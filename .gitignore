@@ -127,7 +127,7 @@ META-INF/*.kotlin_module
 *.sqlite3
 
 ### Misc ###
-local/
-temp/
-tmp/
+/local/
+/temp/
+/tmp/
 *.bak
