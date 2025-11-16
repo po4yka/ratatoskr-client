@@ -2,6 +2,7 @@ package com.po4yka.bitesizereader
 
 import android.app.Application
 import com.po4yka.bitesizereader.di.*
+import com.po4yka.bitesizereader.util.config.AppConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -25,8 +26,10 @@ class BiteSizeReaderApp : Application() {
             )
             properties(
                 mapOf(
-                    "api.base.url" to "https://api.bitesizereader.example.com", // TODO: Update with actual API URL
-                    "api.logging.enabled" to "true"
+                    "api.base.url" to AppConfig.Api.baseUrl,
+                    "api.logging.enabled" to AppConfig.Api.loggingEnabled.toString(),
+                    "telegram.bot.username" to AppConfig.Telegram.botUsername,
+                    "telegram.bot.id" to AppConfig.Telegram.botId
                 )
             )
         }

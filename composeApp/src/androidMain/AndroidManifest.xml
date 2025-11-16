@@ -37,7 +37,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Deep link for Telegram auth callback -->
-                <!-- TODO: Replace with your actual deep link scheme -->
+                <!-- Configured via AppConfig.Telegram.callbackUrl -->
                 <data
                     android:scheme="bitesizereader"
                     android:host="telegram-auth" />

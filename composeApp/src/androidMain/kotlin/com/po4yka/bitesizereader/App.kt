@@ -12,6 +12,7 @@ import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 import com.po4yka.bitesizereader.presentation.navigation.Screen
 import com.po4yka.bitesizereader.presentation.viewmodel.*
 import com.po4yka.bitesizereader.ui.screens.*
+import com.po4yka.bitesizereader.util.share.ShareManager
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
@@ -47,11 +48,16 @@ fun App(
             }
             is Screen.SummaryDetail -> {
                 val viewModel: SummaryDetailViewModel = koinInject { parametersOf(screen.id) }
+                val shareManager: ShareManager = koinInject()
+                val state by viewModel.state.collectAsState()
+
                 SummaryDetailScreen(
                     viewModel = viewModel,
                     onBackClick = { rootComponent.pop() },
                     onShareClick = {
-                        // TODO: Implement share functionality
+                        state.summary?.let { summary ->
+                            shareManager.shareSummary(summary)
+                        }
                     }
                 )
             }

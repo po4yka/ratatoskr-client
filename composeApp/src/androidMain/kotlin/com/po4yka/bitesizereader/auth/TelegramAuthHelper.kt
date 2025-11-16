@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import com.po4yka.bitesizereader.util.config.AppConfig
 
 /**
  * Helper class for Telegram authentication using Custom Tabs
@@ -12,11 +13,17 @@ import androidx.browser.customtabs.CustomTabsIntent
  * and constructing the proper authentication URL.
  */
 object TelegramAuthHelper {
-    // TODO: Replace with your actual Telegram bot username
-    private const val TELEGRAM_BOT_USERNAME = "your_bot_username"
+    // Telegram bot username from centralized config
+    private val TELEGRAM_BOT_USERNAME: String
+        get() = AppConfig.Telegram.botUsername
+
+    // Telegram bot ID from centralized config
+    private val TELEGRAM_BOT_ID: String
+        get() = AppConfig.Telegram.botId
 
     // Deep link callback URL
-    private const val CALLBACK_URL = "bitesizereader://telegram-auth"
+    private val CALLBACK_URL: String
+        get() = AppConfig.Telegram.callbackUrl
 
     /**
      * Launch Telegram authentication in a Custom Tab
@@ -49,12 +56,11 @@ object TelegramAuthHelper {
      * https://oauth.telegram.org/embed/BOT_USERNAME?origin=ORIGIN&return_to=CALLBACK_URL
      */
     private fun buildTelegramAuthUrl(): String {
-        // Using the Telegram Login Widget
+        // Using the Telegram Login Widget (username-based, more commonly used)
         return buildString {
-            append("https://oauth.telegram.org/auth")
-            append("?bot_id=") // TODO: Add your bot ID
-            append("&origin=") // TODO: Add your app origin
-            append("&embed=1")
+            append("https://oauth.telegram.org/embed/")
+            append(TELEGRAM_BOT_USERNAME)
+            append("?origin=android")
             append("&request_access=write")
             append("&return_to=")
             append(Uri.encode(CALLBACK_URL))

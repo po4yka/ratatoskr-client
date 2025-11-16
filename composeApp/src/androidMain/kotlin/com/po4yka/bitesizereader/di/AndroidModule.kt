@@ -3,6 +3,8 @@ package com.po4yka.bitesizereader.di
 import android.content.Context
 import com.po4yka.bitesizereader.data.local.DatabaseDriverFactory
 import com.po4yka.bitesizereader.data.local.SecureStorage
+import com.po4yka.bitesizereader.util.share.AndroidShareManager
+import com.po4yka.bitesizereader.util.share.ShareManager
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +28,11 @@ val androidModule = module {
     // Secure storage
     single<SecureStorage> {
         com.po4yka.bitesizereader.data.local.SecureStorageImpl(androidContext())
+    }
+
+    // Share manager
+    single<ShareManager> {
+        AndroidShareManager(androidContext())
     }
 
     // Coroutine scope for ViewModels

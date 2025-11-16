@@ -3,6 +3,8 @@ package com.po4yka.bitesizereader.di
 import com.po4yka.bitesizereader.data.local.DatabaseDriverFactory
 import com.po4yka.bitesizereader.data.local.SecureStorage
 import com.po4yka.bitesizereader.data.local.SecureStorageImpl
+import com.po4yka.bitesizereader.util.share.IosShareManager
+import com.po4yka.bitesizereader.util.share.ShareManager
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +27,11 @@ val iosModule = module {
     // Secure storage
     single<SecureStorage> {
         SecureStorageImpl()
+    }
+
+    // Share manager
+    single<ShareManager> {
+        IosShareManager()
     }
 
     // Coroutine scope for ViewModels

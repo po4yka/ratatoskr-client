@@ -49,7 +49,11 @@ struct ContentView: View {
                 SummaryDetailView(
                     viewModel: viewModel,
                     onBack: { rootComponent.pop() },
-                    onShare: { /* TODO: Implement share */ }
+                    onShare: {
+                        if let summary = viewModel.state.summary {
+                            ShareHelper.shareSummary(summary)
+                        }
+                    }
                 )
 
             case is Screen.SubmitUrl:

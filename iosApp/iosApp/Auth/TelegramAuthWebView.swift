@@ -52,7 +52,7 @@ struct TelegramAuthWebView: UIViewRepresentable {
 
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             if let url = navigationAction.request.url,
-               url.scheme == "bitesizereader" {
+               url.scheme == AppConfiguration.Telegram.deepLinkScheme {
                 // Handle deep link callback
                 if let authData = TelegramAuthHelper.parseAuthCallback(url: url) {
                     onAuthSuccess(authData)
@@ -97,8 +97,10 @@ struct TelegramAuthData {
 
 /// Helper for Telegram authentication
 struct TelegramAuthHelper {
-    // TODO: Replace with your actual Telegram bot username
-    private static let botUsername = "your_bot_username"
+    /// Telegram bot username from centralized configuration
+    private static var botUsername: String {
+        AppConfiguration.Telegram.botUsername
+    }
 
     /// Build HTML with embedded Telegram Login Widget
     static func buildAuthHTML() -> String {
@@ -153,8 +155,8 @@ struct TelegramAuthHelper {
 
     /// Parse auth callback from deep link URL
     static func parseAuthCallback(url: URL) -> TelegramAuthData? {
-        guard url.scheme == "bitesizereader",
-              url.host == "telegram-auth" else {
+        guard url.scheme == AppConfiguration.Telegram.deepLinkScheme,
+              url.host == AppConfiguration.Telegram.deepLinkHost else {
             return nil
         }
 
