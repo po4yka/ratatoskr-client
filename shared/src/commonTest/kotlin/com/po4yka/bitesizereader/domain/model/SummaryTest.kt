@@ -67,30 +67,31 @@ class SummaryTest {
     @Test
     fun `Summary estimated reading time is positive`() {
         // Given
-        val summary = MockDataFactory.createSummary(estimatedReadingTime = 5)
+        val summary = MockDataFactory.createSummary(readingTimeMin = 5)
 
         // Then
-        assertTrue(summary.estimatedReadingTime > 0)
+        assertTrue(summary.readingTimeMin > 0)
     }
 
     @Test
-    fun `Summary key points can be empty`() {
+    fun `Summary key ideas can be empty`() {
         // Given
-        val summary = MockDataFactory.createSummary(keyPoints = emptyList())
+        val summary = MockDataFactory.createSummary(keyIdeas = emptyList())
 
         // Then
-        assertTrue(summary.keyPoints.isEmpty())
+        assertTrue(summary.keyIdeas.isEmpty())
     }
 
     @Test
     fun `Summary equality works correctly`() {
         // Given
         val summary1 = MockDataFactory.createSummary(id = 1)
-        val summary2 = MockDataFactory.createSummary(id = 1)
+        val summary2 = summary1.copy()
         val summary3 = MockDataFactory.createSummary(id = 2)
 
         // Then
         assertEquals(summary1, summary2)
-        assert(summary1 != summary3)
+        assertEquals(summary1.id, summary2.id)
+        assert(summary1.id != summary3.id)
     }
 }

@@ -97,7 +97,7 @@ class LoginViewModelTest : CoroutineTestBase() {
             val mockTokens = MockDataFactory.createAuthTokens()
             val mockUser =
                 MockDataFactory.createUser(
-                    telegramUserId = telegramUserId,
+                    id = telegramUserId,
                     username = username,
                     firstName = firstName,
                 )

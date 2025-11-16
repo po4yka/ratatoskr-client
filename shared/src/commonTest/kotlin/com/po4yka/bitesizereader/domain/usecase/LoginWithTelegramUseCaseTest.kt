@@ -34,7 +34,7 @@ class LoginWithTelegramUseCaseTest : CoroutineTestBase() {
             val expectedTokens = MockDataFactory.createAuthTokens()
             val expectedUser =
                 MockDataFactory.createUser(
-                    telegramUserId = telegramUserId,
+                    id = telegramUserId,
                     username = username,
                     firstName = firstName,
                     lastName = lastName,
@@ -151,7 +151,7 @@ class LoginWithTelegramUseCaseTest : CoroutineTestBase() {
             val expectedTokens = MockDataFactory.createAuthTokens()
             val expectedUser =
                 MockDataFactory.createUser(
-                    telegramUserId = telegramUserId,
+                    id = telegramUserId,
                     username = null,
                     lastName = null,
                     photoUrl = null,

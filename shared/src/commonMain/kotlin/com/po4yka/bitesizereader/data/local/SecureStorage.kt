@@ -27,4 +27,23 @@ interface SecureStorage {
 /**
  * Expect declaration for platform-specific secure storage
  */
-expect class SecureStorageImpl : SecureStorage
+expect class SecureStorageImpl() {
+    fun saveAccessToken(token: String)
+
+    fun getAccessToken(): String?
+
+    fun saveRefreshToken(token: String)
+
+    fun getRefreshToken(): String?
+
+    fun clearTokens()
+
+    fun saveString(
+        key: String,
+        value: String,
+    )
+
+    fun getString(key: String): String?
+
+    fun remove(key: String)
+}

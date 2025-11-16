@@ -1,47 +1,52 @@
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+
 package com.po4yka.bitesizereader.data.local
 
+import kotlinx.cinterop.*
+import platform.CoreFoundation.*
 import platform.Foundation.*
 import platform.Security.*
+import platform.posix.memcpy
 
 /**
  * iOS implementation using Keychain Services
  */
-actual class SecureStorageImpl : SecureStorage {
+actual class SecureStorageImpl actual constructor() : SecureStorage {
     private val service = "com.po4yka.bitesizereader.tokens"
 
-    override fun saveAccessToken(token: String) {
+    actual override fun saveAccessToken(token: String) {
         save(KEY_ACCESS_TOKEN, token)
     }
 
-    override fun getAccessToken(): String? {
+    actual override fun getAccessToken(): String? {
         return load(KEY_ACCESS_TOKEN)
     }
 
-    override fun saveRefreshToken(token: String) {
+    actual override fun saveRefreshToken(token: String) {
         save(KEY_REFRESH_TOKEN, token)
     }
 
-    override fun getRefreshToken(): String? {
+    actual override fun getRefreshToken(): String? {
         return load(KEY_REFRESH_TOKEN)
     }
 
-    override fun clearTokens() {
+    actual override fun clearTokens() {
         delete(KEY_ACCESS_TOKEN)
         delete(KEY_REFRESH_TOKEN)
     }
 
-    override fun saveString(
+    actual override fun saveString(
         key: String,
         value: String,
     ) {
         save(key, value)
     }
 
-    override fun getString(key: String): String? {
+    actual override fun getString(key: String): String? {
         return load(key)
     }
 
-    override fun remove(key: String) {
+    actual override fun remove(key: String) {
         delete(key)
     }
 
@@ -105,10 +110,12 @@ actual class SecureStorageImpl : SecureStorage {
     }
 
     private fun ByteArray.toNSData(): NSData {
-        return NSData.create(
-            bytes = this.refTo(0),
-            length = this.size.toULong(),
-        )
+        return this.usePinned {
+            NSData.create(
+                bytes = it.addressOf(0),
+                length = this.size.toULong(),
+            )
+        }
     }
 
     private fun NSData.toByteArray(): ByteArray {

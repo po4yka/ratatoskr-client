@@ -1,5 +1,8 @@
 package com.po4yka.bitesizereader.data.mappers
 
+import com.po4yka.bitesizereader.data.remote.dto.EntitiesDto
+import com.po4yka.bitesizereader.data.remote.dto.KeyStatDto
+import com.po4yka.bitesizereader.data.remote.dto.ReadabilityDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryCompactDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryDetailDto
 import kotlin.test.Test
@@ -69,19 +72,13 @@ class SummaryMapperTest {
                 summary1000 = "Long summary",
                 keyIdeas = listOf("Idea 1", "Idea 2"),
                 topicTags = listOf("tech", "ai"),
-                answeredQuestions =
-                    listOf(
-                        mapOf("q" to "Question?", "a" to "Answer"),
-                    ),
+                answeredQuestions = listOf("Question 1?", "Question 2?"),
                 seoKeywords = listOf("keyword1", "keyword2"),
                 readingTimeMin = 10,
                 lang = "en",
-                entities = mapOf("person" to listOf("John Doe")),
-                keyStats =
-                    listOf(
-                        mapOf("label" to "Users", "value" to "1M"),
-                    ),
-                readability = mapOf("score" to 75.5, "grade" to "college"),
+                entities = EntitiesDto(people = listOf("John Doe")),
+                keyStats = listOf(KeyStatDto(label = "Users", value = 1000000.0, unit = "users")),
+                readability = ReadabilityDto(method = "flesch", score = 75.5, level = "college"),
                 isRead = true,
                 createdAt = "2025-01-15T12:00:00Z",
                 updatedAt = "2025-01-16T12:00:00Z",
@@ -94,10 +91,10 @@ class SummaryMapperTest {
         assertEquals(1, domain.id)
         assertEquals("Long summary", domain.summary1000)
         assertEquals(listOf("Idea 1", "Idea 2"), domain.keyIdeas)
-        assertEquals(listOf(mapOf("q" to "Question?", "a" to "Answer")), domain.answeredQuestions)
+        assertEquals(listOf("Question 1?", "Question 2?"), domain.answeredQuestions)
         assertEquals(listOf("keyword1", "keyword2"), domain.seoKeywords)
         assertNotNull(domain.entities)
-        assertEquals(listOf("John Doe"), domain.entities?.get("person"))
+        assertEquals(listOf("John Doe"), domain.entities?.people)
         assertTrue(domain.isRead)
         assertNotNull(domain.updatedAt)
     }

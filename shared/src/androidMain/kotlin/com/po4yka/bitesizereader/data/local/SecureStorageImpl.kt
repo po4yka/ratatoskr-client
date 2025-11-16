@@ -8,13 +8,21 @@ import androidx.security.crypto.MasterKey
 /**
  * Android implementation using EncryptedSharedPreferences
  */
-actual class SecureStorageImpl(context: Context) : SecureStorage {
-    private val masterKey =
+actual class SecureStorageImpl actual constructor() : SecureStorage {
+    private lateinit var context: Context
+
+    // Secondary constructor with Context for Koin injection
+    constructor(context: Context) : this() {
+        this.context = context
+    }
+
+    private val masterKey by lazy {
         MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
+    }
 
-    private val encryptedPrefs: SharedPreferences =
+    private val encryptedPrefs: SharedPreferences by lazy {
         EncryptedSharedPreferences.create(
             context,
             "secure_prefs",
@@ -22,42 +30,43 @@ actual class SecureStorageImpl(context: Context) : SecureStorage {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
         )
+    }
 
-    override fun saveAccessToken(token: String) {
+    actual override fun saveAccessToken(token: String) {
         encryptedPrefs.edit().putString(KEY_ACCESS_TOKEN, token).apply()
     }
 
-    override fun getAccessToken(): String? {
+    actual override fun getAccessToken(): String? {
         return encryptedPrefs.getString(KEY_ACCESS_TOKEN, null)
     }
 
-    override fun saveRefreshToken(token: String) {
+    actual override fun saveRefreshToken(token: String) {
         encryptedPrefs.edit().putString(KEY_REFRESH_TOKEN, token).apply()
     }
 
-    override fun getRefreshToken(): String? {
+    actual override fun getRefreshToken(): String? {
         return encryptedPrefs.getString(KEY_REFRESH_TOKEN, null)
     }
 
-    override fun clearTokens() {
+    actual override fun clearTokens() {
         encryptedPrefs.edit()
             .remove(KEY_ACCESS_TOKEN)
             .remove(KEY_REFRESH_TOKEN)
             .apply()
     }
 
-    override fun saveString(
+    actual override fun saveString(
         key: String,
         value: String,
     ) {
         encryptedPrefs.edit().putString(key, value).apply()
     }
 
-    override fun getString(key: String): String? {
+    actual override fun getString(key: String): String? {
         return encryptedPrefs.getString(key, null)
     }
 
-    override fun remove(key: String) {
+    actual override fun remove(key: String) {
         encryptedPrefs.edit().remove(key).apply()
     }
 
