@@ -39,6 +39,8 @@ class SearchViewModel(
         }
     }
 
+    fun onQueryChange(query: String) = setQuery(query)
+
     fun search() {
         val query = _state.value.query
 

@@ -26,7 +26,7 @@ class SummaryDetailViewModel(
         markAsRead()
     }
 
-    private fun loadSummary() {
+    fun loadSummary() {
         _state.value = _state.value.copy(isLoading = true)
 
         viewModelScope.launch {
@@ -50,6 +50,15 @@ class SummaryDetailViewModel(
     private fun markAsRead() {
         viewModelScope.launch {
             markSummaryAsReadUseCase(summaryId, true)
+        }
+    }
+
+    fun toggleReadStatus() {
+        viewModelScope.launch {
+            _state.value.summary?.let { summary ->
+                markSummaryAsReadUseCase(summaryId, !summary.isRead)
+                loadSummary() // Reload to get updated state
+            }
         }
     }
 

@@ -91,4 +91,19 @@ class LoginViewModel(
             _state.value = LoginState()
         }
     }
+
+    /**
+     * Simplified login method for testing without Telegram integration
+     * TODO: Replace with actual Telegram login flow using Custom Tab/WebView
+     */
+    fun loginWithTelegram() {
+        // For now, this is a placeholder that will be replaced with actual Telegram login
+        // When implemented, this should:
+        // 1. Open Custom Tab (Android) or WKWebView (iOS) with Telegram login widget
+        // 2. Handle callback with Telegram auth data
+        // 3. Call loginWithTelegram with actual parameters
+        _state.value = _state.value.copy(
+            error = "Telegram login not yet implemented. This will be added in Phase 8."
+        )
+    }
 }

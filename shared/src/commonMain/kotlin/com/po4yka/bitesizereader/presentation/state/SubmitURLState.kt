@@ -8,7 +8,11 @@ import com.po4yka.bitesizereader.domain.model.Request
 data class SubmitURLState(
     val url: String = "",
     val isSubmitting: Boolean = false,
+    val validationError: String? = null,
     val error: String? = null,
     val request: Request? = null,
     val isPolling: Boolean = false
-)
+) {
+    val requestStatus get() = request?.status
+    val summaryId get() = request?.summaryId
+}

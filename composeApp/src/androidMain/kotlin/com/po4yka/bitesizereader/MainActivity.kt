@@ -4,22 +4,28 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import com.arkivanov.decompose.defaultComponentContext
+import com.po4yka.bitesizereader.presentation.navigation.RootComponent
+import com.po4yka.bitesizereader.ui.theme.BiteSizeReaderTheme
+import org.koin.android.ext.android.inject
 
+/**
+ * Main activity for Android app
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        // Create root navigation component
+        val rootComponent = RootComponent(
+            componentContext = defaultComponentContext()
+        )
+
         setContent {
-            App()
+            BiteSizeReaderTheme {
+                App(rootComponent = rootComponent)
+            }
         }
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
 }

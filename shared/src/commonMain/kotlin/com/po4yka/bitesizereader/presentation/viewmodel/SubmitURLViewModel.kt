@@ -20,18 +20,27 @@ class SubmitURLViewModel(
     val state: StateFlow<SubmitURLState> = _state.asStateFlow()
 
     fun setURL(url: String) {
-        _state.value = _state.value.copy(url = url)
+        _state.value = _state.value.copy(url = url, validationError = null)
     }
+
+    fun onUrlChange(url: String) = setURL(url)
+
+    fun submitUrl() = submitURL()
 
     fun submitURL() {
         val url = _state.value.url
 
         if (url.isBlank()) {
-            _state.value = _state.value.copy(error = "Please enter a URL")
+            _state.value = _state.value.copy(validationError = "Please enter a URL")
             return
         }
 
-        _state.value = _state.value.copy(isSubmitting = true, error = null)
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            _state.value = _state.value.copy(validationError = "Please enter a valid URL (must start with http:// or https://)")
+            return
+        }
+
+        _state.value = _state.value.copy(isSubmitting = true, validationError = null, error = null)
 
         viewModelScope.launch {
             val result = submitURLUseCase(url)
@@ -101,5 +110,22 @@ class SubmitURLViewModel(
 
     fun reset() {
         _state.value = SubmitURLState()
+    }
+
+    fun cancelRequest() {
+        _state.value.request?.let { request ->
+            viewModelScope.launch {
+                val result = requestRepository.cancelRequest(request.id)
+
+                result.onSuccess {
+                    _state.value = _state.value.copy(
+                        isPolling = false,
+                        request = request.copy(status = RequestStatus.CANCELLED)
+                    )
+                }.onFailure { error ->
+                    _state.value = _state.value.copy(error = error.message)
+                }
+            }
+        }
     }
 }

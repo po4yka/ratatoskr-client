@@ -108,4 +108,32 @@ class SummaryListViewModel(
             }
         }
     }
+
+    fun toggleTagFilter(tag: String) {
+        val currentTags = _state.value.filters.topicTags.toMutableList()
+        if (currentTags.contains(tag)) {
+            currentTags.remove(tag)
+        } else {
+            currentTags.add(tag)
+        }
+
+        _state.value = _state.value.copy(
+            filters = _state.value.filters.copy(topicTags = currentTags)
+        )
+        loadSummaries(refresh = true)
+    }
+
+    fun setReadFilter(readStatus: String?) {
+        _state.value = _state.value.copy(
+            filters = _state.value.filters.copy(readStatus = readStatus)
+        )
+        loadSummaries(refresh = true)
+    }
+
+    fun clearFilters() {
+        _state.value = _state.value.copy(
+            filters = SearchFilters()
+        )
+        loadSummaries(refresh = true)
+    }
 }
