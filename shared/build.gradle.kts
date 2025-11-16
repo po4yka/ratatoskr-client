@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.skie)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
@@ -89,6 +90,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
             implementation(libs.turbine)
+            implementation(libs.mockk)
         }
     }
 }
