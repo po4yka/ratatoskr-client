@@ -47,6 +47,7 @@ class TelegramAuthActivity : ComponentActivity() {
 
             if (telegramUserId != null && authHash != null && authDate != null) {
                 // Call the ViewModel to process authentication
+                // Platform identifier
                 loginViewModel.loginWithTelegram(
                     telegramUserId = telegramUserId,
                     authHash = authHash,
@@ -55,7 +56,7 @@ class TelegramAuthActivity : ComponentActivity() {
                     firstName = firstName,
                     lastName = lastName,
                     photoUrl = photoUrl,
-                    clientId = "android", // Platform identifier
+                    clientId = "android",
                 )
 
                 // Close this activity and return to main app

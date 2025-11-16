@@ -36,7 +36,10 @@ class SubmitURLViewModel(
         }
 
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            _state.value = _state.value.copy(validationError = "Please enter a valid URL (must start with http:// or https://)")
+            _state.value =
+                _state.value.copy(
+                    validationError = "Please enter a valid URL (must start with http:// or https://)",
+                )
             return
         }
 

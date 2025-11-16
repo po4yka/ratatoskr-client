@@ -49,9 +49,24 @@ fun SummaryDetailScreen(
                     state.summary?.let { summary ->
                         IconButton(onClick = { viewModel.toggleReadStatus() }) {
                             Icon(
-                                imageVector = if (summary.isRead) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
-                                contentDescription = if (summary.isRead) "Mark as unread" else "Mark as read",
-                                tint = if (summary.isRead) ReadIndicator else MaterialTheme.colorScheme.onSurfaceVariant,
+                                imageVector =
+                                    if (summary.isRead) {
+                                        Icons.Default.CheckCircle
+                                    } else {
+                                        Icons.Default.RadioButtonUnchecked
+                                    },
+                                contentDescription =
+                                    if (summary.isRead) {
+                                        "Mark as unread"
+                                    } else {
+                                        "Mark as read"
+                                    },
+                                tint =
+                                    if (summary.isRead) {
+                                        ReadIndicator
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    },
                             )
                         }
                         IconButton(onClick = onShareClick) {

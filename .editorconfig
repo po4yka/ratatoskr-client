@@ -9,16 +9,64 @@ indent_style = space
 indent_size = 4
 
 [*.{kt,kts}]
-ktlint_standard_function-naming = disabled
-ktlint_standard_no-wildcard-imports = disabled
-ktlint_standard_discouraged-comment-location = disabled
-ktlint_standard_no-consecutive-comments = disabled
+# Kotlin Multiplatform + Compose settings
 max_line_length = 120
+indent_size = 4
+
+# IntelliJ IDEA Kotlin settings
+ij_kotlin_align_multiline_parameters = true
 ij_kotlin_allow_trailing_comma = true
 ij_kotlin_allow_trailing_comma_on_call_site = true
+ij_kotlin_assignment_wrap = normal
+ij_kotlin_blank_lines_before_declaration_with_comment_or_annotation_on_separate_line = 1
+ij_kotlin_continuation_indent_size = 4
+ij_kotlin_if_rparen_on_new_line = false
+ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,^
+ij_kotlin_line_comment_at_first_column = false
+ij_kotlin_name_count_to_use_star_import = 5
+ij_kotlin_name_count_to_use_star_import_for_members = 3
+ij_kotlin_wrap_elvis_expressions = 1
+ij_kotlin_wrap_expression_body_functions = 1
+ij_kotlin_wrap_first_method_in_call_chain = false
+
+# ktlint rules - Compose-specific
+ktlint_standard_function-naming = disabled
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_no-consecutive-comments = disabled
+ktlint_standard_discouraged-comment-location = disabled
+ktlint_standard_if-else-wrapping = disabled
+ktlint_code_style = ktlint_official
+
+# Additional ktlint customizations for Compose
+ktlint_standard_filename = disabled
+ktlint_standard_package-name = disabled
+ktlint_standard_import-ordering = disabled
+ktlint_standard_no-multi-spaces = disabled
+ktlint_standard_no-unused-imports = disabled
+ktlint_standard_parameter-list-wrapping = disabled
+ktlint_standard_string-template = disabled
+
+# Compose-specific patterns
+ktlint_compose_preview_annotation = disabled
+ktlint_compose_preview-public-check = disabled
+
+[*.{json,webmanifest}]
+indent_size = 2
 
 [*.{yml,yaml}]
 indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
+max_line_length = off
+
+[*.{gradle,gradle.kts}]
+indent_size = 4
+
+[*.xml]
+indent_size = 4
+
+[*.properties]
+end_of_line = lf
+insert_final_newline = false
+trim_trailing_whitespace = true

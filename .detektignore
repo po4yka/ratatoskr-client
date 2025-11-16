@@ -1,0 +1,23 @@
+# Detekt ignore file
+# Files and directories to exclude from detekt analysis
+
+# Build directories
+build/
+.gradle/
+
+# Generated code
+**/generated/
+**/build/generated/
+
+# SQLDelight generated code
+**/sqldelight/
+
+# Compose resources
+**/composeResources/
+
+# Android generated
+**/R.java
+**/BuildConfig.java
+
+# Kotlin build artifacts
+*.kotlin_module

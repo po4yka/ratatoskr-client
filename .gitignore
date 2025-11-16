@@ -134,3 +134,8 @@ META-INF/*.kotlin_module
 
 ### Claude Code ###
 .claude/settings.local.json
+
+### Code Quality Reports ###
+**/reports/ktlint/
+**/reports/detekt/
+detekt-baseline.xml
