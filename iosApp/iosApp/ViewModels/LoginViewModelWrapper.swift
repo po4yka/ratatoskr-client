@@ -36,6 +36,28 @@ class LoginViewModelWrapper: ObservableObject {
         viewModel.loginWithTelegram()
     }
 
+    func loginWithTelegram(
+        telegramUserId: Int64,
+        authHash: String,
+        authDate: Int64,
+        username: String?,
+        firstName: String?,
+        lastName: String?,
+        photoUrl: String?,
+        clientId: String
+    ) {
+        viewModel.loginWithTelegram(
+            telegramUserId: telegramUserId,
+            authHash: authHash,
+            authDate: authDate,
+            username: username,
+            firstName: firstName,
+            lastName: lastName,
+            photoUrl: photoUrl,
+            clientId: clientId
+        )
+    }
+
     func logout() {
         viewModel.logout()
     }

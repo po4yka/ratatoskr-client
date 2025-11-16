@@ -5,6 +5,7 @@ import Shared
 struct AuthView: View {
     @ObservedObject var viewModel: LoginViewModelWrapper
     let onLoginSuccess: () -> Void
+    @State private var showAuthWebView = false
 
     var body: some View {
         VStack(spacing: 30) {
@@ -36,7 +37,7 @@ struct AuthView: View {
 
             // Login Button
             Button(action: {
-                viewModel.loginWithTelegram()
+                showAuthWebView = true
             }) {
                 HStack {
                     if viewModel.state.isLoading {
@@ -81,6 +82,38 @@ struct AuthView: View {
             .padding(.horizontal)
 
             Spacer()
+        }
+        .sheet(isPresented: $showAuthWebView) {
+            NavigationView {
+                TelegramAuthWebView(
+                    onAuthSuccess: { authData in
+                        // Call ViewModel with auth data
+                        viewModel.loginWithTelegram(
+                            telegramUserId: authData.id,
+                            authHash: authData.authHash,
+                            authDate: authData.authDate,
+                            username: authData.username,
+                            firstName: authData.firstName,
+                            lastName: authData.lastName,
+                            photoUrl: authData.photoUrl,
+                            clientId: "ios"
+                        )
+                        showAuthWebView = false
+                    },
+                    onCancel: {
+                        showAuthWebView = false
+                    }
+                )
+                .navigationTitle("Telegram Login")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Cancel") {
+                            showAuthWebView = false
+                        }
+                    }
+                }
+            }
         }
         .onChange(of: viewModel.state.isAuthenticated) { isAuthenticated in
             if isAuthenticated {
