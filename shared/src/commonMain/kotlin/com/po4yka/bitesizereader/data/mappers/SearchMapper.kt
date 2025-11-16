@@ -30,7 +30,7 @@ fun SearchResultDto.toSummary(): Summary {
         readability = null,
         isRead = false,
         createdAt = Clock.System.now(),
-        syncStatus = SyncStatus.SYNCED
+        syncStatus = SyncStatus.SYNCED,
     )
 }
 

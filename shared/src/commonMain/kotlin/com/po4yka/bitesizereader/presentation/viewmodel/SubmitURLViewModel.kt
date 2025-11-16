@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class SubmitURLViewModel(
     private val submitURLUseCase: SubmitURLUseCase,
     private val requestRepository: RequestRepository,
-    private val viewModelScope: CoroutineScope
+    private val viewModelScope: CoroutineScope,
 ) {
     private val _state = MutableStateFlow(SubmitURLState())
     val state: StateFlow<SubmitURLState> = _state.asStateFlow()
@@ -46,20 +46,22 @@ class SubmitURLViewModel(
             val result = submitURLUseCase(url)
 
             result.onSuccess { request ->
-                _state.value = _state.value.copy(
-                    isSubmitting = false,
-                    request = request,
-                    isPolling = true,
-                    error = null
-                )
+                _state.value =
+                    _state.value.copy(
+                        isSubmitting = false,
+                        request = request,
+                        isPolling = true,
+                        error = null,
+                    )
 
                 // Start polling for status
                 pollRequestStatus(request.id)
             }.onFailure { error ->
-                _state.value = _state.value.copy(
-                    isSubmitting = false,
-                    error = error.message
-                )
+                _state.value =
+                    _state.value.copy(
+                        isSubmitting = false,
+                        error = error.message,
+                    )
             }
         }
     }
@@ -68,19 +70,21 @@ class SubmitURLViewModel(
         viewModelScope.launch {
             requestRepository.pollRequestStatus(requestId)
                 .catch { error ->
-                    _state.value = _state.value.copy(
-                        isPolling = false,
-                        error = error.message
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            isPolling = false,
+                            error = error.message,
+                        )
                 }
                 .collect { request ->
                     _state.value = _state.value.copy(request = request)
 
                     // Stop polling when completed
-                    if (request.status in listOf(
+                    if (request.status in
+                        listOf(
                             RequestStatus.COMPLETED,
                             RequestStatus.ERROR,
-                            RequestStatus.CANCELLED
+                            RequestStatus.CANCELLED,
                         )
                     ) {
                         _state.value = _state.value.copy(isPolling = false)
@@ -95,11 +99,12 @@ class SubmitURLViewModel(
                 val result = requestRepository.retryRequest(request.id)
 
                 result.onSuccess { retryRequest ->
-                    _state.value = _state.value.copy(
-                        request = retryRequest,
-                        isPolling = true,
-                        error = null
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            request = retryRequest,
+                            isPolling = true,
+                            error = null,
+                        )
                     pollRequestStatus(retryRequest.id)
                 }.onFailure { error ->
                     _state.value = _state.value.copy(error = error.message)
@@ -118,10 +123,11 @@ class SubmitURLViewModel(
                 val result = requestRepository.cancelRequest(request.id)
 
                 result.onSuccess {
-                    _state.value = _state.value.copy(
-                        isPolling = false,
-                        request = request.copy(status = RequestStatus.CANCELLED)
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            isPolling = false,
+                            request = request.copy(status = RequestStatus.CANCELLED),
+                        )
                 }.onFailure { error ->
                     _state.value = _state.value.copy(error = error.message)
                 }

@@ -9,5 +9,5 @@ data class LoginState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val isAuthenticated: Boolean = false,
-    val user: User? = null
+    val user: User? = null,
 )

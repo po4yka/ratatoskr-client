@@ -29,7 +29,7 @@ fun SummaryCompactDto.toDomain(): Summary {
         readability = null,
         isRead = isRead,
         createdAt = Instant.parse(createdAt),
-        updatedAt = null
+        updatedAt = null,
     )
 }
 
@@ -54,7 +54,7 @@ fun SummaryDetailDto.toDomain(): Summary {
         readability = readability?.toDomain(),
         isRead = isRead,
         createdAt = Instant.parse(createdAt),
-        updatedAt = updatedAt?.let { Instant.parse(it) }
+        updatedAt = updatedAt?.let { Instant.parse(it) },
     )
 }
 
@@ -62,7 +62,7 @@ fun EntitiesDto.toDomain(): Entities {
     return Entities(
         people = people,
         organizations = organizations,
-        locations = locations
+        locations = locations,
     )
 }
 
@@ -71,7 +71,7 @@ fun KeyStatDto.toDomain(): KeyStat {
         label = label,
         value = value,
         unit = unit,
-        sourceExcerpt = sourceExcerpt
+        sourceExcerpt = sourceExcerpt,
     )
 }
 
@@ -79,7 +79,7 @@ fun ReadabilityDto.toDomain(): Readability {
     return Readability(
         method = method,
         score = score,
-        level = level
+        level = level,
     )
 }
 
@@ -87,7 +87,7 @@ fun ReadabilityDto.toDomain(): Readability {
 
 fun Summary.toUpdateRequestDto(): SummaryUpdateRequestDto {
     return SummaryUpdateRequestDto(
-        isRead = isRead
+        isRead = isRead,
     )
 }
 

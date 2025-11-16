@@ -18,7 +18,7 @@ interface AuthRepository {
         firstName: String?,
         lastName: String?,
         photoUrl: String?,
-        clientId: String
+        clientId: String,
     ): Result<Pair<AuthTokens, User>>
 
     /**

@@ -11,7 +11,9 @@ import io.ktor.http.*
  */
 interface AuthApi {
     suspend fun loginWithTelegram(request: TelegramLoginRequestDto): ApiResponse<AuthResponseDto>
+
     suspend fun refreshToken(request: TokenRefreshRequestDto): ApiResponse<TokenRefreshResponseDto>
+
     suspend fun getCurrentUser(): ApiResponse<UserDto>
 }
 
@@ -19,21 +21,16 @@ interface AuthApi {
  * Authentication API implementation
  */
 class AuthApiImpl(
-    private val client: HttpClient
+    private val client: HttpClient,
 ) : AuthApi {
-
-    override suspend fun loginWithTelegram(
-        request: TelegramLoginRequestDto
-    ): ApiResponse<AuthResponseDto> {
+    override suspend fun loginWithTelegram(request: TelegramLoginRequestDto): ApiResponse<AuthResponseDto> {
         return client.post("/v1/auth/telegram-login") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    override suspend fun refreshToken(
-        request: TokenRefreshRequestDto
-    ): ApiResponse<TokenRefreshResponseDto> {
+    override suspend fun refreshToken(request: TokenRefreshRequestDto): ApiResponse<TokenRefreshResponseDto> {
         return client.post("/v1/auth/refresh") {
             contentType(ContentType.Application.Json)
             setBody(request)

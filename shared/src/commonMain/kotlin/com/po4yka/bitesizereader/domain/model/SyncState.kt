@@ -11,32 +11,32 @@ sealed class SyncState {
     data class Syncing(
         val type: SyncType,
         val progress: Int, // 0-100
-        val currentStep: String
+        val currentStep: String,
     ) : SyncState()
 
     data class Success(
         val type: SyncType,
         val syncedAt: Instant,
-        val itemsSynced: Int
+        val itemsSynced: Int,
     ) : SyncState()
 
     data class Error(
         val type: SyncType,
         val error: String,
-        val canRetry: Boolean
+        val canRetry: Boolean,
     ) : SyncState()
 
     data class Retrying(
         val type: SyncType,
         val attemptNumber: Int,
-        val maxAttempts: Int
+        val maxAttempts: Int,
     ) : SyncState()
 }
 
 enum class SyncType {
     FULL,
     DELTA,
-    UPLOAD
+    UPLOAD,
 }
 
 /**
@@ -47,5 +47,5 @@ data class SyncMetadata(
     val lastDeltaSync: Instant? = null,
     val lastSyncTimestamp: Instant? = null,
     val deviceId: String,
-    val pendingChanges: Int = 0
+    val pendingChanges: Int = 0,
 )

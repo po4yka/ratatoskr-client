@@ -13,10 +13,11 @@ import kotlinx.coroutines.flow.onStart
  */
 fun <T> Flow<T>.withLoadingState(
     onStart: () -> Unit = {},
-    onError: (Throwable) -> Unit = {}
-): Flow<T> = this
-    .onStart { onStart() }
-    .catch { error ->
-        onError(error)
-        throw error
-    }
+    onError: (Throwable) -> Unit = {},
+): Flow<T> =
+    this
+        .onStart { onStart() }
+        .catch { error ->
+            onError(error)
+            throw error
+        }

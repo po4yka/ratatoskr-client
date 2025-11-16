@@ -11,7 +11,9 @@ import io.ktor.http.*
  */
 interface RequestsApi {
     suspend fun submitURL(request: SubmitURLRequestDto): ApiResponse<RequestResponseDto>
+
     suspend fun getRequestStatus(requestId: Int): ApiResponse<RequestStatusDto>
+
     suspend fun retryRequest(requestId: Int): ApiResponse<RequestResponseDto>
 }
 
@@ -19,27 +21,20 @@ interface RequestsApi {
  * Requests API implementation
  */
 class RequestsApiImpl(
-    private val client: HttpClient
+    private val client: HttpClient,
 ) : RequestsApi {
-
-    override suspend fun submitURL(
-        request: SubmitURLRequestDto
-    ): ApiResponse<RequestResponseDto> {
+    override suspend fun submitURL(request: SubmitURLRequestDto): ApiResponse<RequestResponseDto> {
         return client.post("/v1/requests") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    override suspend fun getRequestStatus(
-        requestId: Int
-    ): ApiResponse<RequestStatusDto> {
+    override suspend fun getRequestStatus(requestId: Int): ApiResponse<RequestStatusDto> {
         return client.get("/v1/requests/$requestId/status").body()
     }
 
-    override suspend fun retryRequest(
-        requestId: Int
-    ): ApiResponse<RequestResponseDto> {
+    override suspend fun retryRequest(requestId: Int): ApiResponse<RequestResponseDto> {
         return client.post("/v1/requests/$requestId/retry").body()
     }
 }

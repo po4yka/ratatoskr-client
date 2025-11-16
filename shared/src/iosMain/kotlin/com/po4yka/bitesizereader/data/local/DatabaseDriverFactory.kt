@@ -11,7 +11,7 @@ actual class DatabaseDriverFactory {
     actual fun createDriver(): SqlDriver {
         return NativeSqliteDriver(
             schema = Database.Schema,
-            name = "bite_reader.db"
+            name = "bite_reader.db",
         )
     }
 }

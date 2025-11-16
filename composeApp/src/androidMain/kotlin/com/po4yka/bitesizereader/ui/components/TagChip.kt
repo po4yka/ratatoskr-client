@@ -1,10 +1,8 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
 /**
  * Chip component for displaying topic tags
@@ -13,7 +11,7 @@ import androidx.compose.ui.unit.dp
 fun TagChip(
     tag: String,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     if (onClick != null) {
         FilterChip(
@@ -22,10 +20,10 @@ fun TagChip(
             label = {
                 Text(
                     text = tag,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
                 )
             },
-            modifier = modifier
+            modifier = modifier,
         )
     } else {
         SuggestionChip(
@@ -33,10 +31,10 @@ fun TagChip(
             label = {
                 Text(
                     text = tag,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
                 )
             },
-            modifier = modifier
+            modifier = modifier,
         )
     }
 }
@@ -49,7 +47,7 @@ fun SelectableTagChip(
     tag: String,
     selected: Boolean,
     onSelectedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     FilterChip(
         selected = selected,
@@ -57,9 +55,9 @@ fun SelectableTagChip(
         label = {
             Text(
                 text = tag,
-                style = MaterialTheme.typography.labelSmall
+                style = MaterialTheme.typography.labelSmall,
             )
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }

@@ -7,23 +7,25 @@ import org.koin.dsl.module
 /**
  * ViewModel module
  */
-val viewModelModule = module {
-    factory { LoginViewModel(get(), get()) }
-    factory { SummaryListViewModel(get(), get(), get()) }
-    factory { (summaryId: Int) ->
-        SummaryDetailViewModel(summaryId, get(), get(), get())
+val viewModelModule =
+    module {
+        factory { LoginViewModel(get(), get()) }
+        factory { SummaryListViewModel(get(), get(), get()) }
+        factory { (summaryId: Int) ->
+            SummaryDetailViewModel(summaryId, get(), get(), get())
+        }
+        factory { SubmitURLViewModel(get(), get()) }
+        factory { SearchViewModel(get(), get()) }
     }
-    factory { SubmitURLViewModel(get(), get()) }
-    factory { SearchViewModel(get(), get()) }
-}
 
 /**
  * All application modules combined
  */
-fun appModules(): List<Module> = listOf(
-    networkModule,
-    databaseModule,
-    repositoryModule,
-    useCaseModule,
-    viewModelModule
-)
+fun appModules(): List<Module> =
+    listOf(
+        networkModule,
+        databaseModule,
+        repositoryModule,
+        useCaseModule,
+        viewModelModule,
+    )

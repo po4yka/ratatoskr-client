@@ -13,9 +13,8 @@ import com.arkivanov.decompose.value.Value
  * Simplified for use with Android ViewModels and Koin
  */
 class RootComponent(
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : ComponentContext by componentContext {
-
     private val navigation = StackNavigation<Screen>()
 
     val stack: Value<ChildStack<*, Screen>> =
@@ -24,7 +23,7 @@ class RootComponent(
             serializer = Screen.serializer(),
             initialConfiguration = Screen.Auth,
             handleBackButton = true,
-            childFactory = { config, _ -> config }
+            childFactory = { config, _ -> config },
         )
 
     fun navigateToSummaryList() {

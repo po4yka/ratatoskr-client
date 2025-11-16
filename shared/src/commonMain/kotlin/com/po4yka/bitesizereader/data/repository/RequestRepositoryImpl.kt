@@ -19,10 +19,12 @@ import kotlinx.coroutines.flow.map
 class RequestRepositoryImpl(
     private val requestsApi: RequestsApi,
     private val database: Database,
-    private val databaseHelper: DatabaseHelper
+    private val databaseHelper: DatabaseHelper,
 ) : RequestRepository {
-
-    override suspend fun submitURL(url: String, langPreference: String): Result<Request> {
+    override suspend fun submitURL(
+        url: String,
+        langPreference: String,
+    ): Result<Request> {
         return try {
             val requestDto = url.toSubmitURLRequestDto(langPreference)
             val response = requestsApi.submitURL(requestDto)
@@ -55,40 +57,43 @@ class RequestRepositoryImpl(
         }
     }
 
-    override fun pollRequestStatus(requestId: Int): Flow<Request> = flow {
-        var isCompleted = false
+    override fun pollRequestStatus(requestId: Int): Flow<Request> =
+        flow {
+            var isCompleted = false
 
-        while (!isCompleted) {
-            val result = getRequestStatus(requestId)
+            while (!isCompleted) {
+                val result = getRequestStatus(requestId)
 
-            result.onSuccess { request ->
-                emit(request)
+                result.onSuccess { request ->
+                    emit(request)
 
-                // Stop polling if completed, error, or cancelled
-                if (request.status in listOf(
-                        RequestStatus.COMPLETED,
-                        RequestStatus.ERROR,
-                        RequestStatus.CANCELLED
-                    )
-                ) {
+                    // Stop polling if completed, error, or cancelled
+                    if (request.status in
+                        listOf(
+                            RequestStatus.COMPLETED,
+                            RequestStatus.ERROR,
+                            RequestStatus.CANCELLED,
+                        )
+                    ) {
+                        isCompleted = true
+                    }
+                }.onFailure {
+                    // On error, emit cached data if available
+                    val cached =
+                        database.requestQueries.selectById(requestId.toLong())
+                            .executeAsOneOrNull()
+
+                    if (cached != null) {
+                        emit(mapDbRequestToDomain(cached))
+                    }
                     isCompleted = true
                 }
-            }.onFailure {
-                // On error, emit cached data if available
-                val cached = database.requestQueries.selectById(requestId.toLong())
-                    .executeAsOneOrNull()
 
-                if (cached != null) {
-                    emit(mapDbRequestToDomain(cached))
+                if (!isCompleted) {
+                    delay(3000) // Poll every 3 seconds
                 }
-                isCompleted = true
-            }
-
-            if (!isCompleted) {
-                delay(3000) // Poll every 3 seconds
             }
         }
-    }
 
     override suspend fun retryRequest(requestId: Int): Result<Request> {
         return try {
@@ -137,9 +142,10 @@ class RequestRepositoryImpl(
             inputUrl = dbRequest.inputUrl,
             type = com.po4yka.bitesizereader.domain.model.RequestType.valueOf(dbRequest.type),
             status = RequestStatus.valueOf(dbRequest.status),
-            stage = dbRequest.stage?.let {
-                com.po4yka.bitesizereader.domain.model.ProcessingStage.valueOf(it)
-            },
+            stage =
+                dbRequest.stage?.let {
+                    com.po4yka.bitesizereader.domain.model.ProcessingStage.valueOf(it)
+                },
             progress = dbRequest.progress.toInt(),
             langPreference = dbRequest.langPreference,
             summaryId = dbRequest.summaryId?.toInt(),
@@ -148,7 +154,7 @@ class RequestRepositoryImpl(
             estimatedSecondsRemaining = dbRequest.estimatedSecondsRemaining?.toInt(),
             createdAt = kotlinx.datetime.Instant.parse(dbRequest.createdAt),
             updatedAt = dbRequest.updatedAt?.let { kotlinx.datetime.Instant.parse(it) },
-            completedAt = dbRequest.completedAt?.let { kotlinx.datetime.Instant.parse(it) }
+            completedAt = dbRequest.completedAt?.let { kotlinx.datetime.Instant.parse(it) },
         )
     }
 }

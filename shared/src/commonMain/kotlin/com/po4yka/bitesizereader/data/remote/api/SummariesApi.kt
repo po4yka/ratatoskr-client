@@ -18,21 +18,23 @@ interface SummariesApi {
         fromDate: String? = null,
         toDate: String? = null,
         sortBy: String? = null,
-        sortOrder: String? = null
+        sortOrder: String? = null,
     ): ApiResponse<SummaryListResponseDto>
 
     suspend fun getSummaryById(id: Int): ApiResponse<SummaryDetailDto>
 
-    suspend fun updateSummary(id: Int, request: SummaryUpdateRequestDto): ApiResponse<SummaryUpdateResponseDto>
+    suspend fun updateSummary(
+        id: Int,
+        request: SummaryUpdateRequestDto,
+    ): ApiResponse<SummaryUpdateResponseDto>
 }
 
 /**
  * Summaries API implementation
  */
 class SummariesApiImpl(
-    private val client: HttpClient
+    private val client: HttpClient,
 ) : SummariesApi {
-
     override suspend fun getSummaries(
         limit: Int,
         offset: Int,
@@ -41,7 +43,7 @@ class SummariesApiImpl(
         fromDate: String?,
         toDate: String?,
         sortBy: String?,
-        sortOrder: String?
+        sortOrder: String?,
     ): ApiResponse<SummaryListResponseDto> {
         return client.get("/v1/summaries") {
             parameter("limit", limit)
@@ -61,7 +63,7 @@ class SummariesApiImpl(
 
     override suspend fun updateSummary(
         id: Int,
-        request: SummaryUpdateRequestDto
+        request: SummaryUpdateRequestDto,
     ): ApiResponse<SummaryUpdateResponseDto> {
         return client.patch("/v1/summaries/$id") {
             contentType(ContentType.Application.Json)

@@ -16,14 +16,14 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
             databaseModule,
             repositoryModule,
             useCaseModule,
-            viewModelModule
+            viewModelModule,
         )
         properties(
             mapOf(
                 "api.base.url" to AppConfig.Api.baseUrl,
                 "api.logging.enabled" to AppConfig.Api.loggingEnabled.toString(),
                 "telegram.bot.username" to AppConfig.Telegram.botUsername,
-                "telegram.bot.id" to AppConfig.Telegram.botId
-            )
+                "telegram.bot.id" to AppConfig.Telegram.botId,
+            ),
         )
     }

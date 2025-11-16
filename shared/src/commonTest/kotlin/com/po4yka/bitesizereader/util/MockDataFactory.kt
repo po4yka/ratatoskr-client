@@ -10,7 +10,6 @@ import kotlin.time.Duration.Companion.hours
  * Factory for creating mock domain model instances for testing
  */
 object MockDataFactory {
-
     /**
      * Create a mock Summary with customizable properties
      */
@@ -25,7 +24,7 @@ object MockDataFactory {
         language: String = "en",
         isRead: Boolean = false,
         createdAt: Instant = Clock.System.now() - (id * 1).days,
-        sourceMetadata: SourceMetadata = createSourceMetadata()
+        sourceMetadata: SourceMetadata = createSourceMetadata(),
     ) = Summary(
         id = id,
         url = url,
@@ -37,7 +36,7 @@ object MockDataFactory {
         language = language,
         isRead = isRead,
         createdAt = createdAt,
-        sourceMetadata = sourceMetadata
+        sourceMetadata = sourceMetadata,
     )
 
     /**
@@ -48,13 +47,13 @@ object MockDataFactory {
         author: String? = "John Doe",
         publishedDate: String? = "2025-01-15",
         originalTitle: String? = "Original Article Title",
-        imageUrl: String? = "https://example.com/image.jpg"
+        imageUrl: String? = "https://example.com/image.jpg",
     ) = SourceMetadata(
         domain = domain,
         author = author,
         publishedDate = publishedDate,
         originalTitle = originalTitle,
-        imageUrl = imageUrl
+        imageUrl = imageUrl,
     )
 
     /**
@@ -74,7 +73,7 @@ object MockDataFactory {
         clientId: String = "test-client-$id",
         createdAt: Instant = Clock.System.now() - 1.hours,
         summaryId: Int? = null,
-        error: String? = null
+        error: String? = null,
     ) = Request(
         id = id,
         url = url,
@@ -82,7 +81,7 @@ object MockDataFactory {
         clientId = clientId,
         createdAt = createdAt,
         summaryId = summaryId,
-        error = error
+        error = error,
     )
 
     /**
@@ -92,11 +91,12 @@ object MockDataFactory {
         return (1..count).map {
             createRequest(
                 id = it,
-                status = when (it % 3) {
-                    0 -> RequestStatus.COMPLETED
-                    1 -> RequestStatus.PROCESSING
-                    else -> RequestStatus.PENDING
-                }
+                status =
+                    when (it % 3) {
+                        0 -> RequestStatus.COMPLETED
+                        1 -> RequestStatus.PROCESSING
+                        else -> RequestStatus.PENDING
+                    },
             )
         }
     }
@@ -111,7 +111,7 @@ object MockDataFactory {
         firstName: String = "Test",
         lastName: String? = "User",
         photoUrl: String? = "https://example.com/photo.jpg",
-        createdAt: Instant = Clock.System.now() - 30.days
+        createdAt: Instant = Clock.System.now() - 30.days,
     ) = User(
         id = id,
         telegramUserId = telegramUserId,
@@ -119,7 +119,7 @@ object MockDataFactory {
         firstName = firstName,
         lastName = lastName,
         photoUrl = photoUrl,
-        createdAt = createdAt
+        createdAt = createdAt,
     )
 
     /**
@@ -127,10 +127,10 @@ object MockDataFactory {
      */
     fun createAuthTokens(
         accessToken: String = "mock-access-token",
-        refreshToken: String = "mock-refresh-token"
+        refreshToken: String = "mock-refresh-token",
     ) = AuthTokens(
         accessToken = accessToken,
-        refreshToken = refreshToken
+        refreshToken = refreshToken,
     )
 
     /**
@@ -138,10 +138,10 @@ object MockDataFactory {
      */
     fun createSearchQuery(
         query: String = "test query",
-        filters: SearchFilters = SearchFilters()
+        filters: SearchFilters = SearchFilters(),
     ) = SearchQuery(
         query = query,
-        filters = filters
+        filters = filters,
     )
 
     /**
@@ -152,13 +152,13 @@ object MockDataFactory {
         languages: List<String> = emptyList(),
         isRead: Boolean? = null,
         dateFrom: Instant? = null,
-        dateTo: Instant? = null
+        dateTo: Instant? = null,
     ) = SearchFilters(
         topics = topics,
         languages = languages,
         isRead = isRead,
         dateFrom = dateFrom,
-        dateTo = dateTo
+        dateTo = dateTo,
     )
 
     /**
@@ -167,10 +167,10 @@ object MockDataFactory {
     fun createSyncState(
         lastSyncTimestamp: Instant = Clock.System.now() - 1.hours,
         pendingChanges: Int = 0,
-        isSyncing: Boolean = false
+        isSyncing: Boolean = false,
     ) = SyncState(
         lastSyncTimestamp = lastSyncTimestamp,
         pendingChanges = pendingChanges,
-        isSyncing = isSyncing
+        isSyncing = isSyncing,
     )
 }

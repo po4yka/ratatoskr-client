@@ -2,7 +2,6 @@ package com.po4yka.bitesizereader.data.local
 
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.*
-import kotlinx.datetime.Instant
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -10,11 +9,11 @@ import kotlinx.serialization.json.Json
  * Helper class for database operations with JSON serialization
  */
 class DatabaseHelper(private val database: Database) {
-
-    private val json = Json {
-        ignoreUnknownKeys = true
-        encodeDefaults = true
-    }
+    private val json =
+        Json {
+            ignoreUnknownKeys = true
+            encodeDefaults = true
+        }
 
     /**
      * Insert or update a summary in the database
@@ -43,7 +42,7 @@ class DatabaseHelper(private val database: Database) {
             createdAt = summary.createdAt.toString(),
             updatedAt = summary.updatedAt?.toString(),
             syncStatus = summary.syncStatus.name,
-            locallyModified = if (summary.locallyModified) 1L else 0L
+            locallyModified = if (summary.locallyModified) 1L else 0L,
         )
     }
 
@@ -65,7 +64,7 @@ class DatabaseHelper(private val database: Database) {
             estimatedSecondsRemaining = request.estimatedSecondsRemaining?.toLong(),
             createdAt = request.createdAt.toString(),
             updatedAt = request.updatedAt?.toString(),
-            completedAt = request.completedAt?.toString()
+            completedAt = request.completedAt?.toString(),
         )
     }
 
@@ -90,7 +89,10 @@ class DatabaseHelper(private val database: Database) {
         return database.syncMetadataQueries.get(key).executeAsOneOrNull()
     }
 
-    fun setSyncMetadata(key: String, value: String) {
+    fun setSyncMetadata(
+        key: String,
+        value: String,
+    ) {
         database.syncMetadataQueries.set(key, value)
     }
 }

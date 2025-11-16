@@ -12,24 +12,24 @@ import kotlin.test.assertTrue
  * Unit tests for Summary mappers
  */
 class SummaryMapperTest {
-
     @Test
     fun `SummaryCompactDto maps to domain model correctly`() {
         // Given
-        val dto = SummaryCompactDto(
-            id = 1,
-            requestId = 100,
-            title = "Test Article",
-            url = "https://example.com/article",
-            domain = "example.com",
-            tldr = "Test TLDR",
-            summary250 = "Short summary",
-            topicTags = listOf("tech", "ai"),
-            readingTimeMin = 5,
-            lang = "en",
-            isRead = false,
-            createdAt = "2025-01-15T12:00:00Z"
-        )
+        val dto =
+            SummaryCompactDto(
+                id = 1,
+                requestId = 100,
+                title = "Test Article",
+                url = "https://example.com/article",
+                domain = "example.com",
+                tldr = "Test TLDR",
+                summary250 = "Short summary",
+                topicTags = listOf("tech", "ai"),
+                readingTimeMin = 5,
+                lang = "en",
+                isRead = false,
+                createdAt = "2025-01-15T12:00:00Z",
+            )
 
         // When
         val domain = dto.toDomain()
@@ -57,32 +57,35 @@ class SummaryMapperTest {
     @Test
     fun `SummaryDetailDto maps to domain model correctly with all fields`() {
         // Given
-        val dto = SummaryDetailDto(
-            id = 1,
-            requestId = 100,
-            title = "Test Article",
-            url = "https://example.com/article",
-            domain = "example.com",
-            tldr = "Test TLDR",
-            summary250 = "Short summary",
-            summary1000 = "Long summary",
-            keyIdeas = listOf("Idea 1", "Idea 2"),
-            topicTags = listOf("tech", "ai"),
-            answeredQuestions = listOf(
-                mapOf("q" to "Question?", "a" to "Answer")
-            ),
-            seoKeywords = listOf("keyword1", "keyword2"),
-            readingTimeMin = 10,
-            lang = "en",
-            entities = mapOf("person" to listOf("John Doe")),
-            keyStats = listOf(
-                mapOf("label" to "Users", "value" to "1M")
-            ),
-            readability = mapOf("score" to 75.5, "grade" to "college"),
-            isRead = true,
-            createdAt = "2025-01-15T12:00:00Z",
-            updatedAt = "2025-01-16T12:00:00Z"
-        )
+        val dto =
+            SummaryDetailDto(
+                id = 1,
+                requestId = 100,
+                title = "Test Article",
+                url = "https://example.com/article",
+                domain = "example.com",
+                tldr = "Test TLDR",
+                summary250 = "Short summary",
+                summary1000 = "Long summary",
+                keyIdeas = listOf("Idea 1", "Idea 2"),
+                topicTags = listOf("tech", "ai"),
+                answeredQuestions =
+                    listOf(
+                        mapOf("q" to "Question?", "a" to "Answer"),
+                    ),
+                seoKeywords = listOf("keyword1", "keyword2"),
+                readingTimeMin = 10,
+                lang = "en",
+                entities = mapOf("person" to listOf("John Doe")),
+                keyStats =
+                    listOf(
+                        mapOf("label" to "Users", "value" to "1M"),
+                    ),
+                readability = mapOf("score" to 75.5, "grade" to "college"),
+                isRead = true,
+                createdAt = "2025-01-15T12:00:00Z",
+                updatedAt = "2025-01-16T12:00:00Z",
+            )
 
         // When
         val domain = dto.toDomain()
@@ -102,20 +105,21 @@ class SummaryMapperTest {
     @Test
     fun `SummaryCompactDto handles empty lists correctly`() {
         // Given
-        val dto = SummaryCompactDto(
-            id = 1,
-            requestId = 100,
-            title = "Test",
-            url = "https://example.com",
-            domain = "example.com",
-            tldr = "TLDR",
-            summary250 = "Summary",
-            topicTags = emptyList(),
-            readingTimeMin = 1,
-            lang = "en",
-            isRead = false,
-            createdAt = "2025-01-15T12:00:00Z"
-        )
+        val dto =
+            SummaryCompactDto(
+                id = 1,
+                requestId = 100,
+                title = "Test",
+                url = "https://example.com",
+                domain = "example.com",
+                tldr = "TLDR",
+                summary250 = "Summary",
+                topicTags = emptyList(),
+                readingTimeMin = 1,
+                lang = "en",
+                isRead = false,
+                createdAt = "2025-01-15T12:00:00Z",
+            )
 
         // When
         val domain = dto.toDomain()
@@ -129,28 +133,29 @@ class SummaryMapperTest {
     @Test
     fun `SummaryDetailDto handles null optional fields correctly`() {
         // Given
-        val dto = SummaryDetailDto(
-            id = 1,
-            requestId = 100,
-            title = "Test",
-            url = "https://example.com",
-            domain = "example.com",
-            tldr = "TLDR",
-            summary250 = "Summary",
-            summary1000 = null,
-            keyIdeas = emptyList(),
-            topicTags = emptyList(),
-            answeredQuestions = emptyList(),
-            seoKeywords = emptyList(),
-            readingTimeMin = 1,
-            lang = "en",
-            entities = null,
-            keyStats = emptyList(),
-            readability = null,
-            isRead = false,
-            createdAt = "2025-01-15T12:00:00Z",
-            updatedAt = null
-        )
+        val dto =
+            SummaryDetailDto(
+                id = 1,
+                requestId = 100,
+                title = "Test",
+                url = "https://example.com",
+                domain = "example.com",
+                tldr = "TLDR",
+                summary250 = "Summary",
+                summary1000 = null,
+                keyIdeas = emptyList(),
+                topicTags = emptyList(),
+                answeredQuestions = emptyList(),
+                seoKeywords = emptyList(),
+                readingTimeMin = 1,
+                lang = "en",
+                entities = null,
+                keyStats = emptyList(),
+                readability = null,
+                isRead = false,
+                createdAt = "2025-01-15T12:00:00Z",
+                updatedAt = null,
+            )
 
         // When
         val domain = dto.toDomain()

@@ -10,17 +10,18 @@ import coil3.util.DebugLogger
 import com.po4yka.bitesizereader.util.ImageCacheConfig.CACHE_DIRECTORY
 import com.po4yka.bitesizereader.util.ImageCacheConfig.CROSSFADE_DURATION_MS
 import com.po4yka.bitesizereader.util.ImageCacheConfig.DISK_CACHE_SIZE_MB
-import com.po4yka.bitesizereader.util.ImageCacheConfig.MEMORY_CACHE_SIZE_MB
 
 /**
  * Factory for creating configured ImageLoader instances
  */
 object ImageLoaderFactory {
-
     /**
      * Create an optimized ImageLoader for the app
      */
-    fun create(context: Context, enableDebugLogging: Boolean = false): ImageLoader {
+    fun create(
+        context: Context,
+        enableDebugLogging: Boolean = false,
+    ): ImageLoader {
         return ImageLoader.Builder(context)
             .memoryCache {
                 MemoryCache.Builder()

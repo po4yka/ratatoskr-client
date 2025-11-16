@@ -13,5 +13,5 @@ data class SummaryListState(
     val isRefreshing: Boolean = false,
     val hasMore: Boolean = true,
     val syncState: SyncState = SyncState.Idle,
-    val unreadCount: Int = 0
+    val unreadCount: Int = 0,
 )

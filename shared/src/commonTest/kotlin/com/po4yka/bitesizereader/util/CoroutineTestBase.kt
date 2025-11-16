@@ -12,7 +12,6 @@ import kotlin.test.BeforeTest
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class CoroutineTestBase {
-
     @BeforeTest
     fun setupDispatchers() {
         Dispatchers.setMain(TestDispatchers.standard)

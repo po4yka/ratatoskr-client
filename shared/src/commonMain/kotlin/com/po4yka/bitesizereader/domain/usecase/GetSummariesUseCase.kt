@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.Flow
  * Use case for getting summaries with filters
  */
 class GetSummariesUseCase(
-    private val summaryRepository: SummaryRepository
+    private val summaryRepository: SummaryRepository,
 ) {
     operator fun invoke(
         limit: Int = 20,
         offset: Int = 0,
-        filters: SearchFilters = SearchFilters()
+        filters: SearchFilters = SearchFilters(),
     ): Flow<List<Summary>> {
         return summaryRepository.getSummaries(limit, offset, filters)
     }

@@ -9,13 +9,14 @@ data class User(
     val firstName: String?,
     val lastName: String? = null,
     val photoUrl: String? = null,
-    val isOwner: Boolean = false
+    val isOwner: Boolean = false,
 ) {
     val displayName: String
-        get() = when {
-            firstName != null && lastName != null -> "$firstName $lastName"
-            firstName != null -> firstName
-            username != null -> "@$username"
-            else -> "User $id"
-        }
+        get() =
+            when {
+                firstName != null && lastName != null -> "$firstName $lastName"
+                firstName != null -> firstName
+                username != null -> "@$username"
+                else -> "User $id"
+            }
 }

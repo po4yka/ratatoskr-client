@@ -2,8 +2,6 @@ package com.po4yka.bitesizereader.util.share
 
 import com.po4yka.bitesizereader.domain.model.Summary
 import platform.Foundation.NSURL
-import platform.UIKit.UIActivityViewController
-import platform.UIKit.UIApplication
 
 /**
  * iOS implementation of ShareManager using UIActivityViewController
@@ -12,8 +10,10 @@ import platform.UIKit.UIApplication
  * The actual presentation is handled in Swift code via ShareHelper.
  */
 class IosShareManager : ShareManager {
-
-    override fun shareSummary(summary: Summary, customMessage: String?) {
+    override fun shareSummary(
+        summary: Summary,
+        customMessage: String?,
+    ) {
         val shareText = summary.toShareText(customMessage)
         val url = NSURL.URLWithString(summary.url)
 
@@ -21,22 +21,30 @@ class IosShareManager : ShareManager {
         shareItems(listOfNotNull(shareText, url))
     }
 
-    override fun shareText(text: String, subject: String?) {
-        val shareText = if (subject != null) {
-            "$subject\n\n$text"
-        } else {
-            text
-        }
+    override fun shareText(
+        text: String,
+        subject: String?,
+    ) {
+        val shareText =
+            if (subject != null) {
+                "$subject\n\n$text"
+            } else {
+                text
+            }
         shareItems(listOf(shareText))
     }
 
-    override fun shareUrl(url: String, title: String?) {
+    override fun shareUrl(
+        url: String,
+        title: String?,
+    ) {
         val nsUrl = NSURL.URLWithString(url)
-        val items = if (title != null) {
-            listOfNotNull(title, nsUrl)
-        } else {
-            listOfNotNull(nsUrl)
-        }
+        val items =
+            if (title != null) {
+                listOfNotNull(title, nsUrl)
+            } else {
+                listOfNotNull(nsUrl)
+            }
         shareItems(items)
     }
 

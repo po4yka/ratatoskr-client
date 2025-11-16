@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 class LoginViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
     private val authRepository: AuthRepository,
-    private val viewModelScope: CoroutineScope
+    private val viewModelScope: CoroutineScope,
 ) {
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state.asStateFlow()
@@ -53,34 +53,37 @@ class LoginViewModel(
         firstName: String?,
         lastName: String?,
         photoUrl: String?,
-        clientId: String
+        clientId: String,
     ) {
         _state.value = _state.value.copy(isLoading = true, error = null)
 
         viewModelScope.launch {
-            val result = loginWithTelegramUseCase(
-                telegramUserId = telegramUserId,
-                authHash = authHash,
-                authDate = authDate,
-                username = username,
-                firstName = firstName,
-                lastName = lastName,
-                photoUrl = photoUrl,
-                clientId = clientId
-            )
+            val result =
+                loginWithTelegramUseCase(
+                    telegramUserId = telegramUserId,
+                    authHash = authHash,
+                    authDate = authDate,
+                    username = username,
+                    firstName = firstName,
+                    lastName = lastName,
+                    photoUrl = photoUrl,
+                    clientId = clientId,
+                )
 
             result.onSuccess { (_, user) ->
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    isAuthenticated = true,
-                    user = user,
-                    error = null
-                )
+                _state.value =
+                    _state.value.copy(
+                        isLoading = false,
+                        isAuthenticated = true,
+                        user = user,
+                        error = null,
+                    )
             }.onFailure { error ->
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    error = error.message
-                )
+                _state.value =
+                    _state.value.copy(
+                        isLoading = false,
+                        error = error.message,
+                    )
             }
         }
     }

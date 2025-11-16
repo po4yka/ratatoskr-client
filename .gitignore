@@ -131,3 +131,6 @@ META-INF/*.kotlin_module
 /temp/
 /tmp/
 *.bak
+
+### Claude Code ###
+.claude/settings.local.json

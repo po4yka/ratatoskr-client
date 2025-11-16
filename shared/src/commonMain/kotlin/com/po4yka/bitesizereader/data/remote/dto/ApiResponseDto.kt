@@ -11,7 +11,7 @@ data class ApiResponse<T>(
     val success: Boolean,
     val data: T? = null,
     val error: ErrorDetail? = null,
-    val meta: MetaInfo
+    val meta: MetaInfo,
 )
 
 @Serializable
@@ -19,11 +19,11 @@ data class ErrorDetail(
     val code: String,
     val message: String,
     val details: Map<String, String>? = null,
-    @SerialName("correlation_id") val correlationId: String? = null
+    @SerialName("correlation_id") val correlationId: String? = null,
 )
 
 @Serializable
 data class MetaInfo(
     val timestamp: String,
-    val version: String? = null
+    val version: String? = null,
 )

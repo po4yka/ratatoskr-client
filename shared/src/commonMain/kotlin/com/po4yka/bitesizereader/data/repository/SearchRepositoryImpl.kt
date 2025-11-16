@@ -12,15 +12,14 @@ import kotlinx.serialization.json.Json
  */
 class SearchRepositoryImpl(
     private val searchApi: SearchApi,
-    private val database: Database
+    private val database: Database,
 ) : SearchRepository {
-
     private val json = Json { ignoreUnknownKeys = true }
 
     override suspend fun search(
         query: String,
         limit: Int,
-        offset: Int
+        offset: Int,
     ): Result<List<Summary>> {
         return try {
             // Search locally first for instant results
@@ -33,9 +32,10 @@ class SearchRepositoryImpl(
                 val remoteResults = response.data.results.toSummaries()
 
                 // Combine results, preferring remote (more comprehensive)
-                val combined = (remoteResults + localResults)
-                    .distinctBy { it.id }
-                    .take(limit)
+                val combined =
+                    (remoteResults + localResults)
+                        .distinctBy { it.id }
+                        .take(limit)
 
                 Result.success(combined)
             } else {
@@ -50,9 +50,10 @@ class SearchRepositoryImpl(
 
     override suspend fun searchLocal(query: String): Result<List<Summary>> {
         return try {
-            val results = database.summaryQueries.search(query)
-                .executeAsList()
-                .map { mapDbSummaryToDomain(it) }
+            val results =
+                database.summaryQueries.search(query)
+                    .executeAsList()
+                    .map { mapDbSummaryToDomain(it) }
 
             Result.success(results)
         } catch (e: Exception) {
@@ -74,11 +75,12 @@ class SearchRepositoryImpl(
                 }
             }
 
-            val trending = topicFrequency
-                .entries
-                .sortedByDescending { it.value }
-                .take(limit)
-                .map { it.key }
+            val trending =
+                topicFrequency
+                    .entries
+                    .sortedByDescending { it.value }
+                    .take(limit)
+                    .map { it.key }
 
             Result.success(trending)
         } catch (e: Exception) {
@@ -110,7 +112,7 @@ class SearchRepositoryImpl(
             createdAt = kotlinx.datetime.Instant.parse(dbSummary.createdAt),
             updatedAt = dbSummary.updatedAt?.let { kotlinx.datetime.Instant.parse(it) },
             syncStatus = com.po4yka.bitesizereader.domain.model.SyncStatus.valueOf(dbSummary.syncStatus),
-            locallyModified = dbSummary.locallyModified == 1L
+            locallyModified = dbSummary.locallyModified == 1L,
         )
     }
 }

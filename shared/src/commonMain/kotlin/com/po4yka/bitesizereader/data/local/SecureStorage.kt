@@ -5,12 +5,22 @@ package com.po4yka.bitesizereader.data.local
  */
 interface SecureStorage {
     fun saveAccessToken(token: String)
+
     fun getAccessToken(): String?
+
     fun saveRefreshToken(token: String)
+
     fun getRefreshToken(): String?
+
     fun clearTokens()
-    fun saveString(key: String, value: String)
+
+    fun saveString(
+        key: String,
+        value: String,
+    )
+
     fun getString(key: String): String?
+
     fun remove(key: String)
 }
 

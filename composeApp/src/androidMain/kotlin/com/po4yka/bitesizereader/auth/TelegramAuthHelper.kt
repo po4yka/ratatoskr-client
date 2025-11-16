@@ -34,9 +34,10 @@ object TelegramAuthHelper {
     fun launchTelegramAuth(context: Context): Boolean {
         return try {
             val authUrl = buildTelegramAuthUrl()
-            val customTabsIntent = CustomTabsIntent.Builder()
-                .setShowTitle(true)
-                .build()
+            val customTabsIntent =
+                CustomTabsIntent.Builder()
+                    .setShowTitle(true)
+                    .build()
 
             customTabsIntent.launchUrl(context, Uri.parse(authUrl))
             true
@@ -87,7 +88,10 @@ object TelegramAuthHelper {
      * Fallback: Open Telegram app directly for auth
      * This requires the Telegram app to be installed
      */
-    fun launchTelegramApp(context: Context, botUsername: String): Boolean {
+    fun launchTelegramApp(
+        context: Context,
+        botUsername: String,
+    ): Boolean {
         return try {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("tg://resolve?domain=$botUsername&start=auth")

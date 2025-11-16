@@ -20,54 +20,56 @@ import kotlinx.serialization.json.Json
 class SummaryRepositoryImpl(
     private val summariesApi: SummariesApi,
     private val database: Database,
-    private val databaseHelper: DatabaseHelper
+    private val databaseHelper: DatabaseHelper,
 ) : SummaryRepository {
-
     private val json = Json { ignoreUnknownKeys = true }
 
     override fun getSummaries(
         limit: Int,
         offset: Int,
-        filters: SearchFilters
-    ): Flow<List<Summary>> = flow {
-        // Emit cached data first (offline-first)
-        val cachedSummaries = getCachedSummaries(limit, offset, filters)
-        emit(cachedSummaries)
+        filters: SearchFilters,
+    ): Flow<List<Summary>> =
+        flow {
+            // Emit cached data first (offline-first)
+            val cachedSummaries = getCachedSummaries(limit, offset, filters)
+            emit(cachedSummaries)
 
-        // Then fetch from API and update cache
-        try {
-            val response = summariesApi.getSummaries(
-                limit = limit,
-                offset = offset,
-                isRead = filters.isRead,
-                lang = filters.lang,
-                fromDate = filters.fromDate,
-                toDate = filters.toDate,
-                sortBy = filters.sortBy.name.lowercase(),
-                sortOrder = filters.sortOrder.name.lowercase()
-            )
+            // Then fetch from API and update cache
+            try {
+                val response =
+                    summariesApi.getSummaries(
+                        limit = limit,
+                        offset = offset,
+                        isRead = filters.isRead,
+                        lang = filters.lang,
+                        fromDate = filters.fromDate,
+                        toDate = filters.toDate,
+                        sortBy = filters.sortBy.name.lowercase(),
+                        sortOrder = filters.sortOrder.name.lowercase(),
+                    )
 
-            if (response.success && response.data != null) {
-                val summaries = response.data.summaries.map { it.toDomain() }
+                if (response.success && response.data != null) {
+                    val summaries = response.data.summaries.map { it.toDomain() }
 
-                // Update cache
-                summaries.forEach { databaseHelper.insertSummary(it) }
+                    // Update cache
+                    summaries.forEach { databaseHelper.insertSummary(it) }
 
-                // Emit fresh data
-                emit(summaries)
+                    // Emit fresh data
+                    emit(summaries)
+                }
+            } catch (e: Exception) {
+                // On error, cached data is already emitted
+                // Log error or handle it appropriately
             }
-        } catch (e: Exception) {
-            // On error, cached data is already emitted
-            // Log error or handle it appropriately
         }
-    }
 
     override suspend fun getSummaryById(id: Int): Result<Summary> {
         return try {
             // Try cache first
-            val cached = database.summaryQueries.selectById(id.toLong())
-                .executeAsOneOrNull()
-                ?.let { mapDbSummaryToDomain(it) }
+            val cached =
+                database.summaryQueries.selectById(id.toLong())
+                    .executeAsOneOrNull()
+                    ?.let { mapDbSummaryToDomain(it) }
 
             if (cached != null) {
                 // Return cached and fetch in background
@@ -90,36 +92,40 @@ class SummaryRepositoryImpl(
         }
     }
 
-    override suspend fun markAsRead(id: Int, isRead: Boolean): Result<Unit> {
+    override suspend fun markAsRead(
+        id: Int,
+        isRead: Boolean,
+    ): Result<Unit> {
         return try {
             // Update locally first (optimistic update)
             database.summaryQueries.updateReadStatus(
                 isRead = if (isRead) 1L else 0L,
-                id = id.toLong()
+                id = id.toLong(),
             )
 
             // Update on server
-            val request = Summary(
-                id = id,
-                requestId = 0,
-                title = "",
-                url = "",
-                domain = null,
-                tldr = "",
-                summary250 = "",
-                summary1000 = null,
-                keyIdeas = emptyList(),
-                topicTags = emptyList(),
-                answeredQuestions = emptyList(),
-                seoKeywords = emptyList(),
-                readingTimeMin = 0,
-                lang = "",
-                entities = null,
-                keyStats = emptyList(),
-                readability = null,
-                isRead = isRead,
-                createdAt = kotlinx.datetime.Clock.System.now()
-            ).toUpdateRequestDto()
+            val request =
+                Summary(
+                    id = id,
+                    requestId = 0,
+                    title = "",
+                    url = "",
+                    domain = null,
+                    tldr = "",
+                    summary250 = "",
+                    summary1000 = null,
+                    keyIdeas = emptyList(),
+                    topicTags = emptyList(),
+                    answeredQuestions = emptyList(),
+                    seoKeywords = emptyList(),
+                    readingTimeMin = 0,
+                    lang = "",
+                    entities = null,
+                    keyStats = emptyList(),
+                    readability = null,
+                    isRead = isRead,
+                    createdAt = kotlinx.datetime.Clock.System.now(),
+                ).toUpdateRequestDto()
 
             val response = summariesApi.updateSummary(id, request)
 
@@ -136,11 +142,14 @@ class SummaryRepositoryImpl(
         }
     }
 
-    override suspend fun markAsFavorite(id: Int, isFavorite: Boolean): Result<Unit> {
+    override suspend fun markAsFavorite(
+        id: Int,
+        isFavorite: Boolean,
+    ): Result<Unit> {
         return try {
             database.summaryQueries.updateFavoriteStatus(
                 isFavorite = if (isFavorite) 1L else 0L,
-                id = id.toLong()
+                id = id.toLong(),
             )
             Result.success(Unit)
         } catch (e: Exception) {
@@ -184,7 +193,7 @@ class SummaryRepositoryImpl(
     private fun getCachedSummaries(
         limit: Int,
         offset: Int,
-        filters: SearchFilters
+        filters: SearchFilters,
     ): List<Summary> {
         return when {
             filters.isRead == false -> {
@@ -200,7 +209,7 @@ class SummaryRepositoryImpl(
             else -> {
                 database.summaryQueries.selectPaginated(
                     limit.toLong(),
-                    offset.toLong()
+                    offset.toLong(),
                 )
                     .executeAsList()
                     .map { mapDbSummaryToDomain(it) }
@@ -244,7 +253,7 @@ class SummaryRepositoryImpl(
             createdAt = kotlinx.datetime.Instant.parse(dbSummary.createdAt),
             updatedAt = dbSummary.updatedAt?.let { kotlinx.datetime.Instant.parse(it) },
             syncStatus = SyncStatus.valueOf(dbSummary.syncStatus),
-            locallyModified = dbSummary.locallyModified == 1L
+            locallyModified = dbSummary.locallyModified == 1L,
         )
     }
 }

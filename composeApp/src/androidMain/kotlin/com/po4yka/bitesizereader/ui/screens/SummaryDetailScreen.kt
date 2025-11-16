@@ -32,7 +32,7 @@ fun SummaryDetailScreen(
     viewModel: SummaryDetailViewModel,
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -51,32 +51,33 @@ fun SummaryDetailScreen(
                             Icon(
                                 imageVector = if (summary.isRead) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
                                 contentDescription = if (summary.isRead) "Mark as unread" else "Mark as read",
-                                tint = if (summary.isRead) ReadIndicator else MaterialTheme.colorScheme.onSurfaceVariant
+                                tint = if (summary.isRead) ReadIndicator else MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         IconButton(onClick = onShareClick) {
                             Icon(Icons.Default.Share, contentDescription = "Share")
                         }
                     }
-                }
+                },
             )
         },
-        modifier = modifier
+        modifier = modifier,
     ) { paddingValues ->
         when {
             state.error != null -> {
                 ErrorView(
                     message = state.error!!,
                     onRetry = { viewModel.loadSummary() },
-                    modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues),
                 )
             }
             state.isLoading -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = androidx.compose.ui.Alignment.Center
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                    contentAlignment = androidx.compose.ui.Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
@@ -84,7 +85,7 @@ fun SummaryDetailScreen(
             state.summary != null -> {
                 SummaryDetailContent(
                     summary = state.summary!!,
-                    modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues),
                 )
             }
         }
@@ -94,19 +95,20 @@ fun SummaryDetailScreen(
 @Composable
 private fun SummaryDetailContent(
     summary: Summary,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
     ) {
         // Title
         Text(
             text = summary.title,
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -114,18 +116,18 @@ private fun SummaryDetailContent(
         // Metadata: Source, Date, Reading Time
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = summary.sourceDomain ?: "Unknown source",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             summary.readingTime?.let { readingTime ->
                 Text(
                     text = "$readingTime min read",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -133,7 +135,7 @@ private fun SummaryDetailContent(
         Text(
             text = formatDate(summary.createdAt),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -142,7 +144,7 @@ private fun SummaryDetailContent(
         if (summary.topicTags.isNotEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 summary.topicTags.forEach { tag ->
                     TagChip(tag = tag)
@@ -159,7 +161,7 @@ private fun SummaryDetailContent(
         Text(
             text = summary.tldr,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -168,7 +170,7 @@ private fun SummaryDetailContent(
         SectionHeader("Summary")
         Text(
             text = summary.summary250,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -178,19 +180,20 @@ private fun SummaryDetailContent(
             SectionHeader("Key Ideas")
             summary.keyIdeas.forEachIndexed { index, idea ->
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
                 ) {
                     Text(
                         text = "${index + 1}. ",
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Text(
                         text = idea,
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                 }
             }
@@ -204,7 +207,7 @@ private fun SummaryDetailContent(
                 Text(
                     text = "• $entity",
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    modifier = Modifier.padding(vertical = 2.dp),
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -215,16 +218,17 @@ private fun SummaryDetailContent(
             SectionHeader("Notable Quotes")
             summary.quotes.forEach { quote ->
                 Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
                     color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = MaterialTheme.shapes.medium
+                    shape = MaterialTheme.shapes.medium,
                 ) {
                     Text(
                         text = "\"$quote\"",
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(12.dp),
                     )
                 }
             }
@@ -239,7 +243,7 @@ private fun SummaryDetailContent(
             Text(
                 text = url,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
         }
 
@@ -253,7 +257,7 @@ private fun SectionHeader(title: String) {
         text = title,
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 8.dp),
     )
 }
 

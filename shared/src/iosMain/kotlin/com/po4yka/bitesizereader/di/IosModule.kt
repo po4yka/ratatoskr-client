@@ -15,27 +15,28 @@ import org.koin.dsl.module
 /**
  * iOS-specific Koin module
  */
-val iosModule = module {
-    // HTTP Client Engine (Darwin for iOS)
-    single<HttpClientEngine> {
-        Darwin.create()
-    }
+val iosModule =
+    module {
+        // HTTP Client Engine (Darwin for iOS)
+        single<HttpClientEngine> {
+            Darwin.create()
+        }
 
-    // Database driver factory
-    single { DatabaseDriverFactory() }
+        // Database driver factory
+        single { DatabaseDriverFactory() }
 
-    // Secure storage
-    single<SecureStorage> {
-        SecureStorageImpl()
-    }
+        // Secure storage
+        single<SecureStorage> {
+            SecureStorageImpl()
+        }
 
-    // Share manager
-    single<ShareManager> {
-        IosShareManager()
-    }
+        // Share manager
+        single<ShareManager> {
+            IosShareManager()
+        }
 
-    // Coroutine scope for ViewModels
-    single<CoroutineScope> {
-        CoroutineScope(SupervisorJob() + Dispatchers.Main)
+        // Coroutine scope for ViewModels
+        single<CoroutineScope> {
+            CoroutineScope(SupervisorJob() + Dispatchers.Main)
+        }
     }
-}

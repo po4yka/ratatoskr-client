@@ -8,7 +8,7 @@ import com.po4yka.bitesizereader.domain.repository.AuthRepository
  * Use case for logging in with Telegram
  */
 class LoginWithTelegramUseCase(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) {
     suspend operator fun invoke(
         telegramUserId: Long,
@@ -18,7 +18,7 @@ class LoginWithTelegramUseCase(
         firstName: String?,
         lastName: String?,
         photoUrl: String?,
-        clientId: String
+        clientId: String,
     ): Result<Pair<AuthTokens, User>> {
         return authRepository.loginWithTelegram(
             telegramUserId = telegramUserId,
@@ -28,7 +28,7 @@ class LoginWithTelegramUseCase(
             firstName = firstName,
             lastName = lastName,
             photoUrl = photoUrl,
-            clientId = clientId
+            clientId = clientId,
         )
     }
 }

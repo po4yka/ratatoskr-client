@@ -7,11 +7,11 @@ import com.po4yka.bitesizereader.domain.repository.RequestRepository
  * Use case for submitting a URL for summarization
  */
 class SubmitURLUseCase(
-    private val requestRepository: RequestRepository
+    private val requestRepository: RequestRepository,
 ) {
     suspend operator fun invoke(
         url: String,
-        langPreference: String = "auto"
+        langPreference: String = "auto",
     ): Result<Request> {
         // Validate URL
         if (!isValidURL(url)) {

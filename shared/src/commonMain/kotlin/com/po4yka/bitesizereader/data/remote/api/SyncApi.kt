@@ -11,6 +11,7 @@ import io.ktor.http.*
  */
 interface SyncApi {
     suspend fun getDeltaSync(since: String): ApiResponse<SyncDeltaResponseDto>
+
     suspend fun uploadChanges(request: SyncUploadRequestDto): ApiResponse<Unit>
 }
 
@@ -18,18 +19,15 @@ interface SyncApi {
  * Sync API implementation
  */
 class SyncApiImpl(
-    private val client: HttpClient
+    private val client: HttpClient,
 ) : SyncApi {
-
     override suspend fun getDeltaSync(since: String): ApiResponse<SyncDeltaResponseDto> {
         return client.get("/v1/sync/delta") {
             parameter("since", since)
         }.body()
     }
 
-    override suspend fun uploadChanges(
-        request: SyncUploadRequestDto
-    ): ApiResponse<Unit> {
+    override suspend fun uploadChanges(request: SyncUploadRequestDto): ApiResponse<Unit> {
         return client.post("/v1/sync/upload") {
             contentType(ContentType.Application.Json)
             setBody(request)

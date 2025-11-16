@@ -5,7 +5,7 @@ package com.po4yka.bitesizereader.domain.model
  */
 data class SearchQuery(
     val query: String,
-    val filters: SearchFilters = SearchFilters()
+    val filters: SearchFilters = SearchFilters(),
 )
 
 /**
@@ -18,16 +18,16 @@ data class SearchFilters(
     val fromDate: String? = null,
     val toDate: String? = null,
     val sortBy: SortField = SortField.CREATED_AT,
-    val sortOrder: SortOrder = SortOrder.DESC
+    val sortOrder: SortOrder = SortOrder.DESC,
 )
 
 enum class SortField {
     CREATED_AT,
     READING_TIME,
-    TITLE
+    TITLE,
 }
 
 enum class SortOrder {
     ASC,
-    DESC
+    DESC,
 }

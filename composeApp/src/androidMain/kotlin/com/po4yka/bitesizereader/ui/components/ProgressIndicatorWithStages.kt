@@ -19,18 +19,18 @@ import com.po4yka.bitesizereader.ui.theme.ProcessingIndicator
 @Composable
 fun ProgressIndicatorWithStages(
     status: RequestStatus,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Overall progress bar
         when (status) {
             RequestStatus.PENDING, RequestStatus.DOWNLOADING, RequestStatus.PROCESSING -> {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
-                    color = ProcessingIndicator
+                    color = ProcessingIndicator,
                 )
             }
             RequestStatus.COMPLETED -> {
@@ -43,7 +43,7 @@ fun ProgressIndicatorWithStages(
                 LinearProgressIndicator(
                     progress = { 1f },
                     modifier = Modifier.fillMaxWidth(),
-                    color = FailedIndicator
+                    color = FailedIndicator,
                 )
             }
         }
@@ -53,34 +53,34 @@ fun ProgressIndicatorWithStages(
         // Stage indicators
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             StageIndicator(
                 title = "Submitted",
                 isCompleted = true,
                 isCurrent = status == RequestStatus.PENDING,
-                isFailed = false
+                isFailed = false,
             )
 
             StageIndicator(
                 title = "Downloading Content",
                 isCompleted = status in listOf(RequestStatus.PROCESSING, RequestStatus.COMPLETED),
                 isCurrent = status == RequestStatus.DOWNLOADING,
-                isFailed = status == RequestStatus.FAILED && status == RequestStatus.DOWNLOADING
+                isFailed = status == RequestStatus.FAILED && status == RequestStatus.DOWNLOADING,
             )
 
             StageIndicator(
                 title = "Processing Summary",
                 isCompleted = status == RequestStatus.COMPLETED,
                 isCurrent = status == RequestStatus.PROCESSING,
-                isFailed = status == RequestStatus.FAILED && status == RequestStatus.PROCESSING
+                isFailed = status == RequestStatus.FAILED && status == RequestStatus.PROCESSING,
             )
 
             StageIndicator(
                 title = "Ready",
                 isCompleted = status == RequestStatus.COMPLETED,
                 isCurrent = false,
-                isFailed = status in listOf(RequestStatus.FAILED, RequestStatus.CANCELLED)
+                isFailed = status in listOf(RequestStatus.FAILED, RequestStatus.CANCELLED),
             )
         }
     }
@@ -91,11 +91,11 @@ private fun StageIndicator(
     title: String,
     isCompleted: Boolean,
     isCurrent: Boolean,
-    isFailed: Boolean
+    isFailed: Boolean,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         // Stage icon
         when {
@@ -104,7 +104,7 @@ private fun StageIndicator(
                     imageVector = Icons.Default.Close,
                     contentDescription = null,
                     tint = FailedIndicator,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
             isCompleted -> {
@@ -112,20 +112,20 @@ private fun StageIndicator(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
             isCurrent -> {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
-                    strokeWidth = 2.dp
+                    strokeWidth = 2.dp,
                 )
             }
             else -> {
                 Surface(
                     modifier = Modifier.size(24.dp),
                     shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.surfaceVariant
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                 ) {}
             }
         }
@@ -134,11 +134,12 @@ private fun StageIndicator(
         Text(
             text = title,
             style = MaterialTheme.typography.bodyMedium,
-            color = when {
-                isFailed -> FailedIndicator
-                isCompleted || isCurrent -> MaterialTheme.colorScheme.onSurface
-                else -> MaterialTheme.colorScheme.onSurfaceVariant
-            }
+            color =
+                when {
+                    isFailed -> FailedIndicator
+                    isCompleted || isCurrent -> MaterialTheme.colorScheme.onSurface
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                },
         )
     }
 }

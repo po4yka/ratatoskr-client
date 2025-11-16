@@ -13,7 +13,7 @@ data class SearchResultDto(
     val url: String,
     val snippet: String,
     @SerialName("relevance_score") val relevanceScore: Double,
-    @SerialName("topic_tags") val topicTags: List<String>
+    @SerialName("topic_tags") val topicTags: List<String>,
 )
 
 /**
@@ -23,5 +23,5 @@ data class SearchResultDto(
 data class SearchResponseDto(
     val results: List<SearchResultDto>,
     val total: Int,
-    val query: String
+    val query: String,
 )

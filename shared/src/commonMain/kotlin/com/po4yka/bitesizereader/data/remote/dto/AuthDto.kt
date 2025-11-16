@@ -15,7 +15,7 @@ data class TelegramLoginRequestDto(
     @SerialName("first_name") val firstName: String? = null,
     @SerialName("last_name") val lastName: String? = null,
     @SerialName("photo_url") val photoUrl: String? = null,
-    @SerialName("client_id") val clientId: String
+    @SerialName("client_id") val clientId: String,
 )
 
 /**
@@ -27,7 +27,7 @@ data class AuthResponseDto(
     @SerialName("refresh_token") val refreshToken: String,
     @SerialName("token_type") val tokenType: String,
     @SerialName("expires_in") val expiresIn: Int,
-    val user: UserDto
+    val user: UserDto,
 )
 
 /**
@@ -35,7 +35,7 @@ data class AuthResponseDto(
  */
 @Serializable
 data class TokenRefreshRequestDto(
-    @SerialName("refresh_token") val refreshToken: String
+    @SerialName("refresh_token") val refreshToken: String,
 )
 
 /**
@@ -46,7 +46,7 @@ data class TokenRefreshResponseDto(
     @SerialName("access_token") val accessToken: String,
     @SerialName("token_type") val tokenType: String,
     @SerialName("expires_in") val expiresIn: Int,
-    @SerialName("refresh_token") val refreshToken: String? = null
+    @SerialName("refresh_token") val refreshToken: String? = null,
 )
 
 /**
@@ -59,5 +59,5 @@ data class UserDto(
     @SerialName("first_name") val firstName: String? = null,
     @SerialName("last_name") val lastName: String? = null,
     @SerialName("photo_url") val photoUrl: String? = null,
-    @SerialName("is_owner") val isOwner: Boolean = false
+    @SerialName("is_owner") val isOwner: Boolean = false,
 )

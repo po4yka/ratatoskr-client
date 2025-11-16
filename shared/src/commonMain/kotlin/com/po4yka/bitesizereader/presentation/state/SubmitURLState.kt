@@ -11,7 +11,7 @@ data class SubmitURLState(
     val validationError: String? = null,
     val error: String? = null,
     val request: Request? = null,
-    val isPolling: Boolean = false
+    val isPolling: Boolean = false,
 ) {
     val requestStatus get() = request?.status
     val summaryId get() = request?.summaryId

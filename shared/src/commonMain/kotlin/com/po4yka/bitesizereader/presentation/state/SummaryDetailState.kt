@@ -8,5 +8,5 @@ import com.po4yka.bitesizereader.domain.model.Summary
 data class SummaryDetailState(
     val summary: Summary? = null,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
 )

@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 data class SyncDeltaResponseDto(
     val summaries: List<SyncChangeDto>,
     @SerialName("deleted_ids") val deletedIds: List<Int>,
-    @SerialName("sync_timestamp") val syncTimestamp: String
+    @SerialName("sync_timestamp") val syncTimestamp: String,
 )
 
 /**
@@ -20,7 +20,7 @@ data class SyncDeltaResponseDto(
 data class SyncChangeDto(
     val id: Int,
     val action: String, // "update" or "delete"
-    val data: SummaryDetailDto? = null
+    val data: SummaryDetailDto? = null,
 )
 
 /**
@@ -30,7 +30,7 @@ data class SyncChangeDto(
 data class SyncUploadRequestDto(
     val changes: List<SyncUploadChangeDto>,
     @SerialName("device_id") val deviceId: String,
-    @SerialName("last_sync") val lastSync: String
+    @SerialName("last_sync") val lastSync: String,
 )
 
 /**
@@ -41,5 +41,5 @@ data class SyncUploadChangeDto(
     @SerialName("summary_id") val summaryId: Int,
     val action: String,
     val fields: Map<String, Any>,
-    @SerialName("client_timestamp") val clientTimestamp: String
+    @SerialName("client_timestamp") val clientTimestamp: String,
 )

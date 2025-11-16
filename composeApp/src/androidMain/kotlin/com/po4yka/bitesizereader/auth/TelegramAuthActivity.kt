@@ -55,7 +55,7 @@ class TelegramAuthActivity : ComponentActivity() {
                     firstName = firstName,
                     lastName = lastName,
                     photoUrl = photoUrl,
-                    clientId = "android" // Platform identifier
+                    clientId = "android", // Platform identifier
                 )
 
                 // Close this activity and return to main app

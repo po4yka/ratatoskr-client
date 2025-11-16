@@ -14,7 +14,7 @@ interface SummaryRepository {
     fun getSummaries(
         limit: Int = 20,
         offset: Int = 0,
-        filters: SearchFilters = SearchFilters()
+        filters: SearchFilters = SearchFilters(),
     ): Flow<List<Summary>>
 
     /**
@@ -25,12 +25,18 @@ interface SummaryRepository {
     /**
      * Mark summary as read/unread
      */
-    suspend fun markAsRead(id: Int, isRead: Boolean): Result<Unit>
+    suspend fun markAsRead(
+        id: Int,
+        isRead: Boolean,
+    ): Result<Unit>
 
     /**
      * Mark summary as favorite/unfavorite
      */
-    suspend fun markAsFavorite(id: Int, isFavorite: Boolean): Result<Unit>
+    suspend fun markAsFavorite(
+        id: Int,
+        isFavorite: Boolean,
+    ): Result<Unit>
 
     /**
      * Delete a summary

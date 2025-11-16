@@ -22,19 +22,19 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun App(
     rootComponent: RootComponent,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Children(
         stack = rootComponent.stack,
         modifier = modifier.fillMaxSize(),
-        animation = stackAnimation(fade())
+        animation = stackAnimation(fade()),
     ) { child ->
         when (val screen = child.instance) {
             is Screen.Auth -> {
                 val viewModel: LoginViewModel = koinInject()
                 AuthScreen(
                     viewModel = viewModel,
-                    onLoginSuccess = { rootComponent.navigateToSummaryList() }
+                    onLoginSuccess = { rootComponent.navigateToSummaryList() },
                 )
             }
             is Screen.SummaryList -> {
@@ -43,7 +43,7 @@ fun App(
                     viewModel = viewModel,
                     onSummaryClick = { id -> rootComponent.navigateToSummaryDetail(id) },
                     onSubmitUrlClick = { rootComponent.navigateToSubmitUrl() },
-                    onSearchClick = { rootComponent.navigateToSearch() }
+                    onSearchClick = { rootComponent.navigateToSearch() },
                 )
             }
             is Screen.SummaryDetail -> {
@@ -58,7 +58,7 @@ fun App(
                         state.summary?.let { summary ->
                             shareManager.shareSummary(summary)
                         }
-                    }
+                    },
                 )
             }
             is Screen.SubmitUrl -> {
@@ -69,7 +69,7 @@ fun App(
                     onSuccess = { summaryId ->
                         rootComponent.pop()
                         rootComponent.navigateToSummaryDetail(summaryId)
-                    }
+                    },
                 )
             }
             is Screen.Search -> {
@@ -77,7 +77,7 @@ fun App(
                 SearchScreen(
                     viewModel = viewModel,
                     onSummaryClick = { id -> rootComponent.navigateToSummaryDetail(id) },
-                    onBackClick = { rootComponent.pop() }
+                    onBackClick = { rootComponent.pop() },
                 )
             }
         }

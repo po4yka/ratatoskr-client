@@ -12,7 +12,10 @@ interface ShareManager {
      * @param summary The summary to share
      * @param customMessage Optional custom message to include
      */
-    fun shareSummary(summary: Summary, customMessage: String? = null)
+    fun shareSummary(
+        summary: Summary,
+        customMessage: String? = null,
+    )
 
     /**
      * Share plain text content
@@ -20,7 +23,10 @@ interface ShareManager {
      * @param text The text to share
      * @param subject Optional subject/title
      */
-    fun shareText(text: String, subject: String? = null)
+    fun shareText(
+        text: String,
+        subject: String? = null,
+    )
 
     /**
      * Share a URL
@@ -28,7 +34,10 @@ interface ShareManager {
      * @param url The URL to share
      * @param title Optional title for the URL
      */
-    fun shareUrl(url: String, title: String? = null)
+    fun shareUrl(
+        url: String,
+        title: String? = null,
+    )
 }
 
 /**

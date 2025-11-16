@@ -9,18 +9,19 @@ import androidx.security.crypto.MasterKey
  * Android implementation using EncryptedSharedPreferences
  */
 actual class SecureStorageImpl(context: Context) : SecureStorage {
+    private val masterKey =
+        MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
 
-    private val masterKey = MasterKey.Builder(context)
-        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-        .build()
-
-    private val encryptedPrefs: SharedPreferences = EncryptedSharedPreferences.create(
-        context,
-        "secure_prefs",
-        masterKey,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+    private val encryptedPrefs: SharedPreferences =
+        EncryptedSharedPreferences.create(
+            context,
+            "secure_prefs",
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+        )
 
     override fun saveAccessToken(token: String) {
         encryptedPrefs.edit().putString(KEY_ACCESS_TOKEN, token).apply()
@@ -45,7 +46,10 @@ actual class SecureStorageImpl(context: Context) : SecureStorage {
             .apply()
     }
 
-    override fun saveString(key: String, value: String) {
+    override fun saveString(
+        key: String,
+        value: String,
+    ) {
         encryptedPrefs.edit().putString(key, value).apply()
     }
 

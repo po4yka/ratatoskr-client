@@ -16,7 +16,7 @@ class SummaryDetailViewModel(
     private val summaryId: Int,
     private val getSummaryByIdUseCase: GetSummaryByIdUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
-    private val viewModelScope: CoroutineScope
+    private val viewModelScope: CoroutineScope,
 ) {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state: StateFlow<SummaryDetailState> = _state.asStateFlow()
@@ -33,16 +33,18 @@ class SummaryDetailViewModel(
             val result = getSummaryByIdUseCase(summaryId)
 
             result.onSuccess { summary ->
-                _state.value = _state.value.copy(
-                    summary = summary,
-                    isLoading = false,
-                    error = null
-                )
+                _state.value =
+                    _state.value.copy(
+                        summary = summary,
+                        isLoading = false,
+                        error = null,
+                    )
             }.onFailure { error ->
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    error = error.message
-                )
+                _state.value =
+                    _state.value.copy(
+                        isLoading = false,
+                        error = error.message,
+                    )
             }
         }
     }

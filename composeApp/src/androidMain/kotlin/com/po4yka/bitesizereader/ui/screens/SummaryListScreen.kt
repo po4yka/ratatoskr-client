@@ -29,7 +29,7 @@ fun SummaryListScreen(
     onSummaryClick: (Int) -> Unit,
     onSubmitUrlClick: () -> Unit,
     onSearchClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
     var showFilterSheet by remember { mutableStateOf(false) }
@@ -45,7 +45,7 @@ fun SummaryListScreen(
                     IconButton(onClick = { showFilterSheet = true }) {
                         Icon(Icons.Default.FilterList, contentDescription = "Filter")
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
@@ -53,14 +53,14 @@ fun SummaryListScreen(
                 Icon(Icons.Default.Add, contentDescription = "Submit URL")
             }
         },
-        modifier = modifier
+        modifier = modifier,
     ) { paddingValues ->
         SummaryListContent(
             state = state,
             onSummaryClick = onSummaryClick,
             onRefresh = { viewModel.loadSummaries(refresh = true) },
             onLoadMore = { viewModel.loadMore() },
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
         )
 
         if (showFilterSheet) {
@@ -77,11 +77,11 @@ fun SummaryListScreen(
                             showRead -> "read"
                             showUnread -> "unread"
                             else -> null
-                        }
+                        },
                     )
                 },
                 onDismiss = { showFilterSheet = false },
-                onClearFilters = { viewModel.clearFilters() }
+                onClearFilters = { viewModel.clearFilters() },
             )
         }
     }
@@ -93,21 +93,21 @@ private fun SummaryListContent(
     onSummaryClick: (Int) -> Unit,
     onRefresh: () -> Unit,
     onLoadMore: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     when {
         state.error != null && state.summaries.isEmpty() -> {
             ErrorView(
                 message = state.error,
                 onRetry = onRefresh,
-                modifier = modifier
+                modifier = modifier,
             )
         }
         state.summaries.isEmpty() && !state.isLoading -> {
             EmptyStateView(
                 title = "No summaries yet",
                 message = "Submit a URL to generate your first summary",
-                modifier = modifier
+                modifier = modifier,
             )
         }
         else -> {
@@ -117,15 +117,15 @@ private fun SummaryListContent(
                 state = listState,
                 modifier = modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(
                     items = state.summaries,
-                    key = { it.id }
+                    key = { it.id },
                 ) { summary ->
                     SummaryCard(
                         summary = summary,
-                        onClick = { onSummaryClick(summary.id) }
+                        onClick = { onSummaryClick(summary.id) },
                     )
                 }
 
@@ -133,12 +133,13 @@ private fun SummaryListContent(
                 if (state.isLoadingMore) {
                     item {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
                         ) {
                             CircularProgressIndicator(
-                                modifier = Modifier.align(androidx.compose.ui.Alignment.Center)
+                                modifier = Modifier.align(androidx.compose.ui.Alignment.Center),
                             )
                         }
                     }
@@ -164,7 +165,7 @@ private fun SummaryListContent(
     if (state.isLoading && state.summaries.isEmpty()) {
         Box(
             modifier = modifier.fillMaxSize(),
-            contentAlignment = androidx.compose.ui.Alignment.Center
+            contentAlignment = androidx.compose.ui.Alignment.Center,
         ) {
             CircularProgressIndicator()
         }
@@ -180,21 +181,22 @@ private fun FilterBottomSheet(
     onTagToggle: (String) -> Unit,
     onReadFilterChange: (Boolean, Boolean) -> Unit,
     onDismiss: () -> Unit,
-    onClearFilters: () -> Unit
+    onClearFilters: () -> Unit,
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = "Filters",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
                 )
                 TextButton(onClick = onClearFilters) {
                     Text("Clear All")
@@ -206,19 +208,19 @@ private fun FilterBottomSheet(
             // Read status filter
             Text(
                 text = "Reading Status",
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleSmall,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SelectableTagChip(
                     tag = "Read",
                     selected = showReadOnly,
-                    onSelectedChange = { onReadFilterChange(it, false) }
+                    onSelectedChange = { onReadFilterChange(it, false) },
                 )
                 SelectableTagChip(
                     tag = "Unread",
                     selected = showUnreadOnly,
-                    onSelectedChange = { onReadFilterChange(false, it) }
+                    onSelectedChange = { onReadFilterChange(false, it) },
                 )
             }
 
@@ -227,13 +229,13 @@ private fun FilterBottomSheet(
             // Topic tags filter (would be populated from available tags)
             Text(
                 text = "Topics",
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleSmall,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Select topics to filter (coming soon)",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(24.dp))

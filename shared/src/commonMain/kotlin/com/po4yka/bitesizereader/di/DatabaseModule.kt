@@ -8,13 +8,14 @@ import org.koin.dsl.module
 /**
  * Koin module for database dependencies
  */
-val databaseModule = module {
-    // Database driver (platform-specific)
-    single { get<DatabaseDriverFactory>().createDriver() }
+val databaseModule =
+    module {
+        // Database driver (platform-specific)
+        single { get<DatabaseDriverFactory>().createDriver() }
 
-    // Database instance
-    single { Database(get()) }
+        // Database instance
+        single { Database(get()) }
 
-    // Database helper
-    single { DatabaseHelper(get()) }
-}
+        // Database helper
+        single { DatabaseHelper(get()) }
+    }

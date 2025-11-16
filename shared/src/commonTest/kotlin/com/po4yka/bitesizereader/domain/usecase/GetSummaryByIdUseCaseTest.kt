@@ -17,53 +17,55 @@ import kotlin.test.assertNull
  * Unit tests for GetSummaryByIdUseCase
  */
 class GetSummaryByIdUseCaseTest : CoroutineTestBase() {
-
     private val mockRepository = mockk<SummaryRepository>()
     private val useCase = GetSummaryByIdUseCase(mockRepository)
 
     @Test
-    fun `invoke returns summary when found`() = runTest {
-        // Given
-        val summaryId = 1
-        val mockSummary = MockDataFactory.createSummary(id = summaryId)
-        coEvery { mockRepository.getSummaryById(summaryId) } returns flowOf(mockSummary)
+    fun `invoke returns summary when found`() =
+        runTest {
+            // Given
+            val summaryId = 1
+            val mockSummary = MockDataFactory.createSummary(id = summaryId)
+            coEvery { mockRepository.getSummaryById(summaryId) } returns flowOf(mockSummary)
 
-        // When
-        val result = useCase(summaryId).first()
+            // When
+            val result = useCase(summaryId).first()
 
-        // Then
-        assertEquals(mockSummary, result)
-        coVerify(exactly = 1) { mockRepository.getSummaryById(summaryId) }
-    }
-
-    @Test
-    fun `invoke returns null when summary not found`() = runTest {
-        // Given
-        val summaryId = 999
-        coEvery { mockRepository.getSummaryById(summaryId) } returns flowOf(null)
-
-        // When
-        val result = useCase(summaryId).first()
-
-        // Then
-        assertNull(result)
-        coVerify(exactly = 1) { mockRepository.getSummaryById(summaryId) }
-    }
+            // Then
+            assertEquals(mockSummary, result)
+            coVerify(exactly = 1) { mockRepository.getSummaryById(summaryId) }
+        }
 
     @Test
-    fun `invoke returns updated summary when summary changes`() = runTest {
-        // Given
-        val summaryId = 1
-        val originalSummary = MockDataFactory.createSummary(id = summaryId, isRead = false)
-        val updatedSummary = originalSummary.copy(isRead = true)
-        coEvery { mockRepository.getSummaryById(summaryId) } returns flowOf(originalSummary, updatedSummary)
+    fun `invoke returns null when summary not found`() =
+        runTest {
+            // Given
+            val summaryId = 999
+            coEvery { mockRepository.getSummaryById(summaryId) } returns flowOf(null)
 
-        // When
-        val results = useCase(summaryId)
+            // When
+            val result = useCase(summaryId).first()
 
-        // Then
-        val firstResult = results.first()
-        assertEquals(originalSummary, firstResult)
-        coVerify(exactly = 1) { mockRepository.getSummaryById(summaryId) }
-    }
+            // Then
+            assertNull(result)
+            coVerify(exactly = 1) { mockRepository.getSummaryById(summaryId) }
+        }
+
+    @Test
+    fun `invoke returns updated summary when summary changes`() =
+        runTest {
+            // Given
+            val summaryId = 1
+            val originalSummary = MockDataFactory.createSummary(id = summaryId, isRead = false)
+            val updatedSummary = originalSummary.copy(isRead = true)
+            coEvery { mockRepository.getSummaryById(summaryId) } returns flowOf(originalSummary, updatedSummary)
+
+            // When
+            val results = useCase(summaryId)
+
+            // Then
+            val firstResult = results.first()
+            assertEquals(originalSummary, firstResult)
+            coVerify(exactly = 1) { mockRepository.getSummaryById(summaryId) }
+        }
 }

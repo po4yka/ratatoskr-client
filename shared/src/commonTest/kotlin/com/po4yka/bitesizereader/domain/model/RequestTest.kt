@@ -4,21 +4,20 @@ import com.po4yka.bitesizereader.util.MockDataFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 /**
  * Unit tests for Request domain model
  */
 class RequestTest {
-
     @Test
     fun `Request is created with correct properties`() {
         // Given
-        val request = MockDataFactory.createRequest(
-            id = 1,
-            url = "https://example.com/article",
-            status = RequestStatus.PENDING
-        )
+        val request =
+            MockDataFactory.createRequest(
+                id = 1,
+                url = "https://example.com/article",
+                status = RequestStatus.PENDING,
+            )
 
         // Then
         assertEquals(1, request.id)
@@ -45,10 +44,11 @@ class RequestTest {
         val request = MockDataFactory.createRequest(status = RequestStatus.PROCESSING)
 
         // When
-        val updatedRequest = request.copy(
-            status = RequestStatus.COMPLETED,
-            summaryId = 123
-        )
+        val updatedRequest =
+            request.copy(
+                status = RequestStatus.COMPLETED,
+                summaryId = 123,
+            )
 
         // Then
         assertEquals(RequestStatus.COMPLETED, updatedRequest.status)
@@ -61,10 +61,11 @@ class RequestTest {
         val request = MockDataFactory.createRequest(status = RequestStatus.PROCESSING)
 
         // When
-        val updatedRequest = request.copy(
-            status = RequestStatus.FAILED,
-            error = "Failed to fetch article"
-        )
+        val updatedRequest =
+            request.copy(
+                status = RequestStatus.FAILED,
+                error = "Failed to fetch article",
+            )
 
         // Then
         assertEquals(RequestStatus.FAILED, updatedRequest.status)

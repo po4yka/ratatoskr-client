@@ -5,14 +5,14 @@ package com.po4yka.bitesizereader.util.error
  */
 sealed class AppError(
     open val message: String,
-    open val cause: Throwable? = null
+    open val cause: Throwable? = null,
 ) {
     /**
      * Network related errors
      */
     data class NetworkError(
         override val message: String = "Network error. Please check your connection.",
-        override val cause: Throwable? = null
+        override val cause: Throwable? = null,
     ) : AppError(message, cause)
 
     /**
@@ -21,7 +21,7 @@ sealed class AppError(
     data class ServerError(
         override val message: String = "Server error. Please try again later.",
         val statusCode: Int? = null,
-        override val cause: Throwable? = null
+        override val cause: Throwable? = null,
     ) : AppError(message, cause)
 
     /**
@@ -29,7 +29,7 @@ sealed class AppError(
      */
     data class UnauthorizedError(
         override val message: String = "Session expired. Please login again.",
-        override val cause: Throwable? = null
+        override val cause: Throwable? = null,
     ) : AppError(message, cause)
 
     /**
@@ -37,7 +37,7 @@ sealed class AppError(
      */
     data class NotFoundError(
         override val message: String = "Resource not found.",
-        override val cause: Throwable? = null
+        override val cause: Throwable? = null,
     ) : AppError(message, cause)
 
     /**
@@ -46,7 +46,7 @@ sealed class AppError(
     data class ValidationError(
         override val message: String,
         val field: String? = null,
-        override val cause: Throwable? = null
+        override val cause: Throwable? = null,
     ) : AppError(message, cause)
 
     /**
@@ -54,7 +54,7 @@ sealed class AppError(
      */
     data class DatabaseError(
         override val message: String = "Database error occurred.",
-        override val cause: Throwable? = null
+        override val cause: Throwable? = null,
     ) : AppError(message, cause)
 
     /**
@@ -62,7 +62,7 @@ sealed class AppError(
      */
     data class UnknownError(
         override val message: String = "An unexpected error occurred.",
-        override val cause: Throwable? = null
+        override val cause: Throwable? = null,
     ) : AppError(message, cause)
 }
 
@@ -88,8 +88,9 @@ fun AppError.getUserMessage(): String = message
 /**
  * Check if error is retryable
  */
-fun AppError.isRetryable(): Boolean = when (this) {
-    is AppError.NetworkError -> true
-    is AppError.ServerError -> statusCode in 500..599
-    else -> false
-}
+fun AppError.isRetryable(): Boolean =
+    when (this) {
+        is AppError.NetworkError -> true
+        is AppError.ServerError -> statusCode in 500..599
+        else -> false
+    }

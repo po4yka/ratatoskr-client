@@ -71,11 +71,9 @@ CREATE TRIGGER IF NOT EXISTS summary_ad AFTER DELETE ON Summary BEGIN
 END;
 
 CREATE TRIGGER IF NOT EXISTS summary_au AFTER UPDATE ON Summary BEGIN
-    UPDATE SummaryFts SET
-        title = new.title,
-        tldr = new.tldr,
-        summary250 = new.summary250
-    WHERE rowid = new.id;
+    DELETE FROM SummaryFts WHERE rowid = old.id;
+    INSERT INTO SummaryFts(rowid, title, tldr, summary250)
+    VALUES (new.id, new.title, new.tldr, new.summary250);
 END;
 
 -- Queries
@@ -121,7 +119,7 @@ SELECT Summary.*
 FROM Summary
 JOIN SummaryFts ON Summary.id = SummaryFts.rowid
 WHERE SummaryFts MATCH ?
-ORDER BY rank;
+ORDER BY bm25(SummaryFts);
 
 countAll:
 SELECT COUNT(*) FROM Summary;

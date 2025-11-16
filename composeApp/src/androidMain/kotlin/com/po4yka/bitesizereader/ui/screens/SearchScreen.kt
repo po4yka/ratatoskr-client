@@ -27,7 +27,7 @@ fun SearchScreen(
     viewModel: SearchViewModel,
     onSummaryClick: (Int) -> Unit,
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -39,23 +39,23 @@ fun SearchScreen(
                         query = state.query,
                         onQueryChange = { viewModel.onQueryChange(it) },
                         onSearch = { viewModel.search() },
-                        onClear = { viewModel.clearSearch() }
+                        onClear = { viewModel.clearSearch() },
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
         },
-        modifier = modifier
+        modifier = modifier,
     ) { paddingValues ->
         SearchContent(
             state = state,
             onSummaryClick = onSummaryClick,
             onRetry = { viewModel.search() },
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
         )
     }
 }
@@ -65,7 +65,7 @@ private fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
-    onClear: () -> Unit
+    onClear: () -> Unit,
 ) {
     TextField(
         value = query,
@@ -82,13 +82,14 @@ private fun SearchBar(
             }
         },
         singleLine = true,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-            unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
-        ),
-        modifier = Modifier.fillMaxWidth()
+        colors =
+            TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+            ),
+        modifier = Modifier.fillMaxWidth(),
     )
 }
 
@@ -97,20 +98,20 @@ private fun SearchContent(
     state: com.po4yka.bitesizereader.presentation.state.SearchState,
     onSummaryClick: (Int) -> Unit,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     when {
         state.error != null -> {
             ErrorView(
                 message = state.error,
                 onRetry = onRetry,
-                modifier = modifier
+                modifier = modifier,
             )
         }
         state.isLoading -> {
             Box(
                 modifier = modifier.fillMaxSize(),
-                contentAlignment = androidx.compose.ui.Alignment.Center
+                contentAlignment = androidx.compose.ui.Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }
@@ -120,7 +121,7 @@ private fun SearchContent(
                 title = "No results found",
                 message = "Try different keywords or check your spelling",
                 icon = Icons.Default.Search,
-                modifier = modifier
+                modifier = modifier,
             )
         }
         state.results.isEmpty() -> {
@@ -128,31 +129,31 @@ private fun SearchContent(
                 title = "Search Summaries",
                 message = "Enter keywords to search through your summaries",
                 icon = Icons.Default.Search,
-                modifier = modifier
+                modifier = modifier,
             )
         }
         else -> {
             LazyColumn(
                 modifier = modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
                     Text(
                         text = "${state.results.size} results found",
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = 8.dp),
                     )
                 }
 
                 items(
                     items = state.results,
-                    key = { it.id }
+                    key = { it.id },
                 ) { summary ->
                     SummaryCard(
                         summary = summary,
-                        onClick = { onSummaryClick(summary.id) }
+                        onClick = { onSummaryClick(summary.id) },
                     )
                 }
             }

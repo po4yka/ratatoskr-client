@@ -16,7 +16,7 @@ class SummaryListViewModel(
     private val getSummariesUseCase: GetSummariesUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val syncDataUseCase: SyncDataUseCase,
-    private val viewModelScope: CoroutineScope
+    private val viewModelScope: CoroutineScope,
 ) {
     private val _state = MutableStateFlow(SummaryListState())
     val state: StateFlow<SummaryListState> = _state.asStateFlow()
@@ -40,27 +40,30 @@ class SummaryListViewModel(
             getSummariesUseCase(
                 limit = pageSize,
                 offset = currentOffset,
-                filters = SearchFilters()
+                filters = SearchFilters(),
             ).catch { error ->
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    isRefreshing = false,
-                    error = error.message
-                )
+                _state.value =
+                    _state.value.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = error.message,
+                    )
             }.collect { summaries ->
-                val updatedList = if (refresh || currentOffset == 0) {
-                    summaries
-                } else {
-                    _state.value.summaries + summaries
-                }
+                val updatedList =
+                    if (refresh || currentOffset == 0) {
+                        summaries
+                    } else {
+                        _state.value.summaries + summaries
+                    }
 
-                _state.value = _state.value.copy(
-                    summaries = updatedList,
-                    isLoading = false,
-                    isRefreshing = false,
-                    error = null,
-                    hasMore = summaries.size >= pageSize
-                )
+                _state.value =
+                    _state.value.copy(
+                        summaries = updatedList,
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = null,
+                        hasMore = summaries.size >= pageSize,
+                    )
 
                 if (!refresh) {
                     currentOffset += summaries.size
@@ -79,18 +82,22 @@ class SummaryListViewModel(
         loadSummaries(refresh = true)
     }
 
-    fun markAsRead(id: Int, isRead: Boolean) {
+    fun markAsRead(
+        id: Int,
+        isRead: Boolean,
+    ) {
         viewModelScope.launch {
             markSummaryAsReadUseCase(id, isRead)
 
             // Update local state optimistically
-            val updatedSummaries = _state.value.summaries.map { summary ->
-                if (summary.id == id) {
-                    summary.copy(isRead = isRead)
-                } else {
-                    summary
+            val updatedSummaries =
+                _state.value.summaries.map { summary ->
+                    if (summary.id == id) {
+                        summary.copy(isRead = isRead)
+                    } else {
+                        summary
+                    }
                 }
-            }
 
             _state.value = _state.value.copy(summaries = updatedSummaries)
         }
@@ -117,23 +124,26 @@ class SummaryListViewModel(
             currentTags.add(tag)
         }
 
-        _state.value = _state.value.copy(
-            filters = _state.value.filters.copy(topicTags = currentTags)
-        )
+        _state.value =
+            _state.value.copy(
+                filters = _state.value.filters.copy(topicTags = currentTags),
+            )
         loadSummaries(refresh = true)
     }
 
     fun setReadFilter(readStatus: String?) {
-        _state.value = _state.value.copy(
-            filters = _state.value.filters.copy(readStatus = readStatus)
-        )
+        _state.value =
+            _state.value.copy(
+                filters = _state.value.filters.copy(readStatus = readStatus),
+            )
         loadSummaries(refresh = true)
     }
 
     fun clearFilters() {
-        _state.value = _state.value.copy(
-            filters = SearchFilters()
-        )
+        _state.value =
+            _state.value.copy(
+                filters = SearchFilters(),
+            )
         loadSummaries(refresh = true)
     }
 }

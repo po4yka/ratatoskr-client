@@ -7,7 +7,6 @@ import platform.Security.*
  * iOS implementation using Keychain Services
  */
 actual class SecureStorageImpl : SecureStorage {
-
     private val service = "com.po4yka.bitesizereader.tokens"
 
     override fun saveAccessToken(token: String) {
@@ -31,7 +30,10 @@ actual class SecureStorageImpl : SecureStorage {
         delete(KEY_REFRESH_TOKEN)
     }
 
-    override fun saveString(key: String, value: String) {
+    override fun saveString(
+        key: String,
+        value: String,
+    ) {
         save(key, value)
     }
 
@@ -43,16 +45,20 @@ actual class SecureStorageImpl : SecureStorage {
         delete(key)
     }
 
-    private fun save(key: String, value: String) {
+    private fun save(
+        key: String,
+        value: String,
+    ) {
         val data = value.encodeToByteArray().toNSData()
 
-        val query = mapOf<Any?, Any?>(
-            kSecClass to kSecClassGenericPassword,
-            kSecAttrService to service,
-            kSecAttrAccount to key,
-            kSecValueData to data,
-            kSecAttrAccessible to kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-        )
+        val query =
+            mapOf<Any?, Any?>(
+                kSecClass to kSecClassGenericPassword,
+                kSecAttrService to service,
+                kSecAttrAccount to key,
+                kSecValueData to data,
+                kSecAttrAccessible to kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+            )
 
         // Delete old value first
         SecItemDelete(query as CFDictionaryRef)
@@ -62,35 +68,38 @@ actual class SecureStorageImpl : SecureStorage {
     }
 
     private fun load(key: String): String? {
-        val query = mapOf<Any?, Any?>(
-            kSecClass to kSecClassGenericPassword,
-            kSecAttrService to service,
-            kSecAttrAccount to key,
-            kSecReturnData to kCFBooleanTrue,
-            kSecMatchLimit to kSecMatchLimitOne
-        )
+        val query =
+            mapOf<Any?, Any?>(
+                kSecClass to kSecClassGenericPassword,
+                kSecAttrService to service,
+                kSecAttrAccount to key,
+                kSecReturnData to kCFBooleanTrue,
+                kSecMatchLimit to kSecMatchLimitOne,
+            )
 
-        val result = memScoped {
-            val resultPtr = alloc<CFTypeRefVar>()
-            val status = SecItemCopyMatching(query as CFDictionaryRef, resultPtr.ptr)
+        val result =
+            memScoped {
+                val resultPtr = alloc<CFTypeRefVar>()
+                val status = SecItemCopyMatching(query as CFDictionaryRef, resultPtr.ptr)
 
-            if (status == errSecSuccess) {
-                val data = resultPtr.value as? NSData
-                data?.toByteArray()?.decodeToString()
-            } else {
-                null
+                if (status == errSecSuccess) {
+                    val data = resultPtr.value as? NSData
+                    data?.toByteArray()?.decodeToString()
+                } else {
+                    null
+                }
             }
-        }
 
         return result
     }
 
     private fun delete(key: String) {
-        val query = mapOf<Any?, Any?>(
-            kSecClass to kSecClassGenericPassword,
-            kSecAttrService to service,
-            kSecAttrAccount to key
-        )
+        val query =
+            mapOf<Any?, Any?>(
+                kSecClass to kSecClassGenericPassword,
+                kSecAttrService to service,
+                kSecAttrAccount to key,
+            )
 
         SecItemDelete(query as CFDictionaryRef)
     }
@@ -98,7 +107,7 @@ actual class SecureStorageImpl : SecureStorage {
     private fun ByteArray.toNSData(): NSData {
         return NSData.create(
             bytes = this.refTo(0),
-            length = this.size.toULong()
+            length = this.size.toULong(),
         )
     }
 

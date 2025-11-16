@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.po4yka.bitesizereader.domain.model.RequestStatus
@@ -23,7 +22,7 @@ fun SubmitURLScreen(
     viewModel: SubmitURLViewModel,
     onBackClick: () -> Unit,
     onSuccess: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -35,17 +34,18 @@ fun SubmitURLScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
         },
-        modifier = modifier
+        modifier = modifier,
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (state.requestStatus == null) {
                 // URL Input Form
@@ -54,17 +54,18 @@ fun SubmitURLScreen(
                     onUrlChange = { viewModel.onUrlChange(it) },
                     validationError = state.validationError,
                     onSubmit = { viewModel.submitUrl() },
-                    isSubmitting = state.isSubmitting
+                    isSubmitting = state.isSubmitting,
                 )
             } else {
                 // Processing Status
                 ProcessingStatus(
                     status = state.requestStatus,
                     onCancel = { viewModel.cancelRequest() },
-                    onViewSummary = state.summaryId?.let { id ->
-                        { onSuccess(id) }
-                    },
-                    onSubmitAnother = { viewModel.reset() }
+                    onViewSummary =
+                        state.summaryId?.let { id ->
+                            { onSuccess(id) }
+                        },
+                    onSubmitAnother = { viewModel.reset() },
                 )
             }
         }
@@ -77,14 +78,14 @@ private fun URLInputForm(
     onUrlChange: (String) -> Unit,
     validationError: String?,
     onSubmit: () -> Unit,
-    isSubmitting: Boolean
+    isSubmitting: Boolean,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
             text = "Enter the URL of an article you want to summarize",
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
         )
 
         OutlinedTextField(
@@ -93,24 +94,25 @@ private fun URLInputForm(
             label = { Text("Article URL") },
             placeholder = { Text("https://example.com/article") },
             isError = validationError != null,
-            supportingText = validationError?.let {
-                { Text(it) }
-            },
+            supportingText =
+                validationError?.let {
+                    { Text(it) }
+                },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            enabled = !isSubmitting
+            enabled = !isSubmitting,
         )
 
         Button(
             onClick = onSubmit,
             enabled = url.isNotBlank() && !isSubmitting,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             if (isSubmitting) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     color = MaterialTheme.colorScheme.onPrimary,
-                    strokeWidth = 2.dp
+                    strokeWidth = 2.dp,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
@@ -119,25 +121,27 @@ private fun URLInputForm(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
                     text = "How it works",
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
                 )
                 Text(
-                    text = "1. Enter a URL to any web article\n" +
+                    text =
+                        "1. Enter a URL to any web article\n" +
                             "2. Our AI will download and analyze the content\n" +
                             "3. Get a concise summary with key ideas\n" +
                             "4. Processing typically takes 30-60 seconds",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -149,31 +153,31 @@ private fun ProcessingStatus(
     status: RequestStatus?,
     onCancel: () -> Unit,
     onViewSummary: (() -> Unit)?,
-    onSubmitAnother: () -> Unit
+    onSubmitAnother: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         when (status) {
             RequestStatus.COMPLETED -> {
                 Text(
                     text = "Summary Ready!",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
             RequestStatus.FAILED, RequestStatus.CANCELLED -> {
                 Text(
                     text = if (status == RequestStatus.CANCELLED) "Processing Cancelled" else "Processing Failed",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
             else -> {
                 Text(
                     text = "Processing Your Article",
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
                 )
             }
         }
@@ -188,19 +192,19 @@ private fun ProcessingStatus(
         when (status) {
             RequestStatus.COMPLETED -> {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     onViewSummary?.let { onClick ->
                         Button(
                             onClick = onClick,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             Text("View Summary")
                         }
                     }
                     OutlinedButton(
                         onClick = onSubmitAnother,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text("Submit Another URL")
                     }
@@ -209,7 +213,7 @@ private fun ProcessingStatus(
             RequestStatus.FAILED, RequestStatus.CANCELLED -> {
                 OutlinedButton(
                     onClick = onSubmitAnother,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text("Try Again")
                 }
@@ -217,7 +221,7 @@ private fun ProcessingStatus(
             else -> {
                 OutlinedButton(
                     onClick = onCancel,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text("Cancel")
                 }

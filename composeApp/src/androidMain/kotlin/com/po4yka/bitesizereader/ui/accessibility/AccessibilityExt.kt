@@ -12,17 +12,19 @@ import androidx.compose.ui.semantics.semantics
 /**
  * Mark an element as a heading for screen readers
  */
-fun Modifier.accessibilityHeading(description: String? = null): Modifier = semantics {
-    heading()
-    description?.let { contentDescription = it }
-}
+fun Modifier.accessibilityHeading(description: String? = null): Modifier =
+    semantics {
+        heading()
+        description?.let { contentDescription = it }
+    }
 
 /**
  * Add a content description for screen readers
  */
-fun Modifier.accessibilityLabel(label: String): Modifier = semantics {
-    contentDescription = label
-}
+fun Modifier.accessibilityLabel(label: String): Modifier =
+    semantics {
+        contentDescription = label
+    }
 
 /**
  * Create accessibility description for a summary card
@@ -32,12 +34,15 @@ fun createSummaryCardDescription(
     domain: String,
     readingTime: Int,
     isRead: Boolean,
-    topicTags: List<String>
+    topicTags: List<String>,
 ): String {
     val readStatus = if (isRead) "Read" else "Unread"
-    val topics = if (topicTags.isNotEmpty()) {
-        "Topics: ${topicTags.joinToString(", ")}"
-    } else ""
+    val topics =
+        if (topicTags.isNotEmpty()) {
+            "Topics: ${topicTags.joinToString(", ")}"
+        } else {
+            ""
+        }
 
     return buildString {
         append("$readStatus article. ")
@@ -56,7 +61,7 @@ fun createSummaryCardDescription(
 fun createButtonDescription(
     label: String,
     isLoading: Boolean = false,
-    isEnabled: Boolean = true
+    isEnabled: Boolean = true,
 ): String {
     return buildString {
         append(label)
@@ -72,7 +77,7 @@ fun createButtonDescription(
  */
 fun createFilterChipDescription(
     filter: String,
-    isSelected: Boolean
+    isSelected: Boolean,
 ): String {
     val state = if (isSelected) "selected" else "not selected"
     return "$filter filter, $state"

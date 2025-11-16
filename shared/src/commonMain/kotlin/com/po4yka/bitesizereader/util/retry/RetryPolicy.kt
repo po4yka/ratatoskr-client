@@ -13,7 +13,7 @@ data class RetryPolicy(
     val initialDelay: Duration = 1.seconds,
     val maxDelay: Duration = 10.seconds,
     val factor: Double = 2.0,
-    val shouldRetry: (Throwable) -> Boolean = { true }
+    val shouldRetry: (Throwable) -> Boolean = { true },
 ) {
     companion object {
         /**
@@ -24,22 +24,24 @@ data class RetryPolicy(
         /**
          * Aggressive retry policy with more attempts
          */
-        val AGGRESSIVE = RetryPolicy(
-            maxAttempts = 5,
-            initialDelay = 500.milliseconds,
-            maxDelay = 30.seconds,
-            factor = 2.5
-        )
+        val AGGRESSIVE =
+            RetryPolicy(
+                maxAttempts = 5,
+                initialDelay = 500.milliseconds,
+                maxDelay = 30.seconds,
+                factor = 2.5,
+            )
 
         /**
          * Conservative retry policy with fewer attempts
          */
-        val CONSERVATIVE = RetryPolicy(
-            maxAttempts = 2,
-            initialDelay = 2.seconds,
-            maxDelay = 5.seconds,
-            factor = 1.5
-        )
+        val CONSERVATIVE =
+            RetryPolicy(
+                maxAttempts = 2,
+                initialDelay = 2.seconds,
+                maxDelay = 5.seconds,
+                factor = 1.5,
+            )
     }
 }
 
@@ -48,7 +50,7 @@ data class RetryPolicy(
  */
 suspend fun <T> retryWithBackoff(
     policy: RetryPolicy = RetryPolicy.DEFAULT,
-    block: suspend () -> T
+    block: suspend () -> T,
 ): T {
     var currentDelay = policy.initialDelay
     var lastException: Throwable? = null
@@ -68,8 +70,9 @@ suspend fun <T> retryWithBackoff(
             delay(currentDelay)
 
             // Calculate next delay
-            currentDelay = (currentDelay * policy.factor)
-                .coerceAtMost(policy.maxDelay)
+            currentDelay =
+                (currentDelay * policy.factor)
+                    .coerceAtMost(policy.maxDelay)
         }
     }
 
@@ -84,12 +87,13 @@ suspend fun <T> retry(
     times: Int = 3,
     initialDelayMillis: Long = 1000,
     factor: Double = 2.0,
-    block: suspend () -> T
+    block: suspend () -> T,
 ): T {
-    val policy = RetryPolicy(
-        maxAttempts = times,
-        initialDelay = initialDelayMillis.milliseconds,
-        factor = factor
-    )
+    val policy =
+        RetryPolicy(
+            maxAttempts = times,
+            initialDelay = initialDelayMillis.milliseconds,
+            factor = factor,
+        )
     return retryWithBackoff(policy, block)
 }

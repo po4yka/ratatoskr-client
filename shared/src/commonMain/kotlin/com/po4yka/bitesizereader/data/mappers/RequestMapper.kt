@@ -17,7 +17,7 @@ fun RequestResponseDto.toDomain(): Request {
         stage = stage?.toProcessingStage(),
         progress = progress,
         langPreference = "auto",
-        createdAt = Instant.parse(createdAt)
+        createdAt = Instant.parse(createdAt),
     )
 }
 
@@ -35,7 +35,7 @@ fun RequestStatusDto.toDomain(): Request {
         canRetry = canRetry,
         estimatedSecondsRemaining = estimatedSecondsRemaining,
         createdAt = Instant.DISTANT_PAST, // Not provided in status response
-        updatedAt = Instant.now()
+        updatedAt = Instant.now(),
     )
 }
 
@@ -73,6 +73,6 @@ fun String.toProcessingStage(): ProcessingStage {
 fun String.toSubmitURLRequestDto(langPreference: String = "auto"): SubmitURLRequestDto {
     return SubmitURLRequestDto(
         inputUrl = this,
-        langPreference = langPreference
+        langPreference = langPreference,
     )
 }

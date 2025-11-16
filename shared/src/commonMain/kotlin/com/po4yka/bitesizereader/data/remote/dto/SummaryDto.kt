@@ -19,7 +19,7 @@ data class SummaryCompactDto(
     @SerialName("topic_tags") val topicTags: List<String>,
     @SerialName("is_read") val isRead: Boolean,
     val lang: String,
-    @SerialName("created_at") val createdAt: String
+    @SerialName("created_at") val createdAt: String,
 )
 
 /**
@@ -46,7 +46,7 @@ data class SummaryDetailDto(
     @SerialName("is_read") val isRead: Boolean,
     val lang: String,
     @SerialName("created_at") val createdAt: String,
-    @SerialName("updated_at") val updatedAt: String? = null
+    @SerialName("updated_at") val updatedAt: String? = null,
 )
 
 /**
@@ -56,7 +56,7 @@ data class SummaryDetailDto(
 data class EntitiesDto(
     val people: List<String> = emptyList(),
     val organizations: List<String> = emptyList(),
-    val locations: List<String> = emptyList()
+    val locations: List<String> = emptyList(),
 )
 
 /**
@@ -67,7 +67,7 @@ data class KeyStatDto(
     val label: String,
     val value: Double,
     val unit: String? = null,
-    @SerialName("source_excerpt") val sourceExcerpt: String? = null
+    @SerialName("source_excerpt") val sourceExcerpt: String? = null,
 )
 
 /**
@@ -77,7 +77,7 @@ data class KeyStatDto(
 data class ReadabilityDto(
     val method: String,
     val score: Double,
-    val level: String
+    val level: String,
 )
 
 /**
@@ -88,7 +88,7 @@ data class PaginationInfoDto(
     val total: Int,
     val limit: Int,
     val offset: Int,
-    @SerialName("has_more") val hasMore: Boolean
+    @SerialName("has_more") val hasMore: Boolean,
 )
 
 /**
@@ -97,7 +97,7 @@ data class PaginationInfoDto(
 @Serializable
 data class SummaryListResponseDto(
     val summaries: List<SummaryCompactDto>,
-    val pagination: PaginationInfoDto
+    val pagination: PaginationInfoDto,
 )
 
 /**
@@ -105,7 +105,7 @@ data class SummaryListResponseDto(
  */
 @Serializable
 data class SummaryUpdateRequestDto(
-    @SerialName("is_read") val isRead: Boolean? = null
+    @SerialName("is_read") val isRead: Boolean? = null,
 )
 
 /**
@@ -115,5 +115,5 @@ data class SummaryUpdateRequestDto(
 data class SummaryUpdateResponseDto(
     val id: Int,
     @SerialName("is_read") val isRead: Boolean,
-    @SerialName("updated_at") val updatedAt: String
+    @SerialName("updated_at") val updatedAt: String,
 )

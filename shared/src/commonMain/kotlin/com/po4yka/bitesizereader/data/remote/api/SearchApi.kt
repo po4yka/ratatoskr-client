@@ -12,7 +12,7 @@ interface SearchApi {
     suspend fun search(
         query: String,
         limit: Int = 20,
-        offset: Int = 0
+        offset: Int = 0,
     ): ApiResponse<SearchResponseDto>
 }
 
@@ -20,13 +20,12 @@ interface SearchApi {
  * Search API implementation
  */
 class SearchApiImpl(
-    private val client: HttpClient
+    private val client: HttpClient,
 ) : SearchApi {
-
     override suspend fun search(
         query: String,
         limit: Int,
-        offset: Int
+        offset: Int,
     ): ApiResponse<SearchResponseDto> {
         return client.get("/v1/search") {
             parameter("q", query)

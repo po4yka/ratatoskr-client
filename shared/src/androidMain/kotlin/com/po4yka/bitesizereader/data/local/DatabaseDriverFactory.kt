@@ -13,7 +13,7 @@ actual class DatabaseDriverFactory(private val context: Context) {
         return AndroidSqliteDriver(
             schema = Database.Schema,
             context = context,
-            name = "bite_reader.db"
+            name = "bite_reader.db",
         )
     }
 }

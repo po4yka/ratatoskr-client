@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class SearchViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
     private val searchRepository: SearchRepository,
-    private val viewModelScope: CoroutineScope
+    private val viewModelScope: CoroutineScope,
 ) {
     private val _state = MutableStateFlow(SearchState())
     val state: StateFlow<SearchState> = _state.asStateFlow()
@@ -33,10 +33,11 @@ class SearchViewModel(
 
         // Debounce search
         searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(300) // Wait 300ms before searching
-            search()
-        }
+        searchJob =
+            viewModelScope.launch {
+                delay(300) // Wait 300ms before searching
+                search()
+            }
     }
 
     fun onQueryChange(query: String) = setQuery(query)
@@ -55,16 +56,18 @@ class SearchViewModel(
             val result = searchSummariesUseCase(query)
 
             result.onSuccess { results ->
-                _state.value = _state.value.copy(
-                    results = results,
-                    isSearching = false,
-                    error = null
-                )
+                _state.value =
+                    _state.value.copy(
+                        results = results,
+                        isSearching = false,
+                        error = null,
+                    )
             }.onFailure { error ->
-                _state.value = _state.value.copy(
-                    isSearching = false,
-                    error = error.message
-                )
+                _state.value =
+                    _state.value.copy(
+                        isSearching = false,
+                        error = error.message,
+                    )
             }
         }
     }

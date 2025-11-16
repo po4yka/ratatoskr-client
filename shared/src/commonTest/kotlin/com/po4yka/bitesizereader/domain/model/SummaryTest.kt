@@ -6,21 +6,20 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.days
 
 /**
  * Unit tests for Summary domain model
  */
 class SummaryTest {
-
     @Test
     fun `Summary is created with correct properties`() {
         // Given
-        val summary = MockDataFactory.createSummary(
-            id = 1,
-            title = "Test Article",
-            isRead = false
-        )
+        val summary =
+            MockDataFactory.createSummary(
+                id = 1,
+                title = "Test Article",
+                isRead = false,
+            )
 
         // Then
         assertEquals(1, summary.id)

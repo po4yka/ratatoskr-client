@@ -17,19 +17,20 @@ fun UserDto.toDomain(): User {
         firstName = firstName,
         lastName = lastName,
         photoUrl = photoUrl,
-        isOwner = isOwner
+        isOwner = isOwner,
     )
 }
 
 fun AuthResponseDto.toDomain(): Pair<AuthTokens, User> {
     val now = Clock.System.now()
-    val authTokens = AuthTokens(
-        accessToken = accessToken,
-        refreshToken = refreshToken,
-        tokenType = tokenType,
-        expiresIn = expiresIn,
-        expiresAt = now + expiresIn.seconds
-    )
+    val authTokens =
+        AuthTokens(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            tokenType = tokenType,
+            expiresIn = expiresIn,
+            expiresAt = now + expiresIn.seconds,
+        )
     return authTokens to user.toDomain()
 }
 
@@ -39,7 +40,7 @@ fun TokenRefreshResponseDto.toAuthTokens(currentTime: Instant = Clock.System.now
         refreshToken = refreshToken ?: "",
         tokenType = tokenType,
         expiresIn = expiresIn,
-        expiresAt = currentTime + expiresIn.seconds
+        expiresAt = currentTime + expiresIn.seconds,
     )
 }
 
@@ -53,7 +54,7 @@ fun createTelegramLoginRequest(
     firstName: String?,
     lastName: String?,
     photoUrl: String?,
-    clientId: String
+    clientId: String,
 ): TelegramLoginRequestDto {
     return TelegramLoginRequestDto(
         telegramUserId = telegramUserId,
@@ -63,7 +64,7 @@ fun createTelegramLoginRequest(
         firstName = firstName,
         lastName = lastName,
         photoUrl = photoUrl,
-        clientId = clientId
+        clientId = clientId,
     )
 }
 

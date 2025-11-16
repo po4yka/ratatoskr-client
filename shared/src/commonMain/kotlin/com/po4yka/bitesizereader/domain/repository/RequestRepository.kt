@@ -12,7 +12,7 @@ interface RequestRepository {
      */
     suspend fun submitURL(
         url: String,
-        langPreference: String = "auto"
+        langPreference: String = "auto",
     ): Result<Request>
 
     /**

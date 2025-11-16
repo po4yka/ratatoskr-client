@@ -1,7 +1,9 @@
 package com.po4yka.bitesizereader.ui.screens
 
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
 import com.po4yka.bitesizereader.domain.usecase.LoginWithTelegramUseCase
 import com.po4yka.bitesizereader.presentation.state.LoginState
@@ -10,7 +12,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
 
@@ -18,7 +19,6 @@ import org.junit.Test
  * Compose UI tests for AuthScreen
  */
 class AuthScreenTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -29,17 +29,18 @@ class AuthScreenTest {
         val mockLoginUseCase = mockk<LoginWithTelegramUseCase>()
         coEvery { mockAuthRepository.isAuthenticated() } returns false
 
-        val viewModel = LoginViewModel(
-            loginWithTelegramUseCase = mockLoginUseCase,
-            authRepository = mockAuthRepository,
-            viewModelScope = CoroutineScope(Dispatchers.Unconfined)
-        )
+        val viewModel =
+            LoginViewModel(
+                loginWithTelegramUseCase = mockLoginUseCase,
+                authRepository = mockAuthRepository,
+                viewModelScope = CoroutineScope(Dispatchers.Unconfined),
+            )
 
         // When
         composeTestRule.setContent {
             AuthScreen(
                 viewModel = viewModel,
-                onLoginSuccess = {}
+                onLoginSuccess = {},
             )
         }
 
@@ -57,17 +58,18 @@ class AuthScreenTest {
         val mockLoginUseCase = mockk<LoginWithTelegramUseCase>()
         coEvery { mockAuthRepository.isAuthenticated() } returns false
 
-        val viewModel = LoginViewModel(
-            loginWithTelegramUseCase = mockLoginUseCase,
-            authRepository = mockAuthRepository,
-            viewModelScope = CoroutineScope(Dispatchers.Unconfined)
-        )
+        val viewModel =
+            LoginViewModel(
+                loginWithTelegramUseCase = mockLoginUseCase,
+                authRepository = mockAuthRepository,
+                viewModelScope = CoroutineScope(Dispatchers.Unconfined),
+            )
 
         // When
         composeTestRule.setContent {
             AuthScreen(
                 viewModel = viewModel,
-                onLoginSuccess = {}
+                onLoginSuccess = {},
             )
         }
 
@@ -85,17 +87,18 @@ class AuthScreenTest {
         val mockLoginUseCase = mockk<LoginWithTelegramUseCase>()
         coEvery { mockAuthRepository.isAuthenticated() } returns false
 
-        val viewModel = LoginViewModel(
-            loginWithTelegramUseCase = mockLoginUseCase,
-            authRepository = mockAuthRepository,
-            viewModelScope = CoroutineScope(Dispatchers.Unconfined)
-        )
+        val viewModel =
+            LoginViewModel(
+                loginWithTelegramUseCase = mockLoginUseCase,
+                authRepository = mockAuthRepository,
+                viewModelScope = CoroutineScope(Dispatchers.Unconfined),
+            )
 
         // When
         composeTestRule.setContent {
             AuthScreen(
                 viewModel = viewModel,
-                onLoginSuccess = {}
+                onLoginSuccess = {},
             )
         }
 
@@ -123,11 +126,12 @@ class AuthScreenTest {
         val mockLoginUseCase = mockk<LoginWithTelegramUseCase>()
         coEvery { mockAuthRepository.isAuthenticated() } returns false
 
-        val viewModel = LoginViewModel(
-            loginWithTelegramUseCase = mockLoginUseCase,
-            authRepository = mockAuthRepository,
-            viewModelScope = CoroutineScope(Dispatchers.Unconfined)
-        )
+        val viewModel =
+            LoginViewModel(
+                loginWithTelegramUseCase = mockLoginUseCase,
+                authRepository = mockAuthRepository,
+                viewModelScope = CoroutineScope(Dispatchers.Unconfined),
+            )
 
         // Simulate loading state
         viewModel.state.value = LoginState(isLoading = true)
@@ -136,7 +140,7 @@ class AuthScreenTest {
         composeTestRule.setContent {
             AuthScreen(
                 viewModel = viewModel,
-                onLoginSuccess = {}
+                onLoginSuccess = {},
             )
         }
 
@@ -154,11 +158,12 @@ class AuthScreenTest {
         val mockLoginUseCase = mockk<LoginWithTelegramUseCase>()
         coEvery { mockAuthRepository.isAuthenticated() } returns false
 
-        val viewModel = LoginViewModel(
-            loginWithTelegramUseCase = mockLoginUseCase,
-            authRepository = mockAuthRepository,
-            viewModelScope = CoroutineScope(Dispatchers.Unconfined)
-        )
+        val viewModel =
+            LoginViewModel(
+                loginWithTelegramUseCase = mockLoginUseCase,
+                authRepository = mockAuthRepository,
+                viewModelScope = CoroutineScope(Dispatchers.Unconfined),
+            )
 
         // Simulate error state
         viewModel.state.value = LoginState(error = "Authentication failed")
@@ -167,7 +172,7 @@ class AuthScreenTest {
         composeTestRule.setContent {
             AuthScreen(
                 viewModel = viewModel,
-                onLoginSuccess = {}
+                onLoginSuccess = {},
             )
         }
 

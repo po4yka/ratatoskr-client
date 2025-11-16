@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
  * Use case for synchronizing data
  */
 class SyncDataUseCase(
-    private val syncRepository: SyncRepository
+    private val syncRepository: SyncRepository,
 ) {
     operator fun invoke(forceFullSync: Boolean = false): Flow<SyncState> {
         return if (forceFullSync) {

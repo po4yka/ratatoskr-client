@@ -12,7 +12,6 @@ import androidx.compose.animation.slideOutVertically
  * Animation constants and presets for the app
  */
 object AnimationConstants {
-
     /**
      * Standard duration for most animations (ms)
      */
@@ -41,10 +40,11 @@ object AnimationConstants {
     /**
      * Spring animation for bouncy effects
      */
-    val SPRING_ANIMATION = spring<Float>(
-        dampingRatio = Spring.DampingRatioMediumBouncy,
-        stiffness = Spring.StiffnessLow
-    )
+    val SPRING_ANIMATION =
+        spring<Float>(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow,
+        )
 
     /**
      * Fade in animation
@@ -59,16 +59,18 @@ object AnimationConstants {
     /**
      * Slide in from bottom animation
      */
-    val slideInFromBottom = slideInVertically(
-        initialOffsetY = { it },
-        animationSpec = STANDARD_EASING
-    )
+    val slideInFromBottom =
+        slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = STANDARD_EASING,
+        )
 
     /**
      * Slide out to bottom animation
      */
-    val slideOutToBottom = slideOutVertically(
-        targetOffsetY = { it },
-        animationSpec = STANDARD_EASING
-    )
+    val slideOutToBottom =
+        slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = STANDARD_EASING,
+        )
 }

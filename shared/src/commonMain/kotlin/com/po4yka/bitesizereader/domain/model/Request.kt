@@ -14,21 +14,17 @@ data class Request(
     val stage: ProcessingStage?,
     val progress: Int, // 0-100
     val langPreference: String,
-
     // Result
     val summaryId: Int? = null,
-
     // Error handling
     val errorMessage: String? = null,
     val canRetry: Boolean = false,
-
     // Progress estimation
     val estimatedSecondsRemaining: Int? = null,
-
     // Timestamps
     val createdAt: Instant,
     val updatedAt: Instant? = null,
-    val completedAt: Instant? = null
+    val completedAt: Instant? = null,
 )
 
 /**
@@ -36,7 +32,7 @@ data class Request(
  */
 enum class RequestType {
     URL,
-    YOUTUBE_VIDEO
+    YOUTUBE_VIDEO,
 }
 
 /**
@@ -47,7 +43,7 @@ enum class RequestStatus {
     PROCESSING,
     COMPLETED,
     ERROR,
-    CANCELLED
+    CANCELLED,
 }
 
 /**
@@ -57,5 +53,5 @@ enum class ProcessingStage {
     CONTENT_EXTRACTION,
     LLM_SUMMARIZATION,
     VALIDATION,
-    DONE
+    DONE,
 }

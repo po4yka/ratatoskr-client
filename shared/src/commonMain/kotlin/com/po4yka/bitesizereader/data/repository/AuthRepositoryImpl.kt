@@ -6,17 +6,14 @@ import com.po4yka.bitesizereader.data.remote.api.AuthApi
 import com.po4yka.bitesizereader.domain.model.AuthTokens
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 
 /**
  * Implementation of AuthRepository
  */
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
-    private val secureStorage: SecureStorage
+    private val secureStorage: SecureStorage,
 ) : AuthRepository {
-
     override suspend fun loginWithTelegram(
         telegramUserId: Long,
         authHash: String,
@@ -25,19 +22,20 @@ class AuthRepositoryImpl(
         firstName: String?,
         lastName: String?,
         photoUrl: String?,
-        clientId: String
+        clientId: String,
     ): Result<Pair<AuthTokens, User>> {
         return try {
-            val request = createTelegramLoginRequest(
-                telegramUserId = telegramUserId,
-                authHash = authHash,
-                authDate = authDate,
-                username = username,
-                firstName = firstName,
-                lastName = lastName,
-                photoUrl = photoUrl,
-                clientId = clientId
-            )
+            val request =
+                createTelegramLoginRequest(
+                    telegramUserId = telegramUserId,
+                    authHash = authHash,
+                    authDate = authDate,
+                    username = username,
+                    firstName = firstName,
+                    lastName = lastName,
+                    photoUrl = photoUrl,
+                    clientId = clientId,
+                )
 
             val response = authApi.loginWithTelegram(request)
 

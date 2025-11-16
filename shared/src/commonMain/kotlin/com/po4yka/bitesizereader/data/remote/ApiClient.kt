@@ -17,7 +17,9 @@ import kotlinx.serialization.json.Json
  */
 interface TokenProvider {
     suspend fun getTokens(): Pair<String, String>? // (accessToken, refreshToken)
+
     suspend fun refreshToken(refreshToken: String): Pair<String, String>? // (newAccessToken, newRefreshToken)
+
     suspend fun clearTokens()
 }
 
@@ -28,7 +30,7 @@ fun createHttpClient(
     engine: HttpClientEngine,
     baseUrl: String,
     tokenProvider: TokenProvider,
-    enableLogging: Boolean = false
+    enableLogging: Boolean = false,
 ): HttpClient {
     return HttpClient(engine) {
         // Base URL configuration
@@ -39,13 +41,15 @@ fun createHttpClient(
 
         // JSON serialization
         install(ContentNegotiation) {
-            json(Json {
-                ignoreUnknownKeys = true
-                isLenient = true
-                encodeDefaults = true
-                prettyPrint = false
-                explicitNulls = false
-            })
+            json(
+                Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                    encodeDefaults = true
+                    prettyPrint = false
+                    explicitNulls = false
+                },
+            )
         }
 
         // Authentication with JWT
@@ -56,7 +60,7 @@ fun createHttpClient(
                     tokens?.let {
                         BearerTokens(
                             accessToken = it.first,
-                            refreshToken = it.second
+                            refreshToken = it.second,
                         )
                     }
                 }
@@ -68,7 +72,7 @@ fun createHttpClient(
                         newTokens?.let {
                             BearerTokens(
                                 accessToken = it.first,
-                                refreshToken = it.second
+                                refreshToken = it.second,
                             )
                         }
                     } else {
@@ -86,11 +90,12 @@ fun createHttpClient(
         // Logging (conditional)
         if (enableLogging) {
             install(Logging) {
-                logger = object : io.ktor.client.plugins.logging.Logger {
-                    override fun log(message: String) {
-                        Logger.d { "HTTP: $message" }
+                logger =
+                    object : io.ktor.client.plugins.logging.Logger {
+                        override fun log(message: String) {
+                            Logger.d { "HTTP: $message" }
+                        }
                     }
-                }
                 level = LogLevel.INFO
             }
         }

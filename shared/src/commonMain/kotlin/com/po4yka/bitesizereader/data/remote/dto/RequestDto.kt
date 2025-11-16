@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 data class SubmitURLRequestDto(
     val type: String = "url",
     @SerialName("input_url") val inputUrl: String,
-    @SerialName("lang_preference") val langPreference: String = "auto"
+    @SerialName("lang_preference") val langPreference: String = "auto",
 )
 
 /**
@@ -22,7 +22,7 @@ data class RequestResponseDto(
     val status: String,
     val stage: String? = null,
     val progress: Int,
-    @SerialName("created_at") val createdAt: String
+    @SerialName("created_at") val createdAt: String,
 )
 
 /**
@@ -37,5 +37,5 @@ data class RequestStatusDto(
     @SerialName("estimated_seconds_remaining") val estimatedSecondsRemaining: Int? = null,
     @SerialName("error_message") val errorMessage: String? = null,
     @SerialName("can_retry") val canRetry: Boolean = false,
-    @SerialName("summary_id") val summaryId: Int? = null
+    @SerialName("summary_id") val summaryId: Int? = null,
 )

@@ -10,5 +10,5 @@ data class SearchState(
     val results: List<Summary> = emptyList(),
     val isSearching: Boolean = false,
     val error: String? = null,
-    val trendingTopics: List<String> = emptyList()
+    val trendingTopics: List<String> = emptyList(),
 )

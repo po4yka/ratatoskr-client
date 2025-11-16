@@ -7,41 +7,42 @@ import org.koin.dsl.module
 /**
  * Koin module for repository dependencies
  */
-val repositoryModule = module {
-    single<AuthRepository> {
-        AuthRepositoryImpl(
-            authApi = get(),
-            secureStorage = get()
-        )
-    }
+val repositoryModule =
+    module {
+        single<AuthRepository> {
+            AuthRepositoryImpl(
+                authApi = get(),
+                secureStorage = get(),
+            )
+        }
 
-    single<SummaryRepository> {
-        SummaryRepositoryImpl(
-            summariesApi = get(),
-            database = get(),
-            databaseHelper = get()
-        )
-    }
+        single<SummaryRepository> {
+            SummaryRepositoryImpl(
+                summariesApi = get(),
+                database = get(),
+                databaseHelper = get(),
+            )
+        }
 
-    single<RequestRepository> {
-        RequestRepositoryImpl(
-            requestsApi = get(),
-            database = get(),
-            databaseHelper = get()
-        )
-    }
+        single<RequestRepository> {
+            RequestRepositoryImpl(
+                requestsApi = get(),
+                database = get(),
+                databaseHelper = get(),
+            )
+        }
 
-    single<SearchRepository> {
-        SearchRepositoryImpl(
-            searchApi = get(),
-            database = get()
-        )
-    }
+        single<SearchRepository> {
+            SearchRepositoryImpl(
+                searchApi = get(),
+                database = get(),
+            )
+        }
 
-    single<SyncRepository> {
-        SyncRepositoryImpl(
-            syncApi = get(),
-            databaseHelper = get()
-        )
+        single<SyncRepository> {
+            SyncRepositoryImpl(
+                syncApi = get(),
+                databaseHelper = get(),
+            )
+        }
     }
-}
