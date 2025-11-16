@@ -13,6 +13,7 @@ data class SearchQuery(
  */
 data class SearchFilters(
     val isRead: Boolean? = null,
+    val readStatus: String? = null, // "read", "unread", or null for all
     val lang: String? = null,
     val topicTags: List<String> = emptyList(),
     val fromDate: String? = null,

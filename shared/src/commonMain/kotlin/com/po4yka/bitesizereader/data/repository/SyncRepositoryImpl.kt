@@ -1,3 +1,5 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.data.local.DatabaseHelper
@@ -7,6 +9,7 @@ import com.po4yka.bitesizereader.domain.model.SyncState
 import com.po4yka.bitesizereader.domain.model.SyncType
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
 

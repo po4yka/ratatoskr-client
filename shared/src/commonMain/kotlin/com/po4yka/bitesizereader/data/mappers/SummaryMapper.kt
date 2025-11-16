@@ -1,8 +1,11 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.po4yka.bitesizereader.data.mappers
 
 import com.po4yka.bitesizereader.data.remote.dto.*
 import com.po4yka.bitesizereader.domain.model.*
 import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
 
 /**
  * Maps Summary DTOs to domain models and vice versa

@@ -1,8 +1,12 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.po4yka.bitesizereader.data.mappers
 
 import com.po4yka.bitesizereader.data.remote.dto.*
 import com.po4yka.bitesizereader.domain.model.*
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
 
 /**
  * Maps Request DTOs to domain models and vice versa
@@ -35,7 +39,7 @@ fun RequestStatusDto.toDomain(): Request {
         canRetry = canRetry,
         estimatedSecondsRemaining = estimatedSecondsRemaining,
         createdAt = Instant.DISTANT_PAST, // Not provided in status response
-        updatedAt = Instant.now(),
+        updatedAt = Clock.System.now(),
     )
 }
 

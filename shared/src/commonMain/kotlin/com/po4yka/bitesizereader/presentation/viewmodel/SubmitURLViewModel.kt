@@ -125,11 +125,11 @@ class SubmitURLViewModel(
             viewModelScope.launch {
                 val result = requestRepository.cancelRequest(request.id)
 
-                result.onSuccess {
+                result.onSuccess { cancelledRequest ->
                     _state.value =
                         _state.value.copy(
                             isPolling = false,
-                            request = request.copy(status = RequestStatus.CANCELLED),
+                            request = cancelledRequest,
                         )
                 }.onFailure { error ->
                     _state.value = _state.value.copy(error = error.message)

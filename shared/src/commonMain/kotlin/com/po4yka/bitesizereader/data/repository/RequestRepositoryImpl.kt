@@ -1,5 +1,9 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.po4yka.bitesizereader.data.repository
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.po4yka.bitesizereader.data.local.DatabaseHelper
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.mappers.toSubmitURLRequestDto
@@ -8,6 +12,7 @@ import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
 import com.po4yka.bitesizereader.domain.repository.RequestRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -111,19 +116,37 @@ class RequestRepositoryImpl(
         }
     }
 
+    override suspend fun cancelRequest(requestId: Int): Result<Request> {
+        return try {
+            val response = requestsApi.cancelRequest(requestId)
+
+            if (response.success && response.data != null) {
+                val request = response.data.toDomain()
+                databaseHelper.insertRequest(request)
+                Result.success(request)
+            } else {
+                Result.failure(Exception(response.error?.message ?: "Failed to cancel"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override fun getAllRequests(): Flow<List<Request>> {
         return database.requestQueries.selectAll()
             .asFlow()
-            .map { query ->
-                query.executeAsList().map { mapDbRequestToDomain(it) }
+            .mapToList(Dispatchers.Default)
+            .map { list ->
+                list.map { mapDbRequestToDomain(it) }
             }
     }
 
     override fun getPendingRequests(): Flow<List<Request>> {
         return database.requestQueries.selectPending()
             .asFlow()
-            .map { query ->
-                query.executeAsList().map { mapDbRequestToDomain(it) }
+            .mapToList(Dispatchers.Default)
+            .map { list ->
+                list.map { mapDbRequestToDomain(it) }
             }
     }
 

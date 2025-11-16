@@ -15,6 +15,8 @@ interface RequestsApi {
     suspend fun getRequestStatus(requestId: Int): ApiResponse<RequestStatusDto>
 
     suspend fun retryRequest(requestId: Int): ApiResponse<RequestResponseDto>
+
+    suspend fun cancelRequest(requestId: Int): ApiResponse<RequestResponseDto>
 }
 
 /**
@@ -36,5 +38,9 @@ class RequestsApiImpl(
 
     override suspend fun retryRequest(requestId: Int): ApiResponse<RequestResponseDto> {
         return client.post("/v1/requests/$requestId/retry").body()
+    }
+
+    override suspend fun cancelRequest(requestId: Int): ApiResponse<RequestResponseDto> {
+        return client.post("/v1/requests/$requestId/cancel").body()
     }
 }

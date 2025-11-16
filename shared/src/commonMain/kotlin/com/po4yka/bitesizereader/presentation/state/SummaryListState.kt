@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.presentation.state
 
+import com.po4yka.bitesizereader.domain.model.SearchFilters
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.model.SyncState
 
@@ -14,4 +15,5 @@ data class SummaryListState(
     val hasMore: Boolean = true,
     val syncState: SyncState = SyncState.Idle,
     val unreadCount: Int = 0,
+    val filters: SearchFilters = SearchFilters(),
 )

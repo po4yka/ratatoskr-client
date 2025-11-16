@@ -27,4 +27,4 @@ interface SecureStorage {
 /**
  * Expect declaration for platform-specific secure storage
  */
-expect class SecureStorageImpl() : SecureStorage
+expect class SecureStorageImpl : SecureStorage

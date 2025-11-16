@@ -4,10 +4,12 @@ import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.time.ExperimentalTime
 
 /**
  * Helper class for database operations with JSON serialization
  */
+@OptIn(ExperimentalTime::class)
 class DatabaseHelper(private val database: Database) {
     private val json =
         Json {

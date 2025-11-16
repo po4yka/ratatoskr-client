@@ -1,5 +1,9 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.po4yka.bitesizereader.data.repository
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOne
 import com.po4yka.bitesizereader.data.local.DatabaseHelper
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.mappers.toUpdateRequestDto
@@ -9,9 +13,11 @@ import com.po4yka.bitesizereader.domain.model.SearchFilters
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.model.SyncStatus
 import com.po4yka.bitesizereader.domain.repository.SummaryRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 
 /**
@@ -169,7 +175,8 @@ class SummaryRepositoryImpl(
     override fun getUnreadCount(): Flow<Int> {
         return database.summaryQueries.countUnread()
             .asFlow()
-            .map { it.executeAsOne().toInt() }
+            .mapToOne(Dispatchers.Default)
+            .map { it.toInt() }
     }
 
     override suspend fun refresh(): Result<Unit> {

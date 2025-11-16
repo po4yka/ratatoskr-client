@@ -31,6 +31,11 @@ interface RequestRepository {
     suspend fun retryRequest(requestId: Int): Result<Request>
 
     /**
+     * Cancel a pending or processing request
+     */
+    suspend fun cancelRequest(requestId: Int): Result<Request>
+
+    /**
      * Get all requests
      */
     fun getAllRequests(): Flow<List<Request>>

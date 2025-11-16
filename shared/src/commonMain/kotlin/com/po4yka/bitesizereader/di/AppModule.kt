@@ -9,13 +9,13 @@ import org.koin.dsl.module
  */
 val viewModelModule =
     module {
-        factory { LoginViewModel(get(), get()) }
-        factory { SummaryListViewModel(get(), get(), get()) }
+        factory { LoginViewModel(get(), get(), get()) }
+        factory { SummaryListViewModel(get(), get(), get(), get()) }
         factory { (summaryId: Int) ->
             SummaryDetailViewModel(summaryId, get(), get(), get())
         }
-        factory { SubmitURLViewModel(get(), get()) }
-        factory { SearchViewModel(get(), get()) }
+        factory { SubmitURLViewModel(get(), get(), get()) }
+        factory { SearchViewModel(get(), get(), get()) }
     }
 
 /**

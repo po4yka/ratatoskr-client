@@ -1,9 +1,12 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.po4yka.bitesizereader.data.mappers
 
 import com.po4yka.bitesizereader.data.remote.dto.SearchResultDto
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.model.SyncStatus
 import kotlinx.datetime.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * Maps Search DTOs to domain models

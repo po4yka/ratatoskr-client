@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.data.remote.dto
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -40,6 +41,6 @@ data class SyncUploadRequestDto(
 data class SyncUploadChangeDto(
     @SerialName("summary_id") val summaryId: Int,
     val action: String,
-    val fields: Map<String, Any>,
+    val fields: Map<String, @Contextual Any>,
     @SerialName("client_timestamp") val clientTimestamp: String,
 )

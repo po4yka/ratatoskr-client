@@ -59,9 +59,9 @@ fun Summary.toShareText(customMessage: String? = null): String {
             appendLine()
         }
 
-        if (keyPoints.isNotEmpty()) {
+        if (keyIdeas.isNotEmpty()) {
             appendLine("Key Points:")
-            keyPoints.forEach { point ->
+            keyIdeas.forEach { point ->
                 appendLine("• $point")
             }
             appendLine()

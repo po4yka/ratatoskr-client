@@ -90,6 +90,11 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
             implementation(libs.turbine)
+            // MockK only supports JVM, moved to androidUnitTest
+            // implementation(libs.mockk)
+        }
+
+        androidUnitTest.dependencies {
             implementation(libs.mockk)
         }
     }
