@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a Question
+    url: https://github.com/po4yka/bite-size-reader-client/discussions/new?category=q-a
+    about: Ask questions and discuss ideas with the community
+  - name: Documentation
+    url: https://github.com/po4yka/bite-size-reader-client/blob/main/README.md
+    about: Read the project documentation
