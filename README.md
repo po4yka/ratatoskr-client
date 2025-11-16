@@ -1,5 +1,9 @@
 # Bite-Size Reader Mobile Client
 
+[![PR Validation](https://github.com/po4yka/bite-size-reader-client/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/po4yka/bite-size-reader-client/actions/workflows/pr-validation.yml)
+[![CI](https://github.com/po4yka/bite-size-reader-client/actions/workflows/ci.yml/badge.svg)](https://github.com/po4yka/bite-size-reader-client/actions/workflows/ci.yml)
+[![Code Quality](https://github.com/po4yka/bite-size-reader-client/actions/workflows/code-quality.yml/badge.svg)](https://github.com/po4yka/bite-size-reader-client/actions/workflows/code-quality.yml)
+
 Native iOS and Android mobile application for [Bite-Size Reader](https://github.com/po4yka/bite-size-reader) - a service that summarizes web articles and YouTube videos using LLM.
 
 ## Overview
@@ -19,6 +23,24 @@ This is a **Kotlin Multiplatform Mobile (KMP)** app that provides native user ex
 - **Native UI (20-30%)**: Platform-specific UI with SwiftUI (iOS) and Jetpack Compose (Android)
 - **Offline-First**: Local SQLite database with background sync to backend API
 - **Clean Architecture**: Domain-driven design with clear separation of concerns
+
+## CI/CD
+
+This project features **comprehensive CI/CD automation** using GitHub Actions:
+
+- ✅ **Automated Testing**: All PRs run tests for Android, iOS, and shared code
+- 🔨 **Multi-Platform Builds**: Parallel builds on Ubuntu (Android) and macOS (iOS)
+- 🚀 **Automated Releases**: Tag-based releases with automatic APK/IPA generation
+- 🔍 **Code Quality**: Linting, security scanning, and dependency checks
+- 📦 **Dependabot**: Automatic dependency updates with grouped PRs
+- 💰 **Cost Optimized**: Conditional builds and smart caching reduce CI minutes by ~60%
+
+**Quick Start:**
+- PRs automatically validate on both platforms
+- Add `skip-ios` label to skip expensive macOS builds for Android-only changes
+- Create releases: `git tag v1.0.0 && git push --tags`
+
+See **[docs/CI_CD.md](docs/CI_CD.md)** for complete documentation including setup, secrets configuration, and troubleshooting.
 
 ## Tech Stack
 

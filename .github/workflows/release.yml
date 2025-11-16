@@ -1,0 +1,286 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Trigger on version tags like v1.0.0
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.0.0)'
+        required: true
+        type: string
+
+env:
+  JAVA_VERSION: '17'
+
+jobs:
+  # Create GitHub release
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: get_version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          release_name: Release ${{ steps.get_version.outputs.version }}
+          draft: true
+          prerelease: false
+          body: |
+            ## What's Changed
+            <!-- Add your release notes here -->
+
+            ## Downloads
+            - Android APK: See assets below
+            - iOS IPA: See assets below (requires signing)
+
+            ## Installation
+            **Android:** Download the APK and install on your device
+            **iOS:** Use Xcode or deploy through App Store Connect
+
+  # Build Android Release
+  build-android-release:
+    name: Build Android Release
+    runs-on: ubuntu-latest
+    needs: create-release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-home-cache-cleanup: true
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Decode and setup keystore (if available)
+      - name: Setup Android signing (if configured)
+        if: ${{ secrets.ANDROID_KEYSTORE_RELEASE_B64 != '' }}
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_RELEASE_B64 }}" | base64 -d > release.keystore
+          echo "KEYSTORE_FILE=release.keystore" >> $GITHUB_ENV
+          echo "KEYSTORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}" >> $GITHUB_ENV
+          echo "KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}" >> $GITHUB_ENV
+
+      - name: Build Android Release APK
+        run: ./gradlew :composeApp:assembleRelease --no-daemon
+        env:
+          SIGNING_KEYSTORE_FILE: ${{ env.KEYSTORE_FILE }}
+          SIGNING_KEYSTORE_PASSWORD: ${{ env.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ env.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ env.KEY_PASSWORD }}
+
+      - name: Build Android Release Bundle (AAB)
+        run: ./gradlew :composeApp:bundleRelease --no-daemon
+        continue-on-error: true
+
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: composeApp/build/outputs/apk/release/composeApp-release.apk
+          asset_name: BiteSizeReader-${{ needs.create-release.outputs.version }}-release.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-apk
+          path: composeApp/build/outputs/apk/release/*.apk
+
+      - name: Upload AAB as artifact
+        uses: actions/upload-artifact@v4
+        if: hashFiles('composeApp/build/outputs/bundle/release/*.aab') != ''
+        with:
+          name: android-release-bundle
+          path: composeApp/build/outputs/bundle/release/*.aab
+
+      # Publish to Google Play (if configured)
+      - name: Publish to Google Play
+        if: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != '' }}
+        run: |
+          echo "${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}" > service-account.json
+          ./gradlew :composeApp:publishReleaseBundle --no-daemon
+        continue-on-error: true
+
+  # Build iOS Release
+  build-ios-release:
+    name: Build iOS Release
+    runs-on: macos-14
+    needs: create-release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-home-cache-cleanup: true
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
+      - name: Cache Konan dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-konan-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer || sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Build iOS Release Framework
+        run: |
+          ./gradlew :shared:linkReleaseFrameworkIosArm64 --no-daemon
+          ./gradlew :shared:linkReleaseFrameworkIosSimulatorArm64 --no-daemon
+
+      # Create XCFramework
+      - name: Create XCFramework
+        run: |
+          xcodebuild -create-xcframework \
+            -framework shared/build/bin/iosArm64/releaseFramework/Shared.framework \
+            -framework shared/build/bin/iosSimulatorArm64/releaseFramework/Shared.framework \
+            -output Shared.xcframework
+
+      - name: Upload XCFramework
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-xcframework
+          path: Shared.xcframework
+
+      # Setup iOS signing (if configured)
+      - name: Setup iOS certificates and provisioning profiles
+        if: ${{ secrets.IOS_CERTIFICATE_B64 != '' && secrets.IOS_PROVISIONING_PROFILE_B64 != '' }}
+        run: |
+          # Decode certificate
+          echo "${{ secrets.IOS_CERTIFICATE_B64 }}" | base64 -d > certificate.p12
+
+          # Decode provisioning profile
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE_B64 }}" | base64 -d > profile.mobileprovision
+
+          # Create keychain
+          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
+
+          # Import certificate
+          security import certificate.p12 -k build.keychain -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+
+          # Install provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      # Build iOS app with Xcode (if iosApp exists)
+      - name: Build iOS app
+        if: hashFiles('iosApp/**') != ''
+        run: |
+          cd iosApp
+          xcodebuild clean archive \
+            -workspace iosApp.xcworkspace \
+            -scheme iosApp \
+            -configuration Release \
+            -archivePath build/iosApp.xcarchive \
+            CODE_SIGN_IDENTITY="${{ secrets.IOS_CODE_SIGN_IDENTITY }}" \
+            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}" || echo "Xcode project not configured"
+        continue-on-error: true
+
+      - name: Export IPA
+        if: hashFiles('iosApp/build/iosApp.xcarchive') != ''
+        run: |
+          cd iosApp
+          xcodebuild -exportArchive \
+            -archivePath build/iosApp.xcarchive \
+            -exportPath build \
+            -exportOptionsPlist exportOptions.plist || echo "Export options not configured"
+        continue-on-error: true
+
+      - name: Upload IPA as artifact
+        if: hashFiles('iosApp/build/*.ipa') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-ipa
+          path: iosApp/build/*.ipa
+
+      # Publish to App Store (if configured with Fastlane)
+      - name: Deploy to App Store
+        if: ${{ secrets.APP_STORE_CONNECT_API_KEY_B64 != '' && hashFiles('iosApp/build/*.ipa') != '' }}
+        run: |
+          # Setup Fastlane if configured
+          cd iosApp
+          fastlane release || echo "Fastlane not configured"
+        continue-on-error: true
+
+  # Finalize release
+  finalize-release:
+    name: Finalize Release
+    runs-on: ubuntu-latest
+    needs: [ create-release, build-android-release, build-ios-release ]
+    if: always()
+
+    steps:
+      - name: Publish Release
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            const draftRelease = releases.find(r => r.draft && r.tag_name === `v${{ needs.create-release.outputs.version }}`);
+
+            if (draftRelease) {
+              await github.rest.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: draftRelease.id,
+                draft: false,
+              });
+              console.log('Release published successfully!');
+            }

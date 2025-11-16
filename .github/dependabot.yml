@@ -1,0 +1,48 @@
+version: 2
+updates:
+  # Gradle dependencies
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "po4yka"
+    labels:
+      - "dependencies"
+      - "gradle"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # Group related updates
+    groups:
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin:*"
+          - "org.jetbrains.kotlinx:*"
+      androidx:
+        patterns:
+          - "androidx.*:*"
+      compose:
+        patterns:
+          - "androidx.compose.*:*"
+          - "org.jetbrains.compose:*"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "po4yka"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
