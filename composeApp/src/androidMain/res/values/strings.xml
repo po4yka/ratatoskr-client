@@ -1,3 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BiteSizeReader</string>
+    <!-- App Name -->
+    <string name="app_name">Bite-Size Reader</string>
+
+    <!-- Authentication -->
+    <string name="auth_title">Bite-Size Reader</string>
+    <string name="auth_subtitle">AI-powered summaries of web articles</string>
+    <string name="auth_login_button">Login with Telegram</string>
+    <string name="auth_logging_in">Logging in…</string>
+    <string name="auth_feature_summaries">Get concise summaries of any web article</string>
+    <string name="auth_feature_search">Search and organize your reading history</string>
+    <string name="auth_feature_sync">Sync across all your devices</string>
+
+    <!-- Summary List -->
+    <string name="summary_list_title">Summaries</string>
+    <string name="summary_list_empty">No summaries yet</string>
+    <string name="summary_list_empty_subtitle">Submit a URL to get started</string>
+    <string name="summary_list_filter_all">All</string>
+    <string name="summary_list_filter_unread">Unread</string>
+    <string name="summary_list_filter_read">Read</string>
+    <string name="summary_list_loading">Loading summaries…</string>
+    <string name="summary_list_error">Failed to load summaries</string>
+    <string name="summary_list_retry">Retry</string>
+    <string name="summary_list_mark_read">Mark as read</string>
+    <string name="summary_list_mark_unread">Mark as unread</string>
+    <string name="summary_list_delete">Delete</string>
+
+    <!-- Summary Detail -->
+    <string name="summary_detail_tldr">TL;DR</string>
+    <string name="summary_detail_key_points">Key Points</string>
+    <string name="summary_detail_topics">Topics</string>
+    <string name="summary_detail_reading_time">%d min read</string>
+    <string name="summary_detail_share">Share</string>
+    <string name="summary_detail_open_original">Open Original</string>
+    <string name="summary_detail_loading">Loading summary…</string>
+    <string name="summary_detail_error">Failed to load summary</string>
+    <string name="summary_detail_not_found">Summary not found</string>
+
+    <!-- Submit URL -->
+    <string name="submit_url_title">Submit URL</string>
+    <string name="submit_url_hint">Paste article URL here</string>
+    <string name="submit_url_button">Submit</string>
+    <string name="submit_url_submitting">Submitting…</string>
+    <string name="submit_url_processing">Processing article…</string>
+    <string name="submit_url_success">Summary created!</string>
+    <string name="submit_url_error">Failed to process URL</string>
+    <string name="submit_url_invalid">Please enter a valid URL</string>
+    <string name="submit_url_stage_fetching">Fetching article</string>
+    <string name="submit_url_stage_analyzing">Analyzing content</string>
+    <string name="submit_url_stage_summarizing">Generating summary</string>
+    <string name="submit_url_stage_complete">Complete</string>
+    <string name="submit_url_cancel">Cancel</string>
+
+    <!-- Search -->
+    <string name="search_title">Search</string>
+    <string name="search_hint">Search summaries…</string>
+    <string name="search_no_results">No results found</string>
+    <string name="search_error">Search failed</string>
+    <string name="search_trending_topics">Trending Topics</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_logout">Logout</string>
+    <string name="profile_settings">Settings</string>
+    <string name="profile_about">About</string>
+    <string name="profile_version">Version %s</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_cache">Clear Cache</string>
+    <string name="settings_cache_cleared">Cache cleared</string>
+
+    <!-- Error Messages -->
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_server">Server error. Please try again later.</string>
+    <string name="error_unauthorized">Session expired. Please login again.</string>
+    <string name="error_not_found">Resource not found.</string>
+    <string name="error_unknown">An unexpected error occurred.</string>
+    <string name="error_retry">Retry</string>
+
+    <!-- Offline Mode -->
+    <string name="offline_indicator">You are offline</string>
+    <string name="offline_message">Some features may be limited</string>
+    <string name="offline_mode_enabled">Offline mode enabled</string>
+
+    <!-- Common Actions -->
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_share">Share</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_ok">OK</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_no">No</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility_summary_card">Summary card</string>
+    <string name="accessibility_filter_chip">Filter chip</string>
+    <string name="accessibility_loading">Loading</string>
+    <string name="accessibility_error">Error</string>
+    <string name="accessibility_mark_read">Mark as read</string>
+    <string name="accessibility_mark_unread">Mark as unread</string>
 </resources>

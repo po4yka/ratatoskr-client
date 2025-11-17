@@ -1,0 +1,98 @@
+/* Authentication */
+"auth.title" = "Bite-Size Reader";
+"auth.subtitle" = "AI-резюме веб-статей";
+"auth.loginButton" = "Войти через Telegram";
+"auth.loggingIn" = "Вход…";
+"auth.feature.summaries" = "Получайте краткие резюме любых веб-статей";
+"auth.feature.search" = "Ищите и организуйте историю чтения";
+"auth.feature.sync" = "Синхронизация на всех устройствах";
+
+/* Summary List */
+"summaryList.title" = "Резюме";
+"summaryList.empty" = "Пока нет резюме";
+"summaryList.emptySubtitle" = "Отправьте URL, чтобы начать";
+"summaryList.filter.all" = "Все";
+"summaryList.filter.unread" = "Непрочитанные";
+"summaryList.filter.read" = "Прочитанные";
+"summaryList.loading" = "Загрузка резюме…";
+"summaryList.error" = "Не удалось загрузить резюме";
+"summaryList.retry" = "Повторить";
+"summaryList.markRead" = "Отметить как прочитанное";
+"summaryList.markUnread" = "Отметить как непрочитанное";
+"summaryList.delete" = "Удалить";
+
+/* Summary Detail */
+"summaryDetail.tldr" = "Краткое резюме";
+"summaryDetail.keyPoints" = "Ключевые моменты";
+"summaryDetail.topics" = "Темы";
+"summaryDetail.readingTime" = "%d мин чтения";
+"summaryDetail.share" = "Поделиться";
+"summaryDetail.openOriginal" = "Открыть оригинал";
+"summaryDetail.loading" = "Загрузка резюме…";
+"summaryDetail.error" = "Не удалось загрузить резюме";
+"summaryDetail.notFound" = "Резюме не найдено";
+
+/* Submit URL */
+"submitURL.title" = "Отправить URL";
+"submitURL.hint" = "Вставьте URL статьи";
+"submitURL.button" = "Отправить";
+"submitURL.submitting" = "Отправка…";
+"submitURL.processing" = "Обработка статьи…";
+"submitURL.success" = "Резюме создано!";
+"submitURL.error" = "Не удалось обработать URL";
+"submitURL.invalid" = "Введите действительный URL";
+"submitURL.stage.fetching" = "Загрузка статьи";
+"submitURL.stage.analyzing" = "Анализ контента";
+"submitURL.stage.summarizing" = "Создание резюме";
+"submitURL.stage.complete" = "Готово";
+"submitURL.cancel" = "Отмена";
+
+/* Search */
+"search.title" = "Поиск";
+"search.hint" = "Поиск резюме…";
+"search.noResults" = "Ничего не найдено";
+"search.error" = "Ошибка поиска";
+"search.trendingTopics" = "Популярные темы";
+
+/* Profile */
+"profile.title" = "Профиль";
+"profile.logout" = "Выйти";
+"profile.settings" = "Настройки";
+"profile.about" = "О приложении";
+"profile.version" = "Версия %@";
+
+/* Settings */
+"settings.title" = "Настройки";
+"settings.theme" = "Тема";
+"settings.theme.system" = "Системная";
+"settings.theme.light" = "Светлая";
+"settings.theme.dark" = "Тёмная";
+"settings.language" = "Язык";
+"settings.notifications" = "Уведомления";
+"settings.cache" = "Очистить кеш";
+"settings.cacheCleared" = "Кеш очищен";
+
+/* Error Messages */
+"error.network" = "Ошибка сети. Проверьте подключение.";
+"error.server" = "Ошибка сервера. Попробуйте позже.";
+"error.unauthorized" = "Сессия истекла. Войдите снова.";
+"error.notFound" = "Ресурс не найден.";
+"error.unknown" = "Произошла непредвиденная ошибка.";
+"error.retry" = "Повторить";
+
+/* Offline Mode */
+"offline.indicator" = "Вы оффлайн";
+"offline.message" = "Некоторые функции могут быть недоступны";
+"offline.modeEnabled" = "Оффлайн режим включён";
+
+/* Common Actions */
+"action.back" = "Назад";
+"action.close" = "Закрыть";
+"action.cancel" = "Отмена";
+"action.save" = "Сохранить";
+"action.delete" = "Удалить";
+"action.share" = "Поделиться";
+"action.refresh" = "Обновить";
+"action.ok" = "ОК";
+"action.yes" = "Да";
+"action.no" = "Нет";

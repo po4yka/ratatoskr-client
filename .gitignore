@@ -1,0 +1,141 @@
+# Bite-Size Reader - .gitignore
+
+### Security & Secrets ###
+local.properties
+*.keystore
+*.jks
+secrets.properties
+google-services.json
+GoogleService-Info.plist
+
+### Gradle ###
+.gradle/
+build/
+*/build/
+buildSrc/build/
+gradle-app.setting
+!gradle-wrapper.jar
+
+### Android ###
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/
+captures/
+.externalNativeBuild
+.cxx
+*.iml
+
+### Android Studio / IntelliJ IDEA ###
+.idea/
+*.ipr
+*.iws
+*.iml
+.idea/caches
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/vcs.xml
+.idea/jsLibraryMappings.xml
+.idea/dataSources.ids
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+.idea/gradle.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/misc.xml
+
+### iOS / Xcode ###
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+*.xcuserstate
+*.xcuserdatad
+xcuserdata/
+*.moved-aside
+*.hmap
+*.ipa
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+timeline.xctimeline
+
+### CocoaPods ###
+Pods/
+*.podspec
+!Podfile
+!Podfile.lock
+
+### Swift Package Manager ###
+.build/
+Packages/
+Package.pins
+Package.resolved
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+### VS Code ###
+.vscode/
+*.code-workspace
+
+### Kotlin Multiplatform ###
+shared/shared.podspec
+shared/build/
+iosApp/Pods/
+
+### Build Artifacts ###
+*.log
+*.tmp
+*.swp
+*~
+
+### Node / NPM (if using for tooling) ###
+node_modules/
+npm-debug.log
+yarn-error.log
+
+### Kotlin ###
+*.kotlin_module
+META-INF/*.kotlin_module
+
+### Database ###
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+### Misc ###
+/local/
+/temp/
+/tmp/
+*.bak
+
+### Claude Code ###
+.claude/settings.local.json
+
+### Code Quality Reports ###
+**/reports/ktlint/
+**/reports/detekt/
+detekt-baseline.xml

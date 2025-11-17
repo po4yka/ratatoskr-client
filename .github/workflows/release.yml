@@ -1,4 +1,4 @@
-name: Release Build
+name: Release
 
 on:
   push:
@@ -15,12 +15,11 @@ env:
   JAVA_VERSION: '17'
 
 jobs:
-  # Create GitHub release
-  create-release:
-    name: Create GitHub Release
+  # Validate release version
+  validate:
+    name: Validate Release
     runs-on: ubuntu-latest
     outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
       version: ${{ steps.get_version.outputs.version }}
 
     steps:
@@ -36,14 +35,46 @@ jobs:
             echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Validate version format
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format: $VERSION"
+            exit 1
+          fi
+
+  # Create GitHub release (draft)
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: validate
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ needs.validate.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          if [ -f CHANGELOG.md ]; then
+            # Extract changelog for this version
+            VERSION=${{ needs.validate.outputs.version }}
+            sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '$ d' > release_notes.md || echo "Release $VERSION" > release_notes.md
+          else
+            echo "Release ${{ needs.validate.outputs.version }}" > release_notes.md
+          fi
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          release_name: Release ${{ steps.get_version.outputs.version }}
+          tag_name: v${{ needs.validate.outputs.version }}
+          release_name: Release ${{ needs.validate.outputs.version }}
           draft: true
           prerelease: false
           body: |
@@ -63,6 +94,7 @@ jobs:
     name: Build Android Release
     runs-on: ubuntu-latest
     needs: create-release
+    timeout-minutes: 45
 
     steps:
       - name: Checkout code
@@ -85,9 +117,9 @@ jobs:
 
       # Decode and setup keystore (if available)
       - name: Setup Android signing (if configured)
-        if: ${{ secrets.ANDROID_KEYSTORE_RELEASE_B64 != '' }}
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_RELEASE_B64 }}" | base64 -d > release.keystore
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > release.keystore
           echo "KEYSTORE_FILE=release.keystore" >> $GITHUB_ENV
           echo "KEYSTORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
           echo "KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}" >> $GITHUB_ENV
@@ -120,6 +152,7 @@ jobs:
         with:
           name: android-release-apk
           path: composeApp/build/outputs/apk/release/*.apk
+          retention-days: 30
 
       - name: Upload AAB as artifact
         uses: actions/upload-artifact@v4
@@ -127,6 +160,11 @@ jobs:
         with:
           name: android-release-bundle
           path: composeApp/build/outputs/bundle/release/*.aab
+          retention-days: 30
+
+      - name: Cleanup keystore
+        if: always()
+        run: rm -f release.keystore
 
       # Publish to Google Play (if configured)
       - name: Publish to Google Play
@@ -141,6 +179,7 @@ jobs:
     name: Build iOS Release
     runs-on: macos-14
     needs: create-release
+    timeout-minutes: 60
 
     steps:
       - name: Checkout code
@@ -193,62 +232,91 @@ jobs:
 
       # Setup iOS signing (if configured)
       - name: Setup iOS certificates and provisioning profiles
-        if: ${{ secrets.IOS_CERTIFICATE_B64 != '' && secrets.IOS_PROVISIONING_PROFILE_B64 != '' }}
+        if: ${{ secrets.IOS_CERTIFICATE_BASE64 != '' && secrets.IOS_PROVISIONING_PROFILE_B64 != '' }}
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
         run: |
           # Decode certificate
-          echo "${{ secrets.IOS_CERTIFICATE_B64 }}" | base64 -d > certificate.p12
+          echo "$CERTIFICATE_BASE64" | base64 -d > certificate.p12
 
           # Decode provisioning profile
           echo "${{ secrets.IOS_PROVISIONING_PROFILE_B64 }}" | base64 -d > profile.mobileprovision
 
           # Create keychain
-          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
-          security set-keychain-settings -t 3600 -u build.keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
           # Import certificate
-          security import certificate.p12 -k build.keychain -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: -s -k "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security import certificate.p12 -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
 
           # Install provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
       # Build iOS app with Xcode (if iosApp exists)
-      - name: Build iOS app
-        if: hashFiles('iosApp/**') != ''
+      - name: Install CocoaPods dependencies
+        if: hashFiles('iosApp/Podfile') != ''
         run: |
           cd iosApp
-          xcodebuild clean archive \
-            -workspace iosApp.xcworkspace \
+          pod install
+
+      - name: Build iOS archive
+        if: hashFiles('iosApp/**') != ''
+        run: |
+          xcodebuild archive \
+            -workspace iosApp/iosApp.xcworkspace \
             -scheme iosApp \
             -configuration Release \
-            -archivePath build/iosApp.xcarchive \
+            -archivePath $RUNNER_TEMP/iosApp.xcarchive \
+            -destination 'generic/platform=iOS' \
             CODE_SIGN_IDENTITY="${{ secrets.IOS_CODE_SIGN_IDENTITY }}" \
-            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}" || echo "Xcode project not configured"
+            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}" || \
+            xcodebuild archive \
+            -workspace iosApp/iosApp.xcworkspace \
+            -scheme iosApp \
+            -configuration Release \
+            -archivePath $RUNNER_TEMP/iosApp.xcarchive \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
         continue-on-error: true
 
       - name: Export IPA
-        if: hashFiles('iosApp/build/iosApp.xcarchive') != ''
+        if: hashFiles('${{ runner.temp }}/iosApp.xcarchive') != ''
         run: |
-          cd iosApp
-          xcodebuild -exportArchive \
-            -archivePath build/iosApp.xcarchive \
-            -exportPath build \
-            -exportOptionsPlist exportOptions.plist || echo "Export options not configured"
+          if [ -f "iosApp/ExportOptions.plist" ]; then
+            xcodebuild -exportArchive \
+              -archivePath $RUNNER_TEMP/iosApp.xcarchive \
+              -exportPath $RUNNER_TEMP/export \
+              -exportOptionsPlist iosApp/ExportOptions.plist
+          else
+            echo "ExportOptions.plist not found, skipping IPA export"
+          fi
         continue-on-error: true
 
       - name: Upload IPA as artifact
-        if: hashFiles('iosApp/build/*.ipa') != ''
+        if: hashFiles('${{ runner.temp }}/export/*.ipa') != ''
         uses: actions/upload-artifact@v4
         with:
           name: ios-release-ipa
-          path: iosApp/build/*.ipa
+          path: ${{ runner.temp }}/export/*.ipa
+          retention-days: 30
+
+      - name: Cleanup keychain
+        if: always()
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
 
       # Publish to App Store (if configured with Fastlane)
       - name: Deploy to App Store
-        if: ${{ secrets.APP_STORE_CONNECT_API_KEY_B64 != '' && hashFiles('iosApp/build/*.ipa') != '' }}
+        if: ${{ secrets.APP_STORE_CONNECT_API_KEY_B64 != '' && hashFiles('${{ runner.temp }}/export/*.ipa') != '' }}
         run: |
           # Setup Fastlane if configured
           cd iosApp
@@ -261,6 +329,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ create-release, build-android-release, build-ios-release ]
     if: always()
+    permissions:
+      contents: write
 
     steps:
       - name: Publish Release
@@ -284,3 +354,33 @@ jobs:
               });
               console.log('Release published successfully!');
             }
+
+  # Notification
+  notify:
+    name: Notify Release
+    runs-on: ubuntu-latest
+    needs: [validate, finalize-release]
+    if: always()
+
+    steps:
+      - name: Send notification
+        run: |
+          STATUS="${{ needs.finalize-release.result }}"
+          VERSION="${{ needs.validate.outputs.version }}"
+
+          if [ "$STATUS" == "success" ]; then
+            echo "✅ Release v$VERSION created successfully!"
+          else
+            echo "❌ Release v$VERSION failed!"
+          fi
+
+      # Optionally, send Slack/Discord notification
+      # - name: Slack Notification
+      #   uses: slackapi/slack-github-action@v1
+      #   with:
+      #     payload: |
+      #       {
+      #         "text": "Release v${{ needs.validate.outputs.version }} - ${{ needs.finalize-release.result }}"
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
