@@ -60,7 +60,8 @@ kotlin {
             implementation(libs.kotlinx.datetime)
 
             // Logging
-            implementation(libs.kermit)
+            implementation(libs.kotlin.logging)
+            implementation(libs.slf4j.api)
         }
 
         androidMain.dependencies {
@@ -75,6 +76,9 @@ kotlin {
 
             // Android Security
             implementation(libs.androidx.security.crypto)
+
+            // Logging - SLF4J backend for Android
+            implementation(libs.logback.android)
         }
 
         iosMain.dependencies {

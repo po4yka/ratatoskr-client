@@ -8,6 +8,9 @@ import com.po4yka.bitesizereader.data.remote.api.AuthApi
 import com.po4yka.bitesizereader.domain.model.AuthTokens
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Implementation of AuthRepository
@@ -27,6 +30,7 @@ class AuthRepositoryImpl(
         clientId: String,
     ): Result<Pair<AuthTokens, User>> {
         return try {
+            logger.debug { "Attempting Telegram login for user: $telegramUserId" }
             val request =
                 createTelegramLoginRequest(
                     telegramUserId = telegramUserId,
@@ -50,17 +54,21 @@ class AuthRepositoryImpl(
                 // Store user ID for later use
                 secureStorage.saveString("user_id", user.id.toString())
 
+                logger.info { "Successfully logged in user: ${user.id}" }
                 Result.success(authTokens to user)
             } else {
+                logger.warn { "Login failed: ${response.error?.message}" }
                 Result.failure(Exception(response.error?.message ?: "Login failed"))
             }
         } catch (e: Exception) {
+            logger.error(e) { "Exception during Telegram login for user: $telegramUserId" }
             Result.failure(e)
         }
     }
 
     override suspend fun refreshToken(refreshToken: String): Result<AuthTokens> {
         return try {
+            logger.debug { "Attempting to refresh access token" }
             val request = refreshToken.toTokenRefreshRequest()
             val response = authApi.refreshToken(request)
 
@@ -70,11 +78,14 @@ class AuthRepositoryImpl(
                 // Update stored tokens
                 storeTokens(authTokens)
 
+                logger.info { "Successfully refreshed access token" }
                 Result.success(authTokens)
             } else {
+                logger.warn { "Token refresh failed: ${response.error?.message}" }
                 Result.failure(Exception(response.error?.message ?: "Token refresh failed"))
             }
         } catch (e: Exception) {
+            logger.error(e) { "Exception during token refresh" }
             Result.failure(e)
         }
     }
@@ -119,8 +130,10 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun logout() {
+        logger.info { "Logging out user" }
         secureStorage.clearTokens()
         secureStorage.remove("user_id")
         secureStorage.remove("token_expires_at")
+        logger.debug { "User logged out successfully" }
     }
 }

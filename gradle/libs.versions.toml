@@ -30,6 +30,9 @@ kotlinx-serialization = "1.7.3"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.6.1"
 kermit = "2.0.4"
+kotlin-logging = "7.0.3"
+slf4j = "2.0.16"
+logback-android = "3.0.0"
 
 # Android Specific
 coil = "3.3.0"
@@ -103,6 +106,9 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 
 # Logging
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+logback-android = { module = "com.github.tony19:logback-android", version.ref = "logback-android" }
 
 # Android Specific
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }

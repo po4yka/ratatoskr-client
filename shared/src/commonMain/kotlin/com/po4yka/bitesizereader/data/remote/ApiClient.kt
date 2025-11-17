@@ -1,6 +1,6 @@
 package com.po4yka.bitesizereader.data.remote
 
-import co.touchlab.kermit.Logger
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.*
@@ -11,6 +11,8 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Token provider interface for authentication
@@ -93,7 +95,7 @@ fun createHttpClient(
                 logger =
                     object : io.ktor.client.plugins.logging.Logger {
                         override fun log(message: String) {
-                            Logger.d { "HTTP: $message" }
+                            com.po4yka.bitesizereader.data.remote.logger.debug { "HTTP: $message" }
                         }
                     }
                 level = LogLevel.INFO
