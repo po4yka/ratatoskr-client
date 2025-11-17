@@ -63,6 +63,12 @@ fun App(
             }
             is Screen.SubmitUrl -> {
                 val viewModel: SubmitURLViewModel = koinInject()
+
+                // Set prefilled URL if provided (from share intent)
+                screen.prefilledUrl?.let { url ->
+                    viewModel.setURL(url)
+                }
+
                 SubmitURLScreen(
                     viewModel = viewModel,
                     onBackClick = { rootComponent.pop() },

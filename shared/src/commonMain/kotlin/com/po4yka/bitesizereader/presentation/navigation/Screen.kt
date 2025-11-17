@@ -17,7 +17,7 @@ sealed interface Screen {
     data class SummaryDetail(val id: Int) : Screen
 
     @Serializable
-    data object SubmitUrl : Screen
+    data class SubmitUrl(val prefilledUrl: String? = null) : Screen
 
     @Serializable
     data object Search : Screen

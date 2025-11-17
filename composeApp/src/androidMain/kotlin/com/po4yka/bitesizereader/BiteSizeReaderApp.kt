@@ -3,11 +3,12 @@ package com.po4yka.bitesizereader
 import android.app.Application
 import com.po4yka.bitesizereader.di.*
 import com.po4yka.bitesizereader.util.config.AppConfig
+import com.po4yka.bitesizereader.worker.WorkManagerInitializer
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 /**
- * Application class for initializing dependencies
+ * Application class for initializing dependencies and background work
  */
 class BiteSizeReaderApp : Application() {
     override fun onCreate() {
@@ -33,5 +34,8 @@ class BiteSizeReaderApp : Application() {
                 ),
             )
         }
+
+        // Schedule periodic background sync
+        WorkManagerInitializer.schedulePeriodicSync(this)
     }
 }

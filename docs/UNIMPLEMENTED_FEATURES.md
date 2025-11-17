@@ -521,8 +521,10 @@ These features are planned for **post-MVP** (Q4 2025 and beyond):
 
 1. ~~Complete iOS UI Implementation~~ ✅ **DONE** - All screens implemented
 2. ~~Implement Telegram Auth UI~~ ✅ **DONE** - WKWebView working on iOS, inline widget on Android
+3. ~~Implement Android Share Intent~~ ✅ **DONE** - Receives URLs from other apps
+4. ~~Implement Android WorkManager~~ ✅ **DONE** - Background sync every 6 hours
 
-### 🔴 **High Priority** (Now Much Shorter!)
+### 🔴 **High Priority** (Getting Even Shorter!)
 
 1. **Fix Test Coverage Gaps** (Phase 9)
    - Fix error state timing test
@@ -531,11 +533,11 @@ These features are planned for **post-MVP** (Q4 2025 and beyond):
    - Estimated: 1 week
    - Blockers: None
 
-2. **Implement Critical Platform Features**
-   - Android: Share Intent, WorkManager background sync
-   - iOS: Share Extension, Background Tasks
-   - Estimated: 1 week
-   - Blockers: None
+2. **Complete iOS Platform Features** (Requires Xcode)
+   - iOS: Share Extension (guide provided)
+   - iOS: Background Tasks (guide provided)
+   - Estimated: 2-3 hours in Xcode
+   - Blockers: None - comprehensive guide in docs/IOS_SHARE_EXTENSION_GUIDE.md
 
 ### 🟡 **Medium Priority** (Pre-Beta)
 

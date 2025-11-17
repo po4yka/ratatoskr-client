@@ -33,6 +33,10 @@ class SubmitURLViewModelWrapper: ObservableObject {
         }
     }
 
+    func setURL(_ url: String) {
+        viewModel.setURL(url: url)
+    }
+
     func onUrlChange(_ url: String) {
         viewModel.onUrlChange(url: url)
     }
