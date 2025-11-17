@@ -1,0 +1,20 @@
+-- SyncMetadata table schema
+
+CREATE TABLE IF NOT EXISTS SyncMetadata (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+-- Queries
+
+get:
+SELECT value FROM SyncMetadata WHERE key = ?;
+
+set:
+INSERT OR REPLACE INTO SyncMetadata(key, value) VALUES (?, ?);
+
+delete:
+DELETE FROM SyncMetadata WHERE key = ?;
+
+deleteAll:
+DELETE FROM SyncMetadata;

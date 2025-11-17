@@ -1,0 +1,98 @@
+/* Authentication */
+"auth.title" = "Bite-Size Reader";
+"auth.subtitle" = "AI-powered summaries of web articles";
+"auth.loginButton" = "Login with Telegram";
+"auth.loggingIn" = "Logging in…";
+"auth.feature.summaries" = "Get concise summaries of any web article";
+"auth.feature.search" = "Search and organize your reading history";
+"auth.feature.sync" = "Sync across all your devices";
+
+/* Summary List */
+"summaryList.title" = "Summaries";
+"summaryList.empty" = "No summaries yet";
+"summaryList.emptySubtitle" = "Submit a URL to get started";
+"summaryList.filter.all" = "All";
+"summaryList.filter.unread" = "Unread";
+"summaryList.filter.read" = "Read";
+"summaryList.loading" = "Loading summaries…";
+"summaryList.error" = "Failed to load summaries";
+"summaryList.retry" = "Retry";
+"summaryList.markRead" = "Mark as read";
+"summaryList.markUnread" = "Mark as unread";
+"summaryList.delete" = "Delete";
+
+/* Summary Detail */
+"summaryDetail.tldr" = "TL;DR";
+"summaryDetail.keyPoints" = "Key Points";
+"summaryDetail.topics" = "Topics";
+"summaryDetail.readingTime" = "%d min read";
+"summaryDetail.share" = "Share";
+"summaryDetail.openOriginal" = "Open Original";
+"summaryDetail.loading" = "Loading summary…";
+"summaryDetail.error" = "Failed to load summary";
+"summaryDetail.notFound" = "Summary not found";
+
+/* Submit URL */
+"submitURL.title" = "Submit URL";
+"submitURL.hint" = "Paste article URL here";
+"submitURL.button" = "Submit";
+"submitURL.submitting" = "Submitting…";
+"submitURL.processing" = "Processing article…";
+"submitURL.success" = "Summary created!";
+"submitURL.error" = "Failed to process URL";
+"submitURL.invalid" = "Please enter a valid URL";
+"submitURL.stage.fetching" = "Fetching article";
+"submitURL.stage.analyzing" = "Analyzing content";
+"submitURL.stage.summarizing" = "Generating summary";
+"submitURL.stage.complete" = "Complete";
+"submitURL.cancel" = "Cancel";
+
+/* Search */
+"search.title" = "Search";
+"search.hint" = "Search summaries…";
+"search.noResults" = "No results found";
+"search.error" = "Search failed";
+"search.trendingTopics" = "Trending Topics";
+
+/* Profile */
+"profile.title" = "Profile";
+"profile.logout" = "Logout";
+"profile.settings" = "Settings";
+"profile.about" = "About";
+"profile.version" = "Version %@";
+
+/* Settings */
+"settings.title" = "Settings";
+"settings.theme" = "Theme";
+"settings.theme.system" = "System";
+"settings.theme.light" = "Light";
+"settings.theme.dark" = "Dark";
+"settings.language" = "Language";
+"settings.notifications" = "Notifications";
+"settings.cache" = "Clear Cache";
+"settings.cacheCleared" = "Cache cleared";
+
+/* Error Messages */
+"error.network" = "Network error. Please check your connection.";
+"error.server" = "Server error. Please try again later.";
+"error.unauthorized" = "Session expired. Please login again.";
+"error.notFound" = "Resource not found.";
+"error.unknown" = "An unexpected error occurred.";
+"error.retry" = "Retry";
+
+/* Offline Mode */
+"offline.indicator" = "You are offline";
+"offline.message" = "Some features may be limited";
+"offline.modeEnabled" = "Offline mode enabled";
+
+/* Common Actions */
+"action.back" = "Back";
+"action.close" = "Close";
+"action.cancel" = "Cancel";
+"action.save" = "Save";
+"action.delete" = "Delete";
+"action.share" = "Share";
+"action.refresh" = "Refresh";
+"action.ok" = "OK";
+"action.yes" = "Yes";
+"action.no" = "No";

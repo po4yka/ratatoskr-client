@@ -1,48 +1,84 @@
 package com.po4yka.bitesizereader
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import com.arkivanov.decompose.extensions.compose.stack.Children
+import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
+import com.po4yka.bitesizereader.presentation.navigation.RootComponent
+import com.po4yka.bitesizereader.presentation.navigation.Screen
+import com.po4yka.bitesizereader.presentation.viewmodel.*
+import com.po4yka.bitesizereader.ui.screens.*
+import com.po4yka.bitesizereader.util.share.ShareManager
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
-import bitesizereader.composeapp.generated.resources.Res
-import bitesizereader.composeapp.generated.resources.compose_multiplatform
-
+/**
+ * Main app composable with Decompose navigation
+ */
 @Composable
-@Preview
-fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
+fun App(
+    rootComponent: RootComponent,
+    modifier: Modifier = Modifier,
+) {
+    Children(
+        stack = rootComponent.stack,
+        modifier = modifier.fillMaxSize(),
+        animation = stackAnimation(fade()),
+    ) { child ->
+        when (val screen = child.instance) {
+            is Screen.Auth -> {
+                val viewModel: LoginViewModel = koinInject()
+                AuthScreen(
+                    viewModel = viewModel,
+                    onLoginSuccess = { rootComponent.navigateToSummaryList() },
+                )
             }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
+            is Screen.SummaryList -> {
+                val viewModel: SummaryListViewModel = koinInject()
+                SummaryListScreen(
+                    viewModel = viewModel,
+                    onSummaryClick = { id -> rootComponent.navigateToSummaryDetail(id) },
+                    onSubmitUrlClick = { rootComponent.navigateToSubmitUrl() },
+                    onSearchClick = { rootComponent.navigateToSearch() },
+                )
+            }
+            is Screen.SummaryDetail -> {
+                val viewModel: SummaryDetailViewModel = koinInject { parametersOf(screen.id) }
+                val shareManager: ShareManager = koinInject()
+                val state by viewModel.state.collectAsState()
+
+                SummaryDetailScreen(
+                    viewModel = viewModel,
+                    onBackClick = { rootComponent.pop() },
+                    onShareClick = {
+                        state.summary?.let { summary ->
+                            shareManager.shareSummary(summary)
+                        }
+                    },
+                )
+            }
+            is Screen.SubmitUrl -> {
+                val viewModel: SubmitURLViewModel = koinInject()
+                SubmitURLScreen(
+                    viewModel = viewModel,
+                    onBackClick = { rootComponent.pop() },
+                    onSuccess = { summaryId ->
+                        rootComponent.pop()
+                        rootComponent.navigateToSummaryDetail(summaryId)
+                    },
+                )
+            }
+            is Screen.Search -> {
+                val viewModel: SearchViewModel = koinInject()
+                SearchScreen(
+                    viewModel = viewModel,
+                    onSummaryClick = { id -> rootComponent.navigateToSummaryDetail(id) },
+                    onBackClick = { rootComponent.pop() },
+                )
             }
         }
     }

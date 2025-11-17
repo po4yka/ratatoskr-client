@@ -1,33 +1,129 @@
 import SwiftUI
 import Shared
 
+/// Main content view with Decompose navigation
 struct ContentView: View {
-    @State private var showContent = false
-    var body: some View {
-        VStack {
-            Button("Click me!") {
-                withAnimation {
-                    showContent = !showContent
-                }
-            }
+    @StateObject private var navigator = NavigationState()
+    private let rootComponent: RootComponent
+    private let koinHelper: KoinHelper
 
-            if showContent {
-                VStack(spacing: 16) {
-                    Image(systemName: "swift")
-                        .font(.system(size: 200))
-                        .foregroundColor(.accentColor)
-                    Text("SwiftUI: \(Greeting().greet())")
+    init(rootComponent: RootComponent, koinHelper: KoinHelper) {
+        self.rootComponent = rootComponent
+        self.koinHelper = koinHelper
+    }
+
+    var body: some View {
+        ObservingView(rootComponent.stack) { childStack in
+            let child = childStack.active.instance
+
+            switch child {
+            case is Screen.Auth:
+                let viewModel = LoginViewModelWrapper(
+                    viewModel: koinHelper.getLoginViewModel()
+                )
+                AuthView(viewModel: viewModel) {
+                    rootComponent.navigateToSummaryList()
                 }
-                .transition(.move(edge: .top).combined(with: .opacity))
+
+            case is Screen.SummaryList:
+                let viewModel = SummaryListViewModelWrapper(
+                    viewModel: koinHelper.getSummaryListViewModel()
+                )
+                SummaryListView(
+                    viewModel: viewModel,
+                    onSummaryTap: { id in
+                        rootComponent.navigateToSummaryDetail(id: id)
+                    },
+                    onSubmitUrlTap: {
+                        rootComponent.navigateToSubmitUrl()
+                    },
+                    onSearchTap: {
+                        rootComponent.navigateToSearch()
+                    }
+                )
+
+            case let screen as Screen.SummaryDetail:
+                let viewModel = SummaryDetailViewModelWrapper(
+                    viewModel: koinHelper.getSummaryDetailViewModel(summaryId: screen.id)
+                )
+                SummaryDetailView(
+                    viewModel: viewModel,
+                    onBack: { rootComponent.pop() },
+                    onShare: {
+                        if let summary = viewModel.state.summary {
+                            ShareHelper.shareSummary(summary)
+                        }
+                    }
+                )
+
+            case is Screen.SubmitUrl:
+                let viewModel = SubmitURLViewModelWrapper(
+                    viewModel: koinHelper.getSubmitURLViewModel()
+                )
+                SubmitURLView(
+                    viewModel: viewModel,
+                    onBack: { rootComponent.pop() },
+                    onSuccess: { summaryId in
+                        rootComponent.pop()
+                        rootComponent.navigateToSummaryDetail(id: summaryId)
+                    }
+                )
+
+            case is Screen.Search:
+                let viewModel = SearchViewModelWrapper(
+                    viewModel: koinHelper.getSearchViewModel()
+                )
+                SearchView(
+                    viewModel: viewModel,
+                    onSummaryTap: { id in
+                        rootComponent.navigateToSummaryDetail(id: id)
+                    },
+                    onBack: { rootComponent.pop() }
+                )
+
+            default:
+                EmptyView()
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding()
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+/// Helper for observing Decompose state changes
+struct ObservingView<T: AnyObject, Content: View>: View {
+    @StateObject private var observer: Observer<T>
+    private let content: (T) -> Content
+
+    init(_ value: SkieSwiftStateFlow<T>, @ViewBuilder content: @escaping (T) -> Content) {
+        _observer = StateObject(wrappedValue: Observer(value: value))
+        self.content = content
+    }
+
+    var body: some View {
+        content(observer.value)
     }
 }
+
+@MainActor
+private class Observer<T: AnyObject>: ObservableObject {
+    @Published var value: T
+    private var task: Task<Void, Never>?
+
+    init(value: SkieSwiftStateFlow<T>) {
+        self.value = value.value
+        task = Task { [weak self] in
+            for await newValue in value {
+                self?.value = newValue
+            }
+        }
+    }
+
+    deinit {
+        task?.cancel()
+    }
+}
+
+/// Navigation state
+class NavigationState: ObservableObject {
+    @Published var currentScreen: Screen = Screen.Auth()
+}
+

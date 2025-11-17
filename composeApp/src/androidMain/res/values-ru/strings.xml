@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">Bite-Size Reader</string>
+
+    <!-- Authentication -->
+    <string name="auth_title">Bite-Size Reader</string>
+    <string name="auth_subtitle">AI-резюме веб-статей</string>
+    <string name="auth_login_button">Войти через Telegram</string>
+    <string name="auth_logging_in">Вход…</string>
+    <string name="auth_feature_summaries">Получайте краткие резюме любых веб-статей</string>
+    <string name="auth_feature_search">Ищите и организуйте историю чтения</string>
+    <string name="auth_feature_sync">Синхронизация на всех устройствах</string>
+
+    <!-- Summary List -->
+    <string name="summary_list_title">Резюме</string>
+    <string name="summary_list_empty">Пока нет резюме</string>
+    <string name="summary_list_empty_subtitle">Отправьте URL, чтобы начать</string>
+    <string name="summary_list_filter_all">Все</string>
+    <string name="summary_list_filter_unread">Непрочитанные</string>
+    <string name="summary_list_filter_read">Прочитанные</string>
+    <string name="summary_list_loading">Загрузка резюме…</string>
+    <string name="summary_list_error">Не удалось загрузить резюме</string>
+    <string name="summary_list_retry">Повторить</string>
+    <string name="summary_list_mark_read">Отметить как прочитанное</string>
+    <string name="summary_list_mark_unread">Отметить как непрочитанное</string>
+    <string name="summary_list_delete">Удалить</string>
+
+    <!-- Summary Detail -->
+    <string name="summary_detail_tldr">Краткое резюме</string>
+    <string name="summary_detail_key_points">Ключевые моменты</string>
+    <string name="summary_detail_topics">Темы</string>
+    <string name="summary_detail_reading_time">%d мин чтения</string>
+    <string name="summary_detail_share">Поделиться</string>
+    <string name="summary_detail_open_original">Открыть оригинал</string>
+    <string name="summary_detail_loading">Загрузка резюме…</string>
+    <string name="summary_detail_error">Не удалось загрузить резюме</string>
+    <string name="summary_detail_not_found">Резюме не найдено</string>
+
+    <!-- Submit URL -->
+    <string name="submit_url_title">Отправить URL</string>
+    <string name="submit_url_hint">Вставьте URL статьи</string>
+    <string name="submit_url_button">Отправить</string>
+    <string name="submit_url_submitting">Отправка…</string>
+    <string name="submit_url_processing">Обработка статьи…</string>
+    <string name="submit_url_success">Резюме создано!</string>
+    <string name="submit_url_error">Не удалось обработать URL</string>
+    <string name="submit_url_invalid">Введите действительный URL</string>
+    <string name="submit_url_stage_fetching">Загрузка статьи</string>
+    <string name="submit_url_stage_analyzing">Анализ контента</string>
+    <string name="submit_url_stage_summarizing">Создание резюме</string>
+    <string name="submit_url_stage_complete">Готово</string>
+    <string name="submit_url_cancel">Отмена</string>
+
+    <!-- Search -->
+    <string name="search_title">Поиск</string>
+    <string name="search_hint">Поиск резюме…</string>
+    <string name="search_no_results">Ничего не найдено</string>
+    <string name="search_error">Ошибка поиска</string>
+    <string name="search_trending_topics">Популярные темы</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Профиль</string>
+    <string name="profile_logout">Выйти</string>
+    <string name="profile_settings">Настройки</string>
+    <string name="profile_about">О приложении</string>
+    <string name="profile_version">Версия %s</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_system">Системная</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_notifications">Уведомления</string>
+    <string name="settings_cache">Очистить кеш</string>
+    <string name="settings_cache_cleared">Кеш очищен</string>
+
+    <!-- Error Messages -->
+    <string name="error_network">Ошибка сети. Проверьте подключение.</string>
+    <string name="error_server">Ошибка сервера. Попробуйте позже.</string>
+    <string name="error_unauthorized">Сессия истекла. Войдите снова.</string>
+    <string name="error_not_found">Ресурс не найден.</string>
+    <string name="error_unknown">Произошла непредвиденная ошибка.</string>
+    <string name="error_retry">Повторить</string>
+
+    <!-- Offline Mode -->
+    <string name="offline_indicator">Вы оффлайн</string>
+    <string name="offline_message">Некоторые функции могут быть недоступны</string>
+    <string name="offline_mode_enabled">Оффлайн режим включён</string>
+
+    <!-- Common Actions -->
+    <string name="action_back">Назад</string>
+    <string name="action_close">Закрыть</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_share">Поделиться</string>
+    <string name="action_refresh">Обновить</string>
+    <string name="action_ok">ОК</string>
+    <string name="action_yes">Да</string>
+    <string name="action_no">Нет</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility_summary_card">Карточка резюме</string>
+    <string name="accessibility_filter_chip">Фильтр</string>
+    <string name="accessibility_loading">Загрузка</string>
+    <string name="accessibility_error">Ошибка</string>
+    <string name="accessibility_mark_read">Отметить как прочитанное</string>
+    <string name="accessibility_mark_unread">Отметить как непрочитанное</string>
+</resources>
