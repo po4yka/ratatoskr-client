@@ -20,6 +20,10 @@ struct iOSApp: App {
                 checkForSharedURL()
             }
         }
+        .onOpenURL { url in
+            // Handle deep links from widget
+            handleDeepLink(url)
+        }
     }
 
     /// Check if Share Extension saved a URL to shared storage
@@ -36,6 +40,26 @@ struct iOSApp: App {
             sharedDefaults.removeObject(forKey: "sharedURL")
             sharedDefaults.removeObject(forKey: "sharedURLTimestamp")
             sharedDefaults.synchronize()
+        }
+    }
+
+    /// Handle deep links from widget
+    private func handleDeepLink(_ url: URL) {
+        print("[MainApp] Received deep link: \(url)")
+
+        // Parse widget deep link: bitesizereader://summary/{id}
+        guard url.scheme == "bitesizereader" else {
+            print("[MainApp] Unknown URL scheme: \(url.scheme ?? "nil")")
+            return
+        }
+
+        if url.host == "summary",
+           let summaryIdString = url.pathComponents.last,
+           let summaryId = Int32(summaryIdString) {
+            print("[MainApp] Opening summary with ID: \(summaryId)")
+            appDelegate.rootComponent.navigateToSummaryDetail(id: summaryId)
+        } else {
+            print("[MainApp] Could not parse summary ID from URL: \(url)")
         }
     }
 }

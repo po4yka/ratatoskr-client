@@ -11,7 +11,7 @@ import com.po4yka.bitesizereader.ui.theme.BiteSizeReaderTheme
 
 /**
  * Main activity for Android app
- * Handles app launch and share intents from other apps
+ * Handles app launch, share intents, and widget clicks
  */
 class MainActivity : ComponentActivity() {
     private lateinit var rootComponent: RootComponent
@@ -32,12 +32,29 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Handle share intent if launched from another app
-        handleShareIntent(intent)
+        // Handle incoming intents
+        handleIntent(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    /**
+     * Handle all incoming intents (share, widget clicks, etc.)
+     */
+    private fun handleIntent(intent: Intent?) {
+        intent ?: return
+
+        // Handle widget click - navigate to specific summary
+        intent.getStringExtra("summaryId")?.toIntOrNull()?.let { summaryId ->
+            rootComponent.navigateToSummaryDetail(id = summaryId)
+            return
+        }
+
+        // Handle share intent from other apps
         handleShareIntent(intent)
     }
 

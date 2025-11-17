@@ -43,6 +43,10 @@ kotlin {
             // WorkManager for background sync
             implementation(libs.androidx.work.runtime)
 
+            // Glance for widgets
+            implementation(libs.androidx.glance.appwidget)
+            implementation(libs.androidx.glance.material3)
+
             // Coroutines
             implementation(libs.kotlinx.coroutines.android)
         }

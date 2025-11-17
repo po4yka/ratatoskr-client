@@ -50,6 +50,19 @@
                     android:host="telegram-auth" />
             </intent-filter>
         </activity>
+
+        <!-- Recent Summaries Widget -->
+        <receiver
+            android:name=".widget.RecentSummariesWidgetReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/recent_summaries_widget_info" />
+        </receiver>
     </application>
 
 </manifest>
