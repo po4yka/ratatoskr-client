@@ -23,7 +23,7 @@ androidx-glance = "1.1.0"
 
 # KMP Core Libraries
 ktor = "3.3.2"
-sqldelight = "2.1.0"
+sqldelight = "2.2.1"
 decompose = "3.4.0"
 store = "5.0.0"
 koin = "4.0.0"
