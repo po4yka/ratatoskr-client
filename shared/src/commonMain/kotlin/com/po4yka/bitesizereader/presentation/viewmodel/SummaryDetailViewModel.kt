@@ -16,8 +16,7 @@ class SummaryDetailViewModel(
     private val summaryId: Int,
     private val getSummaryByIdUseCase: GetSummaryByIdUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
-    private val viewModelScope: CoroutineScope,
-) {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state: StateFlow<SummaryDetailState> = _state.asStateFlow()
 

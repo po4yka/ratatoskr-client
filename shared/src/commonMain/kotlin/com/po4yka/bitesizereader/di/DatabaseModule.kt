@@ -7,15 +7,18 @@ import org.koin.dsl.module
 
 /**
  * Koin module for database dependencies
+ *
+ * Uses lazy initialization (createdAtStart = false) to defer database creation
+ * until first data access, improving startup performance.
  */
 val databaseModule =
     module {
-        // Database driver (platform-specific)
-        single { get<DatabaseDriverFactory>().createDriver() }
+        // Lazy singleton - Database driver (platform-specific)
+        single(createdAtStart = false) { get<DatabaseDriverFactory>().createDriver() }
 
-        // Database instance
-        single { Database(get()) }
+        // Lazy singleton - Database instance
+        single(createdAtStart = false) { Database(get()) }
 
-        // Database helper
-        single { DatabaseHelper(get()) }
+        // Lazy singleton - Database helper
+        single(createdAtStart = false) { DatabaseHelper(get()) }
     }

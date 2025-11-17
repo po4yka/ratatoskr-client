@@ -25,6 +25,7 @@ class SummaryListViewModelWrapper: ObservableObject {
 
     deinit {
         stateTask?.cancel()
+        viewModel.onCleared()
     }
 
     private func observeState() {

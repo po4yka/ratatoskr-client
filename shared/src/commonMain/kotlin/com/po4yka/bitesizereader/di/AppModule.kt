@@ -6,16 +6,19 @@ import org.koin.dsl.module
 
 /**
  * ViewModel module
+ *
+ * All ViewModels extend BaseViewModel which provides lifecycle-managed CoroutineScope.
+ * No need to inject CoroutineScope anymore.
  */
 val viewModelModule =
     module {
-        factory { LoginViewModel(get(), get(), get()) }
-        factory { SummaryListViewModel(get(), get(), get(), get()) }
+        factory { LoginViewModel(get(), get()) }
+        factory { SummaryListViewModel(get(), get(), get()) }
         factory { (summaryId: Int) ->
-            SummaryDetailViewModel(summaryId, get(), get(), get())
+            SummaryDetailViewModel(summaryId, get(), get())
         }
-        factory { SubmitURLViewModel(get(), get(), get()) }
-        factory { SearchViewModel(get(), get(), get()) }
+        factory { SubmitURLViewModel(get(), get()) }
+        factory { SearchViewModel(get(), get()) }
     }
 
 /**

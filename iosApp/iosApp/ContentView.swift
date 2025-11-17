@@ -56,10 +56,16 @@ struct ContentView: View {
                     }
                 )
 
-            case is Screen.SubmitUrl:
+            case let screen as Screen.SubmitUrl:
                 let viewModel = SubmitURLViewModelWrapper(
                     viewModel: koinHelper.getSubmitURLViewModel()
                 )
+
+                // Set prefilled URL if provided (from share extension)
+                if let prefilledUrl = screen.prefilledUrl {
+                    viewModel.setURL(prefilledUrl)
+                }
+
                 SubmitURLView(
                     viewModel: viewModel,
                     onBack: { rootComponent.pop() },

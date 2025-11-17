@@ -16,6 +16,12 @@ kotlin {
         }
     }
 
+    jvm("desktop") {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
+    }
+
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
@@ -60,7 +66,8 @@ kotlin {
             implementation(libs.kotlinx.datetime)
 
             // Logging
-            implementation(libs.kermit)
+            implementation(libs.kotlin.logging)
+            implementation(libs.slf4j.api)
         }
 
         androidMain.dependencies {
@@ -75,6 +82,9 @@ kotlin {
 
             // Android Security
             implementation(libs.androidx.security.crypto)
+
+            // Logging - SLF4J backend for Android
+            implementation(libs.logback.android)
         }
 
         iosMain.dependencies {
@@ -83,6 +93,19 @@ kotlin {
 
             // SQLDelight Native Driver
             implementation(libs.sqldelight.native.driver)
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                // Ktor OkHttp Engine (same as Android)
+                implementation(libs.ktor.client.okhttp)
+
+                // SQLDelight SQLite JDBC Driver for Desktop
+                implementation(libs.sqldelight.sqlite.driver)
+
+                // Logging - SLF4J backend for Desktop
+                implementation(libs.logback.android)
+            }
         }
 
         commonTest.dependencies {

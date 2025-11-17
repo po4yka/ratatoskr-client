@@ -4,7 +4,6 @@ import com.po4yka.bitesizereader.domain.model.RequestStatus
 import com.po4yka.bitesizereader.domain.repository.RequestRepository
 import com.po4yka.bitesizereader.domain.usecase.SubmitURLUseCase
 import com.po4yka.bitesizereader.presentation.state.SubmitURLState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -14,8 +13,7 @@ import kotlinx.coroutines.launch
 class SubmitURLViewModel(
     private val submitURLUseCase: SubmitURLUseCase,
     private val requestRepository: RequestRepository,
-    private val viewModelScope: CoroutineScope,
-) {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SubmitURLState())
     val state: StateFlow<SubmitURLState> = _state.asStateFlow()
 

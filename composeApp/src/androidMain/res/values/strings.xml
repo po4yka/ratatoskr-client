@@ -3,6 +3,9 @@
     <!-- App Name -->
     <string name="app_name">Bite-Size Reader</string>
 
+    <!-- Widget -->
+    <string name="widget_description">Shows your recent article summaries</string>
+
     <!-- Authentication -->
     <string name="auth_title">Bite-Size Reader</string>
     <string name="auth_subtitle">AI-powered summaries of web articles</string>

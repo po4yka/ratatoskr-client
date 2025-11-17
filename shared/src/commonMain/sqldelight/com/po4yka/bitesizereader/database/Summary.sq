@@ -51,6 +51,12 @@ CREATE INDEX IF NOT EXISTS idx_summary_lang ON Summary(lang);
 CREATE INDEX IF NOT EXISTS idx_summary_syncStatus ON Summary(syncStatus);
 CREATE INDEX IF NOT EXISTS idx_summary_requestId ON Summary(requestId);
 
+-- Composite indices for common query patterns (most selective column first)
+CREATE INDEX IF NOT EXISTS idx_summary_isRead_createdAt ON Summary(isRead, createdAt DESC);
+CREATE INDEX IF NOT EXISTS idx_summary_isFavorite_createdAt ON Summary(isFavorite, createdAt DESC);
+CREATE INDEX IF NOT EXISTS idx_summary_domain_createdAt ON Summary(domain, createdAt DESC);
+CREATE INDEX IF NOT EXISTS idx_summary_syncStatus_locallyModified ON Summary(syncStatus, locallyModified);
+
 -- FTS5 virtual table for full-text search
 CREATE VIRTUAL TABLE IF NOT EXISTS SummaryFts USING fts5(
     title,

@@ -23,6 +23,7 @@ class SubmitURLViewModelWrapper: ObservableObject {
 
     deinit {
         stateTask?.cancel()
+        viewModel.onCleared()
     }
 
     private func observeState() {
@@ -31,6 +32,10 @@ class SubmitURLViewModelWrapper: ObservableObject {
                 self?.state = newState
             }
         }
+    }
+
+    func setURL(_ url: String) {
+        viewModel.setURL(url: url)
     }
 
     func onUrlChange(_ url: String) {

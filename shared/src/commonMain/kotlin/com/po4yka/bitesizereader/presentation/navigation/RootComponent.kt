@@ -34,8 +34,8 @@ class RootComponent(
         navigation.push(Screen.SummaryDetail(id))
     }
 
-    fun navigateToSubmitUrl() {
-        navigation.push(Screen.SubmitUrl)
+    fun navigateToSubmitUrl(prefilledUrl: String? = null) {
+        navigation.push(Screen.SubmitUrl(prefilledUrl))
     }
 
     fun navigateToSearch() {

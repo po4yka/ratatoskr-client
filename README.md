@@ -56,7 +56,8 @@ See **[docs/CI_CD.md](docs/CI_CD.md)** for complete documentation including setu
 | **DI** | [Koin 3.5+](https://insert-koin.io/) | Dependency injection |
 | **Coroutines** | [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) | Async/await and Flow streams |
 | **Date/Time** | [kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime) | ISO 8601 parsing and timezone handling |
-| **Logging** | [Kermit](https://github.com/touchlab/Kermit) | Multiplatform logging |
+| **Logging** | [kotlin-logging](https://github.com/oshai/kotlin-logging) | Structured multiplatform logging |
+| **Dev Tools** | [Compose Hot Reload](https://github.com/JetBrains/compose-hot-reload) | Instant UI updates without restarts |
 
 ### iOS (SwiftUI)
 
@@ -1080,6 +1081,17 @@ client.id=android-app-v1.0
 **Note**: Do NOT commit `local.properties` - it's in `.gitignore`.
 
 ### Build & Run
+
+#### Desktop (Hot Reload for UI Development)
+
+```bash
+# Run with Compose Hot Reload for rapid UI development
+./gradlew :composeApp:runDesktop
+
+# Edit any Compose UI file and see changes instantly!
+```
+
+**Note**: Desktop target is for development only. See [docs/COMPOSE_HOT_RELOAD.md](docs/COMPOSE_HOT_RELOAD.md) for details.
 
 #### Android
 

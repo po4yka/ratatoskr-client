@@ -5,7 +5,6 @@ import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.presentation.state.SummaryListState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -16,8 +15,7 @@ class SummaryListViewModel(
     private val getSummariesUseCase: GetSummariesUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val syncDataUseCase: SyncDataUseCase,
-    private val viewModelScope: CoroutineScope,
-) {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryListState())
     val state: StateFlow<SummaryListState> = _state.asStateFlow()
 
@@ -42,11 +40,19 @@ class SummaryListViewModel(
                 offset = currentOffset,
                 filters = SearchFilters(),
             ).catch { error ->
+                val appError = (error as? Exception)?.let {
+                    com.po4yka.bitesizereader.util.error.toAppError(it)
+                } ?: com.po4yka.bitesizereader.util.error.AppError.UnknownError(
+                    message = error.message ?: "Unknown error"
+                )
+
                 _state.value =
                     _state.value.copy(
                         isLoading = false,
                         isRefreshing = false,
                         error = error.message,
+                        appError = appError,
+                        canRetry = com.po4yka.bitesizereader.util.error.isRetryable(appError),
                     )
             }.collect { summaries ->
                 val updatedList =
@@ -62,6 +68,9 @@ class SummaryListViewModel(
                         isLoading = false,
                         isRefreshing = false,
                         error = null,
+                        appError = null,
+                        canRetry = false,
+                        retryAttempt = 0,
                         hasMore = summaries.size >= pageSize,
                     )
 
@@ -145,5 +154,29 @@ class SummaryListViewModel(
                 filters = SearchFilters(),
             )
         loadSummaries(refresh = true)
+    }
+
+    /**
+     * Retry the last failed operation
+     */
+    fun retry() {
+        if (_state.value.canRetry) {
+            _state.value = _state.value.copy(
+                retryAttempt = _state.value.retryAttempt + 1
+            )
+            loadSummaries(refresh = true)
+        }
+    }
+
+    /**
+     * Clear error state
+     */
+    fun clearError() {
+        _state.value = _state.value.copy(
+            error = null,
+            appError = null,
+            canRetry = false,
+            retryAttempt = 0
+        )
     }
 }
