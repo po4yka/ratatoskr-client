@@ -16,6 +16,12 @@ kotlin {
         }
     }
 
+    jvm("desktop") {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
+    }
+
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
@@ -87,6 +93,19 @@ kotlin {
 
             // SQLDelight Native Driver
             implementation(libs.sqldelight.native.driver)
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                // Ktor OkHttp Engine (same as Android)
+                implementation(libs.ktor.client.okhttp)
+
+                // SQLDelight SQLite JDBC Driver for Desktop
+                implementation(libs.sqldelight.sqlite.driver)
+
+                // Logging - SLF4J backend for Desktop
+                implementation(libs.logback.android)
+            }
         }
 
         commonTest.dependencies {
