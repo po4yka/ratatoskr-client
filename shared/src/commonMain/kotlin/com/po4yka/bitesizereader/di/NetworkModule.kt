@@ -8,11 +8,14 @@ import org.koin.dsl.module
 
 /**
  * Koin module for network dependencies
+ *
+ * Uses lazy initialization (createdAtStart = false) to defer HTTP client and API creation
+ * until network requests are needed, improving startup performance.
  */
 val networkModule =
     module {
-        // Token provider
-        single<TokenProvider> {
+        // Lazy singleton - Token provider
+        single<TokenProvider>(createdAtStart = false) {
             object : TokenProvider {
                 private val secureStorage: SecureStorage by lazy { get() }
 
@@ -38,8 +41,8 @@ val networkModule =
             }
         }
 
-        // HTTP Client (platform-specific engine provided separately)
-        single {
+        // Lazy singleton - HTTP Client (platform-specific engine provided separately)
+        single(createdAtStart = false) {
             createHttpClient(
                 engine = get(),
                 baseUrl = getProperty("api.base.url"),
@@ -48,10 +51,10 @@ val networkModule =
             )
         }
 
-        // API implementations
-        single<AuthApi> { AuthApiImpl(get()) }
-        single<SummariesApi> { SummariesApiImpl(get()) }
-        single<RequestsApi> { RequestsApiImpl(get()) }
-        single<SearchApi> { SearchApiImpl(get()) }
-        single<SyncApi> { SyncApiImpl(get()) }
+        // Lazy singletons - API implementations
+        single<AuthApi>(createdAtStart = false) { AuthApiImpl(get()) }
+        single<SummariesApi>(createdAtStart = false) { SummariesApiImpl(get()) }
+        single<RequestsApi>(createdAtStart = false) { RequestsApiImpl(get()) }
+        single<SearchApi>(createdAtStart = false) { SearchApiImpl(get()) }
+        single<SyncApi>(createdAtStart = false) { SyncApiImpl(get()) }
     }

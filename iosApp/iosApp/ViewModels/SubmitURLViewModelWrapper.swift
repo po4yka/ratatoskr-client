@@ -23,6 +23,7 @@ class SubmitURLViewModelWrapper: ObservableObject {
 
     deinit {
         stateTask?.cancel()
+        viewModel.onCleared()
     }
 
     private func observeState() {

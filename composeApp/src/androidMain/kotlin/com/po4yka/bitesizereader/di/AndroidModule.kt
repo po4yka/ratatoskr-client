@@ -34,9 +34,4 @@ val androidModule =
         single<ShareManager> {
             AndroidShareManager(androidContext())
         }
-
-        // Coroutine scope for ViewModels
-        single<CoroutineScope> {
-            CoroutineScope(SupervisorJob() + Dispatchers.Main)
-        }
     }

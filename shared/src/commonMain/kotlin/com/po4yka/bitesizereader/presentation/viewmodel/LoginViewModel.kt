@@ -15,8 +15,7 @@ import kotlinx.coroutines.launch
 class LoginViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
     private val authRepository: AuthRepository,
-    private val viewModelScope: CoroutineScope,
-) {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state.asStateFlow()
 

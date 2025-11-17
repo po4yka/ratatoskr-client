@@ -3,7 +3,6 @@ package com.po4yka.bitesizereader.presentation.viewmodel
 import com.po4yka.bitesizereader.domain.repository.SearchRepository
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.presentation.state.SearchState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +16,7 @@ import kotlinx.coroutines.launch
 class SearchViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
     private val searchRepository: SearchRepository,
-    private val viewModelScope: CoroutineScope,
-) {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SearchState())
     val state: StateFlow<SearchState> = _state.asStateFlow()
 

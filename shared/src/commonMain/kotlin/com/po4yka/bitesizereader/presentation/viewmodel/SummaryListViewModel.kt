@@ -5,7 +5,6 @@ import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.presentation.state.SummaryListState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -16,8 +15,7 @@ class SummaryListViewModel(
     private val getSummariesUseCase: GetSummariesUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val syncDataUseCase: SyncDataUseCase,
-    private val viewModelScope: CoroutineScope,
-) {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryListState())
     val state: StateFlow<SummaryListState> = _state.asStateFlow()
 

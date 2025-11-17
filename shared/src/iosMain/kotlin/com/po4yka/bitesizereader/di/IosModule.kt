@@ -7,9 +7,6 @@ import com.po4yka.bitesizereader.util.share.IosShareManager
 import com.po4yka.bitesizereader.util.share.ShareManager
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import org.koin.dsl.module
 
 /**
@@ -33,10 +30,5 @@ val iosModule =
         // Share manager
         single<ShareManager> {
             IosShareManager()
-        }
-
-        // Coroutine scope for ViewModels
-        single<CoroutineScope> {
-            CoroutineScope(SupervisorJob() + Dispatchers.Main)
         }
     }
