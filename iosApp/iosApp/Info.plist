@@ -4,5 +4,37 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+
+	<!-- Background Modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+		<string>fetch</string>
+	</array>
+
+	<!-- Background Task Scheduler Identifiers -->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.po4yka.bitesizereader.sync</string>
+	</array>
+
+	<!-- App Groups for Share Extension -->
+	<key>AppGroups</key>
+	<array>
+		<string>group.com.po4yka.bitesizereader</string>
+	</array>
+
+	<!-- Deep Link URL Scheme for Widgets -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>bitesizereader</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>com.po4yka.bitesizereader</string>
+		</dict>
+	</array>
 </dict>
 </plist>
