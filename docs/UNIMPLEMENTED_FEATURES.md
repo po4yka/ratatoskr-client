@@ -418,11 +418,12 @@ All items not started:
 
 | Feature | Status | Priority | Notes |
 |---------|--------|----------|-------|
-| Share Extension | ❌ Not Implemented | High | Requires SwiftUI implementation |
-| WidgetKit | ❌ Not Implemented | Medium | Requires SwiftUI implementation |
-| Universal Links | ❌ Not Implemented | Medium | Deep linking |
+| Share Extension | ✅ **Implemented** | - | Submit URLs from Safari - fully working with App Groups |
+| Background Tasks | ✅ **Implemented** | - | BGProcessingTask syncs every 6 hours (matches Android) |
+| Deep Linking | ✅ **Implemented** | - | Custom URL scheme `bitesizereader://` working |
+| WidgetKit Widget | ⚠️ Exists | Medium | Code at `iosApp/RecentSummariesWidget/` but needs testing |
+| Universal Links | ❌ Not Implemented | Medium | HTTPS deep linking |
 | Siri Shortcuts | ❌ Not Implemented | Low | Voice commands |
-| Background Tasks | ❌ Not Implemented | High | Background sync |
 | iPad Layouts | ❌ Not Implemented | Low | Multi-column layout |
 
 ---
@@ -523,8 +524,10 @@ These features are planned for **post-MVP** (Q4 2025 and beyond):
 2. ~~Implement Telegram Auth UI~~ ✅ **DONE** - WKWebView working on iOS, inline widget on Android
 3. ~~Implement Android Share Intent~~ ✅ **DONE** - Receives URLs from other apps
 4. ~~Implement Android WorkManager~~ ✅ **DONE** - Background sync every 6 hours
+5. ~~Implement iOS Share Extension~~ ✅ **DONE** - Share from Safari with App Groups (2025-11-18)
+6. ~~Implement iOS Background Tasks~~ ✅ **DONE** - BGProcessingTask every 6 hours (2025-11-18)
 
-### 🔴 **High Priority** (Getting Even Shorter!)
+### 🔴 **High Priority** (MVP Blockers)
 
 1. **Fix Test Coverage Gaps** (Phase 9)
    - Fix error state timing test
@@ -533,28 +536,23 @@ These features are planned for **post-MVP** (Q4 2025 and beyond):
    - Estimated: 1 week
    - Blockers: None
 
-2. **Complete iOS Platform Features** (Requires Xcode)
-   - iOS: Share Extension (guide provided)
-   - iOS: Background Tasks (guide provided)
-   - Estimated: 2-3 hours in Xcode
-   - Blockers: None - comprehensive guide in docs/IOS_SHARE_EXTENSION_GUIDE.md
-
 ### 🟡 **Medium Priority** (Pre-Beta)
 
-5. **Polish & Accessibility** (Phase 10)
+3. **Polish & Accessibility** (Phase 10)
    - Performance optimization
    - Accessibility support
    - Animations
    - Error handling improvements
    - Estimated: 2 weeks
 
-6. **Documentation**
-   - ARCHITECTURE.md
-   - TESTING.md
-   - DEVELOPMENT.md
-   - Estimated: 3-4 days
+4. **Documentation**
+   - ✅ ARCHITECTURE.md - Complete
+   - ✅ TESTING.md - Complete
+   - ✅ IOS_FEATURES.md - Complete
+   - ❌ DEVELOPMENT.md - Needed
+   - Estimated: 1-2 days
 
-7. **CI/CD Setup** (Phase 11)
+5. **CI/CD Setup** (Phase 11)
    - GitHub Actions
    - Automated testing
    - Build automation
@@ -593,16 +591,16 @@ Based on TODO.md and current status, here's what's needed to complete MVP:
 ### Must Have (Blocking Release)
 
 - [ ] Fix critical tests (error state test)
-- [ ] Implement Share Intent (Android)
-- [ ] Implement Share Extension (iOS)
-- [ ] Implement background sync (both platforms)
+- [X] Implement Share Intent (Android) ✅
+- [X] Implement Share Extension (iOS) ✅
+- [X] Implement background sync (both platforms) ✅
 - [ ] Basic accessibility support (partially done for iOS)
 - [ ] Error handling polish
 - [ ] Performance optimization
 - [ ] CI/CD pipeline
 - [ ] Privacy policy and ToS
 
-**Estimated Time to MVP**: ~~6-8 weeks~~ → **3-4 weeks** (reduced because iOS and auth are complete!)
+**Estimated Time to MVP**: ~~6-8 weeks~~ → ~~3-4 weeks~~ → **2-3 weeks** (reduced because iOS platform features are complete!)
 
 ### Should Have (Pre-Public Beta)
 
@@ -637,28 +635,29 @@ Based on TODO.md and current status, here's what's needed to complete MVP:
 7. **Authentication** - Telegram auth working on both platforms ✅ **NEW!**
 8. **Development Tools** - Hot reload, logging, documentation
 
-### Remaining Gaps ❌ (Much Smaller Now!)
+### Remaining Gaps ❌ (Very Small Now!)
 
-1. **Platform Features** - Share Intent/Extension, widgets, background sync missing
-2. **Testing** - Coverage gaps, 1 disabled test, limited UI tests
-3. **CI/CD** - No automation yet
-4. **Polish** - Performance work, localization, animations
+1. **Testing** - Coverage gaps, 1 disabled test, limited UI tests
+2. **CI/CD** - Limited automation
+3. **Polish** - Performance work, localization, animations
+4. **Widgets** - iOS widget needs testing, Android widget needs verification
 
 ### Updated Critical Path to MVP (Much Shorter!)
 
-1. Add platform features (Share, sync) (1 week)
+1. ~~Add platform features (Share, sync) (1 week)~~ ✅ **COMPLETE**
 2. Fix tests and add coverage (1 week)
 3. Polish and performance (1-2 weeks)
-4. CI/CD and release prep (1 week)
+4. CI/CD and release prep (few days)
 
-**Total**: ~~6-8 weeks~~ → **3-4 weeks to MVP** 🎉
+**Total**: ~~6-8 weeks~~ → ~~3-4 weeks~~ → **2-3 weeks to MVP** 🎉
 
 ### Progress Update
 
 **Before Correction**: 40-50% complete, 6-8 weeks to MVP
-**After Correction**: **70-75% complete**, **3-4 weeks to MVP**
+**After iOS Discovery**: **70-75% complete**, **3-4 weeks to MVP**
+**After Platform Features**: **~80% complete**, **2-3 weeks to MVP**
 
-The iOS UI being complete cuts development time nearly in half!
+The iOS UI and platform features being complete dramatically reduced development time!
 
 ---
 
@@ -666,6 +665,7 @@ The iOS UI being complete cuts development time nearly in half!
 
 | Date | Changes | Author |
 |------|---------|--------|
+| 2025-11-18 | **iOS Platform Features Complete**: Share Extension and Background Tasks already fully implemented. Added Info.plist configuration. Created comprehensive IOS_FEATURES.md documentation. MVP timeline: 2-3 weeks. Progress: ~80%. | Claude |
 | 2025-11-17 (Updated) | **MAJOR CORRECTION**: Discovered iOS UI is 100% complete (21 files, 2000+ LOC). Updated entire document. Revised MVP timeline from 6-8 weeks to 3-4 weeks. Progress: 70-75% (was 40-50%). | Claude |
 | 2025-11-17 | Initial audit - comprehensive review of unimplemented features | Claude |
 
@@ -675,10 +675,11 @@ The iOS UI being complete cuts development time nearly in half!
 
 1. **Review this document** with the team ✅
 2. **Prioritize** features based on MVP requirements ✅ Updated
-3. **Update TODO.md** with current status (mark iOS as complete)
+3. **Update TODO.md** with current status (mark iOS and platform features as complete)
 4. **Create GitHub issues** for high-priority items (now much smaller list!)
 5. ~~Assign ownership for iOS UI implementation~~ **COMPLETE** ✅
-6. **Set milestone dates** for MVP completion (now 3-4 weeks instead of 6-8)
+6. ~~Implement iOS platform features~~ **COMPLETE** ✅
+7. **Set milestone dates** for MVP completion (now 2-3 weeks instead of 6-8)
 
 ---
 
