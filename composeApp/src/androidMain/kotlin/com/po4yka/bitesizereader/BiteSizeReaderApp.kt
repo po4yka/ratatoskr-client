@@ -1,7 +1,8 @@
 package com.po4yka.bitesizereader
 
 import android.app.Application
-import com.po4yka.bitesizereader.di.*
+import com.po4yka.bitesizereader.di.androidModule
+import com.po4yka.bitesizereader.di.appModules
 import com.po4yka.bitesizereader.util.config.AppConfig
 import com.po4yka.bitesizereader.worker.WorkManagerInitializer
 import org.koin.android.ext.koin.androidContext
@@ -17,14 +18,7 @@ class BiteSizeReaderApp : Application() {
         // Initialize Koin
         startKoin {
             androidContext(this@BiteSizeReaderApp)
-            modules(
-                androidModule,
-                networkModule,
-                databaseModule,
-                repositoryModule,
-                useCaseModule,
-                viewModelModule,
-            )
+            modules(listOf(androidModule) + appModules())
             properties(
                 mapOf(
                     "api.base.url" to AppConfig.Api.baseUrl,

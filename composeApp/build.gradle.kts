@@ -24,6 +24,25 @@ kotlin {
     }
 
     sourceSets {
+        commonMain.dependencies {
+            // Compose Multiplatform
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+
+            // Shared module
+            implementation(projects.shared)
+
+            // Koin
+            implementation(libs.koin.core)
+
+            // Decompose
+            implementation(libs.decompose.core)
+        }
+
         androidMain.dependencies {
             // Compose
             implementation(compose.preview)
@@ -49,29 +68,10 @@ kotlin {
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.android)
-        }
-
-        commonMain.dependencies {
-            // Compose Multiplatform
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
 
             // Lifecycle
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-
-            // Shared module
-            implementation(projects.shared)
-
-            // Koin
-            implementation(libs.koin.core)
-
-            // Decompose
-            implementation(libs.decompose.core)
         }
 
         val desktopMain by getting {

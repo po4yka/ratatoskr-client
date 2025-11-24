@@ -23,6 +23,7 @@ import org.koin.core.parameter.parametersOf
 fun App(
     rootComponent: RootComponent,
     modifier: Modifier = Modifier,
+    onLoginClick: () -> Unit = {},
 ) {
     Children(
         stack = rootComponent.stack,
@@ -35,6 +36,7 @@ fun App(
                 AuthScreen(
                     viewModel = viewModel,
                     onLoginSuccess = { rootComponent.navigateToSummaryList() },
+                    onLoginClick = onLoginClick,
                 )
             }
             is Screen.SummaryList -> {
