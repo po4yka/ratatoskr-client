@@ -1,9 +1,9 @@
 [versions]
 # Build & Gradle
-agp = "8.13.0"
-kotlin = "2.2.10"
-composeMultiplatform = "1.9.1"
-composeHotReload = "1.0.0-rc03"
+agp = "8.6.1"
+kotlin = "1.9.24"
+composeMultiplatform = "1.7.3"
+composeHotReload = "1.0.0"
 
 # Android SDK
 android-compileSdk = "36"
