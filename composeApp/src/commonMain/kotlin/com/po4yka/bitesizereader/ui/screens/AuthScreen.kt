@@ -7,10 +7,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.po4yka.bitesizereader.auth.TelegramAuthHelper
 import com.po4yka.bitesizereader.presentation.viewmodel.LoginViewModel
 
 /**
@@ -21,9 +19,9 @@ fun AuthScreen(
     viewModel: LoginViewModel,
     onLoginSuccess: () -> Unit,
     modifier: Modifier = Modifier,
+    onLoginClick: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
-    val context = LocalContext.current
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -69,10 +67,7 @@ fun AuthScreen(
 
             // Login Button
             Button(
-                onClick = {
-                    // Launch Telegram authentication in Custom Tab
-                    TelegramAuthHelper.launchTelegramAuth(context)
-                },
+                onClick = onLoginClick,
                 enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth(),
             ) {
