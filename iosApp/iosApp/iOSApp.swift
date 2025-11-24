@@ -9,10 +9,7 @@ struct iOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(
-                rootComponent: appDelegate.rootComponent,
-                koinHelper: appDelegate.koinHelper
-            )
+            ContentView(rootComponent: appDelegate.rootComponent)
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {

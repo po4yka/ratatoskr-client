@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.di
 
 import com.po4yka.bitesizereader.util.config.AppConfig
+import com.po4yka.bitesizereader.di.appModules
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 
@@ -10,14 +11,7 @@ import org.koin.dsl.KoinAppDeclaration
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
     startKoin {
         appDeclaration()
-        modules(
-            iosModule,
-            networkModule,
-            databaseModule,
-            repositoryModule,
-            useCaseModule,
-            viewModelModule,
-        )
+        modules(listOf(iosModule) + appModules())
         properties(
             mapOf(
                 "api.base.url" to AppConfig.Api.baseUrl,
