@@ -10,8 +10,8 @@ use_frameworks!
 inhibit_all_warnings!
 
 target 'iosApp' do
-  # Shared Kotlin Multiplatform Framework
-  pod 'Shared', :path => '../shared'
+  # Compose Multiplatform UI + shared business logic
+  pod 'ComposeApp', :path => '../composeApp'
 
   # iOS-specific dependencies can be added here if needed
   # Example:

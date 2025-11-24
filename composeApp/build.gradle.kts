@@ -11,6 +11,18 @@ plugins {
 }
 
 kotlin {
+    cocoapods {
+        summary = "Compose Multiplatform UI for Bite-Size Reader"
+        homepage = "https://github.com/po4yka/bite-size-reader-client"
+        ios.deploymentTarget = "15.0"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
+            baseName = "ComposeApp"
+            isStatic = true
+            export(projects.shared)
+        }
+    }
+
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
@@ -22,6 +34,10 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
@@ -38,6 +54,7 @@ kotlin {
 
             // Koin
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
 
             // Decompose
             implementation(libs.decompose.core)
@@ -80,6 +97,21 @@ kotlin {
                 implementation(libs.decompose.compose)
             }
         }
+
+        val iosMain by creating {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(libs.decompose.core)
+            }
+        }
+
+        val iosX64Main by getting { dependsOn(iosMain) }
+        val iosArm64Main by getting { dependsOn(iosMain) }
+        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
