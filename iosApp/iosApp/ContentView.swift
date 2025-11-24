@@ -1,135 +1,58 @@
 import SwiftUI
+import ComposeApp
 import Shared
 
-/// Main content view with Decompose navigation
+/// Main content view hosting the shared Compose Multiplatform UI
 struct ContentView: View {
-    @StateObject private var navigator = NavigationState()
+    @State private var isTelegramSheetPresented = false
+    @State private var pendingLoginViewModel: LoginViewModel?
+
     private let rootComponent: RootComponent
-    private let koinHelper: KoinHelper
 
-    init(rootComponent: RootComponent, koinHelper: KoinHelper) {
+    init(rootComponent: RootComponent) {
         self.rootComponent = rootComponent
-        self.koinHelper = koinHelper
     }
 
     var body: some View {
-        ObservingView(rootComponent.stack) { childStack in
-            let child = childStack.active.instance
-
-            switch child {
-            case is Screen.Auth:
-                let viewModel = LoginViewModelWrapper(
-                    viewModel: koinHelper.getLoginViewModel()
-                )
-                AuthView(viewModel: viewModel) {
-                    rootComponent.navigateToSummaryList()
-                }
-
-            case is Screen.SummaryList:
-                let viewModel = SummaryListViewModelWrapper(
-                    viewModel: koinHelper.getSummaryListViewModel()
-                )
-                SummaryListView(
-                    viewModel: viewModel,
-                    onSummaryTap: { id in
-                        rootComponent.navigateToSummaryDetail(id: id)
+        ComposeRootView(
+            rootComponent: rootComponent,
+            onLoginRequest: { viewModel in
+                pendingLoginViewModel = viewModel
+                isTelegramSheetPresented = true
+            }
+        )
+        .sheet(isPresented: $isTelegramSheetPresented) {
+            if let viewModel = pendingLoginViewModel {
+                TelegramAuthWebView(
+                    onAuthSuccess: { authData in
+                        viewModel.loginWithTelegram(
+                            telegramUserId: authData.id,
+                            authHash: authData.authHash,
+                            authDate: authData.authDate,
+                            username: authData.username,
+                            firstName: authData.firstName,
+                            lastName: authData.lastName,
+                            photoUrl: authData.photoUrl,
+                            clientId: "ios"
+                        )
+                        rootComponent.navigateToSummaryList()
+                        isTelegramSheetPresented = false
                     },
-                    onSubmitUrlTap: {
-                        rootComponent.navigateToSubmitUrl()
-                    },
-                    onSearchTap: {
-                        rootComponent.navigateToSearch()
-                    }
+                    onCancel: { isTelegramSheetPresented = false }
                 )
-
-            case let screen as Screen.SummaryDetail:
-                let viewModel = SummaryDetailViewModelWrapper(
-                    viewModel: koinHelper.getSummaryDetailViewModel(summaryId: screen.id)
-                )
-                SummaryDetailView(
-                    viewModel: viewModel,
-                    onBack: { rootComponent.pop() },
-                    onShare: {
-                        if let summary = viewModel.state.summary {
-                            ShareHelper.shareSummary(summary)
-                        }
-                    }
-                )
-
-            case let screen as Screen.SubmitUrl:
-                let viewModel = SubmitURLViewModelWrapper(
-                    viewModel: koinHelper.getSubmitURLViewModel()
-                )
-
-                // Set prefilled URL if provided (from share extension)
-                if let prefilledUrl = screen.prefilledUrl {
-                    viewModel.setURL(prefilledUrl)
-                }
-
-                SubmitURLView(
-                    viewModel: viewModel,
-                    onBack: { rootComponent.pop() },
-                    onSuccess: { summaryId in
-                        rootComponent.pop()
-                        rootComponent.navigateToSummaryDetail(id: summaryId)
-                    }
-                )
-
-            case is Screen.Search:
-                let viewModel = SearchViewModelWrapper(
-                    viewModel: koinHelper.getSearchViewModel()
-                )
-                SearchView(
-                    viewModel: viewModel,
-                    onSummaryTap: { id in
-                        rootComponent.navigateToSummaryDetail(id: id)
-                    },
-                    onBack: { rootComponent.pop() }
-                )
-
-            default:
-                EmptyView()
+                .ignoresSafeArea()
             }
         }
     }
 }
 
-/// Helper for observing Decompose state changes
-struct ObservingView<T: AnyObject, Content: View>: View {
-    @StateObject private var observer: Observer<T>
-    private let content: (T) -> Content
+private struct ComposeRootView: UIViewControllerRepresentable {
+    let rootComponent: RootComponent
+    let onLoginRequest: (LoginViewModel) -> Void
 
-    init(_ value: SkieSwiftStateFlow<T>, @ViewBuilder content: @escaping (T) -> Content) {
-        _observer = StateObject(wrappedValue: Observer(value: value))
-        self.content = content
+    func makeUIViewController(context: Context) -> UIViewController {
+        MainViewController(rootComponent: rootComponent, onLoginClick: onLoginRequest)
     }
 
-    var body: some View {
-        content(observer.value)
-    }
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
-
-@MainActor
-private class Observer<T: AnyObject>: ObservableObject {
-    @Published var value: T
-    private var task: Task<Void, Never>?
-
-    init(value: SkieSwiftStateFlow<T>) {
-        self.value = value.value
-        task = Task { [weak self] in
-            for await newValue in value {
-                self?.value = newValue
-            }
-        }
-    }
-
-    deinit {
-        task?.cancel()
-    }
-}
-
-/// Navigation state
-class NavigationState: ObservableObject {
-    @Published var currentScreen: Screen = Screen.Auth()
-}
-

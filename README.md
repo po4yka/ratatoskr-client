@@ -4,11 +4,11 @@
 [![CI](https://github.com/po4yka/bite-size-reader-client/actions/workflows/ci.yml/badge.svg)](https://github.com/po4yka/bite-size-reader-client/actions/workflows/ci.yml)
 [![Code Quality](https://github.com/po4yka/bite-size-reader-client/actions/workflows/code-quality.yml/badge.svg)](https://github.com/po4yka/bite-size-reader-client/actions/workflows/code-quality.yml)
 
-Native iOS and Android mobile application for [Bite-Size Reader](https://github.com/po4yka/bite-size-reader) - a service that summarizes web articles and YouTube videos using LLM.
+Compose Multiplatform client for [Bite-Size Reader](https://github.com/po4yka/bite-size-reader) - a service that summarizes web articles and YouTube videos using LLM.
 
 ## Overview
 
-This is a **Kotlin Multiplatform Mobile (KMP)** app that provides native user experiences on both iOS and Android while sharing ~70-80% of business logic code. The app allows users to:
+This is a **Kotlin Multiplatform + Compose Multiplatform** app that provides a shared UI stack across Android, iOS, and Desktop while sharing ~80-90% of business logic code. The app allows users to:
 
 - Browse and read saved article/video summaries
 - Submit new URLs for AI-powered summarization
@@ -18,9 +18,9 @@ This is a **Kotlin Multiplatform Mobile (KMP)** app that provides native user ex
 
 ### Architecture Philosophy
 
-**KMP + Native UI Approach:**
-- **Shared Code (70-80%)**: Business logic, networking, database, state management (Kotlin)
-- **Native UI (20-30%)**: Platform-specific UI with SwiftUI (iOS) and Jetpack Compose (Android)
+**KMP + Compose Multiplatform UI:**
+- **Shared Code (80-90%)**: Business logic, networking, database, state management (Kotlin)
+- **Shared UI**: Compose Multiplatform screens rendered on Android, iOS, and Desktop (with platform hooks for auth/intents)
 - **Offline-First**: Local SQLite database with background sync to backend API
 - **Clean Architecture**: Domain-driven design with clear separation of concerns
 
@@ -59,10 +59,10 @@ See **[docs/CI_CD.md](docs/CI_CD.md)** for complete documentation including setu
 | **Logging** | [kotlin-logging](https://github.com/oshai/kotlin-logging) | Structured multiplatform logging |
 | **Dev Tools** | [Compose Hot Reload](https://github.com/JetBrains/compose-hot-reload) | Instant UI updates without restarts |
 
-### iOS (SwiftUI)
+### iOS (Compose Multiplatform host)
 
-- **SwiftUI** - Modern declarative UI framework
-- **Combine** - Reactive bindings to shared ViewModels
+- **Compose Multiplatform** - Shared UI rendered via `MainViewController`
+- **SwiftUI shell** - Hosts Compose UI and bridges Telegram login via native WebView
 - **SKIE** - Better Swift/Kotlin interop (suspend → async/await, Flow → AsyncSequence)
 - **Keychain** - Secure JWT token storage
 - **Share Extension** - Submit URLs from Safari/other apps
@@ -102,21 +102,16 @@ bite-size-reader-client/
 │   │   ├── iosMain/kotlin/         # iOS-specific code
 │   │   └── commonTest/kotlin/      # Shared tests
 │   └── build.gradle.kts
-├── composeApp/                      # Android app (~15-20%)
-│   ├── src/androidMain/kotlin/
-│   │   ├── ui/
-│   │   │   ├── theme/              # Material 3 theme
-│   │   │   ├── screens/            # Composable screens
-│   │   │   └── components/         # Reusable components
-│   │   ├── MainActivity.kt
-│   │   └── App.kt
-│   └── build.gradle.kts
-├── iosApp/                          # iOS app (~15-20%)
+├── composeApp/                      # Compose Multiplatform UI + Android app shell
+│   ├── src/androidMain/kotlin/     # Android-specific entrypoints
+│   ├── src/iosMain/kotlin/         # Compose UIViewController for iOS host
+│   ├── src/desktopMain/kotlin/     # Desktop preview entrypoint
+│   └── src/commonMain/kotlin/      # Shared Compose UI/theme/navigation
+├── iosApp/                          # iOS app shell (SwiftUI hosting Compose)
 │   ├── iosApp/
-│   │   ├── Views/                  # SwiftUI views
-│   │   ├── ViewModels/             # Swift wrappers for KMP VMs
-│   │   ├── Auth/                   # Telegram auth
-│   │   └── App.swift
+│   │   ├── Auth/                   # Native Telegram login sheet
+│   │   ├── Config/                 # Platform config
+│   │   └── iOSApp.swift            # Entry point hosting Compose UI
 │   ├── ShareExtension/             # Share sheet extension
 │   └── WidgetExtension/            # Home screen widget
 ├── gradle/

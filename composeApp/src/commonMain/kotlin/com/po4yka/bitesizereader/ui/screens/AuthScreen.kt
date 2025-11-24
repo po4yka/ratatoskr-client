@@ -19,7 +19,7 @@ fun AuthScreen(
     viewModel: LoginViewModel,
     onLoginSuccess: () -> Unit,
     modifier: Modifier = Modifier,
-    onLoginClick: () -> Unit = {},
+    onLoginClick: (LoginViewModel) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -67,7 +67,7 @@ fun AuthScreen(
 
             // Login Button
             Button(
-                onClick = onLoginClick,
+                onClick = { onLoginClick(viewModel) },
                 enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth(),
             ) {
