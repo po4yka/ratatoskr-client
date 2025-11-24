@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.arkivanov.decompose.defaultComponentContext
+import com.po4yka.bitesizereader.auth.TelegramAuthHelper
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 import com.po4yka.bitesizereader.ui.theme.BiteSizeReaderTheme
 
@@ -26,9 +27,13 @@ class MainActivity : ComponentActivity() {
                 componentContext = defaultComponentContext(),
             )
 
+        val activity = this
         setContent {
             BiteSizeReaderTheme {
-                App(rootComponent = rootComponent)
+                App(
+                    rootComponent = rootComponent,
+                    onLoginClick = { TelegramAuthHelper.launchTelegramAuth(activity) },
+                )
             }
         }
 

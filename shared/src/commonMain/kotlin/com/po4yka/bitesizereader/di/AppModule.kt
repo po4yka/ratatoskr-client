@@ -12,7 +12,7 @@ import org.koin.dsl.module
  */
 val viewModelModule =
     module {
-        factory { LoginViewModel(get(), get()) }
+        single { LoginViewModel(get(), get()) }
         factory { SummaryListViewModel(get(), get(), get()) }
         factory { (summaryId: Int) ->
             SummaryDetailViewModel(summaryId, get(), get())

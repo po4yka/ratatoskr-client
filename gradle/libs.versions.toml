@@ -1,9 +1,9 @@
 [versions]
 # Build & Gradle
-agp = "8.13.0"
-kotlin = "2.2.10"
-composeMultiplatform = "1.9.1"
-composeHotReload = "1.0.0-rc03"
+agp = "8.6.1"
+kotlin = "2.0.21"
+composeMultiplatform = "1.7.3"
+composeHotReload = "1.0.0"
 
 # Android SDK
 android-compileSdk = "36"
@@ -102,6 +102,7 @@ store = { module = "org.mobilenativefoundation.store:store5", version.ref = "sto
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-android" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin-android" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 
 # Kotlinx Libraries
