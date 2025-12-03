@@ -1,5 +1,6 @@
--- Summary table schema
+-- Central SQLDelight schema for BiteSize Reader
 
+-- Summary table schema
 CREATE TABLE IF NOT EXISTS Summary (
     id INTEGER NOT NULL PRIMARY KEY,
     requestId INTEGER NOT NULL,
@@ -83,7 +84,6 @@ CREATE TRIGGER IF NOT EXISTS summary_au AFTER UPDATE ON Summary BEGIN
 END;
 
 -- Queries
-
 selectAll:
 SELECT * FROM Summary
 ORDER BY createdAt DESC;
@@ -159,9 +159,110 @@ UPDATE Summary
 SET locallyModified = 0, syncStatus = 'SYNCED'
 WHERE id IN ?;
 
-deleteById:
-DELETE FROM Summary
+-- Request table schema
+CREATE TABLE IF NOT EXISTS Request (
+    id INTEGER NOT NULL PRIMARY KEY,
+    inputUrl TEXT NOT NULL,
+    type TEXT NOT NULL, -- URL, YOUTUBE_VIDEO
+    status TEXT NOT NULL, -- PENDING, PROCESSING, COMPLETED, ERROR, CANCELLED
+    stage TEXT, -- CONTENT_EXTRACTION, LLM_SUMMARIZATION, VALIDATION, DONE
+    progress INTEGER NOT NULL DEFAULT 0, -- 0-100
+    langPreference TEXT NOT NULL DEFAULT 'auto',
+
+    -- Result
+    summaryId INTEGER,
+
+    -- Error handling
+    errorMessage TEXT,
+    canRetry INTEGER NOT NULL DEFAULT 0,
+
+    -- Progress estimation
+    estimatedSecondsRemaining INTEGER,
+
+    -- Timestamps (stored as ISO 8601 strings)
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT,
+    completedAt TEXT
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_request_status ON Request(status);
+CREATE INDEX IF NOT EXISTS idx_request_createdAt ON Request(createdAt);
+CREATE INDEX IF NOT EXISTS idx_request_summaryId ON Request(summaryId);
+
+-- Queries
+selectRequests:
+SELECT * FROM Request
+ORDER BY createdAt DESC;
+
+selectRequestById:
+SELECT * FROM Request
 WHERE id = ?;
 
-deleteAll:
-DELETE FROM Summary;
+selectByStatus:
+SELECT * FROM Request
+WHERE status = ?
+ORDER BY createdAt DESC;
+
+selectPending:
+SELECT * FROM Request
+WHERE status IN ('PENDING', 'PROCESSING')
+ORDER BY createdAt DESC;
+
+selectRecent:
+SELECT * FROM Request
+ORDER BY createdAt DESC
+LIMIT ?;
+
+insertRequest:
+INSERT OR REPLACE INTO Request(
+    id, inputUrl, type, status, stage, progress, langPreference,
+    summaryId, errorMessage, canRetry, estimatedSecondsRemaining,
+    createdAt, updatedAt, completedAt
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateStatus:
+UPDATE Request
+SET status = ?, stage = ?, progress = ?,
+    estimatedSecondsRemaining = ?, updatedAt = ?
+WHERE id = ?;
+
+updateCompleted:
+UPDATE Request
+SET status = 'COMPLETED', summaryId = ?, completedAt = ?, updatedAt = ?
+WHERE id = ?;
+
+updateError:
+UPDATE Request
+SET status = 'ERROR', errorMessage = ?, canRetry = ?, updatedAt = ?
+WHERE id = ?;
+
+deleteRequestById:
+DELETE FROM Request
+WHERE id = ?;
+
+deleteCompleted:
+DELETE FROM Request
+WHERE status = 'COMPLETED' AND completedAt IS NOT NULL;
+
+deleteAllRequests:
+DELETE FROM Request;
+
+-- SyncMetadata table schema
+CREATE TABLE IF NOT EXISTS SyncMetadata (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+-- Queries
+getSyncMetadata:
+SELECT value FROM SyncMetadata WHERE key = ?;
+
+setSyncMetadata:
+INSERT OR REPLACE INTO SyncMetadata(key, value) VALUES (?, ?);
+
+deleteSyncMetadata:
+DELETE FROM SyncMetadata WHERE key = ?;
+
+deleteAllSyncMetadata:
+DELETE FROM SyncMetadata;
