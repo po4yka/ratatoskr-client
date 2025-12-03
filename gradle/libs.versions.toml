@@ -51,7 +51,7 @@ kover = "0.8.3"
 
 # Code Quality
 ktlint = "12.1.1"
-detekt = "1.23.7"
+detekt = "1.23.8"
 
 [libraries]
 # Kotlin
