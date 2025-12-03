@@ -40,7 +40,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: shared-test-results
           path: shared/build/reports/tests/
@@ -79,7 +79,7 @@ jobs:
         run: ./gradlew :composeApp:testDebugUnitTest --no-daemon
 
       - name: Upload Android APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-debug-apk
           path: composeApp/build/outputs/apk/debug/*.apk
@@ -87,7 +87,7 @@ jobs:
 
       - name: Upload Android test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: android-test-results
           path: composeApp/build/reports/tests/
@@ -138,7 +138,7 @@ jobs:
 
       - name: Upload iOS test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ios-test-results
           path: shared/build/reports/tests/

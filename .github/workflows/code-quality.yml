@@ -40,7 +40,7 @@ jobs:
 
       - name: Upload detekt reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: detekt-reports
           path: |
@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload dependency update report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dependency-updates-report
           path: build/dependencyUpdates/
