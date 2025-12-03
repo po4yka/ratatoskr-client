@@ -39,6 +39,7 @@ class RecentSummariesWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
+        glanceAppWidget.updateAll(context)
         logger.debug { "Widget update requested for ${appWidgetIds.size} widgets" }
     }
 
