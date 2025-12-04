@@ -12,7 +12,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 class RequestRepositoryImpl(
     private val database: Database,

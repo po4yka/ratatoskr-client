@@ -22,6 +22,10 @@ kotlin {
         }
     }
 
+    sourceSets.all {
+        languageSettings.optIn("kotlin.time.ExperimentalTime")
+    }
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -64,7 +68,6 @@ kotlin {
             // Kotlinx
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
-            api(libs.kotlinx.datetime)
 
             // Logging
             implementation(libs.kotlin.logging)

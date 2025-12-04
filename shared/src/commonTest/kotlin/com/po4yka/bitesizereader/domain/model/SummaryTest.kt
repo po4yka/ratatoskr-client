@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.domain.model
 
 import com.po4yka.bitesizereader.util.MockDataFactory
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
