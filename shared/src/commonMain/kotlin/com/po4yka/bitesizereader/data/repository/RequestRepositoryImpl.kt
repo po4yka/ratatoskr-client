@@ -21,14 +21,14 @@ class RequestRepositoryImpl(
     override suspend fun submitUrl(url: String): Request {
         val requestDto = api.submitUrl(url)
         val requestEntity = requestDto.toEntity()
-        database.requestEntityQueries.insertRequest(requestEntity)
+        database.databaseQueries.requestEntityQueries.insertRequest(requestEntity)
         return requestDto.toDomain()
     }
 
     override suspend fun getRequestStatus(id: String): Request {
         val statusDto = api.getRequestStatus(id)
         // We only get status, need to update local entity
-        val currentEntity = database.requestEntityQueries.selectAllRequests()
+        val currentEntity = database.databaseQueries.requestEntityQueries.selectAllRequests()
             .executeAsList().find { it.id == id }
             
         if (currentEntity != null) {
@@ -37,13 +37,13 @@ class RequestRepositoryImpl(
         }
         // Returning mock or incomplete request based on statusDto if needed
         // For now, just return what's in DB
-         return database.requestEntityQueries.selectAllRequests()
+         return database.databaseQueries.requestEntityQueries.selectAllRequests()
             .executeAsList().find { it.id == id }?.toDomain() 
             ?: throw Exception("Request not found locally")
     }
 
     override fun getRequests(): Flow<List<Request>> {
-        return database.requestEntityQueries.selectAllRequests()
+        return database.databaseQueries.requestEntityQueries.selectAllRequests()
             .asFlow().mapToList(Dispatchers.IO).map { entities ->
                 entities.map { it.toDomain() }
             }

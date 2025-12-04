@@ -19,8 +19,7 @@ fun UserDto.toDomain(): User {
         username = username,
         firstName = firstName,
         lastName = lastName,
-        photoUrl = photoUrl,
-        isOwner = isOwner,
+        photoUrl = photoUrl
     )
 }
 
@@ -40,7 +39,7 @@ fun AuthResponseDto.toDomain(): Pair<AuthTokens, User> {
 fun TokenRefreshResponseDto.toAuthTokens(currentTime: Instant = Clock.System.now()): AuthTokens {
     return AuthTokens(
         accessToken = accessToken,
-        refreshToken = refreshToken ?: "",
+        refreshToken = refreshToken,
         tokenType = tokenType,
         expiresIn = expiresIn,
         expiresAt = currentTime + expiresIn.seconds,
@@ -48,7 +47,6 @@ fun TokenRefreshResponseDto.toAuthTokens(currentTime: Instant = Clock.System.now
 }
 
 // Domain to DTO conversions
-
 fun createTelegramLoginRequest(
     telegramUserId: Long,
     authHash: String,

@@ -26,7 +26,7 @@ class SummaryRepositoryImpl(
         // For this implementation, we'll return DB flow and trigger a background refresh (mocked logic for now)
         // TODO: Implement full Store logic or Sync logic
         
-        return database.summaryEntityQueries.selectAllSummaries(
+        return database.databaseQueries.summaryEntityQueries.selectAllSummaries(
             limit = pageSize.toLong(),
             offset = ((page - 1) * pageSize).toLong()
         ).asFlow().mapToList(Dispatchers.IO).map { entities ->
@@ -35,16 +35,16 @@ class SummaryRepositoryImpl(
     }
 
     override suspend fun getSummaryById(id: String): Summary? {
-        return database.summaryEntityQueries.getSummaryById(id)
+        return database.databaseQueries.summaryEntityQueries.getSummaryById(id)
             .executeAsOneOrNull()?.toDomain()
     }
 
     override suspend fun markAsRead(id: String) {
-        database.summaryEntityQueries.updateSummaryReadStatus(true, id)
+        database.databaseQueries.summaryEntityQueries.updateSummaryReadStatus(true, id)
     }
 
     override suspend fun deleteSummary(id: String) {
-        database.summaryEntityQueries.deleteSummary(id)
+        database.databaseQueries.summaryEntityQueries.deleteSummary(id)
         try {
             api.deleteSummary(id)
         } catch (e: Exception) {

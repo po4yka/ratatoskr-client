@@ -6,14 +6,7 @@ import org.koin.dsl.KoinAppDeclaration
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     appDeclaration()
-    modules(
-        networkModule,
-        databaseModule,
-        repositoryModule,
-        useCaseModule,
-        viewModelModule,
-        platformModule()
-    )
+    modules(appModules() + platformModule())
 }
 
 expect fun platformModule(): Module

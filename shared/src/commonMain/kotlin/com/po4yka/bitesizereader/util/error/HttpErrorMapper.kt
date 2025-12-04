@@ -12,32 +12,32 @@ fun HttpStatusCode.toAppError(response: HttpResponse? = null): AppError {
     return when (value) {
         // 4xx Client Errors
         400 -> AppError.ValidationError("Bad request. Please check your input.")
-        401 -> AppError.UnauthorizedError()
-        403 -> AppError.UnauthorizedError("Access forbidden. You don't have permission for this action.")
-        404 -> AppError.NotFoundError()
-        408 -> AppError.NetworkError(message = "Request timeout. Please try again.", isTimeout = true)
-        429 -> AppError.RateLimitError()
+        401 -> AppError.AuthError(message = "Unauthorized. Please login again.")
+        403 -> AppError.AuthError(message = "Access forbidden. You don't have permission for this action.")
+        404 -> AppError.ServerError(code = 404, message = "Resource not found.")
+        408 -> AppError.NetworkError(message = "Request timeout. Please try again.")
+        429 -> AppError.ServerError(code = 429, message = "Too many requests. Please try again later.")
 
         // 5xx Server Errors
-        500 -> AppError.ServerError(statusCode = 500)
+        500 -> AppError.ServerError(code = 500, message = "Internal server error.")
         502 -> AppError.ServerError(
             message = "Bad gateway. The server is having trouble processing your request.",
-            statusCode = 502
+            code = 502
         )
         503 -> AppError.ServerError(
             message = "Service unavailable. The server is temporarily down for maintenance.",
-            statusCode = 503
+            code = 503
         )
         504 -> AppError.ServerError(
             message = "Gateway timeout. The server took too long to respond.",
-            statusCode = 504
+            code = 504
         )
 
         else -> {
             if (value in 400..499) {
                 AppError.ValidationError("Request failed with code $value")
             } else if (value in 500..599) {
-                AppError.ServerError(statusCode = value)
+                AppError.ServerError(code = value, message = "Server error $value")
             } else {
                 AppError.UnknownError("Unexpected response code: $value")
             }
