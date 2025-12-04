@@ -18,6 +18,6 @@ class BiteSizeReaderApp : Application() {
         }
 
         // Schedule periodic background sync
-        // WorkManagerInitializer.schedulePeriodicSync(this) // Commented out as I haven't implemented WorkManagerInitializer yet
+        WorkManagerInitializer.schedulePeriodicSync(this)
     }
 }
