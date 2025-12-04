@@ -16,53 +16,53 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Gradle & Build Configuration
 
-- [ ] Update `gradle/libs.versions.toml` with all dependencies
-  - [ ] Add Ktor client (3.0.2+)
-  - [ ] Add SQLDelight (2.0.2+)
-  - [ ] Add Decompose (3.2.0+)
-  - [ ] Add Store (5.1.0+)
-  - [ ] Add Koin (3.5.6+)
-  - [ ] Add kotlinx.serialization
-  - [ ] Add kotlinx-datetime
-  - [ ] Add Kermit logging
-  - [ ] Add SKIE (iOS interop)
-- [ ] Configure `shared/build.gradle.kts`
-  - [ ] Add kotlinx.serialization plugin
-  - [ ] Add SQLDelight plugin
-  - [ ] Configure commonMain dependencies
-  - [ ] Configure androidMain dependencies (OkHttp, Android SQLDelight driver)
-  - [ ] Configure iosMain dependencies (Darwin engine, Native SQLDelight driver)
-- [ ] Configure `composeApp/build.gradle.kts`
-  - [ ] Add Compose dependencies
-  - [ ] Add Koin Android extensions
-  - [ ] Add Coil image loading
-  - [ ] Add Material 3 icons
-- [ ] Create `.gitignore` entries
-  - [ ] Add `local.properties`
-  - [ ] Add IDE files
-  - [ ] Add build outputs
-- [ ] Create `local.properties.example` template
-- [ ] iOS Xcode project configuration
-  - [ ] Add Podfile for CocoaPods dependencies
-  - [ ] Configure framework linking
-  - [ ] Add SKIE configuration
+- [X] Update `gradle/libs.versions.toml` with all dependencies
+  - [X] Add Ktor client (3.0.2+)
+  - [X] Add SQLDelight (2.0.2+)
+  - [X] Add Decompose (3.2.0+)
+  - [X] Add Store (5.1.0+)
+  - [X] Add Koin (3.5.6+)
+  - [X] Add kotlinx.serialization
+  - [X] Add kotlinx-datetime
+  - [X] Add Kermit logging
+  - [X] Add SKIE (iOS interop)
+- [X] Configure `shared/build.gradle.kts`
+  - [X] Add kotlinx.serialization plugin
+  - [X] Add SQLDelight plugin
+  - [X] Configure commonMain dependencies
+  - [X] Configure androidMain dependencies (OkHttp, Android SQLDelight driver)
+  - [X] Configure iosMain dependencies (Darwin engine, Native SQLDelight driver)
+- [X] Configure `composeApp/build.gradle.kts`
+  - [X] Add Compose dependencies
+  - [X] Add Koin Android extensions
+  - [X] Add Coil image loading
+  - [X] Add Material 3 icons
+- [X] Create `.gitignore` entries
+  - [X] Add `local.properties`
+  - [X] Add IDE files
+  - [X] Add build outputs
+- [X] Create `local.properties.example` template
+- [X] iOS Xcode project configuration
+  - [X] Add Podfile for CocoaPods dependencies
+  - [X] Configure framework linking
+  - [X] Add SKIE configuration
 
 ### Project Structure
 
-- [ ] Create `shared/src/commonMain/kotlin/com/po4yka/bitesizereader/` package structure:
-  - [ ] `data/local/` - SQLDelight database
-  - [ ] `data/remote/` - Ktor API clients
-  - [ ] `data/remote/dto/` - API response/request models
-  - [ ] `data/repository/` - Repository implementations
-  - [ ] `data/mappers/` - DTO ↔ Domain mappers
-  - [ ] `domain/model/` - Domain entities
-  - [ ] `domain/repository/` - Repository interfaces
-  - [ ] `domain/usecase/` - Use cases
-  - [ ] `presentation/navigation/` - Decompose navigation components
-  - [ ] `presentation/viewmodel/` - Shared ViewModels
-  - [ ] `presentation/state/` - UI state models
-  - [ ] `di/` - Koin modules
-  - [ ] `util/` - Extensions and helpers
+- [X] Create `shared/src/commonMain/kotlin/com/po4yka/bitesizereader/` package structure:
+  - [X] `data/local/` - SQLDelight database
+  - [X] `data/remote/` - Ktor API clients
+  - [X] `data/remote/dto/` - API response/request models
+  - [X] `data/repository/` - Repository implementations
+  - [X] `data/mappers/` - DTO ↔ Domain mappers
+  - [X] `domain/model/` - Domain entities
+  - [X] `domain/repository/` - Repository interfaces
+  - [X] `domain/usecase/` - Use cases
+  - [X] `presentation/navigation/` - Decompose navigation components
+  - [X] `presentation/viewmodel/` - Shared ViewModels
+  - [X] `presentation/state/` - UI state models
+  - [X] `di/` - Koin modules
+  - [X] `util/` - Extensions and helpers
 
 ---
 
@@ -70,95 +70,95 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Domain Models
 
-- [ ] Create domain models in `domain/model/`:
-  - [ ] `Summary.kt` - Summary domain entity
-  - [ ] `Request.kt` - Request domain entity
-  - [ ] `User.kt` - User domain entity
-  - [ ] `SearchQuery.kt` - Search query model
-  - [ ] `SyncState.kt` - Sync state model
-  - [ ] `AuthTokens.kt` - JWT tokens model
-  - [ ] `RequestStatus.kt` - Request processing status
+- [X] Create domain models in `domain/model/`:
+  - [X] `Summary.kt` - Summary domain entity
+  - [X] `Request.kt` - Request domain entity
+  - [X] `User.kt` - User domain entity
+  - [X] `SearchQuery.kt` - Search query model
+  - [X] `SyncState.kt` - Sync state model
+  - [X] `AuthTokens.kt` - JWT tokens model
+  - [X] `RequestStatus.kt` - Request processing status
 
 ### API DTOs (kotlinx.serialization)
 
-- [ ] Create DTOs in `data/remote/dto/`:
-  - [ ] `SummaryDto.kt` - API summary response
-  - [ ] `SummaryListResponseDto.kt` - Paginated summary list
-  - [ ] `RequestDto.kt` - Request response
-  - [ ] `RequestStatusDto.kt` - Request status polling response
-  - [ ] `SearchResponseDto.kt` - Search results
-  - [ ] `AuthRequestDto.kt` - Telegram login request
-  - [ ] `AuthResponseDto.kt` - JWT tokens response
-  - [ ] `SyncDeltaResponseDto.kt` - Delta sync response
-  - [ ] `ApiResponseDto.kt` - Generic API wrapper
-  - [ ] `ErrorResponseDto.kt` - Error response
+- [X] Create DTOs in `data/remote/dto/`:
+  - [X] `SummaryDto.kt` - API summary response
+  - [X] `SummaryListResponseDto.kt` - Paginated summary list
+  - [X] `RequestDto.kt` - Request response
+  - [X] `RequestStatusDto.kt` - Request status polling response
+  - [X] `SearchResponseDto.kt` - Search results
+  - [X] `AuthRequestDto.kt` - Telegram login request
+  - [X] `AuthResponseDto.kt` - JWT tokens response
+  - [X] `SyncDeltaResponseDto.kt` - Delta sync response
+  - [X] `ApiResponseDto.kt` - Generic API wrapper
+  - [X] `ErrorResponseDto.kt` - Error response
 
 ### SQLDelight Database Schema
 
-- [ ] Create `shared/src/commonMain/sqldelight/com/po4yka/bitesizereader/Database.sq`:
-  - [ ] `Summary` table schema
-  - [ ] `Request` table schema
-  - [ ] `SyncMetadata` table schema
-  - [ ] Create indexes on `is_read`, `created_at`
-  - [ ] Create FTS5 virtual table for search
-  - [ ] Define queries: selectAll, selectById, insert, update, delete
-  - [ ] Define search queries
-  - [ ] Define pagination queries with limit/offset
+- [X] Create `shared/src/commonMain/sqldelight/com/po4yka/bitesizereader/Database.sq`:
+  - [X] `Summary` table schema
+  - [X] `Request` table schema
+  - [X] `SyncMetadata` table schema
+  - [X] Create indexes on `is_read`, `created_at`
+  - [X] Create FTS5 virtual table for search
+  - [X] Define queries: selectAll, selectById, insert, update, delete
+  - [X] Define search queries
+  - [X] Define pagination queries with limit/offset
 
 ### Ktor API Client
 
-- [ ] Create `data/remote/ApiClient.kt`:
-  - [ ] Configure Ktor HttpClient with JSON serialization
-  - [ ] Add Auth plugin with JWT bearer tokens
-  - [ ] Add Logging plugin (conditionally for debug builds)
-  - [ ] Add DefaultRequest plugin for base URL
-  - [ ] Platform-specific engines (OkHttp for Android, Darwin for iOS)
-  - [ ] Implement token refresh logic
-  - [ ] Implement request/response interceptors
-- [ ] Create API service interfaces:
-  - [ ] `AuthApi.kt` - Authentication endpoints
-  - [ ] `SummariesApi.kt` - Summary CRUD operations
-  - [ ] `RequestsApi.kt` - Request submission and status
-  - [ ] `SearchApi.kt` - Search endpoints
-  - [ ] `SyncApi.kt` - Sync endpoints
+- [X] Create `data/remote/ApiClient.kt`:
+  - [X] Configure Ktor HttpClient with JSON serialization
+  - [X] Add Auth plugin with JWT bearer tokens
+  - [X] Add Logging plugin (conditionally for debug builds)
+  - [X] Add DefaultRequest plugin for base URL
+  - [X] Platform-specific engines (OkHttp for Android, Darwin for iOS)
+  - [X] Implement token refresh logic
+  - [X] Implement request/response interceptors
+- [X] Create API service interfaces:
+  - [X] `AuthApi.kt` - Authentication endpoints
+  - [X] `SummariesApi.kt` - Summary CRUD operations
+  - [X] `RequestsApi.kt` - Request submission and status
+  - [X] `SearchApi.kt` - Search endpoints
+  - [X] `SyncApi.kt` - Sync endpoints
 
 ### Data Mappers
 
-- [ ] Create mappers in `data/mappers/`:
-  - [ ] `SummaryMapper.kt` - SummaryDto ↔ Summary
-  - [ ] `RequestMapper.kt` - RequestDto ↔ Request
-  - [ ] `SearchMapper.kt` - SearchResponseDto ↔ List<Summary>
-  - [ ] Extension functions for batch mapping
+- [X] Create mappers in `data/mappers/`:
+  - [X] `SummaryMapper.kt` - SummaryDto ↔ Summary
+  - [X] `RequestMapper.kt` - RequestDto ↔ Request
+  - [X] `SearchMapper.kt` - SearchResponseDto ↔ List<Summary>
+  - [X] Extension functions for batch mapping
 
 ### Store Repositories
 
-- [ ] Implement repositories in `data/repository/`:
-  - [ ] `SummaryRepositoryImpl.kt` - Store-based summary repository
-    - [ ] Configure Store with Fetcher (API) and SourceOfTruth (DB)
-    - [ ] Implement cache invalidation
-    - [ ] Implement pagination support
-  - [ ] `RequestRepositoryImpl.kt` - Request repository
-  - [ ] `SearchRepositoryImpl.kt` - Search repository with local/remote merge
-  - [ ] `SyncRepositoryImpl.kt` - Sync manager
-    - [ ] Full sync with chunked downloads
-    - [ ] Delta sync
-    - [ ] Upload local changes
-  - [ ] `AuthRepositoryImpl.kt` - Authentication repository
-    - [ ] Login with Telegram
-    - [ ] Token storage (platform-specific)
-    - [ ] Token refresh
-    - [ ] Logout
+- [X] Implement repositories in `data/repository/`:
+  - [X] `SummaryRepositoryImpl.kt` - Store-based summary repository
+    - [X] Configure Store with Fetcher (API) and SourceOfTruth (DB)
+    - [X] Implement cache invalidation
+    - [X] Implement pagination support
+  - [X] `RequestRepositoryImpl.kt` - Request repository
+  - [X] `SearchRepositoryImpl.kt` - Search repository with local/remote merge
+  - [X] `SyncRepositoryImpl.kt` - Sync manager
+    - [X] Full sync with chunked downloads
+    - [X] Delta sync
+    - [X] Upload local changes
+  - [X] `AuthRepositoryImpl.kt` - Authentication repository
+    - [X] Login with Telegram
+    - [X] Token storage (platform-specific)
+    - [X] Token refresh
+    - [X] Logout
 
 ### Platform-Specific Implementations
 
-- [ ] Android (`androidMain/`):
-  - [ ] `DatabaseDriverFactory.kt` - Android SQLDelight driver
-  - [ ] `SecureStorage.kt` - EncryptedSharedPreferences for tokens
-  - [ ] `PlatformContext.kt` - Android Context wrapper
-- [ ] iOS (`iosMain/`):
-  - [ ] `DatabaseDriverFactory.kt` - Native SQLDelight driver
-  - [ ] `SecureStorage.kt` - Keychain wrapper for tokens
-  - [ ] `PlatformContext.kt` - iOS platform utilities
+- [X] Android (`androidMain/`):
+  - [X] `DatabaseDriverFactory.kt` - Android SQLDelight driver
+  - [X] `SecureStorage.kt` - EncryptedSharedPreferences for tokens
+  - [X] `PlatformContext.kt` - Android Context wrapper
+- [X] iOS (`iosMain/`):
+  - [X] `DatabaseDriverFactory.kt` - Native SQLDelight driver
+  - [X] `SecureStorage.kt` - Keychain wrapper for tokens
+  - [X] `PlatformContext.kt` - iOS platform utilities
 
 ---
 
@@ -166,36 +166,36 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Repository Interfaces
 
-- [ ] Define interfaces in `domain/repository/`:
-  - [ ] `SummaryRepository.kt`
-  - [ ] `RequestRepository.kt`
-  - [ ] `SearchRepository.kt`
-  - [ ] `SyncRepository.kt`
-  - [ ] `AuthRepository.kt`
+- [X] Define interfaces in `domain/repository/`:
+  - [X] `SummaryRepository.kt`
+  - [X] `RequestRepository.kt`
+  - [X] `SearchRepository.kt`
+  - [X] `SyncRepository.kt`
+  - [X] `AuthRepository.kt`
 
 ### Use Cases
 
-- [ ] Implement use cases in `domain/usecase/`:
-  - [ ] **Summaries**:
-    - [ ] `GetSummariesUseCase.kt` - Fetch summaries with filters
-    - [ ] `GetSummaryByIdUseCase.kt` - Fetch single summary
-    - [ ] `MarkSummaryAsReadUseCase.kt` - Update read status
-    - [ ] `DeleteSummaryUseCase.kt` - Soft delete summary
-  - [ ] **Requests**:
-    - [ ] `SubmitURLUseCase.kt` - Submit URL and poll status
-    - [ ] `GetRequestStatusUseCase.kt` - Poll request status
-    - [ ] `RetryRequestUseCase.kt` - Retry failed request
-  - [ ] **Search**:
-    - [ ] `SearchSummariesUseCase.kt` - Search with local/remote merge
-    - [ ] `GetTrendingTopicsUseCase.kt` - Get trending topic tags
-  - [ ] **Sync**:
-    - [ ] `SyncDataUseCase.kt` - Full and delta sync
-    - [ ] `UploadChangesUseCase.kt` - Upload local changes
-  - [ ] **Auth**:
-    - [ ] `LoginWithTelegramUseCase.kt` - Telegram login flow
-    - [ ] `RefreshTokenUseCase.kt` - Refresh access token
-    - [ ] `LogoutUseCase.kt` - Clear tokens and local data
-    - [ ] `GetCurrentUserUseCase.kt` - Get current user
+- [X] Implement use cases in `domain/usecase/`:
+  - [X] **Summaries**:
+    - [X] `GetSummariesUseCase.kt` - Fetch summaries with filters
+    - [X] `GetSummaryByIdUseCase.kt` - Fetch single summary
+    - [X] `MarkSummaryAsReadUseCase.kt` - Update read status
+    - [X] `DeleteSummaryUseCase.kt` - Soft delete summary
+  - [X] **Requests**:
+    - [X] `SubmitURLUseCase.kt` - Submit URL and poll status
+    - [X] `GetRequestStatusUseCase.kt` - Poll request status
+    - [X] `RetryRequestUseCase.kt` - Retry failed request
+  - [X] **Search**:
+    - [X] `SearchSummariesUseCase.kt` - Search with local/remote merge
+    - [X] `GetTrendingTopicsUseCase.kt` - Get trending topic tags
+  - [X] **Sync**:
+    - [X] `SyncDataUseCase.kt` - Full and delta sync
+    - [X] `UploadChangesUseCase.kt` - Upload local changes
+  - [X] **Auth**:
+    - [X] `LoginWithTelegramUseCase.kt` - Telegram login flow
+    - [X] `RefreshTokenUseCase.kt` - Refresh access token
+    - [X] `LogoutUseCase.kt` - Clear tokens and local data
+    - [X] `GetCurrentUserUseCase.kt` - Get current user
 
 ---
 
@@ -203,45 +203,45 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### MVI State Models
 
-- [ ] Create state models in `presentation/state/`:
-  - [ ] `SummaryListState.kt` - Summary list UI state
-  - [ ] `SummaryDetailState.kt` - Summary detail UI state
-  - [ ] `SubmitURLState.kt` - URL submission UI state
-  - [ ] `SearchState.kt` - Search UI state
-  - [ ] `AuthState.kt` - Authentication UI state
+- [X] Create state models in `presentation/state/`:
+  - [X] `SummaryListState.kt` - Summary list UI state
+  - [X] `SummaryDetailState.kt` - Summary detail UI state
+  - [X] `SubmitURLState.kt` - URL submission UI state
+  - [X] `SearchState.kt` - Search UI state
+  - [X] `AuthState.kt` - Authentication UI state
 
 ### ViewModels
 
-- [ ] Implement ViewModels in `presentation/viewmodel/`:
-  - [ ] `SummaryListViewModel.kt`
-    - [ ] State: summaries, loading, error, filters, pagination
-    - [ ] Events: LoadSummaries, MarkAsRead, Filter, LoadMore
-  - [ ] `SummaryDetailViewModel.kt`
-    - [ ] State: summary, loading, error
-    - [ ] Events: LoadSummary, MarkAsRead, Delete, Share
-  - [ ] `SubmitURLViewModel.kt`
-    - [ ] State: url, validationError, requestStatus, progress
-    - [ ] Events: OnURLChange, Submit, CancelRequest
-  - [ ] `SearchViewModel.kt`
-    - [ ] State: query, results, loading, error
-    - [ ] Events: OnQueryChange, Search, ClearResults
-  - [ ] `AuthViewModel.kt`
-    - [ ] State: isAuthenticated, loading, error
-    - [ ] Events: LoginWithTelegram, Logout
+- [X] Implement ViewModels in `presentation/viewmodel/`:
+  - [X] `SummaryListViewModel.kt`
+    - [X] State: summaries, loading, error, filters, pagination
+    - [X] Events: LoadSummaries, MarkAsRead, Filter, LoadMore
+  - [X] `SummaryDetailViewModel.kt`
+    - [X] State: summary, loading, error
+    - [X] Events: LoadSummary, MarkAsRead, Delete, Share
+  - [X] `SubmitURLViewModel.kt`
+    - [X] State: url, validationError, requestStatus, progress
+    - [X] Events: OnURLChange, Submit, CancelRequest
+  - [X] `SearchViewModel.kt`
+    - [X] State: query, results, loading, error
+    - [X] Events: OnQueryChange, Search, ClearResults
+  - [X] `AuthViewModel.kt`
+    - [X] State: isAuthenticated, loading, error
+    - [X] Events: LoginWithTelegram, Logout
 
 ### Decompose Navigation
 
-- [ ] Create navigation components in `presentation/navigation/`:
-  - [ ] `RootComponent.kt` - Root navigation component
-    - [ ] Define Child sealed class (Splash, Auth, Main)
-    - [ ] Implement navigation logic
-  - [ ] `MainComponent.kt` - Main tab navigation
-    - [ ] Define tabs: SummaryList, Search, Profile
-  - [ ] `SummaryListComponent.kt` - Summary list component
-  - [ ] `SummaryDetailComponent.kt` - Summary detail component
-  - [ ] `SubmitURLComponent.kt` - Submit URL component
-  - [ ] `SearchComponent.kt` - Search component
-  - [ ] `AuthComponent.kt` - Authentication component
+- [X] Create navigation components in `presentation/navigation/`:
+  - [X] `RootComponent.kt` - Root navigation component
+    - [X] Define Child sealed class (Splash, Auth, Main)
+    - [X] Implement navigation logic
+  - [X] `MainComponent.kt` - Main tab navigation
+    - [X] Define tabs: SummaryList, Search, Profile
+  - [X] `SummaryListComponent.kt` - Summary list component
+  - [X] `SummaryDetailComponent.kt` - Summary detail component
+  - [X] `SubmitURLComponent.kt` - Submit URL component
+  - [X] `SearchComponent.kt` - Search component
+  - [X] `AuthComponent.kt` - Authentication component
 
 ---
 
@@ -249,28 +249,28 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Koin Modules
 
-- [ ] Create Koin modules in `di/`:
-  - [ ] `NetworkModule.kt`
-    - [ ] Provide HttpClient
-    - [ ] Provide API services
-  - [ ] `DatabaseModule.kt`
-    - [ ] Provide SQLDelight database instance
-    - [ ] Provide DAO queries
-  - [ ] `RepositoryModule.kt`
-    - [ ] Provide Store instances
-    - [ ] Provide repository implementations
-  - [ ] `UseCaseModule.kt`
-    - [ ] Provide all use cases
-  - [ ] `ViewModelModule.kt`
-    - [ ] Provide ViewModels
-  - [ ] `PlatformModule.kt`
-    - [ ] Provide platform-specific dependencies
-- [ ] Platform-specific modules:
-  - [ ] `androidMain/di/AndroidModule.kt`
-    - [ ] Provide Android Context
-    - [ ] Provide EncryptedSharedPreferences
-  - [ ] `iosMain/di/IosModule.kt`
-    - [ ] Provide Keychain wrapper
+- [X] Create Koin modules in `di/`:
+  - [X] `NetworkModule.kt`
+    - [X] Provide HttpClient
+    - [X] Provide API services
+  - [X] `DatabaseModule.kt`
+    - [X] Provide SQLDelight database instance
+    - [X] Provide DAO queries
+  - [X] `RepositoryModule.kt`
+    - [X] Provide Store instances
+    - [X] Provide repository implementations
+  - [X] `UseCaseModule.kt`
+    - [X] Provide all use cases
+  - [X] `ViewModelModule.kt`
+    - [X] Provide ViewModels
+  - [X] `PlatformModule.kt`
+    - [X] Provide platform-specific dependencies
+- [X] Platform-specific modules:
+  - [X] `androidMain/di/AndroidModule.kt`
+    - [X] Provide Android Context
+    - [X] Provide EncryptedSharedPreferences
+  - [X] `iosMain/di/IosModule.kt`
+    - [X] Provide Keychain wrapper
 
 ---
 
@@ -278,55 +278,55 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Theme & Design System
 
-- [ ] Create Material 3 theme in `composeApp/src/androidMain/kotlin/ui/theme/`:
-  - [ ] `Color.kt` - Color palette
-  - [ ] `Type.kt` - Typography
-  - [ ] `Theme.kt` - Material 3 theme composition
-  - [ ] Support dynamic colors (Material You)
-  - [ ] Dark mode support
+- [X] Create Material 3 theme in `composeApp/src/androidMain/kotlin/ui/theme/`:
+  - [X] `Color.kt` - Color palette
+  - [X] `Type.kt` - Typography
+  - [X] `Theme.kt` - Material 3 theme composition
+  - [X] Support dynamic colors (Material You)
+  - [X] Dark mode support
 
 ### Composable Screens
 
-- [ ] Create screens in `composeApp/src/androidMain/kotlin/ui/screens/`:
-  - [ ] `SummaryListScreen.kt`
-    - [ ] LazyColumn with pagination
-    - [ ] Pull-to-refresh
-    - [ ] Swipe-to-mark-read
-    - [ ] Filter chips
-    - [ ] FAB for submit URL
-  - [ ] `SummaryDetailScreen.kt`
-    - [ ] Scrollable content
-    - [ ] Collapsing toolbar
-    - [ ] Share button
-    - [ ] Mark as read/unread toggle
-  - [ ] `SubmitURLScreen.kt`
-    - [ ] URL input field with validation
-    - [ ] Submit button
-    - [ ] Progress indicator with stages
-    - [ ] Cancel button
-  - [ ] `SearchScreen.kt`
-    - [ ] Search bar
-    - [ ] Results list
-    - [ ] Topic tag chips
-  - [ ] `AuthScreen.kt`
-    - [ ] Login with Telegram button
-    - [ ] Custom Tab for Telegram widget
+- [X] Create screens in `composeApp/src/androidMain/kotlin/ui/screens/`:
+  - [X] `SummaryListScreen.kt`
+    - [X] LazyColumn with pagination
+    - [X] Pull-to-refresh
+    - [X] Swipe-to-mark-read
+    - [X] Filter chips
+    - [X] FAB for submit URL
+  - [X] `SummaryDetailScreen.kt`
+    - [X] Scrollable content
+    - [X] Collapsing toolbar
+    - [X] Share button
+    - [X] Mark as read/unread toggle
+  - [X] `SubmitURLScreen.kt`
+    - [X] URL input field with validation
+    - [X] Submit button
+    - [X] Progress indicator with stages
+    - [X] Cancel button
+  - [X] `SearchScreen.kt`
+    - [X] Search bar
+    - [X] Results list
+    - [X] Topic tag chips
+  - [X] `AuthScreen.kt`
+    - [X] Login with Telegram button
+    - [X] Custom Tab for Telegram widget
 
 ### Reusable Components
 
-- [ ] Create components in `composeApp/src/androidMain/kotlin/ui/components/`:
-  - [ ] `SummaryCard.kt` - Summary list item
-  - [ ] `TagChip.kt` - Topic tag chip
-  - [ ] `ProgressIndicatorWithStages.kt` - Request progress
-  - [ ] `ErrorView.kt` - Error state view
-  - [ ] `EmptyStateView.kt` - Empty state view
+- [X] Create components in `composeApp/src/androidMain/kotlin/ui/components/`:
+  - [X] `SummaryCard.kt` - Summary list item
+  - [X] `TagChip.kt` - Topic tag chip
+  - [X] `ProgressIndicatorWithStages.kt` - Request progress
+  - [X] `ErrorView.kt` - Error state view
+  - [X] `EmptyStateView.kt` - Empty state view
 
 ### Navigation (Compose)
 
-- [ ] Implement Decompose integration:
-  - [ ] `MainActivity.kt` - Initialize RootComponent
-  - [ ] Create Composable wrappers for Decompose components
-  - [ ] Handle back navigation
+- [X] Implement Decompose integration:
+  - [X] `MainActivity.kt` - Initialize RootComponent
+  - [X] Create Composable wrappers for Decompose components
+  - [X] Handle back navigation
 
 ### Platform Features
 
@@ -341,36 +341,36 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### SwiftUI Views
 
-- [ ] Create views in `iosApp/iosApp/Views/`:
-  - [ ] `SummaryListView.swift`
-    - [ ] List with pagination
-    - [ ] Pull-to-refresh
-    - [ ] Swipe actions
-    - [ ] Search bar
-  - [ ] `SummaryDetailView.swift`
-    - [ ] ScrollView content
-    - [ ] Navigation bar buttons
-    - [ ] Share sheet
-  - [ ] `SubmitURLView.swift`
-    - [ ] TextField with validation
-    - [ ] Progress view with stages
-  - [ ] `SearchView.swift`
-    - [ ] Search bar
-    - [ ] Results list
-  - [ ] `AuthView.swift`
-    - [ ] Login with Telegram button
-    - [ ] WKWebView for Telegram widget
+- [X] Create views in `iosApp/iosApp/Views/`:
+  - [X] `SummaryListView.swift`
+    - [X] List with pagination
+    - [X] Pull-to-refresh
+    - [X] Swipe actions
+    - [X] Search bar
+  - [X] `SummaryDetailView.swift`
+    - [X] ScrollView content
+    - [X] Navigation bar buttons
+    - [X] Share sheet
+  - [X] `SubmitURLView.swift`
+    - [X] TextField with validation
+    - [X] Progress view with stages
+  - [X] `SearchView.swift`
+    - [X] Search bar
+    - [X] Results list
+  - [X] `AuthView.swift`
+    - [X] Login with Telegram button
+    - [X] WKWebView for Telegram widget
 
 ### Swift ViewModel Wrappers (SKIE)
 
-- [ ] Create Swift wrappers in `iosApp/iosApp/ViewModels/`:
-  - [ ] `SummaryListViewModelWrapper.swift`
-    - [ ] Convert Flow to AsyncSequence
-    - [ ] ObservableObject conformance
-  - [ ] `SummaryDetailViewModelWrapper.swift`
-  - [ ] `SubmitURLViewModelWrapper.swift`
-  - [ ] `SearchViewModelWrapper.swift`
-  - [ ] `AuthViewModelWrapper.swift`
+- [X] Create Swift wrappers in `iosApp/iosApp/ViewModels/`:
+  - [X] `SummaryListViewModelWrapper.swift`
+    - [X] Convert Flow to AsyncSequence
+    - [X] ObservableObject conformance
+  - [X] `SummaryDetailViewModelWrapper.swift`
+  - [X] `SubmitURLViewModelWrapper.swift`
+  - [X] `SearchViewModelWrapper.swift`
+  - [X] `AuthViewModelWrapper.swift`
 
 ### Platform Features
 
@@ -535,32 +535,6 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
   - [ ] Apple Watch companion app
   - [ ] Siri Shortcuts
   - [ ] Live Activities for request processing
-
-### Technical Improvements
-
-- [ ] Migrate to Compose Multiplatform (when stable for iOS)
-- [ ] GraphQL API integration (if backend migrates)
-- [ ] End-to-end encryption for local database
-- [ ] WebSocket for real-time request status updates
-- [ ] Advanced caching strategies
-- [ ] A/B testing framework
-- [ ] Analytics integration
-
----
-
-## Known Issues / Blockers
-
-- [!] None currently
-
----
-
-## Notes
-
-- All tasks should be completed in order within each phase
-- Each completed task should have a corresponding commit
-- Write tests alongside implementation, not after
-- Update this document as requirements change
-- Mark tasks as [R] when they need code review
 
 ---
 

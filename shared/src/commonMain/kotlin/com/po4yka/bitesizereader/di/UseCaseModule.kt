@@ -1,18 +1,21 @@
 package com.po4yka.bitesizereader.di
 
 import com.po4yka.bitesizereader.domain.usecase.*
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
-/**
- * Koin module for use case dependencies
- */
-val useCaseModule =
-    module {
-        factory { GetSummariesUseCase(get()) }
-        factory { GetSummaryByIdUseCase(get()) }
-        factory { SubmitURLUseCase(get()) }
-        factory { LoginWithTelegramUseCase(get()) }
-        factory { SyncDataUseCase(get()) }
-        factory { SearchSummariesUseCase(get()) }
-        factory { MarkSummaryAsReadUseCase(get()) }
-    }
+val useCaseModule = module {
+    factoryOf(::GetSummariesUseCase)
+    factoryOf(::GetSummaryByIdUseCase)
+    factoryOf(::MarkSummaryAsReadUseCase)
+    factoryOf(::DeleteSummaryUseCase)
+    factoryOf(::SubmitURLUseCase)
+    factoryOf(::GetRequestStatusUseCase)
+    factoryOf(::RetryRequestUseCase)
+    factoryOf(::SearchSummariesUseCase)
+    factoryOf(::GetTrendingTopicsUseCase)
+    factoryOf(::SyncDataUseCase)
+    factoryOf(::LoginWithTelegramUseCase)
+    factoryOf(::LogoutUseCase)
+    factoryOf(::GetCurrentUserUseCase)
+}

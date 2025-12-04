@@ -94,6 +94,3 @@ fastlane/screenshots
 
 # Node Modules
 node_modules/
-
-# SQLDelight
-*.sq

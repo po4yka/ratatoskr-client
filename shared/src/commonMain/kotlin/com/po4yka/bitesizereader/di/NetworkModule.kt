@@ -1,60 +1,33 @@
 package com.po4yka.bitesizereader.di
 
-import com.po4yka.bitesizereader.data.local.SecureStorage
-import com.po4yka.bitesizereader.data.remote.TokenProvider
-import com.po4yka.bitesizereader.data.remote.api.*
-import com.po4yka.bitesizereader.data.remote.createHttpClient
+import com.po4yka.bitesizereader.data.remote.ApiClient
+import com.po4yka.bitesizereader.data.remote.AuthApi
+import com.po4yka.bitesizereader.data.remote.KtorAuthApi
+import com.po4yka.bitesizereader.data.remote.KtorRequestsApi
+import com.po4yka.bitesizereader.data.remote.KtorSearchApi
+import com.po4yka.bitesizereader.data.remote.KtorSummariesApi
+import com.po4yka.bitesizereader.data.remote.KtorSyncApi
+import com.po4yka.bitesizereader.data.remote.RequestsApi
+import com.po4yka.bitesizereader.data.remote.SearchApi
+import com.po4yka.bitesizereader.data.remote.SummariesApi
+import com.po4yka.bitesizereader.data.remote.SyncApi
+import io.ktor.client.engine.HttpClientEngine
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
-/**
- * Koin module for network dependencies
- *
- * Uses lazy initialization (createdAtStart = false) to defer HTTP client and API creation
- * until network requests are needed, improving startup performance.
- */
-val networkModule =
-    module {
-        // Lazy singleton - Token provider
-        single<TokenProvider>(createdAtStart = false) {
-            object : TokenProvider {
-                private val secureStorage: SecureStorage by lazy { get() }
-
-                override suspend fun getTokens(): Pair<String, String>? {
-                    val accessToken = secureStorage.getAccessToken()
-                    val refreshToken = secureStorage.getRefreshToken()
-
-                    return if (!accessToken.isNullOrEmpty() && !refreshToken.isNullOrEmpty()) {
-                        accessToken to refreshToken
-                    } else {
-                        null
-                    }
-                }
-
-                override suspend fun refreshToken(refreshToken: String): Pair<String, String>? {
-                    // Refresh logic handled by AuthRepository
-                    return null
-                }
-
-                override suspend fun clearTokens() {
-                    secureStorage.clearTokens()
-                }
-            }
-        }
-
-        // Lazy singleton - HTTP Client (platform-specific engine provided separately)
-        single(createdAtStart = false) {
-            createHttpClient(
-                engine = get(),
-                baseUrl = getProperty("api.base.url"),
-                tokenProvider = get(),
-                enableLogging = getProperty("api.logging.enabled", true),
-            )
-        }
-
-        // Lazy singletons - API implementations
-        single<AuthApi>(createdAtStart = false) { AuthApiImpl(get()) }
-        single<SummariesApi>(createdAtStart = false) { SummariesApiImpl(get()) }
-        single<RequestsApi>(createdAtStart = false) { RequestsApiImpl(get()) }
-        single<SearchApi>(createdAtStart = false) { SearchApiImpl(get()) }
-        single<SyncApi>(createdAtStart = false) { SyncApiImpl(get()) }
+val networkModule = module {
+    single {
+        ApiClient(
+            engine = get(),
+            baseUrl = "http://10.0.2.2:8000", // TODO: Use Build Config
+            secureStorage = get()
+        ).client
     }
+
+    singleOf(::KtorAuthApi) bind AuthApi::class
+    singleOf(::KtorSummariesApi) bind SummariesApi::class
+    singleOf(::KtorRequestsApi) bind RequestsApi::class
+    singleOf(::KtorSearchApi) bind SearchApi::class
+    singleOf(::KtorSyncApi) bind SyncApi::class
+}

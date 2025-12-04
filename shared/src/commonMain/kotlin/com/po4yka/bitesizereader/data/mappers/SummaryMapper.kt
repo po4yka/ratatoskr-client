@@ -1,105 +1,58 @@
-@file:OptIn(kotlin.time.ExperimentalTime::class)
-
 package com.po4yka.bitesizereader.data.mappers
 
-import com.po4yka.bitesizereader.data.remote.dto.*
-import com.po4yka.bitesizereader.domain.model.*
+import com.po4yka.bitesizereader.data.remote.dto.SummaryDto
+import com.po4yka.bitesizereader.database.SummaryEntity
+import com.po4yka.bitesizereader.domain.model.Summary
 import kotlinx.datetime.Instant
-import kotlin.time.ExperimentalTime
 
-/**
- * Maps Summary DTOs to domain models and vice versa
- */
-
-fun SummaryCompactDto.toDomain(): Summary {
+fun SummaryDto.toDomain(): Summary {
     return Summary(
         id = id,
-        requestId = requestId,
         title = title,
-        url = url,
-        domain = domain,
-        tldr = tldr,
-        summary250 = summary250,
-        summary1000 = null,
-        keyIdeas = emptyList(),
-        topicTags = topicTags,
-        answeredQuestions = emptyList(),
-        seoKeywords = emptyList(),
-        readingTimeMin = readingTimeMin,
-        lang = lang,
-        entities = null,
-        keyStats = emptyList(),
-        readability = null,
-        isRead = isRead,
+        content = content,
+        sourceUrl = sourceUrl,
+        imageUrl = imageUrl,
         createdAt = Instant.parse(createdAt),
-        updatedAt = null,
+        isRead = false,
+        tags = tags
     )
 }
 
-fun SummaryDetailDto.toDomain(): Summary {
+fun SummaryEntity.toDomain(): Summary {
     return Summary(
         id = id,
-        requestId = requestId,
         title = title,
-        url = url,
-        domain = domain,
-        tldr = tldr,
-        summary250 = summary250,
-        summary1000 = summary1000,
-        keyIdeas = keyIdeas,
-        topicTags = topicTags,
-        answeredQuestions = answeredQuestions,
-        seoKeywords = seoKeywords,
-        readingTimeMin = readingTimeMin,
-        lang = lang,
-        entities = entities?.toDomain(),
-        keyStats = keyStats.map { it.toDomain() },
-        readability = readability?.toDomain(),
+        content = content,
+        sourceUrl = sourceUrl,
+        imageUrl = imageUrl,
+        createdAt = createdAt,
         isRead = isRead,
+        tags = tags
+    )
+}
+
+fun SummaryDto.toEntity(isRead: Boolean = false): SummaryEntity {
+    return SummaryEntity(
+        id = id,
+        title = title,
+        content = content,
+        sourceUrl = sourceUrl,
+        imageUrl = imageUrl,
         createdAt = Instant.parse(createdAt),
-        updatedAt = updatedAt?.let { Instant.parse(it) },
-    )
-}
-
-fun EntitiesDto.toDomain(): Entities {
-    return Entities(
-        people = people,
-        organizations = organizations,
-        locations = locations,
-    )
-}
-
-fun KeyStatDto.toDomain(): KeyStat {
-    return KeyStat(
-        label = label,
-        value = value,
-        unit = unit,
-        sourceExcerpt = sourceExcerpt,
-    )
-}
-
-fun ReadabilityDto.toDomain(): Readability {
-    return Readability(
-        method = method,
-        score = score,
-        level = level,
-    )
-}
-
-// Domain to DTO conversions (for upload)
-
-fun Summary.toUpdateRequestDto(): SummaryUpdateRequestDto {
-    return SummaryUpdateRequestDto(
         isRead = isRead,
+        tags = tags
     )
 }
 
-// Batch mapping extensions
-
-fun List<SummaryCompactDto>.toDomain(): List<Summary> {
-    return map { it.toDomain() }
-}
-
-fun List<SummaryDetailDto>.toDomainDetailed(): List<Summary> {
-    return map { it.toDomain() }
+fun Summary.toEntity(): SummaryEntity {
+    return SummaryEntity(
+        id = id,
+        title = title,
+        content = content,
+        sourceUrl = sourceUrl,
+        imageUrl = imageUrl,
+        createdAt = createdAt,
+        isRead = isRead,
+        tags = tags
+    )
 }

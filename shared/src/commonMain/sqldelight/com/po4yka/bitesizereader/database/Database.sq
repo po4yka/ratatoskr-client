@@ -1,0 +1,106 @@
+import kotlin.Boolean;
+import kotlin.String;
+import kotlin.collections.List;
+import kotlinx.datetime.Instant;
+
+CREATE TABLE summaryEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    sourceUrl TEXT NOT NULL,
+    imageUrl TEXT,
+    createdAt INTEGER AS Instant NOT NULL,
+    isRead INTEGER AS Boolean NOT NULL DEFAULT 0,
+    tags TEXT AS List<String> NOT NULL
+);
+
+CREATE INDEX summary_isRead ON summaryEntity(isRead);
+CREATE INDEX summary_createdAt ON summaryEntity(createdAt);
+
+CREATE TABLE requestEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    url TEXT NOT NULL,
+    status TEXT NOT NULL,
+    createdAt INTEGER AS Instant NOT NULL,
+    updatedAt INTEGER AS Instant NOT NULL
+);
+
+CREATE TABLE syncMetadataEntity (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT 0,
+    lastSyncTime INTEGER AS Instant,
+    syncToken TEXT
+);
+
+-- FTS5 Search
+CREATE VIRTUAL TABLE summaryFTS USING fts5(
+    title,
+    content,
+    tags,
+    content='summaryEntity'
+);
+
+CREATE TRIGGER summary_ai AFTER INSERT ON summaryEntity BEGIN
+  INSERT INTO summaryFTS(rowid, title, content, tags) VALUES (new.rowid, new.title, new.content, new.tags);
+END;
+
+CREATE TRIGGER summary_ad AFTER DELETE ON summaryEntity BEGIN
+  INSERT INTO summaryFTS(summaryFTS, rowid, title, content, tags) VALUES('delete', old.rowid, old.title, old.content, old.tags);
+END;
+
+CREATE TRIGGER summary_au AFTER UPDATE ON summaryEntity BEGIN
+  INSERT INTO summaryFTS(summaryFTS, rowid, title, content, tags) VALUES('delete', old.rowid, old.title, old.content, old.tags);
+  INSERT INTO summaryFTS(rowid, title, content, tags) VALUES (new.rowid, new.title, new.content, new.tags);
+END;
+
+-- Summary Queries
+selectAllSummaries:
+SELECT * FROM summaryEntity
+ORDER BY createdAt DESC
+LIMIT :limit OFFSET :offset;
+
+getSummaryById:
+SELECT * FROM summaryEntity
+WHERE id = :id;
+
+insertSummary:
+INSERT OR REPLACE INTO summaryEntity(id, title, content, sourceUrl, imageUrl, createdAt, isRead, tags)
+VALUES ?;
+
+updateSummaryReadStatus:
+UPDATE summaryEntity
+SET isRead = :isRead
+WHERE id = :id;
+
+deleteSummary:
+DELETE FROM summaryEntity
+WHERE id = :id;
+
+searchSummaries:
+SELECT summaryEntity.*
+FROM summaryEntity
+JOIN summaryFTS ON summaryEntity.rowid = summaryFTS.rowid
+WHERE summaryFTS MATCH :query
+ORDER BY rank;
+
+-- Request Queries
+selectAllRequests:
+SELECT * FROM requestEntity
+ORDER BY createdAt DESC;
+
+insertRequest:
+INSERT OR REPLACE INTO requestEntity(id, url, status, createdAt, updatedAt)
+VALUES ?;
+
+updateRequestStatus:
+UPDATE requestEntity
+SET status = :status, updatedAt = :updatedAt
+WHERE id = :id;
+
+-- Sync Queries
+getSyncMetadata:
+SELECT * FROM syncMetadataEntity
+WHERE id = 0;
+
+updateSyncMetadata:
+INSERT OR REPLACE INTO syncMetadataEntity(id, lastSyncTime, syncToken)
+VALUES (0, :lastSyncTime, :syncToken);
