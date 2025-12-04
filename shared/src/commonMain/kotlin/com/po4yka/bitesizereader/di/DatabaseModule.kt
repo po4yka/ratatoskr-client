@@ -26,10 +26,6 @@ val databaseModule = module {
                     override fun decode(databaseValue: String): List<String> =
                          if (databaseValue.isBlank()) emptyList() else databaseValue.split(",")
                     override fun encode(value: List<String>): String = value.joinToString(",")
-                },
-                isReadAdapter = object : ColumnAdapter<Boolean, Long> {
-                     override fun decode(databaseValue: Long): Boolean = databaseValue == 1L
-                     override fun encode(value: Boolean): Long = if (value) 1L else 0L
                 }
             ),
             requestEntityAdapter = com.po4yka.bitesizereader.database.RequestEntity.Adapter(

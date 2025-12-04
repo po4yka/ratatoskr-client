@@ -53,25 +53,21 @@ fun Summary.toShareText(customMessage: String? = null): String {
         appendLine(title)
         appendLine()
 
-        if (tldr.isNotBlank()) {
+        // Use available fields from current Summary model
+        // Note: tldr, keyIdeas, topicTags might not be present in the new Summary model
+        // Adjusting to what's available: content, sourceUrl, tags
+        
+        if (content.isNotBlank()) {
             appendLine("Summary:")
-            appendLine(tldr)
+            appendLine(content)
             appendLine()
         }
 
-        if (keyIdeas.isNotEmpty()) {
-            appendLine("Key Points:")
-            keyIdeas.forEach { point ->
-                appendLine("• $point")
-            }
-            appendLine()
-        }
+        appendLine("Read more: $sourceUrl")
 
-        appendLine("Read more: $url")
-
-        if (topicTags.isNotEmpty()) {
+        if (tags.isNotEmpty()) {
             appendLine()
-            append("Tags: ${topicTags.joinToString(", ") { "#$it" }}")
+            append("Tags: ${tags.joinToString(", ") { "#$it" }}")
         }
     }
 }

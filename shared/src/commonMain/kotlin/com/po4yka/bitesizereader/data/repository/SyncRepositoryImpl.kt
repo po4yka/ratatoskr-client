@@ -20,20 +20,20 @@ class SyncRepositoryImpl(
 ) : SyncRepository {
 
     override suspend fun sync() {
-        val metadata = database.syncMetadataEntityQueries.getSyncMetadata().executeAsOneOrNull()
+        val metadata = database.databaseQueries.syncMetadataEntityQueries.getSyncMetadata().executeAsOneOrNull()
         val token = metadata?.syncToken
 
         val response = api.sync(token)
 
         database.transaction {
             response.upsertedSummaries.forEach { dto ->
-                database.summaryEntityQueries.insertSummary(dto.toEntity())
+                database.databaseQueries.summaryEntityQueries.insertSummary(dto.toEntity())
             }
             response.deletedSummaryIds.forEach { id ->
-                database.summaryEntityQueries.deleteSummary(id)
+                database.databaseQueries.summaryEntityQueries.deleteSummary(id)
             }
             
-            database.syncMetadataEntityQueries.updateSyncMetadata(
+            database.databaseQueries.syncMetadataEntityQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
                 syncToken = response.syncToken
             )
@@ -41,7 +41,7 @@ class SyncRepositoryImpl(
     }
 
     override fun getSyncState(): Flow<SyncState> {
-        return database.syncMetadataEntityQueries.getSyncMetadata()
+        return database.databaseQueries.syncMetadataEntityQueries.getSyncMetadata()
             .asFlow().mapToOneOrNull(Dispatchers.IO).map { entity ->
                 SyncState(
                     lastSyncTime = entity?.lastSyncTime,

@@ -6,6 +6,23 @@ import kotlin.math.pow
 
 private val logger = KotlinLogging.logger {}
 
+sealed class RetryStrategy {
+    data object NoRetry : RetryStrategy()
+    data class Immediate(val maxAttempts: Int) : RetryStrategy()
+    data class FixedDelay(val maxAttempts: Int, val delayMs: Long) : RetryStrategy()
+    data class ExponentialBackoff(val maxAttempts: Int, val initialDelayMs: Long = 1000, val maxDelayMs: Long = 32000, val multiplier: Double = 2.0) : RetryStrategy() {
+        fun getDelayForAttempt(attempt: Int): Long = calculateExponentialBackoff(attempt, initialDelayMs, maxDelayMs, multiplier)
+    }
+    data object WhenOnline : RetryStrategy()
+}
+
+// Helper to get default strategy from AppError
+fun AppError.getRetryStrategy(): RetryStrategy = when (this) {
+    is AppError.NetworkError -> RetryStrategy.ExponentialBackoff(maxAttempts = 3)
+    is AppError.ServerError -> if (code in 500..599) RetryStrategy.ExponentialBackoff(maxAttempts = 3) else RetryStrategy.NoRetry
+    else -> RetryStrategy.NoRetry
+}
+
 /**
  * Retry a suspending operation with the specified strategy
  */
