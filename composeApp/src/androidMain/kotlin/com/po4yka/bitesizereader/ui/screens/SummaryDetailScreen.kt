@@ -9,8 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.po4yka.bitesizereader.presentation.navigation.SummaryDetailComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,16 +37,31 @@ fun SummaryDetailScreen(component: SummaryDetailComponent) {
             modifier = Modifier
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp)
         ) {
             if (state.isLoading) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
             } else if (summary != null) {
-                Text(text = summary.title, style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = summary.content, style = MaterialTheme.typography.bodyLarge)
+                summary.imageUrl?.let { url ->
+                    AsyncImage(
+                        model = url,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(text = summary.title, style = MaterialTheme.typography.headlineMedium)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = summary.content, style = MaterialTheme.typography.bodyLarge)
+                }
             } else if (state.error != null) {
-                Text(text = "Error: ${state.error}", color = MaterialTheme.colorScheme.error)
+                Text(
+                    text = "Error: ${state.error}", 
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
+                )
             }
         }
     }

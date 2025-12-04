@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader
 
 import android.app.Application
+import com.po4yka.bitesizereader.di.imageLoaderModule
 import com.po4yka.bitesizereader.di.initKoin
 import org.koin.android.ext.koin.androidContext
 
@@ -14,6 +15,7 @@ class BiteSizeReaderApp : Application() {
         // Initialize Koin
         initKoin {
             androidContext(this@BiteSizeReaderApp)
+            modules(imageLoaderModule)
             // properties(...) if needed
         }
 

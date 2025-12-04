@@ -8,8 +8,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.po4yka.bitesizereader.presentation.navigation.SummaryListComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,6 +28,16 @@ fun SummaryListScreen(component: SummaryListComponent) {
             LazyColumn(contentPadding = padding) {
                 items(state.summaries) { summary ->
                     ListItem(
+                        leadingContent = {
+                            summary.imageUrl?.let { url ->
+                                AsyncImage(
+                                    model = url,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(56.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        },
                         headlineContent = { Text(summary.title) },
                         supportingContent = { Text(summary.sourceUrl) },
                         modifier = Modifier.clickable { component.onSummaryClicked(summary.id) }
