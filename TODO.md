@@ -330,10 +330,10 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Platform Features
 
-- [ ] Share Intent - Receive URLs from other apps
-- [ ] WorkManager - Background sync
-- [ ] App Widget - Home screen widget with recent summaries
-- [ ] App Shortcuts - Quick actions (Submit URL, Search)
+- [X] Share Intent - Receive URLs from other apps
+- [X] WorkManager - Background sync
+- [X] App Widget - Home screen widget with recent summaries
+- [X] App Shortcuts - Quick actions (Submit URL, Search)
 
 ---
 
@@ -374,10 +374,10 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Platform Features
 
-- [ ] Share Extension - Submit URLs from Safari
-- [ ] WidgetKit - Home screen widget
-- [ ] Universal Links - Deep linking
-- [ ] Background Tasks - Background sync
+- [X] Share Extension - Submit URLs from Safari
+- [X] WidgetKit - Home screen widget
+- [X] Universal Links - Deep linking
+- [X] Background Tasks - Background sync
 
 ---
 

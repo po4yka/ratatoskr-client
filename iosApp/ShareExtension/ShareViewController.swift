@@ -1,78 +1,57 @@
 import UIKit
 import Social
 import MobileCoreServices
-import UniformTypeIdentifiers
+import Shared // Assuming you have a shared framework available
 
-/**
- * Share Extension View Controller
- * Receives URLs shared from Safari, Chrome, and other apps
- */
 class ShareViewController: SLComposeServiceViewController {
 
     override func isContentValid() -> Bool {
-        // Always valid since we just extract and forward the URL
+        // Do validation of contentText and/or NSExtensionContext attachments here
         return true
     }
 
-    override func didSelectPost() {
-        // Extract URL from share context
-        if let item = extensionContext?.inputItems.first as? NSExtensionItem,
+    override fun didSelectPost() {
+        // This is called after the user selects Post. Do the upload of contentText and/or NSExtensionContext attachments.
+        
+        guard let extensionContext = self.extensionContext else { return }
+        
+        let content = contentText
+        
+        // Find URL in attachments
+        if let item = extensionContext.inputItems.first as? NSExtensionItem,
            let attachments = item.attachments {
-
-            for attachment in attachments {
-                // Check for URL type
-                if attachment.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
-                    attachment.loadItem(forTypeIdentifier: UTType.url.identifier, options: nil) { [weak self] (url, error) in
-                        if let shareURL = url as? URL {
-                            self?.saveSharedURL(shareURL.absoluteString)
+            
+            for provider in attachments {
+                if provider.hasItemConformingToTypeIdentifier(kUTTypeURL as String) {
+                    provider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil) { [weak self] (data, error) in
+                        if let url = data as? URL {
+                            self?.submitUrl(url.absoluteString)
                         }
-                        self?.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
                     }
-                    return
-                }
-
-                // Check for web page (fallback for some browsers)
-                if attachment.hasItemConformingToTypeIdentifier(UTType.propertyList.identifier) {
-                    attachment.loadItem(forTypeIdentifier: UTType.propertyList.identifier, options: nil) { [weak self] (data, error) in
-                        if let dictionary = data as? [String: Any],
-                           let results = dictionary[NSExtensionJavaScriptPreprocessingResultsKey] as? [String: Any],
-                           let urlString = results["URL"] as? String {
-                            self?.saveSharedURL(urlString)
-                        }
-                        self?.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
-                    }
-                    return
                 }
             }
         }
-
-        // No valid URL found - still complete the request
-        extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+        
+        // Inform the host that we're done, so it un-blocks its UI. Note: Alternatively you could call super's -didSelectPost, which will similarly complete the extension context.
+        self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
     }
 
     override func configurationItems() -> [Any]! {
-        // No additional configuration UI needed
+        // To add configuration options via table cells at the bottom of the sheet, return an array of SLComposeSheetConfigurationItem here.
         return []
     }
-
-    override func presentationAnimationDidFinish() {
-        // Auto-post immediately when opened (no user interaction needed)
-        didSelectPost()
-    }
-
-    // MARK: - Private Methods
-
-    /// Save shared URL to UserDefaults (shared with main app via App Group)
-    private func saveSharedURL(_ url: String) {
-        // Use App Group to share data between extension and main app
-        if let sharedDefaults = UserDefaults(suiteName: "group.com.po4yka.bitesizereader") {
-            sharedDefaults.set(url, forKey: "sharedURL")
-            sharedDefaults.set(Date(), forKey: "sharedURLTimestamp")
-            sharedDefaults.synchronize()
-
-            print("[ShareExtension] Saved URL to shared storage: \(url)")
-        } else {
-            print("[ShareExtension] ERROR: Could not access shared UserDefaults")
+    
+    private func submitUrl(_ url: String) {
+        // Logic to call Shared Kotlin code to submit URL
+        // Note: This requires the Shared framework to be linked to the Extension target
+        // and potentially sharing data via App Groups (NSUserDefaults suite) if direct network call isn't desired/possible immediately.
+        print("Submitting URL from Share Extension: \(url)")
+        
+        // Example: Save to shared defaults to be picked up by main app
+        if let userDefaults = UserDefaults(suiteName: "group.com.po4yka.bitesizereader") {
+            var pendingUrls = userDefaults.array(forKey: "pending_urls") as? [String] ?? []
+            pendingUrls.append(url)
+            userDefaults.set(pendingUrls, forKey: "pending_urls")
         }
     }
 }
