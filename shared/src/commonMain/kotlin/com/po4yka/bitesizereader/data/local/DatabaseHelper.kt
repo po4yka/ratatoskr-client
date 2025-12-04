@@ -21,7 +21,7 @@ class DatabaseHelper(private val database: Database) {
      * Insert or update a summary in the database
      */
     fun insertSummary(summary: Summary) {
-        database.summaryQueries.insert(
+        database.databaseQueries.insert(
             id = summary.id.toLong(),
             requestId = summary.requestId.toLong(),
             title = summary.title,
@@ -52,7 +52,7 @@ class DatabaseHelper(private val database: Database) {
      * Insert or update a request in the database
      */
     fun insertRequest(request: Request) {
-        database.requestQueries.insert(
+        database.databaseQueries.insertRequest(
             id = request.id.toLong(),
             inputUrl = request.inputUrl,
             type = request.type.name,
@@ -74,27 +74,27 @@ class DatabaseHelper(private val database: Database) {
      * Clear all summaries from the database
      */
     fun clearAllSummaries() {
-        database.summaryQueries.deleteAll()
+        database.databaseQueries.deleteAll()
     }
 
     /**
      * Mark summaries as synced
      */
     fun markAsSynced(ids: List<Int>) {
-        database.summaryQueries.markAsSynced(ids.map { it.toLong() })
+        database.databaseQueries.markAsSynced(ids.map { it.toLong() })
     }
 
     /**
      * Get/set sync metadata
      */
     fun getSyncMetadata(key: String): String? {
-        return database.syncMetadataQueries.get(key).executeAsOneOrNull()
+        return database.databaseQueries.getSyncMetadata(key).executeAsOneOrNull()
     }
 
     fun setSyncMetadata(
         key: String,
         value: String,
     ) {
-        database.syncMetadataQueries.set(key, value)
+        database.databaseQueries.setSyncMetadata(key, value)
     }
 }

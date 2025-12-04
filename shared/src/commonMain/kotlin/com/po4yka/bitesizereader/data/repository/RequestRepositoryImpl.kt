@@ -85,7 +85,7 @@ class RequestRepositoryImpl(
                 }.onFailure {
                     // On error, emit cached data if available
                     val cached =
-                        database.requestQueries.selectById(requestId.toLong())
+                        database.databaseQueries.selectRequestById(requestId.toLong())
                             .executeAsOneOrNull()
 
                     if (cached != null) {
@@ -133,7 +133,7 @@ class RequestRepositoryImpl(
     }
 
     override fun getAllRequests(): Flow<List<Request>> {
-        return database.requestQueries.selectAll()
+        return database.databaseQueries.selectRequests()
             .asFlow()
             .mapToList(Dispatchers.Default)
             .map { list ->
@@ -142,7 +142,7 @@ class RequestRepositoryImpl(
     }
 
     override fun getPendingRequests(): Flow<List<Request>> {
-        return database.requestQueries.selectPending()
+        return database.databaseQueries.selectPending()
             .asFlow()
             .mapToList(Dispatchers.Default)
             .map { list ->
@@ -152,7 +152,7 @@ class RequestRepositoryImpl(
 
     override suspend fun deleteRequest(requestId: Int): Result<Unit> {
         return try {
-            database.requestQueries.deleteById(requestId.toLong())
+            database.databaseQueries.deleteRequestById(requestId.toLong())
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

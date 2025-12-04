@@ -53,7 +53,7 @@ class SearchRepositoryImpl(
     override suspend fun searchLocal(query: String): Result<List<Summary>> {
         return try {
             val results =
-                database.summaryQueries.search(query)
+                database.databaseQueries.search(query)
                     .executeAsList()
                     .map { mapDbSummaryToDomain(it) }
 
@@ -66,7 +66,7 @@ class SearchRepositoryImpl(
     override suspend fun getTrendingTopics(limit: Int): Result<List<String>> {
         return try {
             // Extract trending topics from local summaries
-            val allSummaries = database.summaryQueries.selectAll().executeAsList()
+            val allSummaries = database.databaseQueries.selectAll().executeAsList()
 
             val topicFrequency = mutableMapOf<String, Int>()
 

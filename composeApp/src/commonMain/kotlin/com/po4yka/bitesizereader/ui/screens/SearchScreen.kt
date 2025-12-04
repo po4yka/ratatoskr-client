@@ -103,7 +103,7 @@ private fun SearchContent(
     when {
         state.error != null -> {
             ErrorView(
-                message = state.error,
+                message = state.error!!,
                 onRetry = onRetry,
                 modifier = modifier,
             )

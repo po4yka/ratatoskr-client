@@ -128,27 +128,25 @@ private fun SummaryDetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Metadata: Source, Date, Reading Time
+            // Metadata: Source, Date, Reading Time
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = summary.sourceDomain ?: "Unknown source",
+                text = summary.domain ?: "Unknown source",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            summary.readingTime?.let { readingTime ->
-                Text(
-                    text = "$readingTime min read",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            Text(
+                text = "${summary.readingTimeMin} min read",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
 
         Text(
-            text = formatDate(summary.createdAt),
+            text = formatDate(summary.createdAt.toEpochMilliseconds()),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -216,9 +214,13 @@ private fun SummaryDetailContent(
         }
 
         // Entities (if available)
-        if (!summary.entities.isNullOrEmpty()) {
+        val allEntities = summary.entities?.let {
+            it.people + it.organizations + it.locations
+        } ?: emptyList()
+
+        if (allEntities.isNotEmpty()) {
             SectionHeader("Key Entities")
-            summary.entities.forEach { entity ->
+            allEntities.forEach { entity ->
                 Text(
                     text = "• $entity",
                     style = MaterialTheme.typography.bodyMedium,
@@ -229,29 +231,10 @@ private fun SummaryDetailContent(
         }
 
         // Quotes (if available)
-        if (!summary.quotes.isNullOrEmpty()) {
-            SectionHeader("Notable Quotes")
-            summary.quotes.forEach { quote ->
-                Surface(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Text(
-                        text = "\"$quote\"",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(12.dp),
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+        // summary.quotes is missing in model
 
         // Original URL
-        summary.sourceUrl?.let { url ->
+        summary.url.let { url ->
             Divider()
             Spacer(modifier = Modifier.height(16.dp))
             SectionHeader("Original Article")

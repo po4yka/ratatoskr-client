@@ -101,13 +101,13 @@ fun SummaryCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = summary.sourceDomain ?: "Unknown source",
+                    text = summary.domain ?: "Unknown source",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Text(
-                    text = formatDate(summary.createdAt),
+                    text = formatDate(summary.createdAt.toEpochMilliseconds()),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
