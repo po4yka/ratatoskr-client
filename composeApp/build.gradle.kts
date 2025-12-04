@@ -13,6 +13,8 @@ plugins {
 
 kotlin {
     cocoapods {
+        // Ensure the generated podspec matches the Podfile dependency name
+        name = "ComposeApp"
         summary = "Compose Multiplatform UI for Bite-Size Reader"
         homepage = "https://github.com/po4yka/bite-size-reader-client"
         version = "1.0.0"
