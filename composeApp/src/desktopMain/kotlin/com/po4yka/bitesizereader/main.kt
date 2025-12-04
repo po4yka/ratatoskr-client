@@ -7,6 +7,7 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.po4yka.bitesizereader.di.appModules
 import com.po4yka.bitesizereader.di.desktopModule
+import com.po4yka.bitesizereader.presentation.navigation.DefaultRootComponent
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 import com.po4yka.bitesizereader.util.config.AppConfig
 import org.koin.core.context.startKoin
@@ -32,8 +33,8 @@ fun main() {
     application {
         val windowState = rememberWindowState()
         val lifecycle = LifecycleRegistry()
-        val rootComponent =
-            RootComponent(
+        val rootComponent: RootComponent =
+            DefaultRootComponent(
                 componentContext = DefaultComponentContext(lifecycle = lifecycle),
             )
 

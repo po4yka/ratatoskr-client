@@ -9,18 +9,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.po4yka.bitesizereader.presentation.viewmodel.LoginViewModel
+import com.po4yka.bitesizereader.presentation.navigation.AuthComponent
+import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
 
 /**
  * Authentication screen with Telegram login
  */
 @Composable
 fun AuthScreen(
-    viewModel: LoginViewModel,
-    onLoginSuccess: () -> Unit,
+    component: AuthComponent,
+    onLoginSuccess: () -> Unit = component::onLoginSuccess,
     modifier: Modifier = Modifier,
-    onLoginClick: (LoginViewModel) -> Unit = {},
+    onLoginClick: () -> Unit = {},
 ) {
+    val viewModel: AuthViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
 
     Box(
@@ -67,7 +69,7 @@ fun AuthScreen(
 
             // Login Button
             Button(
-                onClick = { onLoginClick(viewModel) },
+                onClick = { onLoginClick() },
                 enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth(),
             ) {

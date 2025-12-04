@@ -27,7 +27,7 @@ fun ProgressIndicatorWithStages(
     ) {
         // Overall progress bar
         when (status) {
-            RequestStatus.PENDING, RequestStatus.DOWNLOADING, RequestStatus.PROCESSING -> {
+            RequestStatus.PENDING, RequestStatus.PROCESSING -> {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
                     color = ProcessingIndicator,
@@ -39,7 +39,7 @@ fun ProgressIndicatorWithStages(
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-            RequestStatus.FAILED, RequestStatus.CANCELLED -> {
+            RequestStatus.FAILED -> {
                 LinearProgressIndicator(
                     progress = { 1f },
                     modifier = Modifier.fillMaxWidth(),
@@ -63,13 +63,6 @@ fun ProgressIndicatorWithStages(
             )
 
             StageIndicator(
-                title = "Downloading Content",
-                isCompleted = status in listOf(RequestStatus.PROCESSING, RequestStatus.COMPLETED),
-                isCurrent = status == RequestStatus.DOWNLOADING,
-                isFailed = status == RequestStatus.FAILED && status == RequestStatus.DOWNLOADING,
-            )
-
-            StageIndicator(
                 title = "Processing Summary",
                 isCompleted = status == RequestStatus.COMPLETED,
                 isCurrent = status == RequestStatus.PROCESSING,
@@ -80,7 +73,7 @@ fun ProgressIndicatorWithStages(
                 title = "Ready",
                 isCompleted = status == RequestStatus.COMPLETED,
                 isCurrent = false,
-                isFailed = status in listOf(RequestStatus.FAILED, RequestStatus.CANCELLED),
+                isFailed = status == RequestStatus.FAILED,
             )
         }
     }

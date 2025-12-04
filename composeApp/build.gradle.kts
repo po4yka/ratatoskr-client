@@ -81,6 +81,7 @@ kotlin {
             // Coil for image loading
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+            implementation(libs.ktor.client.okhttp)
 
             // WorkManager for background sync
             implementation(libs.androidx.work.runtime)

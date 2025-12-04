@@ -105,9 +105,7 @@ private fun SummaryItem(summary: Summary) {
             .padding(12.dp)
             .clickable(
                 onClick = actionStartActivity<MainActivity>(
-                    parameters = actionParametersOf(
-                        "summaryId" to summary.id.toString()
-                    )
+                    // For now, just open the app; deep links can be added later.
                 )
             )
     ) {
@@ -126,7 +124,7 @@ private fun SummaryItem(summary: Summary) {
 
         // TLDR preview
         Text(
-            text = summary.tldr,
+            text = summary.content.take(120) + if (summary.content.length > 120) "…" else "",
             style = TextStyle(
                 fontSize = 12.sp,
                 color = GlanceTheme.colors.onSurfaceVariant
@@ -142,19 +140,8 @@ private fun SummaryItem(summary: Summary) {
             horizontalAlignment = Alignment.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Reading time
-            Text(
-                text = "⏱ ${summary.readingTimeMin} min",
-                style = TextStyle(
-                    fontSize = 11.sp,
-                    color = GlanceTheme.colors.primary
-                )
-            )
-
-            Spacer(modifier = GlanceModifier.width(12.dp))
-
             // Domain
-            summary.domain?.let { domain ->
+            extractDomain(summary.sourceUrl)?.let { domain ->
                 Text(
                     text = "🌐 $domain",
                     style = TextStyle(
@@ -166,4 +153,9 @@ private fun SummaryItem(summary: Summary) {
             }
         }
     }
+}
+
+private fun extractDomain(url: String): String? {
+    val noProtocol = url.substringAfter("://", url)
+    return noProtocol.substringBefore("/").ifBlank { null }
 }

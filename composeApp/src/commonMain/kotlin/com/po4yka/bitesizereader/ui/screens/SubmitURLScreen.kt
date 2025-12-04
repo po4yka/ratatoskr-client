@@ -21,7 +21,6 @@ import com.po4yka.bitesizereader.ui.components.ProgressIndicatorWithStages
 fun SubmitURLScreen(
     viewModel: SubmitURLViewModel,
     onBackClick: () -> Unit,
-    onSuccess: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
@@ -47,25 +46,19 @@ fun SubmitURLScreen(
                     .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            if (state.requestStatus == null) {
-                // URL Input Form
-                URLInputForm(
-                    url = state.url,
-                    onUrlChange = { viewModel.onUrlChange(it) },
-                    validationError = state.validationError,
-                    onSubmit = { viewModel.submitUrl() },
-                    isSubmitting = state.isSubmitting,
-                )
-            } else {
-                // Processing Status
+            URLInputForm(
+                url = state.url,
+                onUrlChange = { viewModel.onUrlChanged(it) },
+                validationError = state.error,
+                onSubmit = { viewModel.submitUrl() },
+                isSubmitting = state.isLoading,
+            )
+
+            if (state.status != RequestStatus.PENDING || state.isLoading) {
                 ProcessingStatus(
-                    status = state.requestStatus,
-                    onCancel = { viewModel.cancelRequest() },
-                    onViewSummary =
-                        state.summaryId?.let { id ->
-                            { onSuccess(id) }
-                        },
-                    onSubmitAnother = { viewModel.reset() },
+                    status = state.status,
+                    onCancel = { /* no-op */ },
+                    onSubmitAnother = { /* no-op for now */ },
                 )
             }
         }
@@ -152,7 +145,6 @@ private fun URLInputForm(
 private fun ProcessingStatus(
     status: RequestStatus?,
     onCancel: () -> Unit,
-    onViewSummary: (() -> Unit)?,
     onSubmitAnother: () -> Unit,
 ) {
     Column(
@@ -167,9 +159,9 @@ private fun ProcessingStatus(
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
-            RequestStatus.FAILED, RequestStatus.CANCELLED -> {
+            RequestStatus.FAILED -> {
                 Text(
-                    text = if (status == RequestStatus.CANCELLED) "Processing Cancelled" else "Processing Failed",
+                    text = "Processing Failed",
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.error,
                 )
@@ -182,9 +174,7 @@ private fun ProcessingStatus(
             }
         }
 
-        status?.let {
-            ProgressIndicatorWithStages(status = it)
-        }
+        status?.let { ProgressIndicatorWithStages(status = it) }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -194,14 +184,6 @@ private fun ProcessingStatus(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    onViewSummary?.let { onClick ->
-                        Button(
-                            onClick = onClick,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text("View Summary")
-                        }
-                    }
                     OutlinedButton(
                         onClick = onSubmitAnother,
                         modifier = Modifier.fillMaxWidth(),
@@ -210,7 +192,7 @@ private fun ProcessingStatus(
                     }
                 }
             }
-            RequestStatus.FAILED, RequestStatus.CANCELLED -> {
+            RequestStatus.FAILED -> {
                 OutlinedButton(
                     onClick = onSubmitAnother,
                     modifier = Modifier.fillMaxWidth(),

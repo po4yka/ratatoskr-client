@@ -3,6 +3,7 @@ package com.po4yka.bitesizereader
 import android.app.Application
 import com.po4yka.bitesizereader.di.imageLoaderModule
 import com.po4yka.bitesizereader.di.initKoin
+import com.po4yka.bitesizereader.worker.WorkManagerInitializer
 import org.koin.android.ext.koin.androidContext
 
 /**

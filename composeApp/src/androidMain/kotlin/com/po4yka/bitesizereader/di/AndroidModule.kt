@@ -1,14 +1,12 @@
 package com.po4yka.bitesizereader.di
 
 import com.po4yka.bitesizereader.data.local.DatabaseDriverFactory
+import com.po4yka.bitesizereader.data.local.AndroidSecureStorage
 import com.po4yka.bitesizereader.data.local.SecureStorage
 import com.po4yka.bitesizereader.util.share.AndroidShareManager
 import com.po4yka.bitesizereader.util.share.ShareManager
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -27,7 +25,7 @@ val androidModule =
 
         // Secure storage
         single<SecureStorage> {
-            com.po4yka.bitesizereader.data.local.SecureStorageImpl(androidContext())
+            AndroidSecureStorage(androidContext())
         }
 
         // Share manager
