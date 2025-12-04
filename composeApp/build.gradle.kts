@@ -15,6 +15,7 @@ kotlin {
     cocoapods {
         summary = "Compose Multiplatform UI for Bite-Size Reader"
         homepage = "https://github.com/po4yka/bite-size-reader-client"
+        version = "1.0.0"
         ios.deploymentTarget = "15.0"
         podfile = project.file("../iosApp/Podfile")
         framework {
@@ -145,22 +146,22 @@ android {
         buildConfigField(
             "String",
             "API_BASE_URL",
-            "\"${localProperties.getProperty("api.base.url", "http://10.0.2.2:8000")}\"",
+            "\"${localProperties.getProperty("api.base.url", "http://10.0.2.2:8000")}\""
         )
         buildConfigField(
             "String",
             "CLIENT_ID",
-            "\"${localProperties.getProperty("client.id", "android-app-v1.0")}\"",
+            "\"${localProperties.getProperty("client.id", "android-app-v1.0")}\""
         )
         buildConfigField(
             "int",
             "API_TIMEOUT_SECONDS",
-            localProperties.getProperty("api.timeout.seconds", "30"),
+            localProperties.getProperty("api.timeout.seconds", "30")
         )
         buildConfigField(
             "boolean",
             "API_LOGGING_ENABLED",
-            localProperties.getProperty("api.logging.enabled", "true"),
+            localProperties.getProperty("api.logging.enabled", "true")
         )
     }
 
@@ -187,7 +188,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard-rules.pro"
             )
         }
     }

@@ -65,6 +65,35 @@ playground.xcworkspace
 *.tar.gz
 *.rar
 
+
 # Virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+# CocoaPods
+Pods/
+
+# Xcode
+xcuserdata/
+
+# VS Code
+.vscode/
+
+# Environment Variables
+.env
+
+# Compiled Class Files
+*.class
+
+# Test Output
+test_output/
+
+# Fastlane
+fastlane/report.xml
+fastlane/screenshots
+
+# Node Modules
+node_modules/
+
+# SQLDelight
+*.sq
