@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+import com.po4yka.bitesizereader.util.error.toAppError
+
 class SubmitURLViewModel(
     private val submitURLUseCase: SubmitURLUseCase,
     private val getRequestStatusUseCase: GetRequestStatusUseCase
@@ -36,7 +38,7 @@ class SubmitURLViewModel(
                 // Start polling
                 pollStatus(request.id)
             } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.message)
+                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().message)
             }
         }
     }

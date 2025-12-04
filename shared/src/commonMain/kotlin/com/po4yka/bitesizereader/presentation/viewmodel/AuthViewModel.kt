@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+import com.po4yka.bitesizereader.util.error.toAppError
+
 class AuthViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
     private val logoutUseCase: LogoutUseCase,
@@ -35,7 +37,7 @@ class AuthViewModel(
 
     fun login(authData: AuthRequestDto) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
+            _state.value = _state.value.copy(isLoading = true, error = null)
             try {
                 loginWithTelegramUseCase(authData)
                 val user = getCurrentUserUseCase()
@@ -46,7 +48,7 @@ class AuthViewModel(
                     error = null
                 )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.message)
+                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().message)
             }
         }
     }
