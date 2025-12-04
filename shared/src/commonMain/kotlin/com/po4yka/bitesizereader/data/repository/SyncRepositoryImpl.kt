@@ -11,7 +11,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 class SyncRepositoryImpl(
     private val database: Database,

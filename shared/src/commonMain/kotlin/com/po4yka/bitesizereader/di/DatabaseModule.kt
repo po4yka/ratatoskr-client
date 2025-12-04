@@ -2,14 +2,9 @@ package com.po4yka.bitesizereader.di
 
 import com.po4yka.bitesizereader.data.local.DatabaseDriverFactory
 import com.po4yka.bitesizereader.database.Database
-import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.database.SummaryEntity
 import app.cash.sqldelight.ColumnAdapter
-import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
-import kotlinx.datetime.Instant
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.Json
+import kotlin.time.Instant
 import org.koin.dsl.module
 
 val databaseModule = module {

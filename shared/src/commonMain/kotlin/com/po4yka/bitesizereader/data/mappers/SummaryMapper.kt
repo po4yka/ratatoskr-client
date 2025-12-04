@@ -3,7 +3,7 @@ package com.po4yka.bitesizereader.data.mappers
 import com.po4yka.bitesizereader.data.remote.dto.SummaryDto
 import com.po4yka.bitesizereader.database.SummaryEntity
 import com.po4yka.bitesizereader.domain.model.Summary
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 fun SummaryDto.toDomain(): Summary {
     return Summary(

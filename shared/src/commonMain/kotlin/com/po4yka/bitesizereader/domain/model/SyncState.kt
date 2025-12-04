@@ -1,6 +1,6 @@
 package com.po4yka.bitesizereader.domain.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class SyncState(
     val lastSyncTime: Instant?,

@@ -4,7 +4,7 @@ import com.po4yka.bitesizereader.data.remote.dto.RequestDto
 import com.po4yka.bitesizereader.database.RequestEntity
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 fun RequestDto.toDomain(): Request {
     return Request(
