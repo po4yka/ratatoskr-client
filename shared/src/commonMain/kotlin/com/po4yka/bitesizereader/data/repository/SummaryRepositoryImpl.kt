@@ -1,7 +1,6 @@
 package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.data.mappers.toDomain
-import com.po4yka.bitesizereader.data.mappers.toEntity
 import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.Summary
@@ -26,7 +25,7 @@ class SummaryRepositoryImpl(
         // For this implementation, we'll return DB flow and trigger a background refresh (mocked logic for now)
         // TODO: Implement full Store logic or Sync logic
         
-        return database.databaseQueries.summaryEntityQueries.selectAllSummaries(
+        return database.databaseQueries.selectAllSummaries(
             limit = pageSize.toLong(),
             offset = ((page - 1) * pageSize).toLong()
         ).asFlow().mapToList(Dispatchers.IO).map { entities ->
@@ -35,16 +34,16 @@ class SummaryRepositoryImpl(
     }
 
     override suspend fun getSummaryById(id: String): Summary? {
-        return database.databaseQueries.summaryEntityQueries.getSummaryById(id)
+        return database.databaseQueries.getSummaryById(id)
             .executeAsOneOrNull()?.toDomain()
     }
 
     override suspend fun markAsRead(id: String) {
-        database.databaseQueries.summaryEntityQueries.updateSummaryReadStatus(true, id)
+        database.databaseQueries.updateSummaryReadStatus(true, id)
     }
 
     override suspend fun deleteSummary(id: String) {
-        database.databaseQueries.summaryEntityQueries.deleteSummary(id)
+        database.databaseQueries.deleteSummary(id)
         try {
             api.deleteSummary(id)
         } catch (e: Exception) {

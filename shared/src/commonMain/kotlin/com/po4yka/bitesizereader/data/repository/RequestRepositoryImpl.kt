@@ -12,6 +12,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.datetime.Clock
 
 class RequestRepositoryImpl(
     private val database: Database,
@@ -21,29 +22,27 @@ class RequestRepositoryImpl(
     override suspend fun submitUrl(url: String): Request {
         val requestDto = api.submitUrl(url)
         val requestEntity = requestDto.toEntity()
-        database.databaseQueries.requestEntityQueries.insertRequest(requestEntity)
+        database.databaseQueries.insertRequest(requestEntity)
         return requestDto.toDomain()
     }
 
     override suspend fun getRequestStatus(id: String): Request {
         val statusDto = api.getRequestStatus(id)
-        // We only get status, need to update local entity
-        val currentEntity = database.databaseQueries.requestEntityQueries.selectAllRequests()
-            .executeAsList().find { it.id == id }
-            
-        if (currentEntity != null) {
-             // Update logic would go here if we had status in Entity matching DTO
-             // database.requestEntityQueries.updateRequestStatus(...)
-        }
-        // Returning mock or incomplete request based on statusDto if needed
-        // For now, just return what's in DB
-         return database.databaseQueries.requestEntityQueries.selectAllRequests()
-            .executeAsList().find { it.id == id }?.toDomain() 
+        val existing = database.databaseQueries.selectAllRequests()
+            .executeAsList()
+            .find { it.id == id }
             ?: throw Exception("Request not found locally")
+
+        val updatedEntity = existing.copy(
+            status = statusDto.status,
+            updatedAt = Clock.System.now()
+        )
+        database.databaseQueries.insertRequest(updatedEntity)
+        return updatedEntity.toDomain()
     }
 
     override fun getRequests(): Flow<List<Request>> {
-        return database.databaseQueries.requestEntityQueries.selectAllRequests()
+        return database.databaseQueries.selectAllRequests()
             .asFlow().mapToList(Dispatchers.IO).map { entities ->
                 entities.map { it.toDomain() }
             }

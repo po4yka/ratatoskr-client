@@ -1,6 +1,5 @@
 package com.po4yka.bitesizereader.data.repository
 
-import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.mappers.toEntity
 import com.po4yka.bitesizereader.data.remote.SyncApi
 import com.po4yka.bitesizereader.database.Database
@@ -20,20 +19,20 @@ class SyncRepositoryImpl(
 ) : SyncRepository {
 
     override suspend fun sync() {
-        val metadata = database.databaseQueries.syncMetadataEntityQueries.getSyncMetadata().executeAsOneOrNull()
+        val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val token = metadata?.syncToken
 
         val response = api.sync(token)
 
         database.transaction {
             response.upsertedSummaries.forEach { dto ->
-                database.databaseQueries.summaryEntityQueries.insertSummary(dto.toEntity())
+                database.databaseQueries.insertSummary(dto.toEntity())
             }
             response.deletedSummaryIds.forEach { id ->
-                database.databaseQueries.summaryEntityQueries.deleteSummary(id)
+                database.databaseQueries.deleteSummary(id)
             }
             
-            database.databaseQueries.syncMetadataEntityQueries.updateSyncMetadata(
+            database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
                 syncToken = response.syncToken
             )
@@ -41,7 +40,7 @@ class SyncRepositoryImpl(
     }
 
     override fun getSyncState(): Flow<SyncState> {
-        return database.databaseQueries.syncMetadataEntityQueries.getSyncMetadata()
+        return database.databaseQueries.getSyncMetadata()
             .asFlow().mapToOneOrNull(Dispatchers.IO).map { entity ->
                 SyncState(
                     lastSyncTime = entity?.lastSyncTime,
