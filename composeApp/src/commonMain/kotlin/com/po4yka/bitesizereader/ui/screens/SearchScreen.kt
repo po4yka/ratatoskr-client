@@ -25,7 +25,7 @@ import com.po4yka.bitesizereader.ui.components.SummaryCard
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
-    onSummaryClick: (Int) -> Unit,
+    onSummaryClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -37,9 +37,8 @@ fun SearchScreen(
                 title = {
                     SearchBar(
                         query = state.query,
-                        onQueryChange = { viewModel.onQueryChange(it) },
-                        onSearch = { viewModel.search() },
-                        onClear = { viewModel.clearSearch() },
+                        onQueryChange = { viewModel.onQueryChanged(it) },
+                        onClear = { viewModel.onQueryChanged("") },
                     )
                 },
                 navigationIcon = {
@@ -54,7 +53,7 @@ fun SearchScreen(
         SearchContent(
             state = state,
             onSummaryClick = onSummaryClick,
-            onRetry = { viewModel.search() },
+            onRetry = { viewModel.onQueryChanged(state.query) },
             modifier = Modifier.padding(paddingValues),
         )
     }
@@ -64,7 +63,6 @@ fun SearchScreen(
 private fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
     onClear: () -> Unit,
 ) {
     TextField(
@@ -96,7 +94,7 @@ private fun SearchBar(
 @Composable
 private fun SearchContent(
     state: com.po4yka.bitesizereader.presentation.state.SearchState,
-    onSummaryClick: (Int) -> Unit,
+    onSummaryClick: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

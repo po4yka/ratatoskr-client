@@ -6,7 +6,6 @@ import coil3.disk.DiskCache
 import coil3.disk.directory
 import coil3.memory.MemoryCache
 import coil3.request.crossfade
-import coil3.util.DebugLogger
 import com.po4yka.bitesizereader.util.ImageCacheConfig.CACHE_DIRECTORY
 import com.po4yka.bitesizereader.util.ImageCacheConfig.CROSSFADE_DURATION_MS
 import com.po4yka.bitesizereader.util.ImageCacheConfig.DISK_CACHE_SIZE_MB
@@ -36,12 +35,6 @@ object ImageLoaderFactory {
                     .build()
             }
             .crossfade(CROSSFADE_DURATION_MS)
-            .respectCacheHeaders(false) // Use our own cache policy
-            .apply {
-                if (enableDebugLogging) {
-                    logger(DebugLogger())
-                }
-            }
             .build()
     }
 }

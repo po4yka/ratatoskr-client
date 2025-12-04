@@ -2,21 +2,12 @@ package com.po4yka.bitesizereader
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import coil3.ImageLoader
-import coil3.compose.setSingletonImageLoaderFactory
 import com.arkivanov.decompose.extensions.compose.stack.Children
-import com.arkivanov.decompose.extensions.compose.stack.animation.fade
-import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
-import com.po4yka.bitesizereader.presentation.navigation.Screen
-import com.po4yka.bitesizereader.presentation.viewmodel.*
-import com.po4yka.bitesizereader.ui.screens.*
-import com.po4yka.bitesizereader.util.share.ShareManager
-import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
+import com.po4yka.bitesizereader.ui.screens.AuthScreen
+import com.po4yka.bitesizereader.ui.screens.SummaryListScreen
 
 /**
  * Main app composable with Decompose navigation
@@ -25,74 +16,20 @@ import org.koin.core.parameter.parametersOf
 fun App(
     rootComponent: RootComponent,
     modifier: Modifier = Modifier,
-    onLoginClick: (LoginViewModel) -> Unit = {},
+    onLoginClick: () -> Unit = {},
 ) {
-    val imageLoader: ImageLoader = koinInject()
-    setSingletonImageLoaderFactory { imageLoader }
+    val childStack = rootComponent.childStack.subscribeAsState()
 
     Children(
-        stack = rootComponent.stack,
+        stack = childStack.value,
         modifier = modifier.fillMaxSize(),
-        animation = stackAnimation(fade()),
     ) { child ->
-        when (val screen = child.instance) {
-            is Screen.Auth -> {
-                val viewModel: LoginViewModel = koinInject()
-                AuthScreen(
-                    viewModel = viewModel,
-                    onLoginSuccess = { rootComponent.navigateToSummaryList() },
-                    onLoginClick = { onLoginClick(viewModel) },
-                )
-            }
-            is Screen.SummaryList -> {
-                val viewModel: SummaryListViewModel = koinInject()
-                SummaryListScreen(
-                    viewModel = viewModel,
-                    onSummaryClick = { id -> rootComponent.navigateToSummaryDetail(id) },
-                    onSubmitUrlClick = { rootComponent.navigateToSubmitUrl() },
-                    onSearchClick = { rootComponent.navigateToSearch() },
-                )
-            }
-            is Screen.SummaryDetail -> {
-                val viewModel: SummaryDetailViewModel = koinInject { parametersOf(screen.id) }
-                val shareManager: ShareManager = koinInject()
-                val state by viewModel.state.collectAsState()
-
-                SummaryDetailScreen(
-                    viewModel = viewModel,
-                    onBackClick = { rootComponent.pop() },
-                    onShareClick = {
-                        state.summary?.let { summary ->
-                            shareManager.shareSummary(summary)
-                        }
-                    },
-                )
-            }
-            is Screen.SubmitUrl -> {
-                val viewModel: SubmitURLViewModel = koinInject()
-
-                // Set prefilled URL if provided (from share intent)
-                screen.prefilledUrl?.let { url ->
-                    viewModel.setURL(url)
-                }
-
-                SubmitURLScreen(
-                    viewModel = viewModel,
-                    onBackClick = { rootComponent.pop() },
-                    onSuccess = { summaryId ->
-                        rootComponent.pop()
-                        rootComponent.navigateToSummaryDetail(summaryId)
-                    },
-                )
-            }
-            is Screen.Search -> {
-                val viewModel: SearchViewModel = koinInject()
-                SearchScreen(
-                    viewModel = viewModel,
-                    onSummaryClick = { id -> rootComponent.navigateToSummaryDetail(id) },
-                    onBackClick = { rootComponent.pop() },
-                )
-            }
+        when (val instance = child.instance) {
+            is RootComponent.Child.Auth -> AuthScreen(
+                component = instance.component,
+                onLoginClick = onLoginClick
+            )
+            is RootComponent.Child.Main -> SummaryListScreen(component = instance.component.summaryListComponent)
         }
     }
 }

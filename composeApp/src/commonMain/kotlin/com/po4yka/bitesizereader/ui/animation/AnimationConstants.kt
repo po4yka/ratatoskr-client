@@ -1,8 +1,5 @@
 package com.po4yka.bitesizereader.ui.animation
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -27,34 +24,17 @@ object AnimationConstants {
      */
     const val SLOW_DURATION = 500
 
-    /**
-     * Standard easing for material design
-     */
-    val STANDARD_EASING = tween<Float>(STANDARD_DURATION)
-
-    /**
-     * Fast easing for quick transitions
-     */
-    val FAST_EASING = tween<Float>(FAST_DURATION)
-
-    /**
-     * Spring animation for bouncy effects
-     */
-    val SPRING_ANIMATION =
-        spring<Float>(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow,
-        )
+    // Using default specs for simplicity across platforms.
 
     /**
      * Fade in animation
      */
-    val fadeIn = fadeIn(animationSpec = STANDARD_EASING)
+    val fadeIn = fadeIn()
 
     /**
      * Fade out animation
      */
-    val fadeOut = fadeOut(animationSpec = STANDARD_EASING)
+    val fadeOut = fadeOut()
 
     /**
      * Slide in from bottom animation
@@ -62,7 +42,6 @@ object AnimationConstants {
     val slideInFromBottom =
         slideInVertically(
             initialOffsetY = { it },
-            animationSpec = STANDARD_EASING,
         )
 
     /**
@@ -71,6 +50,5 @@ object AnimationConstants {
     val slideOutToBottom =
         slideOutVertically(
             targetOffsetY = { it },
-            animationSpec = STANDARD_EASING,
         )
 }

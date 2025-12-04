@@ -1,6 +1,12 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.po4yka.bitesizereader.ui.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -8,7 +14,15 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,21 +34,24 @@ import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.TagChip
 import com.po4yka.bitesizereader.ui.theme.ReadIndicator
-import java.text.SimpleDateFormat
-import java.util.*
+import kotlin.time.ExperimentalTime
+import kotlin.time.toJavaInstant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
-/**
- * Summary detail screen with scrollable content
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SummaryDetailScreen(
     viewModel: SummaryDetailViewModel,
+    summaryId: String,
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
-) {
+    ) {
     val state by viewModel.state.collectAsState()
+    androidx.compose.runtime.LaunchedEffect(summaryId) {
+        viewModel.loadSummary(summaryId)
+    }
 
     Scaffold(
         topBar = {
@@ -47,28 +64,11 @@ fun SummaryDetailScreen(
                 },
                 actions = {
                     state.summary?.let { summary ->
-                        IconButton(onClick = { viewModel.toggleReadStatus() }) {
-                            Icon(
-                                imageVector =
-                                    if (summary.isRead) {
-                                        Icons.Default.CheckCircle
-                                    } else {
-                                        Icons.Default.RadioButtonUnchecked
-                                    },
-                                contentDescription =
-                                    if (summary.isRead) {
-                                        "Mark as unread"
-                                    } else {
-                                        "Mark as read"
-                                    },
-                                tint =
-                                    if (summary.isRead) {
-                                        ReadIndicator
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    },
-                            )
-                        }
+                        Icon(
+                            imageVector = if (summary.isRead) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
+                            contentDescription = null,
+                            tint = if (summary.isRead) ReadIndicator else MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                         IconButton(onClick = onShareClick) {
                             Icon(Icons.Default.Share, contentDescription = "Share")
                         }
@@ -82,12 +82,12 @@ fun SummaryDetailScreen(
             state.error != null -> {
                 ErrorView(
                     message = state.error!!,
-                    onRetry = { viewModel.loadSummary() },
+                    onRetry = { viewModel.loadSummary(summaryId) },
                     modifier = Modifier.padding(paddingValues),
                 )
             }
             state.isLoading -> {
-                Box(
+                androidx.compose.foundation.layout.Box(
                     modifier =
                         Modifier
                             .fillMaxSize()
@@ -119,7 +119,6 @@ private fun SummaryDetailContent(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
     ) {
-        // Title
         Text(
             text = summary.title,
             style = MaterialTheme.typography.headlineMedium,
@@ -128,138 +127,64 @@ private fun SummaryDetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-            // Metadata: Source, Date, Reading Time
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = summary.domain ?: "Unknown source",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = "${summary.readingTimeMin} min read",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        Text(
+            text = extractDomain(summary.sourceUrl) ?: "Unknown source",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
 
         Text(
-            text = formatDate(summary.createdAt.toEpochMilliseconds()),
+            text = formatDate(summary.createdAt),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Topic Tags
-        if (summary.topicTags.isNotEmpty()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+        if (summary.tags.isNotEmpty()) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
             ) {
-                summary.topicTags.forEach { tag ->
-                    TagChip(tag = tag)
-                }
+                summary.tags.forEach { tag -> TagChip(tag = tag) }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Divider()
+        HorizontalDivider()
         Spacer(modifier = Modifier.height(16.dp))
 
-        // TL;DR Section
-        SectionHeader("TL;DR")
         Text(
-            text = summary.tldr,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.SemiBold,
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // 250-word Summary
-        SectionHeader("Summary")
-        Text(
-            text = summary.summary250,
+            text = summary.content,
             style = MaterialTheme.typography.bodyLarge,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Key Ideas
-        if (summary.keyIdeas.isNotEmpty()) {
-            SectionHeader("Key Ideas")
-            summary.keyIdeas.forEachIndexed { index, idea ->
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                ) {
-                    Text(
-                        text = "${index + 1}. ",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Text(
-                        text = idea,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Entities (if available)
-        val allEntities = summary.entities?.let {
-            it.people + it.organizations + it.locations
-        } ?: emptyList()
-
-        if (allEntities.isNotEmpty()) {
-            SectionHeader("Key Entities")
-            allEntities.forEach { entity ->
-                Text(
-                    text = "• $entity",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(vertical = 2.dp),
-                )
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        // Quotes (if available)
-        // summary.quotes is missing in model
-
-        // Original URL
-        summary.url.let { url ->
-            Divider()
-            Spacer(modifier = Modifier.height(16.dp))
-            SectionHeader("Original Article")
-            Text(
-                text = url,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = "Original Article",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+        Text(
+            text = summary.sourceUrl,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
     }
 }
 
-@Composable
-private fun SectionHeader(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = 8.dp),
-    )
+@OptIn(ExperimentalTime::class)
+private fun formatDate(instant: kotlin.time.Instant): String {
+    val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+    return formatter.format(instant.toJavaInstant().atZone(ZoneId.systemDefault()).toLocalDate())
 }
 
-private fun formatDate(timestamp: Long): String {
-    val dateFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
-    return dateFormat.format(Date(timestamp))
+private fun extractDomain(url: String): String? {
+    val noProtocol = url.substringAfter("://", url)
+    return noProtocol.substringBefore("/").ifBlank { null }
 }

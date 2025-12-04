@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
 /**
  * Material 3 Typography for Bite-Size Reader
  */
-val Typography =
+val AppTypography =
     Typography(
         // Display
         displayLarge =
