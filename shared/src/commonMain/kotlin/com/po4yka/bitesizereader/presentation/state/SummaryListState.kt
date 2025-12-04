@@ -20,4 +20,5 @@ data class SummaryListState(
     val filters: SearchFilters = SearchFilters(),
     val canRetry: Boolean = false, // Whether current error is retryable
     val retryAttempt: Int = 0, // Current retry attempt number
+    val isLoadingMore: Boolean = false,
 )

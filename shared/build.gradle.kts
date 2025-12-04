@@ -63,7 +63,7 @@ kotlin {
             // Kotlinx
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.datetime)
+            api(libs.kotlinx.datetime)
 
             // Logging
             implementation(libs.kotlin.logging)
@@ -81,19 +81,26 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
 
             // Android Security
+            implementation("io.insert-koin:koin-android:4.0.0")
             implementation(libs.androidx.security.crypto)
 
             // Logging - SLF4J backend for Android
             implementation(libs.logback.android)
         }
 
-        iosMain.dependencies {
-            // Ktor Darwin Engine
-            implementation(libs.ktor.client.darwin)
+        val iosMain by creating {
+            dependsOn(commonMain.get())
+            dependencies {
+                // Ktor Darwin Engine
+                implementation(libs.ktor.client.darwin)
 
-            // SQLDelight Native Driver
-            implementation(libs.sqldelight.native.driver)
+                // SQLDelight Native Driver
+                implementation(libs.sqldelight.native.driver)
+            }
         }
+
+        val iosArm64Main by getting { dependsOn(iosMain) }
+        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
 
         val desktopMain by getting {
             dependencies {

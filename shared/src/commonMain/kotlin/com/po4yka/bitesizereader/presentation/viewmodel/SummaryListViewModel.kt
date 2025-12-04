@@ -5,6 +5,9 @@ import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.presentation.state.SummaryListState
+import com.po4yka.bitesizereader.util.error.toAppError
+import com.po4yka.bitesizereader.util.error.isRetryable
+import com.po4yka.bitesizereader.util.error.AppError
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -41,8 +44,8 @@ class SummaryListViewModel(
                 filters = SearchFilters(),
             ).catch { error ->
                 val appError = (error as? Exception)?.let {
-                    com.po4yka.bitesizereader.util.error.toAppError(it)
-                } ?: com.po4yka.bitesizereader.util.error.AppError.UnknownError(
+                    it.toAppError()
+                } ?: AppError.UnknownError(
                     message = error.message ?: "Unknown error"
                 )
 
@@ -52,7 +55,7 @@ class SummaryListViewModel(
                         isRefreshing = false,
                         error = error.message,
                         appError = appError,
-                        canRetry = com.po4yka.bitesizereader.util.error.isRetryable(appError),
+                        canRetry = appError.isRetryable(),
                     )
             }.collect { summaries ->
                 val updatedList =

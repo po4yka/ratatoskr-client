@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
+    kotlin("native.cocoapods")
 }
 
 kotlin {
@@ -48,6 +49,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.materialIconsExtended)
 
             // Shared module
             implementation(projects.shared)
@@ -55,6 +57,7 @@ kotlin {
             // Koin
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+            implementation(libs.kotlin.logging)
 
             // Decompose
             implementation(libs.decompose.core)
@@ -99,6 +102,7 @@ kotlin {
         }
 
         val iosMain by creating {
+            dependsOn(commonMain.get())
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)

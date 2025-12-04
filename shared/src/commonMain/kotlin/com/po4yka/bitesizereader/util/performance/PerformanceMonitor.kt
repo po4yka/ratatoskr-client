@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlin.system.measureTimeMillis
 
-private val logger = KotlinLogging.logger {}
+@PublishedApi
+internal val logger = KotlinLogging.logger {}
 
 /**
  * Performance monitoring utilities for tracking operation timing

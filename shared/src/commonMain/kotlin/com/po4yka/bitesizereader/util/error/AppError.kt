@@ -1,13 +1,15 @@
 package com.po4yka.bitesizereader.util.error
 
+import kotlin.math.pow
+
 /**
  * Sealed class representing application errors with user-friendly messages
  * and retry strategies
  */
 sealed class AppError(
-    open val message: String,
-    open val cause: Throwable? = null,
-) {
+    override val message: String,
+    override val cause: Throwable? = null,
+) : Exception(message, cause) {
     /**
      * Network connectivity errors (no internet, timeout, etc.)
      */
@@ -230,7 +232,7 @@ sealed class RetryStrategy {
         val multiplier: Double = 2.0
     ) : RetryStrategy() {
         fun getDelayForAttempt(attempt: Int): Long {
-            val delay = initialDelayMs * kotlin.math.pow(multiplier, attempt.toDouble()).toLong()
+            val delay = initialDelayMs * multiplier.pow(attempt.toDouble()).toLong()
             return minOf(delay, maxDelayMs)
         }
     }

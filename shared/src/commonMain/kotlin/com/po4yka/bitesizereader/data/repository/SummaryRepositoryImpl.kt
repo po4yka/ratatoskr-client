@@ -73,7 +73,7 @@ class SummaryRepositoryImpl(
         return try {
             // Try cache first
             val cached =
-                database.summaryQueries.selectById(id.toLong())
+                database.databaseQueries.selectById(id.toLong())
                     .executeAsOneOrNull()
                     ?.let { mapDbSummaryToDomain(it) }
 
@@ -104,7 +104,7 @@ class SummaryRepositoryImpl(
     ): Result<Unit> {
         return try {
             // Update locally first (optimistic update)
-            database.summaryQueries.updateReadStatus(
+            database.databaseQueries.updateReadStatus(
                 isRead = if (isRead) 1L else 0L,
                 id = id.toLong(),
             )
@@ -137,7 +137,7 @@ class SummaryRepositoryImpl(
 
             if (response.success) {
                 // Mark as synced
-                database.summaryQueries.markAsSynced(listOf(id.toLong()))
+                database.databaseQueries.markAsSynced(listOf(id.toLong()))
                 Result.success(Unit)
             } else {
                 Result.failure(Exception(response.error?.message ?: "Failed to update"))
@@ -153,7 +153,7 @@ class SummaryRepositoryImpl(
         isFavorite: Boolean,
     ): Result<Unit> {
         return try {
-            database.summaryQueries.updateFavoriteStatus(
+            database.databaseQueries.updateFavoriteStatus(
                 isFavorite = if (isFavorite) 1L else 0L,
                 id = id.toLong(),
             )
@@ -165,7 +165,7 @@ class SummaryRepositoryImpl(
 
     override suspend fun deleteSummary(id: Int): Result<Unit> {
         return try {
-            database.summaryQueries.deleteById(id.toLong())
+            database.databaseQueries.deleteById(id.toLong())
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -173,7 +173,7 @@ class SummaryRepositoryImpl(
     }
 
     override fun getUnreadCount(): Flow<Int> {
-        return database.summaryQueries.countUnread()
+        return database.databaseQueries.countUnread()
             .asFlow()
             .mapToOne(Dispatchers.Default)
             .map { it.toInt() }
@@ -204,17 +204,17 @@ class SummaryRepositoryImpl(
     ): List<Summary> {
         return when {
             filters.isRead == false -> {
-                database.summaryQueries.selectUnread()
+                database.databaseQueries.selectUnread()
                     .executeAsList()
                     .map { mapDbSummaryToDomain(it) }
             }
             filters.lang != null -> {
-                database.summaryQueries.selectByLang(filters.lang)
+                database.databaseQueries.selectByLang(filters.lang)
                     .executeAsList()
                     .map { mapDbSummaryToDomain(it) }
             }
             else -> {
-                database.summaryQueries.selectPaginated(
+                database.databaseQueries.selectPaginated(
                     limit.toLong(),
                     offset.toLong(),
                 )

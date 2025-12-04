@@ -98,7 +98,7 @@ private fun SummaryListContent(
     when {
         state.error != null && state.summaries.isEmpty() -> {
             ErrorView(
-                message = state.error,
+                message = state.error!!,
                 onRetry = onRefresh,
                 modifier = modifier,
             )
