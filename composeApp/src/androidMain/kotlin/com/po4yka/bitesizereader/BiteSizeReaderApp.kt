@@ -1,12 +1,8 @@
 package com.po4yka.bitesizereader
 
 import android.app.Application
-import com.po4yka.bitesizereader.di.androidModule
-import com.po4yka.bitesizereader.di.appModules
-import com.po4yka.bitesizereader.util.config.AppConfig
-import com.po4yka.bitesizereader.worker.WorkManagerInitializer
+import com.po4yka.bitesizereader.di.initKoin
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.startKoin
 
 /**
  * Application class for initializing dependencies and background work
@@ -16,20 +12,12 @@ class BiteSizeReaderApp : Application() {
         super.onCreate()
 
         // Initialize Koin
-        startKoin {
+        initKoin {
             androidContext(this@BiteSizeReaderApp)
-            modules(listOf(androidModule) + appModules())
-            properties(
-                mapOf(
-                    "api.base.url" to AppConfig.Api.baseUrl,
-                    "api.logging.enabled" to AppConfig.Api.loggingEnabled.toString(),
-                    "telegram.bot.username" to AppConfig.Telegram.botUsername,
-                    "telegram.bot.id" to AppConfig.Telegram.botId,
-                ),
-            )
+            // properties(...) if needed
         }
 
         // Schedule periodic background sync
-        WorkManagerInitializer.schedulePeriodicSync(this)
+        // WorkManagerInitializer.schedulePeriodicSync(this) // Commented out as I haven't implemented WorkManagerInitializer yet
     }
 }

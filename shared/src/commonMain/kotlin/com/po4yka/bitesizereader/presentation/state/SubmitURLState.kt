@@ -1,18 +1,11 @@
 package com.po4yka.bitesizereader.presentation.state
 
-import com.po4yka.bitesizereader.domain.model.Request
+import com.po4yka.bitesizereader.domain.model.RequestStatus
 
-/**
- * UI state for submit URL screen
- */
 data class SubmitURLState(
     val url: String = "",
-    val isSubmitting: Boolean = false,
-    val validationError: String? = null,
+    val status: RequestStatus = RequestStatus.PENDING,
+    val isLoading: Boolean = false,
     val error: String? = null,
-    val request: Request? = null,
-    val isPolling: Boolean = false,
-) {
-    val requestStatus get() = request?.status
-    val summaryId get() = request?.summaryId
-}
+    val progress: Float = 0f
+)

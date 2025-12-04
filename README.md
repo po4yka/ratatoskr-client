@@ -1316,20 +1316,6 @@ Or at runtime:
 Logger.setMinSeverity(Severity.Debug)
 ```
 
-## Contributing
-
-See [TODO.md](./TODO.md) for current implementation tasks and [ROADMAP.md](./ROADMAP.md) for planned features.
-
-### Development Workflow
-
-1. Create feature branch: `git checkout -b feature/summary-filters`
-2. Implement changes in `shared/` first (business logic)
-3. Add platform-specific UI in `composeApp/` and `iosApp/`
-4. Write tests: `./gradlew :shared:allTests`
-5. Format code: IDE auto-format
-6. Commit with descriptive message
-7. Push and create PR
-
 ## License
 
 BSD 3-Clause License - see [LICENSE](./LICENSE) file.
@@ -1339,20 +1325,3 @@ Copyright (c) 2025, Nikita Pochaev
 ## Related Projects
 
 - **Backend Service**: [bite-size-reader](https://github.com/po4yka/bite-size-reader) - FastAPI backend with Telegram bot
-- **Decompose**: [arkivanov/Decompose](https://github.com/arkivanov/Decompose) - Navigation library
-- **Store**: [MobileNativeFoundation/Store](https://github.com/MobileNativeFoundation/Store) - Repository pattern
-
-## Resources
-
-### Documentation
-
-- [Kotlin Multiplatform Docs](https://kotlinlang.org/docs/multiplatform.html)
-- [Decompose Documentation](https://arkivanov.github.io/Decompose/)
-- [Ktor Client Docs](https://ktor.io/docs/client.html)
-- [SQLDelight Documentation](https://cashapp.github.io/sqldelight/)
-- [Store Documentation](https://mobilenativefoundation.github.io/Store/)
-- [Backend API Spec](https://github.com/po4yka/bite-size-reader/blob/main/SPEC.md)
-
-## Changelog
-
-See [CHANGELOG.md](./CHANGELOG.md) for version history.
