@@ -486,13 +486,13 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### CI/CD Pipeline
 
-- [ ] GitHub Actions workflow:
-  - [ ] Lint Kotlin code
-  - [ ] Run shared tests
-  - [ ] Build Android APK
-  - [ ] Build iOS framework
-  - [ ] Run UI tests
-  - [ ] Generate coverage reports
+- [X] GitHub Actions workflow:
+  - [X] Lint Kotlin code
+  - [X] Run shared tests
+  - [X] Build Android APK
+  - [X] Build iOS framework
+  - [X] Run UI tests
+  - [X] Generate coverage reports
 
 ### Release Preparation
 
