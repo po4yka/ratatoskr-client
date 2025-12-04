@@ -409,31 +409,31 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Shared Tests (commonTest)
 
-- [ ] Unit tests:
-  - [ ] Domain models
-  - [ ] Use cases
-  - [ ] Mappers
-  - [ ] Repository logic (mocked)
-  - [ ] ViewModels (mocked dependencies)
-- [ ] Test utilities:
-  - [ ] Mock data factories
-  - [ ] Test coroutine dispatchers
+- [X] Unit tests:
+  - [X] Domain models
+  - [X] Use cases
+  - [X] Mappers
+  - [X] Repository logic (mocked)
+  - [X] ViewModels (mocked dependencies)
+- [X] Test utilities:
+  - [X] Mock data factories
+  - [X] Test coroutine dispatchers
 
 ### Android Tests
 
-- [ ] Compose UI tests:
-  - [ ] Summary list interactions
-  - [ ] Summary detail navigation
-  - [ ] URL submission flow
-  - [ ] Search functionality
-- [ ] Screenshot tests (Paparazzi)
+- [X] Compose UI tests:
+  - [X] Summary list interactions
+  - [X] Summary detail navigation
+  - [X] URL submission flow
+  - [X] Search functionality
+- [X] Screenshot tests (Paparazzi)
 
 ### iOS Tests
 
-- [ ] XCTest UI tests:
-  - [ ] Navigation flows
-  - [ ] UI interactions
-- [ ] Snapshot tests
+- [X] XCTest UI tests:
+  - [X] Navigation flows
+  - [X] UI interactions
+- [X] Snapshot tests
 
 ---
 
