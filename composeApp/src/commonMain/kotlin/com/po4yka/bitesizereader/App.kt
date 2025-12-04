@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
@@ -25,6 +27,9 @@ fun App(
     modifier: Modifier = Modifier,
     onLoginClick: (LoginViewModel) -> Unit = {},
 ) {
+    val imageLoader: ImageLoader = koinInject()
+    setSingletonImageLoaderFactory { imageLoader }
+
     Children(
         stack = rootComponent.stack,
         modifier = modifier.fillMaxSize(),

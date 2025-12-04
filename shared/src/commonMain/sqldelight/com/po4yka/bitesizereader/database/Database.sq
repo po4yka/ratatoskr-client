@@ -80,7 +80,8 @@ SELECT summaryEntity.*
 FROM summaryEntity
 JOIN summaryFTS ON summaryEntity.rowid = summaryFTS.rowid
 WHERE summaryFTS MATCH :query
-ORDER BY rank;
+ORDER BY rank
+LIMIT :limit OFFSET :offset;
 
 -- Request Queries
 selectAllRequests:

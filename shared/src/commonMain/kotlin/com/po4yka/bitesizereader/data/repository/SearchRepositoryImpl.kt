@@ -20,7 +20,11 @@ class SearchRepositoryImpl(
             response.toDomain()
         } catch (e: Exception) {
             // Fallback to local search
-            database.summaryEntityQueries.searchSummaries(query)
+            database.summaryEntityQueries.searchSummaries(
+                query = query,
+                limit = pageSize.toLong(),
+                offset = ((page - 1) * pageSize).toLong()
+            )
                 .executeAsList()
                 .map { it.toDomain() }
         }
