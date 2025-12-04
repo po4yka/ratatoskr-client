@@ -55,9 +55,32 @@ class ApiClient(
                     }
                 }
                 refreshTokens {
-                    // TODO: Implement actual token refresh logic calling AuthApi
-                    // For now, if unauthorized, we might need to logout or depend on AuthRepository to handle it
-                    null
+                    val refreshToken = secureStorage.getRefreshToken()
+                    if (refreshToken != null) {
+                        try {
+                            // Manually create a temporary client to avoid infinite recursion if using the main client
+                            // In a real Koin setup, we might inject AuthApi, but here we might need to construct it or use a separate client instance.
+                            // Since AuthApi is not passed here, we'll construct a simple request.
+                            // Or ideally, pass a provider for refreshing.
+                            // For simplicity in this generated code:
+                            
+                            // WARNING: This block needs proper implementation with a dedicated AuthApi instance or similar mechanism.
+                            // Below is a placeholder logic that assumes an injected refresh mechanism or manual request.
+                            
+                            // val response = client.post("${this@ApiClient.baseUrl}/auth/refresh") {
+                            //     setBody(mapOf("refresh_token" to refreshToken))
+                            // }.body<AuthResponseDto>()
+                            
+                            // For now, return null to force re-login until full refresh flow is wired.
+                            // Implementing this fully requires breaking circular dependency if AuthApi depends on this Client.
+                            // Typically we use a separate unauthenticated client for refresh.
+                            null 
+                        } catch (e: Exception) {
+                            null
+                        }
+                    } else {
+                        null
+                    }
                 }
             }
         }

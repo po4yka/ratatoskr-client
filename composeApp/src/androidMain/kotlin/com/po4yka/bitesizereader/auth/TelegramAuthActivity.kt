@@ -1,27 +1,19 @@
 package com.po4yka.bitesizereader.auth
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
-import com.po4yka.bitesizereader.presentation.viewmodel.LoginViewModel
+import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
+import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
 import org.koin.android.ext.android.inject
 
-/**
- * Activity to handle Telegram authentication callback
- *
- * This activity receives the deep link after Telegram authentication
- * and processes the auth data.
- */
 class TelegramAuthActivity : ComponentActivity() {
-    private val loginViewModel: LoginViewModel by inject()
+    
+    private val authViewModel: AuthViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Handle the deep link
         handleIntent(intent)
     }
 
@@ -32,44 +24,31 @@ class TelegramAuthActivity : ComponentActivity() {
 
     private fun handleIntent(intent: Intent?) {
         val data: Uri? = intent?.data
-
         if (data != null && data.scheme == "bitesizereader" && data.host == "telegram-auth") {
-            // Parse Telegram auth data from URL
-            val telegramUserId = data.getQueryParameter("id")?.toLongOrNull()
-            val authHash = data.getQueryParameter("hash")
-            val authDate = data.getQueryParameter("auth_date")?.toLongOrNull()
-            val username = data.getQueryParameter("username")
-            val firstName = data.getQueryParameter("first_name")
+            // Parse parameters from the URL fragment or query
+            // Telegram widget usually returns data in query params
+            val id = data.getQueryParameter("id")
+            val firstName = data.getQueryParameter("first_name") ?: ""
             val lastName = data.getQueryParameter("last_name")
+            val username = data.getQueryParameter("username")
             val photoUrl = data.getQueryParameter("photo_url")
+            val authDate = data.getQueryParameter("auth_date")?.toLongOrNull() ?: 0L
+            val hash = data.getQueryParameter("hash") ?: ""
 
-            Log.d("TelegramAuth", "Received auth callback: userId=$telegramUserId")
-
-            if (telegramUserId != null && authHash != null && authDate != null) {
-                // Call the ViewModel to process authentication
-                // Platform identifier
-                loginViewModel.loginWithTelegram(
-                    telegramUserId = telegramUserId,
-                    authHash = authHash,
-                    authDate = authDate,
-                    username = username,
+            if (id != null && hash.isNotEmpty()) {
+                val authRequest = AuthRequestDto(
+                    id = id,
                     firstName = firstName,
                     lastName = lastName,
+                    username = username,
                     photoUrl = photoUrl,
-                    clientId = "android",
+                    authDate = authDate,
+                    hash = hash
                 )
-
-                // Close this activity and return to main app
-                setResult(Activity.RESULT_OK)
-                finish()
-            } else {
-                Log.e("TelegramAuth", "Invalid auth data received")
-                setResult(Activity.RESULT_CANCELED)
-                finish()
+                authViewModel.login(authRequest)
             }
-        } else {
-            Log.e("TelegramAuth", "Invalid deep link: $data")
-            setResult(Activity.RESULT_CANCELED)
+            
+            // Close this activity and return to main app
             finish()
         }
     }

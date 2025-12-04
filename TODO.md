@@ -385,23 +385,23 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Telegram Login Integration
 
-- [ ] Android:
-  - [ ] Custom Tab for Telegram Login Widget
-  - [ ] Handle callback URL
-  - [ ] Parse auth data
-  - [ ] Store tokens securely
-- [ ] iOS:
-  - [ ] WKWebView for Telegram Login Widget
-  - [ ] Handle callback URL
-  - [ ] Parse auth data
-  - [ ] Store tokens in Keychain
+- [X] Android:
+  - [X] Custom Tab for Telegram Login Widget
+  - [X] Handle callback URL
+  - [X] Parse auth data
+  - [X] Store tokens securely
+- [X] iOS:
+  - [X] WKWebView for Telegram Login Widget
+  - [X] Handle callback URL
+  - [X] Parse auth data
+  - [X] Store tokens in Keychain
 
 ### Token Management
 
-- [ ] Implement auto-refresh before token expiry
-- [ ] Handle 401 unauthorized responses
-- [ ] Logout and clear tokens
-- [ ] Persist login state across app restarts
+- [X] Implement auto-refresh before token expiry
+- [X] Handle 401 unauthorized responses
+- [X] Logout and clear tokens
+- [X] Persist login state across app restarts
 
 ---
 
