@@ -6,17 +6,15 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
+import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
 import com.po4yka.bitesizereader.ui.screens.AuthScreen
 import com.po4yka.bitesizereader.ui.screens.SummaryListScreen
 
-/**
- * Main app composable with Decompose navigation
- */
+/** Main app composable with Decompose navigation */
 @Composable
 fun App(
     rootComponent: RootComponent,
     modifier: Modifier = Modifier,
-// ...
     onLoginClick: (AuthViewModel) -> Unit = {},
 ) {
     val childStack = rootComponent.childStack.subscribeAsState()
@@ -28,8 +26,9 @@ fun App(
         when (val instance = child.instance) {
             is RootComponent.Child.Auth -> AuthScreen(
                 component = instance.component,
-                onLoginClick = onLoginClick
+                onLoginClick = onLoginClick,
             )
+
             is RootComponent.Child.Main -> SummaryListScreen(component = instance.component.summaryListComponent)
         }
     }

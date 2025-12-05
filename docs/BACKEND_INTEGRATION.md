@@ -502,7 +502,6 @@ override suspend fun getSummaries(): Result<List<Summary>> {
     }
 
     // Proceed with network request
-    // ...
 }
 ```
 
