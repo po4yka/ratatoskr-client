@@ -24,12 +24,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             BiteSizeReaderTheme {
                 val childStack by root.childStack.subscribeAsState()
-                
+
                 Children(
                     stack = childStack,
                 ) {
                     when (val child = it.instance) {
-                        is RootComponent.Child.Auth -> AuthScreen(child.component)
+                        is RootComponent.Child.Auth -> AuthScreen(
+                            component = child.component,
+                            onLoginClick = { _ ->
+                                com.po4yka.bitesizereader.auth.TelegramAuthHelper.launchTelegramAuth(this@MainActivity)
+                            }
+                        )
                         is RootComponent.Child.Main -> SummaryListScreen(child.component.summaryListComponent)
                     }
                 }

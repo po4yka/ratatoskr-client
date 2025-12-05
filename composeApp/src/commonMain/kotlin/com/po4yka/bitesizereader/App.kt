@@ -16,7 +16,8 @@ import com.po4yka.bitesizereader.ui.screens.SummaryListScreen
 fun App(
     rootComponent: RootComponent,
     modifier: Modifier = Modifier,
-    onLoginClick: () -> Unit = {},
+// ...
+    onLoginClick: (AuthViewModel) -> Unit = {},
 ) {
     val childStack = rootComponent.childStack.subscribeAsState()
 
