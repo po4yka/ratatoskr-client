@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
-// ...
+
 fun MainViewController(
     rootComponent: RootComponent,
     onLoginClick: (AuthViewModel) -> Unit = {},
