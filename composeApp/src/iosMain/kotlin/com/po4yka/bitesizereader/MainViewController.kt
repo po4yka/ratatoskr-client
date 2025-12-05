@@ -4,13 +4,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
-import com.po4yka.bitesizereader.presentation.viewmodel.LoginViewModel
-import com.po4yka.bitesizereader.ui.theme.BiteSizeReaderTheme
-import platform.UIKit.UIViewController
-
+import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
+// ...
 fun MainViewController(
     rootComponent: RootComponent,
-    onLoginClick: (LoginViewModel) -> Unit = {},
+    onLoginClick: (AuthViewModel) -> Unit = {},
 ): UIViewController =
     ComposeUIViewController {
         BiteSizeReaderTheme {

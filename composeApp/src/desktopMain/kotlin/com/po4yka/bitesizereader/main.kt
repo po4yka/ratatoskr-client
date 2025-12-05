@@ -43,7 +43,18 @@ fun main() {
             state = windowState,
             title = "BiteSizeReader (Desktop Preview - Hot Reload Enabled)",
         ) {
-            App(rootComponent)
+            App(
+                rootComponent = rootComponent,
+                onLoginClick = { _ ->
+                    if (java.awt.Desktop.isDesktopSupported() && java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.BROWSE)) {
+                        try {
+                            java.awt.Desktop.getDesktop().browse(java.net.URI(AppConfig.Telegram.getTelegramAuthUrl()))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            )
         }
     }
 }

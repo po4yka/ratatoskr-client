@@ -20,7 +20,7 @@ fun AuthScreen(
     component: AuthComponent,
     onLoginSuccess: () -> Unit = component::onLoginSuccess,
     modifier: Modifier = Modifier,
-    onLoginClick: () -> Unit = {},
+    onLoginClick: (AuthViewModel) -> Unit = {},
 ) {
     val viewModel: AuthViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
@@ -69,7 +69,7 @@ fun AuthScreen(
 
             // Login Button
             Button(
-                onClick = { onLoginClick() },
+                onClick = { onLoginClick(viewModel) },
                 enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth(),
             ) {

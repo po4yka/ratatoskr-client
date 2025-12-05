@@ -5,7 +5,7 @@ import Shared
 /// Main content view hosting the shared Compose Multiplatform UI
 struct ContentView: View {
     @State private var isTelegramSheetPresented = false
-    @State private var pendingLoginViewModel: LoginViewModel?
+    @State private var pendingLoginViewModel: AuthViewModel?
 
     private let rootComponent: RootComponent
 
@@ -25,15 +25,16 @@ struct ContentView: View {
             if let viewModel = pendingLoginViewModel {
                 TelegramAuthWebView(
                     onAuthSuccess: { authData in
-                        viewModel.loginWithTelegram(
-                            telegramUserId: authData.id,
-                            authHash: authData.authHash,
-                            authDate: authData.authDate,
-                            username: authData.username,
-                            firstName: authData.firstName,
-                            lastName: authData.lastName,
-                            photoUrl: authData.photoUrl,
-                            clientId: "ios"
+                        viewModel.login(
+                            authData: AuthRequestDto(
+                                id = authData.id,
+                                firstName = authData.firstName,
+                                lastName = authData.lastName ?: "",
+                                username = authData.username,
+                                photoUrl = authData.photoUrl,
+                                authDate = authData.authDate,
+                                hash = authData.authHash
+                            )
                         )
                         rootComponent.navigateToSummaryList()
                         isTelegramSheetPresented = false
@@ -48,7 +49,7 @@ struct ContentView: View {
 
 private struct ComposeRootView: UIViewControllerRepresentable {
     let rootComponent: RootComponent
-    let onLoginRequest: (LoginViewModel) -> Void
+    let onLoginRequest: (AuthViewModel) -> Void
 
     func makeUIViewController(context: Context) -> UIViewController {
         MainViewController(rootComponent: rootComponent, onLoginClick: onLoginRequest)
