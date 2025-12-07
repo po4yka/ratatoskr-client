@@ -4,7 +4,24 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SearchResponseDto(
-    @SerialName("results") val results: List<SummaryDto>,
-    @SerialName("total") val total: Int
+data class SearchResultDto(
+    @SerialName("request_id") val requestId: Long,
+    @SerialName("summary_id") val summaryId: Long,
+    @SerialName("url") val url: String? = null,
+    @SerialName("title") val title: String? = null,
+    @SerialName("domain") val domain: String? = null,
+    @SerialName("snippet") val snippet: String? = null,
+    @SerialName("tldr") val tldr: String? = null,
+    @SerialName("published_at") val publishedAt: String? = null,
+    @SerialName("created_at") val createdAt: String? = null,
+    @SerialName("relevance_score") val relevanceScore: Double? = null,
+    @SerialName("topic_tags") val topicTags: List<String> = emptyList(),
+    @SerialName("is_read") val isRead: Boolean = false
+)
+
+@Serializable
+data class SearchResponseDataDto(
+    @SerialName("results") val results: List<SearchResultDto>,
+    @SerialName("pagination") val pagination: PaginationDto,
+    @SerialName("query") val query: String
 )

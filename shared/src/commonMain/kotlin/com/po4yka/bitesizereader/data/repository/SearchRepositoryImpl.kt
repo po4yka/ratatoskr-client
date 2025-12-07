@@ -17,7 +17,7 @@ class SearchRepositoryImpl(
         // Here we simply call API and return results.
         return try {
             val response = api.search(query, page, pageSize)
-            response.toDomain()
+            response.data?.toDomain() ?: emptyList()
         } catch (e: Exception) {
             // Fallback to local search
             database.databaseQueries.searchSummaries(

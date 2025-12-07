@@ -58,10 +58,11 @@ class AuthRepositoryImpl(
         )
         val response = authApi.loginWithTelegram(request)
         if (response.success && response.data != null) {
-            val (authTokens, user) = response.data.toDomain()
+            val authTokens = response.data.toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
             secureStorage.saveRefreshToken(authTokens.refreshToken)
-            _currentUser.value = user
+            // Fetch current user on-demand
+            _currentUser.value = null
             _isAuthenticated.value = true
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Login failed")
@@ -103,7 +104,10 @@ class AuthRepositoryImpl(
             return try {
                 val response = authApi.refreshToken(TokenRefreshRequestDto(refreshToken))
                 if (response.success && response.data != null) {
-                    val authTokens = response.data.toAuthTokens(Clock.System.now())
+                    val authTokens = response.data.toAuthTokens(
+                        currentTime = Clock.System.now(),
+                        refreshToken = refreshToken
+                    )
                     secureStorage.saveAccessToken(authTokens.accessToken)
                     secureStorage.saveRefreshToken(authTokens.refreshToken)
                     _isAuthenticated.value = true
