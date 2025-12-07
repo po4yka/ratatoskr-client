@@ -12,13 +12,13 @@ plugins {
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
     jvm("desktop") {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -92,20 +92,13 @@ kotlin {
             implementation(libs.logback.android)
         }
 
-        val iosMain by creating {
-            dependsOn(commonMain.get())
-            dependencies {
-                // Ktor Darwin Engine
-                implementation(libs.ktor.client.darwin)
+        iosMain.dependencies {
+            // Ktor Darwin Engine
+            implementation(libs.ktor.client.darwin)
 
-                // SQLDelight Native Driver
-                implementation(libs.sqldelight.native.driver)
-            }
+            // SQLDelight Native Driver
+            implementation(libs.sqldelight.native.driver)
         }
-
-        val iosArm64Main by getting { dependsOn(iosMain) }
-        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
-        val iosX64Main by getting { dependsOn(iosMain) }
 
         val desktopMain by getting {
             dependencies {
@@ -139,8 +132,8 @@ android {
     namespace = "com.po4yka.bitesizereader.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
