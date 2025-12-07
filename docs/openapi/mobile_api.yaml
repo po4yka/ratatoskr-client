@@ -1,0 +1,2594 @@
+openapi: 3.1.0
+info:
+  title: Bite-Size Reader Mobile API
+  description: RESTful API for Android/iOS mobile clients
+  version: 1.0.0
+servers:
+  - url: https://api.bite-size-reader.po4yka.com
+    description: Production
+  - url: https://staging-api.bite-size-reader.po4yka.com
+    description: Staging
+  - url: http://localhost:8000
+    description: Local development
+paths:
+  /v1/auth/telegram-login:
+    post:
+      tags:
+      - Authentication
+      summary: Telegram Login
+      description: 'Exchange Telegram authentication data for JWT tokens.
+
+
+        Verifies Telegram auth hash using HMAC-SHA256 and returns access + refresh
+        tokens.
+
+
+        The authentication data must come from Telegram Login Widget and include:
+
+        - id: Telegram user ID
+
+        - hash: HMAC-SHA256 hash of auth data
+
+        - auth_date: Unix timestamp of authentication
+
+        - client_id: Client application ID
+
+        - Optional: username, first_name, last_name, photo_url'
+      operationId: telegram_login_v1_auth_telegram_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelegramLoginRequest'
+        required: true
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/auth/refresh:
+    post:
+      tags:
+      - Authentication
+      summary: Refresh Access Token
+      description: Refresh an expired access token using a refresh token.
+      operationId: refresh_access_token_v1_auth_refresh_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+        required: true
+      responses:
+        '200':
+          description: Tokens refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/auth/me:
+    get:
+      tags:
+      - Authentication
+      summary: Get Current User Info
+      description: Get current authenticated user information.
+      operationId: get_current_user_info_v1_auth_me_get
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+      - HTTPBearer: []
+  /v1/summaries:
+    get:
+      tags:
+      - Summaries
+      summary: Get Summaries
+      description: 'Get paginated list of summaries.
+
+
+        Query Parameters:
+
+        - limit: Items per page (1-100, default 20)
+
+        - offset: Pagination offset (default 0)
+
+        - is_read: Filter by read status (optional)
+
+        - lang: Filter by language (en/ru/auto)
+
+        - start_date: Filter by creation date (ISO 8601)
+
+        - end_date: Filter by creation date (ISO 8601)
+
+        - sort: Sort order (created_at_desc/created_at_asc)'
+      operationId: get_summaries_v1_summaries_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: is_read
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Read
+      - name: lang
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            pattern: ^(en|ru|auto)$
+          - type: 'null'
+          title: Lang
+      - name: start_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Start Date
+      - name: end_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: End Date
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(created_at_desc|created_at_asc)$
+          default: created_at_desc
+          title: Sort
+      responses:
+        '200':
+          description: Paginated summaries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSummariesResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/summaries/{summary_id}:
+    get:
+      tags:
+      - Summaries
+      summary: Get Summary
+      description: Get a single summary with full details.
+      operationId: get_summary_v1_summaries__summary_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: summary_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Summary Id
+      responses:
+        '200':
+          description: Summary detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryDetailResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags:
+      - Summaries
+      summary: Update Summary
+      description: Update summary metadata (e.g., mark as read).
+      operationId: update_summary_v1_summaries__summary_id__patch
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: summary_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Summary Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSummaryRequest'
+      responses:
+        '200':
+          description: Summary updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryUpdateResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+      - Summaries
+      summary: Delete Summary
+      description: Delete a summary (soft delete).
+      operationId: delete_summary_v1_summaries__summary_id__delete
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: summary_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Summary Id
+      responses:
+        '200':
+          description: Summary deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryDeleteResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/requests:
+    post:
+      tags:
+      - Requests
+      summary: Submit Request
+      description: 'Submit a new URL or forwarded message for processing.
+
+
+        Returns request_id and correlation_id for status polling.
+
+        Checks for duplicates and returns existing summary if found.
+
+        Processing happens asynchronously in the background.'
+      operationId: submit_request_v1_requests_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/SubmitURLRequest'
+              - $ref: '#/components/schemas/SubmitForwardRequest'
+              description: Request payload with discriminator on type
+        required: true
+      responses:
+        '200':
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitRequestResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+      - HTTPBearer: []
+  /v1/requests/{request_id}:
+    get:
+      tags:
+      - Requests
+      summary: Get Request
+      description: Get details about a specific request.
+      operationId: get_request_v1_requests__request_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Request Id
+      responses:
+        '200':
+          description: Request detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestDetailResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/requests/{request_id}/status:
+    get:
+      tags:
+      - Requests
+      summary: Get Request Status
+      description: Poll for real-time processing status.
+      operationId: get_request_status_v1_requests__request_id__status_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Request Id
+      responses:
+        '200':
+          description: Request status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestStatusResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/requests/{request_id}/retry:
+    post:
+      tags:
+      - Requests
+      summary: Retry Request
+      description: Retry a failed request. Processes asynchronously in the background.
+      operationId: retry_request_v1_requests__request_id__retry_post
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Request Id
+      responses:
+        '200':
+          description: Request retried
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestRetryResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/search:
+    get:
+      tags:
+      - Search
+      summary: Search Summaries
+      description: 'Full-text search across all summaries using FTS5.
+
+
+        Search Syntax:
+
+        - Wildcard: bitcoin*
+
+        - Phrase: "artificial intelligence"
+
+        - Boolean: blockchain AND crypto
+
+        - Exclusion: crypto NOT bitcoin'
+      operationId: search_summaries_v1_search_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 200
+          title: Q
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/search/semantic:
+    get:
+      tags:
+      - Search
+      summary: Semantic Search Summaries
+      description: Semantic search across summaries using Chroma embeddings.
+      operationId: semantic_search_summaries_v1_search_semantic_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 200
+          title: Q
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: language
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            minLength: 2
+            maxLength: 10
+          - type: 'null'
+          title: Language
+      - name: tags
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+          - type: 'null'
+          title: Tags
+      - name: user_scope
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 50
+          - type: 'null'
+          title: User Scope
+      responses:
+        '200':
+          description: Semantic search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/topics/trending:
+    get:
+      tags:
+      - Search
+      summary: Get Trending Topics
+      description: Get trending topic tags across recent summaries.
+      operationId: get_trending_topics_v1_topics_trending_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 365
+          minimum: 1
+          default: 30
+          title: Days
+      responses:
+        '200':
+          description: Trending topics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrendingTopicsResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/topics/related:
+    get:
+      tags:
+      - Search
+      summary: Get Related Summaries
+      description: Get summaries related to a specific topic tag.
+      operationId: get_related_summaries_v1_topics_related_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: tag
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          title: Tag
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Related summaries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatedTopicsResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/urls/check-duplicate:
+    get:
+      tags:
+      - Search
+      summary: Check Duplicate
+      description: Check if a URL has already been summarized.
+      operationId: check_duplicate_v1_urls_check_duplicate_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 10
+          title: Url
+      - name: include_summary
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Include Summary
+      responses:
+        '200':
+          description: Duplicate check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateUrlCheckResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/sync/sessions:
+    post:
+      tags:
+      - Sync
+      summary: Create Sync Session
+      description: Create or resume a sync session.
+      operationId: create_sync_session_v1_sync_sessions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/SyncSessionRequest'
+              - type: 'null'
+              description: Optional session options
+      responses:
+        '200':
+          description: Sync session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncSessionResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+      - HTTPBearer: []
+  /v1/sync/full:
+    get:
+      tags:
+      - Sync
+      summary: Full Sync
+      description: Fetch full sync data in bounded chunks.
+      operationId: full_sync_v1_sync_full_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: session_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Sync session identifier
+          title: Session Id
+        description: Sync session identifier
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          title: Limit
+      responses:
+        '200':
+          description: Full sync chunk
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullSyncResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '410':
+          $ref: '#/components/responses/SessionExpiredError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/sync/delta:
+    get:
+      tags:
+      - Sync
+      summary: Delta Sync
+      description: Fetch delta sync (created/updated/deleted) since a cursor.
+      operationId: delta_sync_v1_sync_delta_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: session_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Sync session identifier
+          title: Session Id
+        description: Sync session identifier
+      - name: since
+        in: query
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+          description: Last seen server_version cursor
+          title: Since
+        description: Last seen server_version cursor
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          title: Limit
+      responses:
+        '200':
+          description: Delta sync data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeltaSyncResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '410':
+          $ref: '#/components/responses/SessionExpiredError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/sync/apply:
+    post:
+      tags:
+      - Sync
+      summary: Apply Changes
+      description: Apply client-side changes with conflict detection.
+      operationId: apply_changes_v1_sync_apply_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncApplyRequest'
+        required: true
+      responses:
+        '200':
+          description: Apply results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncApplyResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '410':
+          $ref: '#/components/responses/SessionExpiredError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+      - HTTPBearer: []
+  /v1/user/preferences:
+    get:
+      tags:
+      - User
+      summary: Get User Preferences
+      description: Get user preferences.
+      operationId: get_user_preferences_v1_user_preferences_get
+      responses:
+        '200':
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferencesResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+      - HTTPBearer: []
+    patch:
+      tags:
+      - User
+      summary: Update User Preferences
+      description: Update user preferences.
+      operationId: update_user_preferences_v1_user_preferences_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePreferencesRequest'
+        required: true
+      responses:
+        '200':
+          description: Preferences updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferencesResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+      - HTTPBearer: []
+  /v1/user/stats:
+    get:
+      tags:
+      - User
+      summary: Get User Stats
+      description: Get user statistics.
+      operationId: get_user_stats_v1_user_stats_get
+      responses:
+        '200':
+          description: User stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserStatsResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+      - HTTPBearer: []
+  /:
+    get:
+      summary: Root
+      description: API root endpoint.
+      operationId: root__get
+      responses:
+        '200':
+          description: Root ping
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RootResponseEnvelope'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /health:
+    get:
+      summary: Health Check
+      description: Health check endpoint.
+      operationId: health_check_health_get
+      responses:
+        '200':
+          description: Health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponseEnvelope'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundError:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ConflictError:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    SessionExpiredError:
+      description: Sync session expired or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Validation Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequestsError:
+      description: Too Many Requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    Meta:
+      type: object
+      description: Response metadata for observability and pagination.
+      required:
+      - correlation_id
+      - timestamp
+      - version
+      properties:
+        correlation_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        build:
+          type: string
+          nullable: true
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        debug:
+          type: object
+          nullable: true
+    Pagination:
+      type: object
+      required:
+      - total
+      - limit
+      - offset
+      - has_more
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+        has_more:
+          type: boolean
+        next_cursor:
+          type: integer
+          nullable: true
+    BaseSuccessResponse:
+      type: object
+      required:
+      - success
+      - meta
+      properties:
+        success:
+          type: boolean
+          const: true
+        meta:
+          $ref: '#/components/schemas/Meta'
+    ErrorObject:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          enum:
+          - VALIDATION_ERROR
+          - UNAUTHORIZED
+          - FORBIDDEN
+          - NOT_FOUND
+          - CONFLICT
+          - RATE_LIMIT_EXCEEDED
+          - INTERNAL_ERROR
+          - SESSION_EXPIRED
+        message:
+          type: string
+        details:
+          type: object
+          nullable: true
+        correlation_id:
+          type: string
+          nullable: true
+        retry_after:
+          type: integer
+          nullable: true
+    ErrorResponse:
+      type: object
+      required:
+      - success
+      - error
+      - meta
+      properties:
+        success:
+          type: boolean
+          const: false
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+        meta:
+          $ref: '#/components/schemas/Meta'
+    AuthTokens:
+      type: object
+      required:
+      - access_token
+      - refresh_token
+      - token_type
+      - expires_in
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+          enum:
+          - Bearer
+          default: Bearer
+        expires_in:
+          type: integer
+          description: Seconds until access token expiry
+        refresh_expires_in:
+          type: integer
+          nullable: true
+    LoginData:
+      type: object
+      required:
+      - tokens
+      - user
+      properties:
+        tokens:
+          $ref: '#/components/schemas/AuthTokens'
+        user:
+          $ref: '#/components/schemas/User'
+        preferences:
+          $ref: '#/components/schemas/UserPreferences'
+          nullable: true
+    LoginResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/LoginData'
+    AuthTokensResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/AuthTokens'
+    User:
+      type: object
+      required:
+      - id
+      - is_owner
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+          nullable: true
+        display_name:
+          type: string
+          nullable: true
+        photo_url:
+          type: string
+          nullable: true
+        is_owner:
+          type: boolean
+        client_id:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    UserResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/User'
+    UserPreferences:
+      type: object
+      required:
+      - lang_preference
+      properties:
+        lang_preference:
+          type: string
+          enum:
+          - auto
+          - en
+          - ru
+          default: auto
+        notification_settings:
+          type: object
+          additionalProperties: true
+          nullable: true
+        app_settings:
+          type: object
+          additionalProperties: true
+          nullable: true
+    UserPreferencesResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/UserPreferences'
+    UserStats:
+      type: object
+      required:
+      - total_summaries
+      - unread_count
+      - read_count
+      properties:
+        total_summaries:
+          type: integer
+        unread_count:
+          type: integer
+        read_count:
+          type: integer
+        total_reading_time_min:
+          type: integer
+          nullable: true
+        average_reading_time_min:
+          type: integer
+          nullable: true
+        favorite_topics:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              tag:
+                type: string
+              count:
+                type: integer
+        favorite_domains:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              domain:
+                type: string
+              count:
+                type: integer
+        language_distribution:
+          type: object
+          additionalProperties:
+            type: integer
+          nullable: true
+        joined_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_summary_at:
+          type: string
+          format: date-time
+          nullable: true
+    UserStatsResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/UserStats'
+    SummaryPayload:
+      type: object
+      required:
+      - summary_250
+      - summary_1000
+      - tldr
+      - key_ideas
+      - topic_tags
+      - entities
+      - estimated_reading_time_min
+      properties:
+        summary_250:
+          type: string
+          maxLength: 250
+        summary_1000:
+          type: string
+          maxLength: 1000
+        tldr:
+          type: string
+        key_ideas:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        topic_tags:
+          type: array
+          items:
+            type: string
+        entities:
+          type: object
+          properties:
+            people:
+              type: array
+              items:
+                type: string
+            organizations:
+              type: array
+              items:
+                type: string
+            locations:
+              type: array
+              items:
+                type: string
+        estimated_reading_time_min:
+          type: integer
+        key_stats:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              value:
+                type: number
+              unit:
+                type: string
+                nullable: true
+              source_excerpt:
+                type: string
+        readability:
+          type: object
+          properties:
+            method:
+              type: string
+            score:
+              type: number
+            level:
+              type: string
+        metadata:
+          type: object
+          properties:
+            title:
+              type: string
+            canonical_url:
+              type: string
+            domain:
+              type: string
+            author:
+              type: string
+              nullable: true
+            published_at:
+              type: string
+              format: date-time
+              nullable: true
+            last_updated:
+              type: string
+              format: date-time
+              nullable: true
+        extractive_quotes:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              text:
+                type: string
+              source_span:
+                type: string
+        questions_answered:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              question:
+                type: string
+              answer:
+                type: string
+        topic_taxonomy:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              score:
+                type: number
+              path:
+                type: string
+        hallucination_risk:
+          type: string
+          nullable: true
+        confidence:
+          type: number
+          nullable: true
+        insights:
+          type: object
+          nullable: true
+          properties:
+            topic_overview:
+              type: string
+            new_facts:
+              type: array
+              items:
+                type: object
+                properties:
+                  fact:
+                    type: string
+                  why_it_matters:
+                    type: string
+                  confidence:
+                    type: number
+            open_questions:
+              type: array
+              items:
+                type: string
+            caution:
+              type: string
+              nullable: true
+    Summary:
+      type: object
+      required:
+      - id
+      - request_id
+      - lang
+      - is_read
+      - version
+      - created_at
+      - json_payload
+      properties:
+        id:
+          type: integer
+        request_id:
+          type: integer
+        lang:
+          type: string
+        is_read:
+          type: boolean
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        json_payload:
+          $ref: '#/components/schemas/SummaryPayload'
+        title:
+          type: string
+          nullable: true
+        domain:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        tldr:
+          type: string
+          nullable: true
+    SummaryListItem:
+      type: object
+      required:
+      - id
+      - request_id
+      - title
+      - url
+      - tldr
+      - summary_250
+      - reading_time_min
+      - topic_tags
+      - is_read
+      - lang
+      - created_at
+      properties:
+        id:
+          type: integer
+        request_id:
+          type: integer
+        title:
+          type: string
+        domain:
+          type: string
+          nullable: true
+        url:
+          type: string
+        tldr:
+          type: string
+        summary_250:
+          type: string
+        reading_time_min:
+          type: integer
+        topic_tags:
+          type: array
+          items:
+            type: string
+        is_read:
+          type: boolean
+        lang:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        confidence:
+          type: number
+          nullable: true
+        hallucination_risk:
+          type: string
+          nullable: true
+    SummaryStats:
+      type: object
+      required:
+      - total_summaries
+      - unread_count
+      properties:
+        total_summaries:
+          type: integer
+        unread_count:
+          type: integer
+    PaginatedSummariesData:
+      type: object
+      required:
+      - items
+      - pagination
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryListItem'
+        stats:
+          $ref: '#/components/schemas/SummaryStats'
+          nullable: true
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    PaginatedSummariesResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/PaginatedSummariesData'
+    SummaryDetailData:
+      type: object
+      required:
+      - summary
+      properties:
+        summary:
+          $ref: '#/components/schemas/Summary'
+        request:
+          $ref: '#/components/schemas/Request'
+          nullable: true
+        source:
+          type: object
+          nullable: true
+          properties:
+            url:
+              type: string
+            title:
+              type: string
+            domain:
+              type: string
+            author:
+              type: string
+              nullable: true
+            published_at:
+              type: string
+              format: date-time
+              nullable: true
+            http_status:
+              type: integer
+              nullable: true
+        processing:
+          type: object
+          nullable: true
+          properties:
+            model:
+              type: string
+            tokens_used:
+              type: integer
+            cost_usd:
+              type: number
+            latency_ms:
+              type: integer
+            crawl_latency_ms:
+              type: integer
+            llm_latency_ms:
+              type: integer
+    SummaryDetailResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SummaryDetailData'
+    SummaryUpdateResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            type: object
+            required:
+            - id
+            - is_read
+            - updated_at
+            properties:
+              id:
+                type: integer
+              is_read:
+                type: boolean
+              updated_at:
+                type: string
+                format: date-time
+    SummaryDeleteResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            type: object
+            required:
+            - id
+            - deleted_at
+            properties:
+              id:
+                type: integer
+              deleted_at:
+                type: string
+                format: date-time
+    Request:
+      type: object
+      required:
+      - id
+      - type
+      - status
+      - correlation_id
+      - created_at
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum:
+          - url
+          - forward
+        status:
+          type: string
+          enum:
+          - pending
+          - processing
+          - success
+          - error
+        correlation_id:
+          type: string
+        input_url:
+          type: string
+          nullable: true
+        normalized_url:
+          type: string
+          nullable: true
+        dedupe_hash:
+          type: string
+          nullable: true
+        lang_detected:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+    RequestDetail:
+      type: object
+      required:
+      - request
+      properties:
+        request:
+          $ref: '#/components/schemas/Request'
+        crawl_result:
+          type: object
+          nullable: true
+          properties:
+            status:
+              type: string
+            http_status:
+              type: integer
+              nullable: true
+            latency_ms:
+              type: integer
+              nullable: true
+            error:
+              type: string
+              nullable: true
+        llm_calls:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              model:
+                type: string
+              status:
+                type: string
+              tokens_prompt:
+                type: integer
+              tokens_completion:
+                type: integer
+              cost_usd:
+                type: number
+              latency_ms:
+                type: integer
+              created_at:
+                type: string
+                format: date-time
+        summary:
+          $ref: '#/components/schemas/SummaryListItem'
+          nullable: true
+    RequestDetailResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/RequestDetail'
+    SubmitRequestData:
+      type: object
+      required:
+      - request_id
+      - correlation_id
+      - type
+      - status
+      - is_duplicate
+      - created_at
+      properties:
+        request_id:
+          type: integer
+        correlation_id:
+          type: string
+        type:
+          type: string
+          enum:
+          - url
+          - forward
+        status:
+          type: string
+          enum:
+          - pending
+          - processing
+          - success
+          - failed
+        estimated_wait_seconds:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        is_duplicate:
+          type: boolean
+        duplicate_request_id:
+          type: integer
+          nullable: true
+        duplicate_summary_id:
+          type: integer
+          nullable: true
+        duplicate_summary:
+          $ref: '#/components/schemas/SummaryListItem'
+          nullable: true
+    SubmitRequestResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SubmitRequestData'
+    RequestStatusData:
+      type: object
+      required:
+      - request_id
+      - status
+      properties:
+        request_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - pending
+          - processing
+          - success
+          - error
+        stage:
+          type: string
+          enum:
+          - pending
+          - content_extraction
+          - llm_summarization
+          - validation
+          - success
+          - error
+          nullable: true
+        progress:
+          type: object
+          nullable: true
+          properties:
+            current_step:
+              type: integer
+            total_steps:
+              type: integer
+            percentage:
+              type: integer
+        estimated_seconds_remaining:
+          type: integer
+          nullable: true
+        error_stage:
+          type: string
+          nullable: true
+        error_type:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+        can_retry:
+          type: boolean
+          nullable: true
+        correlation_id:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    RequestStatusResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/RequestStatusData'
+    RequestRetryResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            type: object
+            required:
+            - new_request_id
+            - correlation_id
+            - status
+            - created_at
+            properties:
+              new_request_id:
+                type: integer
+              correlation_id:
+                type: string
+              status:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+    SearchResultItem:
+      type: object
+      required:
+      - request_id
+      - summary_id
+      - url
+      - title
+      - created_at
+      properties:
+        request_id:
+          type: integer
+        summary_id:
+          type: integer
+        url:
+          type: string
+        title:
+          type: string
+        domain:
+          type: string
+          nullable: true
+        snippet:
+          type: string
+          nullable: true
+        tldr:
+          type: string
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        relevance_score:
+          type: number
+          nullable: true
+        topic_tags:
+          type: array
+          items:
+            type: string
+        is_read:
+          type: boolean
+          nullable: true
+    SearchResponseData:
+      type: object
+      required:
+      - results
+      - pagination
+      - query
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResultItem'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        query:
+          type: string
+    SearchResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SearchResponseData'
+    TrendingTopic:
+      type: object
+      required:
+      - tag
+      - count
+      properties:
+        tag:
+          type: string
+        count:
+          type: integer
+        trend:
+          type: string
+          nullable: true
+        percentage_change:
+          type: number
+          nullable: true
+    TrendingTopicsResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            type: object
+            required:
+            - tags
+            properties:
+              tags:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrendingTopic'
+              time_range:
+                type: object
+                nullable: true
+                properties:
+                  start:
+                    type: string
+                    format: date-time
+                  end:
+                    type: string
+                    format: date-time
+    RelatedSummary:
+      type: object
+      required:
+      - summary_id
+      - title
+      - tldr
+      - created_at
+      properties:
+        summary_id:
+          type: integer
+        title:
+          type: string
+        tldr:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    RelatedTopicsResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            type: object
+            required:
+            - tag
+            - summaries
+            - pagination
+            properties:
+              tag:
+                type: string
+              summaries:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RelatedSummary'
+              pagination:
+                $ref: '#/components/schemas/Pagination'
+    DuplicateUrlCheckData:
+      type: object
+      required:
+      - is_duplicate
+      - normalized_url
+      - dedupe_hash
+      properties:
+        is_duplicate:
+          type: boolean
+        normalized_url:
+          type: string
+        dedupe_hash:
+          type: string
+        request_id:
+          type: integer
+          nullable: true
+        summary_id:
+          type: integer
+          nullable: true
+        summarized_at:
+          type: string
+          format: date-time
+          nullable: true
+        summary:
+          $ref: '#/components/schemas/SummaryListItem'
+          nullable: true
+    DuplicateUrlCheckResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/DuplicateUrlCheckData'
+    SyncSessionData:
+      type: object
+      required:
+      - session_id
+      - expires_at
+      - default_limit
+      - max_limit
+      properties:
+        session_id:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        default_limit:
+          type: integer
+        max_limit:
+          type: integer
+        last_issued_since:
+          type: integer
+          nullable: true
+    SyncSessionResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SyncSessionData'
+    SyncEntityEnvelope:
+      type: object
+      required:
+      - entity_type
+      - id
+      - server_version
+      - updated_at
+      properties:
+        entity_type:
+          type: string
+          enum:
+          - summary
+          - request
+          - preference
+          - stat
+          - crawl_result
+          - llm_call
+        id:
+          oneOf:
+          - type: integer
+          - type: string
+        server_version:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        summary:
+          $ref: '#/components/schemas/Summary'
+          nullable: true
+        request:
+          $ref: '#/components/schemas/Request'
+          nullable: true
+        preference:
+          $ref: '#/components/schemas/UserPreferences'
+          nullable: true
+        stat:
+          $ref: '#/components/schemas/UserStats'
+          nullable: true
+    FullSyncItem:
+      allOf:
+      - $ref: '#/components/schemas/SyncEntityEnvelope'
+    FullSyncResponseData:
+      type: object
+      required:
+      - session_id
+      - has_more
+      - items
+      - pagination
+      properties:
+        session_id:
+          type: string
+        has_more:
+          type: boolean
+        next_since:
+          type: integer
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FullSyncItem'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    FullSyncResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/FullSyncResponseData'
+    DeltaSyncResponseData:
+      type: object
+      required:
+      - session_id
+      - since
+      - has_more
+      - created
+      - updated
+      - deleted
+      properties:
+        session_id:
+          type: string
+        since:
+          type: integer
+        has_more:
+          type: boolean
+        next_since:
+          type: integer
+          nullable: true
+        created:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncEntityEnvelope'
+        updated:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncEntityEnvelope'
+        deleted:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncEntityEnvelope'
+    DeltaSyncResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/DeltaSyncResponseData'
+    SyncApplyResult:
+      type: object
+      required:
+      - id
+      - entity_type
+      - status
+      properties:
+        id:
+          oneOf:
+          - type: integer
+          - type: string
+        entity_type:
+          type: string
+        status:
+          type: string
+          enum:
+          - applied
+          - conflict
+          - invalid
+        server_version:
+          type: integer
+          nullable: true
+        server_snapshot:
+          $ref: '#/components/schemas/SyncEntityEnvelope'
+          nullable: true
+        error_code:
+          type: string
+          nullable: true
+        message:
+          type: string
+          nullable: true
+    SyncApplyResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            type: object
+            required:
+            - session_id
+            - results
+            properties:
+              session_id:
+                type: string
+              results:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SyncApplyResult'
+              conflicts:
+                type: array
+                nullable: true
+                items:
+                  $ref: '#/components/schemas/SyncApplyResult'
+              has_more:
+                type: boolean
+                nullable: true
+    RootResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            type: object
+            properties:
+              message:
+                type: string
+    HealthResponseEnvelope:
+      allOf:
+      - $ref: '#/components/schemas/BaseSuccessResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            type: object
+            properties:
+              status:
+                type: string
+                example: ok
+    ForwardMetadata:
+      properties:
+        from_chat_id:
+          type: integer
+        from_message_id:
+          type: integer
+        from_chat_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+        forwarded_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+      type: object
+      required:
+      - from_chat_id
+      - from_message_id
+      title: ForwardMetadata
+      description: Metadata for forwarded message.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+      type: object
+      title: HTTPValidationError
+    RefreshTokenRequest:
+      properties:
+        refresh_token:
+          type: string
+      type: object
+      required:
+      - refresh_token
+      title: RefreshTokenRequest
+      description: Request body for token refresh.
+    SubmitForwardRequest:
+      properties:
+        type:
+          type: string
+          const: forward
+          default: forward
+        content_text:
+          type: string
+          maxLength: 100000
+          minLength: 10
+        forward_metadata:
+          $ref: '#/components/schemas/ForwardMetadata'
+        lang_preference:
+          type: string
+          enum:
+          - auto
+          - en
+          - ru
+          default: auto
+      type: object
+      required:
+      - content_text
+      - forward_metadata
+      title: SubmitForwardRequest
+      description: Request body for submitting a forwarded message.
+    SubmitURLRequest:
+      properties:
+        type:
+          type: string
+          const: url
+          default: url
+        input_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+        lang_preference:
+          type: string
+          enum:
+          - auto
+          - en
+          - ru
+          default: auto
+      type: object
+      required:
+      - input_url
+      title: SubmitURLRequest
+      description: Request body for submitting a URL.
+    SyncApplyItem:
+      properties:
+        entity_type:
+          type: string
+          enum:
+          - summary
+          - request
+          - preference
+          - stat
+          - crawl_result
+          - llm_call
+        id:
+          anyOf:
+          - type: integer
+          - type: string
+        action:
+          type: string
+          enum:
+          - update
+          - delete
+        last_seen_version:
+          type: integer
+          minimum: 0
+        payload:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+        client_timestamp:
+          anyOf:
+          - type: string
+          - type: 'null'
+      type: object
+      required:
+      - entity_type
+      - id
+      - action
+      - last_seen_version
+      title: SyncApplyItem
+      description: Single change to upload during sync.
+    SyncApplyRequest:
+      properties:
+        session_id:
+          type: string
+        changes:
+          items:
+            $ref: '#/components/schemas/SyncApplyItem'
+          type: array
+      type: object
+      required:
+      - session_id
+      - changes
+      title: SyncApplyRequest
+      description: Request body for applying local changes.
+    SyncSessionRequest:
+      properties:
+        limit:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+      type: object
+      title: SyncSessionRequest
+      description: Session creation options.
+    TelegramLoginRequest:
+      properties:
+        id:
+          type: integer
+        hash:
+          type: string
+        auth_date:
+          type: integer
+        username:
+          anyOf:
+          - type: string
+          - type: 'null'
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+        photo_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+        client_id:
+          type: string
+          maxLength: 100
+          minLength: 1
+          description: Client application ID (e.g., 'android-app-v1.0', 'ios-app-v2.0')
+      type: object
+      required:
+      - id
+      - hash
+      - auth_date
+      - client_id
+      title: TelegramLoginRequest
+      description: Request body for Telegram login.
+    UpdatePreferencesRequest:
+      properties:
+        lang_preference:
+          anyOf:
+          - type: string
+            enum:
+            - auto
+            - en
+            - ru
+          - type: 'null'
+        notification_settings:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+        app_settings:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+      type: object
+      title: UpdatePreferencesRequest
+      description: Request body for updating user preferences.
+    UpdateSummaryRequest:
+      properties:
+        is_read:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+      type: object
+      title: UpdateSummaryRequest
+      description: Request body for updating a summary.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+        msg:
+          type: string
+        type:
+          type: string
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
