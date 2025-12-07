@@ -3,7 +3,7 @@ package com.po4yka.bitesizereader.util.error
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
-import io.ktor.utils.io.errors.IOException
+import kotlinx.io.IOException
 
 fun Throwable.toAppError(): AppError {
     return when (this) {
