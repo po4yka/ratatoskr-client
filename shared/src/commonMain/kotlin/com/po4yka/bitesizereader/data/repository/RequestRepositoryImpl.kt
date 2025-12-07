@@ -21,7 +21,7 @@ class RequestRepositoryImpl(
 
     override suspend fun submitUrl(url: String): Request {
         val response = api.submitUrl(url)
-        val requestDto = response.data ?: throw Exception("Failed to submit request")
+        val requestDto = response.data ?: throw IllegalStateException("Failed to submit request")
         val requestEntity = requestDto.toEntity(url)
         database.databaseQueries.insertRequest(requestEntity)
         return requestDto.toDomain(url)
@@ -29,11 +29,11 @@ class RequestRepositoryImpl(
 
     override suspend fun getRequestStatus(id: String): Request {
         val response = api.getRequestStatus(id)
-        val statusDto = response.data ?: throw Exception("Failed to fetch request status")
+        val statusDto = response.data ?: throw IllegalStateException("Failed to fetch request status")
         val existing = database.databaseQueries.selectAllRequests()
             .executeAsList()
             .find { it.id == id }
-            ?: throw Exception("Request not found locally")
+            ?: throw NoSuchElementException("Request not found locally")
 
         val updatedEntity = existing.copy(
             status = statusDto.status,
