@@ -23,11 +23,11 @@ fun UserDto.toDomain(): User {
 fun AuthResponseDto.toDomain(): AuthTokens {
     val now = Clock.System.now()
     return AuthTokens(
-        accessToken = accessToken,
-        refreshToken = refreshToken,
-        tokenType = tokenType,
-        expiresIn = expiresIn,
-        expiresAt = now + expiresIn.seconds,
+        accessToken = tokens.accessToken,
+        refreshToken = tokens.refreshToken,
+        tokenType = tokens.tokenType,
+        expiresIn = tokens.expiresIn,
+        expiresAt = now + tokens.expiresIn.seconds,
     )
 }
 
