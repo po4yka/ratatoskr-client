@@ -1,25 +1,16 @@
 package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.input.KeyboardType
 import com.po4yka.bitesizereader.presentation.navigation.AuthComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
 
-/**
- * Authentication screen with Telegram login
- */
+/** Authentication screen with Telegram login */
 @Composable
 fun AuthScreen(
     component: AuthComponent,
@@ -29,6 +20,15 @@ fun AuthScreen(
 ) {
     val viewModel: AuthViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
+
+    androidx.compose.runtime.LaunchedEffect(state.isAuthenticated) {
+        if (state.isAuthenticated) {
+            // Dialog will be closed by recomposition if we navigate away,
+            // but explicitly handling it here is safer if navigation is delayed.
+             // We can't easily access showDevLogin from here as it's defined later in the function.
+             // However, onLoginSuccess() is called at the end of the function.
+        }
+    }
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -95,16 +95,17 @@ fun AuthScreen(
             var showDevLogin by remember { mutableStateOf(false) }
             TextButton(
                 onClick = { showDevLogin = true },
-                enabled = !state.isLoading
+                enabled = !state.isLoading,
             ) {
                 Text("Developer Login")
             }
 
             if (showDevLogin) {
                 DeveloperLoginDialog(
+                    isLoading = state.isLoading,
+                    error = state.error,
                     onDismiss = { showDevLogin = false },
                     onLogin = { userId, clientId, secret ->
-                        showDevLogin = false
                         viewModel.loginWithSecret(userId, clientId, secret)
                     }
                 )

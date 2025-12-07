@@ -22,7 +22,7 @@ val viewModelModule = module {
     factory { (summaryId: String) -> SummaryDetailViewModel(get(), get(), get()) }
     factory { SubmitURLViewModel(get(), get()) }
     factory { SearchViewModel(get(), get()) }
-    single { AuthViewModel(get(), get(), get()) }
+    single { AuthViewModel(get(), get(), get(), get()) }
 }
 
 /**

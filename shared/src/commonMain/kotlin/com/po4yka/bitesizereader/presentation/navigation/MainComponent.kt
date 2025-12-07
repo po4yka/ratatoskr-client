@@ -33,7 +33,7 @@ class DefaultMainComponent(
     private fun createChild(config: Config, componentContext: ComponentContext): MainComponent.Child =
         when (config) {
             is Config.SummaryList -> MainComponent.Child.SummaryList(
-                DefaultSummaryListComponent(componentContext) { id ->
+                DefaultSummaryListComponent { id ->
                     // TODO: Navigate to detail
                 }
             )
