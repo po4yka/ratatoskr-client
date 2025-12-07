@@ -1,18 +1,23 @@
 package com.po4yka.bitesizereader.data.mappers
 
-import com.po4yka.bitesizereader.data.remote.dto.RequestDto
+import com.po4yka.bitesizereader.data.remote.dto.RequestCreatedDto
 import com.po4yka.bitesizereader.database.RequestEntity
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
+import kotlin.time.Clock
 import kotlin.time.Instant
 
-fun RequestDto.toDomain(): Request {
+fun RequestCreatedDto.toDomain(url: String): Request {
+    val effectiveId = (requestId ?: existingRequestId)?.toString()
+        ?: throw IllegalArgumentException("Request ID missing in response")
+    val createdInstant = createdAt?.let { runCatching { Instant.parse(it) }.getOrNull() }
+        ?: Clock.System.now()
     return Request(
-        id = id,
+        id = effectiveId,
         url = url,
         status = mapStatus(status),
-        createdAt = Instant.parse(createdAt),
-        updatedAt = Instant.parse(updatedAt)
+        createdAt = createdInstant,
+        updatedAt = createdInstant
     )
 }
 
@@ -26,13 +31,17 @@ fun RequestEntity.toDomain(): Request {
     )
 }
 
-fun RequestDto.toEntity(): RequestEntity {
+fun RequestCreatedDto.toEntity(url: String): RequestEntity {
+    val effectiveId = (requestId ?: existingRequestId)?.toString()
+        ?: throw IllegalArgumentException("Request ID missing in response")
+    val createdInstant = createdAt?.let { runCatching { Instant.parse(it) }.getOrNull() }
+        ?: Clock.System.now()
     return RequestEntity(
-        id = id,
+        id = effectiveId,
         url = url,
         status = status,
-        createdAt = Instant.parse(createdAt),
-        updatedAt = Instant.parse(updatedAt)
+        createdAt = createdInstant,
+        updatedAt = createdInstant
     )
 }
 

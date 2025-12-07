@@ -20,21 +20,35 @@ class SyncRepositoryImpl(
 
     override suspend fun sync() {
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
-        val token = metadata?.syncToken
+        val since = metadata?.lastSyncTime?.toString() ?: "1970-01-01T00:00:00Z"
 
-        val response = api.sync(token)
+        val response = api.sync(since)
+
+        if (!response.success || response.data == null) return
+
+        val changes = response.data.changes
+        val syncTimestamp = response.data.syncTimestamp
 
         database.transaction {
-            response.upsertedSummaries.forEach { dto ->
-                database.databaseQueries.insertSummary(dto.toEntity())
+            changes.created.forEach { created ->
+                val payload = created.data
+                database.databaseQueries.insertSummary(
+                    payload.toEntity(isReadOverride = payload.isRead, createdAt = created.createdAt)
+                )
             }
-            response.deletedSummaryIds.forEach { id ->
-                database.databaseQueries.deleteSummary(id)
+            changes.updated.forEach { updated ->
+                val payload = updated.data
+                database.databaseQueries.insertSummary(
+                    payload.toEntity(isReadOverride = payload.isRead, createdAt = updated.createdAt)
+                )
             }
-            
+            changes.deleted.forEach { id ->
+                database.databaseQueries.deleteSummary(id.toString())
+            }
+
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
-                syncToken = response.syncToken
+                syncToken = syncTimestamp
             )
         }
     }

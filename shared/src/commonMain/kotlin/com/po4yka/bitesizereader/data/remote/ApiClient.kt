@@ -1,6 +1,10 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.local.SecureStorage
+import com.po4yka.bitesizereader.data.mappers.toAuthTokens
+import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshResponseDto
+import kotlin.time.Clock
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.auth.Auth
@@ -12,9 +16,13 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class ApiClient(
@@ -41,6 +49,7 @@ class ApiClient(
         install(DefaultRequest) {
             url(this@ApiClient.baseUrl)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
+            header(HttpHeaders.Accept, ContentType.Application.Json)
         }
 
         install(Auth) {
@@ -58,23 +67,24 @@ class ApiClient(
                     val refreshToken = secureStorage.getRefreshToken()
                     if (refreshToken != null) {
                         try {
-                            // Manually create a temporary client to avoid infinite recursion if using the main client
-                            // In a real Koin setup, we might inject AuthApi, but here we might need to construct it or use a separate client instance.
-                            // Since AuthApi is not passed here, we'll construct a simple request.
-                            // Or ideally, pass a provider for refreshing.
-                            // For simplicity in this generated code:
-                            
-                            // WARNING: This block needs proper implementation with a dedicated AuthApi instance or similar mechanism.
-                            // Below is a placeholder logic that assumes an injected refresh mechanism or manual request.
-                            
-                            // val response = client.post("${this@ApiClient.baseUrl}/auth/refresh") {
-                            //     setBody(mapOf("refresh_token" to refreshToken))
-                            // }.body<AuthResponseDto>()
-                            
-                            // For now, return null to force re-login until full refresh flow is wired.
-                            // Implementing this fully requires breaking circular dependency if AuthApi depends on this Client.
-                            // Typically we use a separate unauthenticated client for refresh.
-                            null 
+                            val response = client.post("auth/refresh") {
+                                setBody(mapOf("refresh_token" to refreshToken))
+                            }
+                            val parsed: ApiResponseDto<TokenRefreshResponseDto> =
+                                Json.decodeFromString(response.bodyAsText())
+
+                            if (parsed.success && parsed.data != null) {
+                                val tokens = parsed.data.toAuthTokens(
+                                    currentTime = Clock.System.now(),
+                                    refreshToken = refreshToken
+                                )
+                                secureStorage.saveAccessToken(tokens.accessToken)
+                                secureStorage.saveRefreshToken(tokens.refreshToken)
+                                BearerTokens(tokens.accessToken, tokens.refreshToken)
+                            } else {
+                                secureStorage.clearTokens()
+                                null
+                            }
                         } catch (e: Exception) {
                             null
                         }

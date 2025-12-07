@@ -8,7 +8,5 @@ data class AuthResponseDto(
     @SerialName("access_token") val accessToken: String,
     @SerialName("refresh_token") val refreshToken: String,
     @SerialName("token_type") val tokenType: String,
-    @SerialName("expires_in") val expiresIn: Long,
-    @SerialName("user") val user: UserDto
+    @SerialName("expires_in") val expiresIn: Long
 )
-

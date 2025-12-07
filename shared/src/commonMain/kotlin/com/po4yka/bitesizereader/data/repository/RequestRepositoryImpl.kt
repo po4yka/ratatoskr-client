@@ -20,14 +20,16 @@ class RequestRepositoryImpl(
 ) : RequestRepository {
 
     override suspend fun submitUrl(url: String): Request {
-        val requestDto = api.submitUrl(url)
-        val requestEntity = requestDto.toEntity()
+        val response = api.submitUrl(url)
+        val requestDto = response.data ?: throw Exception("Failed to submit request")
+        val requestEntity = requestDto.toEntity(url)
         database.databaseQueries.insertRequest(requestEntity)
-        return requestDto.toDomain()
+        return requestDto.toDomain(url)
     }
 
     override suspend fun getRequestStatus(id: String): Request {
-        val statusDto = api.getRequestStatus(id)
+        val response = api.getRequestStatus(id)
+        val statusDto = response.data ?: throw Exception("Failed to fetch request status")
         val existing = database.databaseQueries.selectAllRequests()
             .executeAsList()
             .find { it.id == id }

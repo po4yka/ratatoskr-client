@@ -12,28 +12,29 @@ import kotlin.time.Duration.Companion.seconds
 
 fun UserDto.toDomain(): User {
     return User(
-        id = id,
+        id = userId.toString(),
         username = username,
-        firstName = firstName,
-        lastName = lastName,
-        photoUrl = photoUrl
+        firstName = null,
+        lastName = null,
+        photoUrl = null
     )
 }
 
-fun AuthResponseDto.toDomain(): Pair<AuthTokens, User> {
+fun AuthResponseDto.toDomain(): AuthTokens {
     val now = Clock.System.now()
-    val authTokens =
-        AuthTokens(
-            accessToken = accessToken,
-            refreshToken = refreshToken,
-            tokenType = tokenType,
-            expiresIn = expiresIn,
-            expiresAt = now + expiresIn.seconds,
-        )
-    return authTokens to user.toDomain()
+    return AuthTokens(
+        accessToken = accessToken,
+        refreshToken = refreshToken,
+        tokenType = tokenType,
+        expiresIn = expiresIn,
+        expiresAt = now + expiresIn.seconds,
+    )
 }
 
-fun TokenRefreshResponseDto.toAuthTokens(currentTime: Instant = Clock.System.now()): AuthTokens {
+fun TokenRefreshResponseDto.toAuthTokens(
+    currentTime: Instant = Clock.System.now(),
+    refreshToken: String
+): AuthTokens {
     return AuthTokens(
         accessToken = accessToken,
         refreshToken = refreshToken,

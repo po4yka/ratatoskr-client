@@ -11,6 +11,7 @@ import com.po4yka.bitesizereader.data.remote.RequestsApi
 import com.po4yka.bitesizereader.data.remote.SearchApi
 import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.data.remote.SyncApi
+import com.po4yka.bitesizereader.util.config.AppConfig
 import io.ktor.client.engine.HttpClientEngine
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -18,9 +19,11 @@ import org.koin.dsl.module
 
 val networkModule = module {
     single {
+        // Append /v1 so relative paths map to the Mobile API routes exposed by the backend
+        val baseUrl = AppConfig.Api.baseUrl.trimEnd('/') + "/v1"
         ApiClient(
             engine = get(),
-            baseUrl = "http://10.0.2.2:8000", // TODO: Use Build Config
+            baseUrl = baseUrl,
             secureStorage = get()
         ).client
     }
