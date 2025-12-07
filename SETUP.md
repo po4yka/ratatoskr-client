@@ -110,7 +110,7 @@ Before starting development:
    ```
 
 2. **Edit `local.properties`** with your settings:
-   - Set `api.base.url` (http://10.0.2.2:8000 for Android emulator)
+   - Set `api.base.url` (https://bitsizereaderapi.po4yka.com or http://10.0.2.2:8000 for local dev)
    - Set `telegram.bot.token` (from @BotFather)
    - Configure other settings as needed
 

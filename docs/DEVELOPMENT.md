@@ -23,7 +23,7 @@ cd bite-size-reader-client
 
 # Create local.properties
 cat > local.properties << EOL
-api.base.url=http://10.0.2.2:8000
+api.base.url=https://bitsizereaderapi.po4yka.com
 client.id=android-app-v1.0
 api.timeout.seconds=30
 api.logging.enabled=true
