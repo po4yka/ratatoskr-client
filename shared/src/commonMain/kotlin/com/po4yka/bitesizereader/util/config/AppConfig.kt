@@ -22,7 +22,7 @@ object AppConfig {
          * Base URL for the API server
          * Default: example.com (should be replaced in production)
          */
-        var baseUrl: String = "https://api.bitesizereader.example.com"
+        var baseUrl: String = "https://bitsizereaderapi.po4yka.com"
 
         /**
          * Enable API request/response logging
