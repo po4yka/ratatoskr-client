@@ -534,6 +534,117 @@ The backend returns standardized error codes in the response:
 | `forbidden` | 403 | User not in allowlist | Show error message |
 | `not_found` | 404 | Resource not found | Show not found UI |
 | `validation_error` | 422 | Request validation failed | Show field-specific errors |
+##### POST `/v1/requests`
+
+Submit new URL for summarization.
+
+**Headers**: `Authorization: Bearer <access_token>`
+
+**Request Body**:
+```json
+{
+  "type": "url",
+  "input_url": "https://example.com/article",
+  "lang_preference": "auto"
+}
+```
+
+**Response** (200 OK):
+```json
+{
+  "success": true,
+  "data": {
+    "request_id": 42,
+    "correlation_id": "req-123",
+    "type": "url",
+    "status": "pending",
+    "estimated_wait_seconds": 15,
+    "created_at": "2025-01-14T12:00:00Z",
+    "is_duplicate": false
+  },
+  "meta": {
+      "correlation_id": "req-123",
+      "timestamp": "2025-01-14T12:00:00Z",
+      "version": "1.0"
+  }
+}
+```
+
+**Implementation**:
+```kotlin
+@Serializable
+data class SubmitURLRequestDto(
+    @SerialName("input_url") val inputUrl: String,
+    @SerialName("lang_preference") val langPreference: String = "auto",
+    @SerialName("type") val type: String = "url"
+)
+
+@Serializable
+data class SubmitRequestResponseDto(
+    @SerialName("request_id") val requestId: Long,
+    @SerialName("correlation_id") val correlationId: String,
+    @SerialName("type") val type: String,
+    @SerialName("status") val status: String,
+    @SerialName("estimated_wait_seconds") val estimatedWaitSeconds: Int? = null,
+    @SerialName("created_at") val createdAt: String,
+    @SerialName("is_duplicate") val isDuplicate: Boolean,
+    @SerialName("duplicate_request_id") val duplicateRequestId: Long? = null,
+    @SerialName("duplicate_summary_id") val duplicateSummaryId: Long? = null,
+    @SerialName("duplicate_summary") val duplicateSummary: SummaryListItemDto? = null
+)
+
+suspend fun submitUrl(request: SubmitURLRequestDto): ApiResponseDto<SubmitRequestResponseDto> {
+    return client.post("v1/requests") {
+        contentType(ContentType.Application.Json)
+        setBody(request)
+    }.body()
+}
+```
+
+##### GET `/v1/requests/{id}/status`
+
+Poll request processing status.
+
+**Headers**: `Authorization: Bearer <access_token>`
+
+**Path Parameters**: `id` (int) - Request ID
+
+**Response** (200 OK):
+```json
+{
+  "success": true,
+  "data": {
+    "request_id": 42,
+    "status": "processing",
+    "stage": "llm_summarization",
+    "estimated_seconds_remaining": 15,
+    "updated_at": "2025-01-14T12:00:05Z"
+  }
+}
+```
+
+**Status Values**: `pending`, `processing`, `success`, `error`
+
+**Implementation**:
+```kotlin
+@Serializable
+data class RequestStatusResponseDto(
+    @SerialName("request_id") val requestId: Long,
+    @SerialName("status") val status: String,
+    @SerialName("stage") val stage: String? = null,
+    @SerialName("estimated_seconds_remaining") val estimatedSecondsRemaining: Int? = null,
+    @SerialName("error_stage") val errorStage: String? = null,
+    @SerialName("error_type") val errorType: String? = null,
+    @SerialName("error_message") val errorMessage: String? = null,
+    @SerialName("can_retry") val canRetry: Boolean? = null,
+    @SerialName("correlation_id") val correlationId: String? = null,
+    @SerialName("updated_at") val updatedAt: String? = null
+)
+
+suspend fun getRequestStatus(id: String): ApiResponseDto<RequestStatusResponseDto> {
+    return client.get("v1/requests/$id/status").body()
+}
+```
 | `rate_limit_exceeded` | 429 | Too many requests | Wait and retry with backoff |
 | `server_error` | 500 | Internal server error | Retry or show error |
 | `service_unavailable` | 503 | Backend temporarily down | Retry later |
