@@ -1,11 +1,12 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
 import com.po4yka.bitesizereader.domain.usecase.GetTelegramLinkStatusUseCase
 import com.po4yka.bitesizereader.domain.usecase.LinkTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.UnlinkTelegramUseCase
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

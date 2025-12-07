@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class SubmitURLRequestDto(
     @SerialName("input_url") val inputUrl: String,
     @SerialName("lang_preference") val langPreference: String = "auto",
-    @SerialName("type") val type: String = "url"
+    @SerialName("type") val type: String = "url",
 )
 
 @Serializable
@@ -21,7 +21,7 @@ data class SubmitRequestResponseDto(
     @SerialName("is_duplicate") val isDuplicate: Boolean,
     @SerialName("duplicate_request_id") val duplicateRequestId: Long? = null,
     @SerialName("duplicate_summary_id") val duplicateSummaryId: Long? = null,
-    @SerialName("duplicate_summary") val duplicateSummary: SummaryListItemDto? = null
+    @SerialName("duplicate_summary") val duplicateSummary: SummaryCompactDto? = null,
 )
 
 @Serializable
@@ -35,5 +35,5 @@ data class RequestStatusResponseDto(
     @SerialName("error_message") val errorMessage: String? = null,
     @SerialName("can_retry") val canRetry: Boolean? = null,
     @SerialName("correlation_id") val correlationId: String? = null,
-    @SerialName("updated_at") val updatedAt: String? = null
+    @SerialName("updated_at") val updatedAt: String? = null,
 )
