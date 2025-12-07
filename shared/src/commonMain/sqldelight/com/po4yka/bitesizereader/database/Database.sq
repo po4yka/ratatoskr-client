@@ -32,7 +32,8 @@ CREATE TABLE syncMetadataEntity (
 );
 
 -- FTS5 Search
-CREATE VIRTUAL TABLE summaryFTS USING fts5(
+-- FTS4 Search
+CREATE VIRTUAL TABLE summaryFTS USING fts4(
     title,
     content,
     tags,
@@ -40,16 +41,16 @@ CREATE VIRTUAL TABLE summaryFTS USING fts5(
 );
 
 CREATE TRIGGER summary_ai AFTER INSERT ON summaryEntity BEGIN
-  INSERT INTO summaryFTS(rowid, title, content, tags) VALUES (new.rowid, new.title, new.content, new.tags);
+  INSERT INTO summaryFTS(docid, title, content, tags) VALUES (new.rowid, new.title, new.content, new.tags);
 END;
 
 CREATE TRIGGER summary_ad AFTER DELETE ON summaryEntity BEGIN
-  INSERT INTO summaryFTS(summaryFTS, rowid, title, content, tags) VALUES('delete', old.rowid, old.title, old.content, old.tags);
+  DELETE FROM summaryFTS WHERE docid = old.rowid;
 END;
 
 CREATE TRIGGER summary_au AFTER UPDATE ON summaryEntity BEGIN
-  INSERT INTO summaryFTS(summaryFTS, rowid, title, content, tags) VALUES('delete', old.rowid, old.title, old.content, old.tags);
-  INSERT INTO summaryFTS(rowid, title, content, tags) VALUES (new.rowid, new.title, new.content, new.tags);
+  DELETE FROM summaryFTS WHERE docid = old.rowid;
+  INSERT INTO summaryFTS(docid, title, content, tags) VALUES (new.rowid, new.title, new.content, new.tags);
 END;
 
 -- Summary Queries
@@ -78,9 +79,9 @@ WHERE id = :id;
 searchSummaries:
 SELECT summaryEntity.*
 FROM summaryEntity
-JOIN summaryFTS ON summaryEntity.rowid = summaryFTS.rowid
+JOIN summaryFTS ON summaryEntity.rowid = summaryFTS.docid
 WHERE summaryFTS MATCH :query
-ORDER BY rank
+-- Rank is not supported natively in FTS4 without custom functions, simplified to basic match
 LIMIT :limit OFFSET :offset;
 
 -- Request Queries
