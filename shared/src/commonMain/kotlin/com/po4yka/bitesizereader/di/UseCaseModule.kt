@@ -39,6 +39,5 @@ val useCaseModule = module {
     factoryOf(::GetTelegramLinkStatusUseCase)
     factoryOf(::UnlinkTelegramUseCase)
     factoryOf(::LinkTelegramUseCase)
-
     factoryOf(::SettingsViewModel)
 }

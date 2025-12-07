@@ -1,9 +1,14 @@
 package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -91,6 +96,24 @@ private fun URLInputForm(
                 validationError?.let {
                     { Text(it) }
                 },
+            trailingIcon = {
+                if (url.isNotEmpty() && !isSubmitting) {
+                    IconButton(onClick = { onUrlChange("") }) {
+                        Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
+                    }
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Uri,
+                imeAction = ImeAction.Go
+            ),
+            keyboardActions = KeyboardActions(
+                onGo = {
+                    if (url.isNotBlank() && !isSubmitting) {
+                        onSubmit()
+                    }
+                }
+            ),
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             enabled = !isSubmitting,
