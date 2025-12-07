@@ -3,6 +3,7 @@ package com.po4yka.bitesizereader.data.repository
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.mappers.toEntity
 import com.po4yka.bitesizereader.data.remote.RequestsApi
+import com.po4yka.bitesizereader.data.remote.dto.SubmitURLRequestDto
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.repository.RequestRepository
@@ -20,7 +21,8 @@ class RequestRepositoryImpl(
 ) : RequestRepository {
 
     override suspend fun submitUrl(url: String): Request {
-        val response = api.submitUrl(url)
+        val request = SubmitURLRequestDto(inputUrl = url)
+        val response = api.submitUrl(request)
         val requestDto = response.data ?: throw IllegalStateException("Failed to submit request")
         val requestEntity = requestDto.toEntity(url)
         database.databaseQueries.insertRequest(requestEntity)
