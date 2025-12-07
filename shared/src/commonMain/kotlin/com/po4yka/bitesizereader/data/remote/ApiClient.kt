@@ -11,10 +11,10 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -32,7 +32,7 @@ class ApiClient(
 ) {
     val client = HttpClient(engine) {
         expectSuccess = true
-        
+
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -41,9 +41,12 @@ class ApiClient(
             })
         }
 
-        install(Logging) {
-            logger = Logger.SIMPLE
-            level = LogLevel.ALL
+        if (com.po4yka.bitesizereader.util.config.AppConfig.Api.loggingEnabled) {
+            install(Logging) {
+                logger = Logger.DEFAULT
+                level = LogLevel.ALL
+                sanitizeHeader { header -> header == HttpHeaders.Authorization }
+            }
         }
 
         install(DefaultRequest) {
