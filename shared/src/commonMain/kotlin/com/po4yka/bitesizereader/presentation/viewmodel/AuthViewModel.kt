@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
 import com.po4yka.bitesizereader.domain.usecase.GetCurrentUserUseCase
+import com.po4yka.bitesizereader.domain.usecase.LoginWithSecretUseCase
 import com.po4yka.bitesizereader.domain.usecase.LoginWithTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.presentation.state.AuthState
@@ -15,6 +16,7 @@ import com.po4yka.bitesizereader.util.error.toAppError
 
 class AuthViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
+    private val loginWithSecretUseCase: LoginWithSecretUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
@@ -40,6 +42,24 @@ class AuthViewModel(
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
                 loginWithTelegramUseCase(authData)
+                val user = getCurrentUserUseCase()
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    isAuthenticated = true,
+                    user = user,
+                    error = null
+                )
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().message)
+            }
+        }
+    }
+
+    fun loginWithSecret(userId: Int, clientId: String, secret: String) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, error = null)
+            try {
+                loginWithSecretUseCase(userId, clientId, secret)
                 val user = getCurrentUserUseCase()
                 _state.value = _state.value.copy(
                     isLoading = false,

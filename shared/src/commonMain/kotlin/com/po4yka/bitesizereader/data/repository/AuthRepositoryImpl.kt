@@ -5,6 +5,7 @@ import com.po4yka.bitesizereader.data.mappers.createTelegramLoginRequest
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.AuthApi
 import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
+import com.po4yka.bitesizereader.data.remote.dto.SecretLoginRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshRequestDto
 import com.po4yka.bitesizereader.domain.model.AuthTokens
@@ -33,7 +34,7 @@ class AuthRepositoryImpl(
 
     init {
         // Initialize authentication status on startup in a coroutine
-        externalScope.launch { 
+        externalScope.launch {
             checkAuthStatus()
         }
     }
@@ -58,6 +59,25 @@ class AuthRepositoryImpl(
             clientId = "android-app" // TODO: From AppConfig
         )
         val response = authApi.loginWithTelegram(request)
+        if (response.success && response.data != null) {
+            val authTokens = response.data.toDomain()
+            secureStorage.saveAccessToken(authTokens.accessToken)
+            secureStorage.saveRefreshToken(authTokens.refreshToken)
+            // Fetch current user on-demand
+            _currentUser.value = null
+            _isAuthenticated.value = true
+        } else {
+            throw response.error?.let { Exception(it.message) } ?: Exception("Login failed")
+        }
+    }
+
+    override suspend fun loginWithSecret(userId: Int, clientId: String, secret: String) {
+        val request = SecretLoginRequestDto(
+            userId = userId,
+            clientId = clientId,
+            secret = secret
+        )
+        val response = authApi.secretLogin(request)
         if (response.success && response.data != null) {
             val authTokens = response.data.toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
