@@ -15,24 +15,24 @@ import io.ktor.client.request.setBody
 
 class KtorAuthApi(private val client: HttpClient) : AuthApi {
     override suspend fun loginWithTelegram(request: TelegramLoginRequestDto): ApiResponseDto<AuthResponseDto> {
-        return client.post("auth/telegram-login") {
+        return client.post("v1/auth/telegram-login") {
             setBody(request)
         }.body()
     }
 
     override suspend fun secretLogin(request: SecretLoginRequestDto): ApiResponseDto<AuthResponseDto> {
-        return client.post("auth/secret-login") {
+        return client.post("v1/auth/secret-login") {
             setBody(request)
         }.body()
     }
 
     override suspend fun refreshToken(request: TokenRefreshRequestDto): ApiResponseDto<TokenRefreshResponseDto> {
-        return client.post("auth/refresh") {
+        return client.post("v1/auth/refresh") {
             setBody(request)
         }.body()
     }
 
     override suspend fun getCurrentUser(): ApiResponseDto<UserDto> {
-        return client.get("auth/me").body()
+        return client.get("v1/auth/me").body()
     }
 }

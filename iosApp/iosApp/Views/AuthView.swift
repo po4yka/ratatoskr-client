@@ -5,7 +5,7 @@ struct AuthView: View {
     @State private var isShowingWebView = false
 
     // Placeholder URL - needs to be configured
-    private let authUrl = URL(string: "https://bitsizereaderapi.po4yka.com/auth/login-widget?bot=bitesizereader_bot&origin=bitesizereader://telegram-auth")!
+    private let authUrl = URL(string: "https://bitsizereaderapi.po4yka.com/v1/auth/login-widget?bot=bitesizereader_bot&origin=bitesizereader://telegram-auth")!
 
     var body: some View {
         VStack {
