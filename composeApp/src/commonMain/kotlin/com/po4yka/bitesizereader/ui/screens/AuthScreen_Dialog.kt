@@ -2,19 +2,13 @@ package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -24,7 +18,7 @@ fun DeveloperLoginDialog(
     isLoading: Boolean,
     error: String? = null,
     onDismiss: () -> Unit,
-    onLogin: (Int, String, String) -> Unit
+    onLogin: (Int, String, String) -> Unit,
 ) {
     var userId by remember { mutableStateOf("") }
     var clientId by remember { mutableStateOf("") }
@@ -46,13 +40,17 @@ fun DeveloperLoginDialog(
                     isError = isUserIdError,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
+                        imeAction = ImeAction.Next,
                     ),
                     singleLine = true,
-                    enabled = !isLoading
+                    enabled = !isLoading,
                 )
                 if (isUserIdError) {
-                    Text("User ID must be a number", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        "User ID must be a number",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
                 }
                 OutlinedTextField(
                     value = clientId,
@@ -60,7 +58,7 @@ fun DeveloperLoginDialog(
                     label = { Text("Client ID") },
                     singleLine = true,
                     enabled = !isLoading,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 )
                 OutlinedTextField(
                     value = secret,
@@ -75,16 +73,16 @@ fun DeveloperLoginDialog(
                             if (uid != null && clientId.isNotBlank() && secret.isNotBlank()) {
                                 onLogin(uid, clientId, secret)
                             }
-                        }
-                    )
+                        },
+                    ),
                 )
                 if (error != null) {
-                   Text(
-                       text = error,
-                       color = MaterialTheme.colorScheme.error,
-                       style = MaterialTheme.typography.bodySmall,
-                       modifier = androidx.compose.ui.Modifier.padding(top = 8.dp)
-                   )
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
                 }
             }
         },
@@ -96,13 +94,13 @@ fun DeveloperLoginDialog(
                         onLogin(uid, clientId, secret)
                     }
                 },
-                enabled = !isLoading && !isUserIdError && userId.isNotBlank() && clientId.isNotBlank() && secret.isNotBlank()
+                enabled = !isLoading && !isUserIdError && userId.isNotBlank() && clientId.isNotBlank() && secret.isNotBlank(),
             ) {
                 if (isLoading) {
-                    androidx.compose.material3.CircularProgressIndicator(
-                        modifier = androidx.compose.ui.Modifier.size(24.dp),
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
+                        strokeWidth = 2.dp,
                     )
                 } else {
                     Text("Login")
@@ -112,10 +110,10 @@ fun DeveloperLoginDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
-                enabled = !isLoading
+                enabled = !isLoading,
             ) {
                 Text("Cancel")
             }
-        }
+        },
     )
 }
