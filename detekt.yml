@@ -71,6 +71,7 @@ complexity:
     ignoreSingleWhenExpression: true
     ignoreSimpleWhenEntries: true
     ignoreNestingFunctions: false
+    ignoreAnnotated: ['Composable']
   LabeledExpression:
     active: false
     ignoredLabels: []
@@ -80,6 +81,7 @@ complexity:
   LongMethod:
     active: true
     threshold: 60
+    ignoreAnnotated: ['Composable']
   LongParameterList:
     active: true
     functionThreshold: 6
@@ -274,7 +276,7 @@ naming:
     functionPattern: '[a-z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
     # Compose functions start with uppercase
-    ignoreAnnotated: ['Composable']
+    ignoreAnnotated: ['Composable', '*.Composable', 'androidx.compose.runtime.Composable']
   FunctionParameterNaming:
     active: true
     parameterPattern: '[a-z][A-Za-z0-9]*'
