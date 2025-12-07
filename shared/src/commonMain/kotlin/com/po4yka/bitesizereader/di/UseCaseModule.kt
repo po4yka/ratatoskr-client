@@ -7,9 +7,12 @@ import com.po4yka.bitesizereader.domain.usecase.GetRequestStatusUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryByIdUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetTelegramLinkStatusUseCase
+import com.po4yka.bitesizereader.domain.usecase.LinkTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.LoginWithSecretUseCase
 import com.po4yka.bitesizereader.domain.usecase.LoginWithTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
+import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.RetryRequestUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
@@ -33,4 +36,9 @@ val useCaseModule = module {
     factoryOf(::LoginWithSecretUseCase)
     factoryOf(::LogoutUseCase)
     factoryOf(::GetCurrentUserUseCase)
+    factoryOf(::GetTelegramLinkStatusUseCase)
+    factoryOf(::UnlinkTelegramUseCase)
+    factoryOf(::LinkTelegramUseCase)
+
+    factoryOf(::SettingsViewModel)
 }

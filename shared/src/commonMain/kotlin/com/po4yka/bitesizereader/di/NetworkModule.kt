@@ -3,6 +3,8 @@ package com.po4yka.bitesizereader.di
 import com.po4yka.bitesizereader.data.remote.ApiClient
 import com.po4yka.bitesizereader.data.remote.AuthApi
 import com.po4yka.bitesizereader.data.remote.KtorAuthApi
+import com.po4yka.bitesizereader.data.remote.KtorUserApi
+import com.po4yka.bitesizereader.data.remote.UserApi
 import com.po4yka.bitesizereader.data.remote.KtorRequestsApi
 import com.po4yka.bitesizereader.data.remote.KtorSearchApi
 import com.po4yka.bitesizereader.data.remote.KtorSummariesApi
@@ -28,7 +30,8 @@ val networkModule = module {
         ).client
     }
 
-    singleOf(::KtorAuthApi) bind AuthApi::class
+    single<AuthApi> { KtorAuthApi(get()) }
+    single<UserApi> { KtorUserApi(get()) }
     singleOf(::KtorSummariesApi) bind SummariesApi::class
     singleOf(::KtorRequestsApi) bind RequestsApi::class
     singleOf(::KtorSearchApi) bind SearchApi::class
