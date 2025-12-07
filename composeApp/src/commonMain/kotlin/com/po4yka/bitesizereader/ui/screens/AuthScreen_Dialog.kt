@@ -2,6 +2,7 @@ package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
@@ -42,7 +44,10 @@ fun DeveloperLoginDialog(
                     },
                     label = { Text("User ID") },
                     isError = isUserIdError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
                     singleLine = true,
                     enabled = !isLoading
                 )
@@ -54,14 +59,24 @@ fun DeveloperLoginDialog(
                     onValueChange = { clientId = it },
                     label = { Text("Client ID") },
                     singleLine = true,
-                    enabled = !isLoading
+                    enabled = !isLoading,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
                 OutlinedTextField(
                     value = secret,
                     onValueChange = { secret = it },
                     label = { Text("Secret") },
                     singleLine = true,
-                    enabled = !isLoading
+                    enabled = !isLoading,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            val uid = userId.toIntOrNull()
+                            if (uid != null && clientId.isNotBlank() && secret.isNotBlank()) {
+                                onLogin(uid, clientId, secret)
+                            }
+                        }
+                    )
                 )
                 if (error != null) {
                    Text(

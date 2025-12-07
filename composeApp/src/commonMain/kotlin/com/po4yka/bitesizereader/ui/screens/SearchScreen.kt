@@ -8,10 +8,14 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.po4yka.bitesizereader.presentation.viewmodel.SearchViewModel
 import com.po4yka.bitesizereader.ui.components.EmptyStateView
@@ -65,6 +69,7 @@ private fun SearchBar(
     onQueryChange: (String) -> Unit,
     onClear: () -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
     TextField(
         value = query,
         onValueChange = onQueryChange,
@@ -87,6 +92,14 @@ private fun SearchBar(
                 focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                 unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
             ),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                focusManager.clearFocus()
+            }
+        ),
         modifier = Modifier.fillMaxWidth(),
     )
 }
