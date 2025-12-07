@@ -8,7 +8,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
 import com.po4yka.bitesizereader.ui.screens.AuthScreen
-import com.po4yka.bitesizereader.ui.screens.SummaryListScreen
+import com.po4yka.bitesizereader.ui.screens.MainScreen
 
 /** Main app composable with Decompose navigation */
 @Composable
@@ -29,7 +29,7 @@ fun App(
                 onLoginClick = onLoginClick,
             )
 
-            is RootComponent.Child.Main -> SummaryListScreen(component = instance.component.summaryListComponent)
+            is RootComponent.Child.Main -> MainScreen(component = instance.component)
         }
     }
 }
