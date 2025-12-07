@@ -14,14 +14,15 @@ import com.po4yka.bitesizereader.util.error.toAppError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import com.po4yka.bitesizereader.data.mappers.toAuthTokens
 
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
-    private val secureStorage: SecureStorage
+    private val secureStorage: SecureStorage,
+    private val externalScope: CoroutineScope
 ) : AuthRepository {
 
     private val _isAuthenticated = MutableStateFlow(false)
@@ -32,7 +33,7 @@ class AuthRepositoryImpl(
 
     init {
         // Initialize authentication status on startup in a coroutine
-        GlobalScope.launch { // Use GlobalScope as init block is not a suspend context
+        externalScope.launch { 
             checkAuthStatus()
         }
     }

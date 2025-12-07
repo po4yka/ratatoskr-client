@@ -1,8 +1,18 @@
 package com.po4yka.bitesizereader.di
 
 import com.po4yka.bitesizereader.presentation.viewmodel.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
 import org.koin.dsl.module
+
+/**
+ * Coroutine Scope module
+ */
+val coroutineScopeModule = module {
+    single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
+}
 
 /**
  * ViewModel module
@@ -23,5 +33,6 @@ fun appModules(): List<Module> = listOf(
     databaseModule,
     repositoryModule,
     useCaseModule,
-    viewModelModule
+    viewModelModule,
+    coroutineScopeModule
 )
