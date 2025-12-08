@@ -38,24 +38,6 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
-        <!-- Telegram Auth Callback Activity -->
-        <activity
-            android:name=".auth.TelegramAuthActivity"
-            android:exported="true"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <!-- Deep link for Telegram auth callback -->
-                <!-- Configured via AppConfig.Telegram.callbackUrl -->
-                <data
-                    android:scheme="bitesizereader"
-                    android:host="telegram-auth" />
-            </intent-filter>
-        </activity>
-
         <!-- Recent Summaries Widget -->
         <receiver
             android:name=".widget.RecentSummariesWidgetReceiver"

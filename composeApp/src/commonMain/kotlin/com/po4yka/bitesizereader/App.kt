@@ -15,7 +15,6 @@ import com.po4yka.bitesizereader.ui.screens.MainScreen
 fun App(
     rootComponent: RootComponent,
     modifier: Modifier = Modifier,
-    onLoginClick: (AuthViewModel) -> Unit = {},
 ) {
     val childStack = rootComponent.childStack.subscribeAsState()
 
@@ -26,7 +25,6 @@ fun App(
         when (val instance = child.instance) {
             is RootComponent.Child.Auth -> AuthScreen(
                 component = instance.component,
-                onLoginClick = onLoginClick,
             )
 
             is RootComponent.Child.Main -> MainScreen(component = instance.component)

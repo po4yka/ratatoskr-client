@@ -8,14 +8,12 @@ import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
 
 fun MainViewController(
     rootComponent: RootComponent,
-    onLoginClick: (AuthViewModel) -> Unit = {},
 ): UIViewController =
     ComposeUIViewController {
         BiteSizeReaderTheme {
             App(
                 rootComponent = rootComponent,
                 modifier = Modifier.fillMaxSize(),
-                onLoginClick = onLoginClick,
             )
         }
     }
