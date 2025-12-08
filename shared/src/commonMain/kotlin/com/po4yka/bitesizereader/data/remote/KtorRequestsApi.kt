@@ -16,21 +16,21 @@ import io.ktor.http.contentType
 
 class KtorRequestsApi(private val client: HttpClient) : RequestsApi {
     override suspend fun submitUrl(request: SubmitURLRequestDto): ApiResponseDto<SubmitRequestResponseDto> {
-        return client.post("requests") {
+        return client.post("v1/requests") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
     override suspend fun getRequest(id: Long): ApiResponseDto<RequestDetailDto> {
-        return client.get("requests/$id").body()
+        return client.get("v1/requests/$id").body()
     }
 
     override suspend fun getRequestStatus(id: Long): ApiResponseDto<RequestStatusResponseDto> {
-        return client.get("requests/$id/status").body()
+        return client.get("v1/requests/$id/status").body()
     }
 
     override suspend fun retryRequest(id: Long): ApiResponseDto<RetryRequestResponseDto> {
-        return client.post("requests/$id/retry").body()
+        return client.post("v1/requests/$id/retry").body()
     }
 }

@@ -12,7 +12,7 @@ import io.ktor.client.request.parameter
 class KtorSearchApi(private val client: HttpClient) : SearchApi {
     override suspend fun search(query: String, page: Int, pageSize: Int): ApiResponseDto<SearchResponseDataDto> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
-        return client.get("search") {
+        return client.get("v1/search") {
             parameter("q", query)
             parameter("limit", pageSize)
             parameter("offset", offset)
@@ -21,7 +21,7 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
 
     override suspend fun semanticSearch(query: String, page: Int, pageSize: Int): ApiResponseDto<SearchResponseDataDto> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
-        return client.get("search/semantic") {
+        return client.get("v1/search/semantic") {
             parameter("q", query)
             parameter("limit", pageSize)
             parameter("offset", offset)
@@ -29,7 +29,7 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
     }
 
     override suspend fun getTrendingTopics(limit: Int, days: Int): ApiResponseDto<TrendingTopicsResponseDto> {
-        return client.get("topics/trending") {
+        return client.get("v1/topics/trending") {
             parameter("limit", limit)
             parameter("days", days)
         }.body()
@@ -37,7 +37,7 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
 
     override suspend fun getRelatedSummaries(tag: String, page: Int, pageSize: Int): ApiResponseDto<RelatedSummariesResponseDto> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
-        return client.get("topics/related") {
+        return client.get("v1/topics/related") {
             parameter("tag", tag)
             parameter("limit", pageSize)
             parameter("offset", offset)
