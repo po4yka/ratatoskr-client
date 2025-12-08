@@ -192,11 +192,11 @@ StartupTracker.checkpoint("First screen ready")
 **Output Example**:
 
 ```
-🚀 Startup: Koin initialized at 45ms
-🚀 Startup: Database initialized at 120ms
-🚀 Startup: First screen ready at 245ms
-✓ Load Summaries completed in 145ms
-⚠️ SLOW OPERATION: Sync completed took 1250ms (threshold: 1000ms)
+ Startup: Koin initialized at 45ms
+ Startup: Database initialized at 120ms
+ Startup: First screen ready at 245ms
+ Load Summaries completed in 145ms
+ SLOW OPERATION: Sync completed took 1250ms (threshold: 1000ms)
 ```
 
 ---
@@ -273,34 +273,34 @@ val repositoryModule = module {
 ### Lifecycle Flow
 
 ```
-┌─────────────────┐
-│ View Created    │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ ViewModel Init  │ ← viewModelScope created
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Coroutines Run  │ ← Background operations
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ View Destroyed  │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ onCleared()     │ ← viewModelScope.cancel()
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Cleanup Done    │ ← All coroutines cancelled
-└─────────────────┘
+
+ View Created
+
+
+
+
+ ViewModel Init   ← viewModelScope created
+
+
+
+
+ Coroutines Run   ← Background operations
+
+
+
+
+ View Destroyed
+
+
+
+
+ onCleared()      ← viewModelScope.cancel()
+
+
+
+
+ Cleanup Done     ← All coroutines cancelled
+
 ```
 
 ### Memory Leak Detection
@@ -411,15 +411,15 @@ ImageLoader.Builder(context)
 
 **Best Practices**:
 ```kotlin
-// ❌ BAD: Loading all data
+//  BAD: Loading all data
 SELECT * FROM summaries
 
-// ✅ GOOD: Pagination with limit/offset
+//  GOOD: Pagination with limit/offset
 SELECT * FROM summaries
 ORDER BY created_at DESC
 LIMIT 20 OFFSET ?
 
-// ✅ GOOD: Using indexes
+//  GOOD: Using indexes
 SELECT * FROM summaries
 WHERE is_read = 0
 ORDER BY created_at DESC
@@ -451,15 +451,15 @@ ORDER BY created_at DESC
 
 **Avoiding Memory Leaks**:
 ```kotlin
-// ✅ GOOD: Using viewModelScope
+//  GOOD: Using viewModelScope
 viewModelScope.launch {
     // Automatically cancelled when ViewModel cleared
 }
 
-// ✅ GOOD: Weak references in callbacks
+//  GOOD: Weak references in callbacks
 private weak var delegate: SomeDelegate?
 
-// ✅ GOOD: Cancelling flows in deinit/onCleared
+//  GOOD: Cancelling flows in deinit/onCleared
 override fun onCleared() {
     job.cancel()
     super.onCleared()
@@ -605,10 +605,10 @@ android {
 ### 2. Batch Operations
 
 ```kotlin
-// ❌ BAD: Multiple database inserts
+//  BAD: Multiple database inserts
 summaries.forEach { database.insert(it) }
 
-// ✅ GOOD: Batch insert
+//  GOOD: Batch insert
 database.transaction {
     summaries.forEach { insert(it) }
 }
@@ -617,10 +617,10 @@ database.transaction {
 ### 3. Use Background Threads
 
 ```kotlin
-// ❌ BAD: Heavy work on main thread
+//  BAD: Heavy work on main thread
 val processedData = heavyProcessing(data)
 
-// ✅ GOOD: Use appropriate dispatcher
+//  GOOD: Use appropriate dispatcher
 withContext(Dispatchers.Default) {
     val processedData = heavyProcessing(data)
 }
@@ -629,7 +629,7 @@ withContext(Dispatchers.Default) {
 ### 4. Cache Expensive Computations
 
 ```kotlin
-// ✅ GOOD: Memoize expensive calculations
+//  GOOD: Memoize expensive calculations
 private val expensiveResult by lazy {
     performExpensiveCalculation()
 }
@@ -639,12 +639,12 @@ private val expensiveResult by lazy {
 
 **Android Compose**:
 ```kotlin
-// ✅ Use remember for expensive calculations
+//  Use remember for expensive calculations
 val processedList = remember(rawList) {
     rawList.map { process(it) }
 }
 
-// ✅ Use derivedStateOf for computed values
+//  Use derivedStateOf for computed values
 val isScrolled by remember {
     derivedStateOf { listState.firstVisibleItemIndex > 0 }
 }
@@ -652,12 +652,12 @@ val isScrolled by remember {
 
 **iOS SwiftUI**:
 ```swift
-// ✅ Use computed properties wisely
+//  Use computed properties wisely
 var filteredItems: [Item] {
     items.filter { $0.isVisible }
 }
 
-// ✅ Avoid creating new instances in body
+//  Avoid creating new instances in body
 struct ContentView: View {
     @StateObject private var viewModel = ViewModel()
 }

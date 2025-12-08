@@ -70,12 +70,19 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
 
 ### Platform-Specific
 
-- [ ] Android:
-  - [ ] Tablet/foldable layouts
+- [x] Android:
+  - [x] Tablet/foldable layouts (Adaptive navigation)
   - [ ] Wear OS companion app
   - [ ] Android Auto integration
-- [ ] iOS:
-  - [ ] iPad multi-column layout
+- [x] iOS:
+  - [ ] iPad multi-column layout (Partially supported)
   - [ ] Apple Watch companion app
   - [ ] Siri Shortcuts
   - [ ] Live Activities for request processing
+
+## Technical Debt / Code Health
+- [ ] **Fix error state timing test** in `SummaryListViewModelTest.kt`
+- [ ] Migrate `SubmitUrl().execute()` to non-deprecated API (pass Scope)
+- [ ] Fix placeholder app logo in `AuthScreen.kt`
+- [ ] Add proper accessibility labels for VoiceOver/TalkBack
+- [ ] Improve error handling in Submit URL flow

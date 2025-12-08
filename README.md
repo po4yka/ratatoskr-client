@@ -28,19 +28,19 @@ This is a **Kotlin Multiplatform + Compose Multiplatform** app that provides a s
 
 This project features **comprehensive CI/CD automation** using GitHub Actions:
 
-- ✅ **Automated Testing**: All PRs run tests for Android, iOS, and shared code
-- 🔨 **Multi-Platform Builds**: Parallel builds on Ubuntu (Android) and macOS (iOS)
-- 🚀 **Automated Releases**: Tag-based releases with automatic APK/IPA generation
-- 🔍 **Code Quality**: Linting, security scanning, and dependency checks
-- 📦 **Dependabot**: Automatic dependency updates with grouped PRs
-- 💰 **Cost Optimized**: Conditional builds and smart caching reduce CI minutes by ~60%
+-  **Automated Testing**: All PRs run tests for Android, iOS, and shared code
+-  **Multi-Platform Builds**: Parallel builds on Ubuntu (Android) and macOS (iOS)
+-  **Automated Releases**: Tag-based releases with automatic APK/IPA generation
+-  **Code Quality**: Linting, security scanning, and dependency checks
+-  **Dependabot**: Automatic dependency updates with grouped PRs
+-  **Cost Optimized**: Conditional builds and smart caching reduce CI minutes by ~60%
 
 **Quick Start:**
 - PRs automatically validate on both platforms
 - Add `skip-ios` label to skip expensive macOS builds for Android-only changes
 - Create releases: `git tag v1.0.0 && git push --tags`
 
-See **[docs/CI_CD.md](docs/CI_CD.md)** for complete documentation including setup, secrets configuration, and troubleshooting.
+See **[docs/CICD.md](docs/CICD.md)** for complete documentation including setup, secrets configuration, and troubleshooting.
 
 ## Tech Stack
 
@@ -81,44 +81,46 @@ See **[docs/CI_CD.md](docs/CI_CD.md)** for complete documentation including setu
 
 ```
 bite-size-reader-client/
-├── shared/                          # KMP shared code (~70-80%)
-│   ├── src/
-│   │   ├── commonMain/kotlin/       # Shared Kotlin code
-│   │   │   ├── data/
-│   │   │   │   ├── local/          # SQLDelight database
-│   │   │   │   ├── remote/         # Ktor API clients
-│   │   │   │   ├── repository/     # Store-based repositories
-│   │   │   │   └── mappers/        # DTO ↔ Domain mappers
-│   │   │   ├── domain/
-│   │   │   │   ├── model/          # Domain entities
-│   │   │   │   ├── repository/     # Repository interfaces
-│   │   │   │   └── usecase/        # Business logic use cases
-│   │   │   ├── presentation/
-│   │   │   │   ├── navigation/     # Decompose navigation
-│   │   │   │   └── viewmodel/      # Shared ViewModels (MVI)
-│   │   │   ├── di/                 # Koin modules
-│   │   │   └── util/               # Extensions, helpers
-│   │   ├── androidMain/kotlin/     # Android-specific code
-│   │   ├── iosMain/kotlin/         # iOS-specific code
-│   │   └── commonTest/kotlin/      # Shared tests
-│   └── build.gradle.kts
-├── composeApp/                      # Compose Multiplatform UI + Android app shell
-│   ├── src/androidMain/kotlin/     # Android-specific entrypoints
-│   ├── src/iosMain/kotlin/         # Compose UIViewController for iOS host
-│   ├── src/desktopMain/kotlin/     # Desktop preview entrypoint
-│   └── src/commonMain/kotlin/      # Shared Compose UI/theme/navigation
-├── iosApp/                          # iOS app shell (SwiftUI hosting Compose)
-│   ├── iosApp/
-│   │   ├── Auth/                   # Native Telegram login sheet
-│   │   ├── Config/                 # Platform config
-│   │   └── iOSApp.swift            # Entry point hosting Compose UI
-│   ├── ShareExtension/             # Share sheet extension
-│   └── WidgetExtension/            # Home screen widget
-├── gradle/
-│   └── libs.versions.toml          # Version catalog
-├── README.md                        # This file
-├── TODO.md                          # Implementation checklist
-└── ROADMAP.md                       # Development phases
+ shared/                          # KMP shared code (~70-80%)
+    src/
+       commonMain/kotlin/       # Shared Kotlin code
+          data/
+             local/          # SQLDelight database
+             remote/         # Ktor API clients
+             repository/     # Store-based repositories
+             mappers/        # DTO ↔ Domain mappers
+          domain/
+             model/          # Domain entities
+             repository/     # Repository interfaces
+             usecase/        # Business logic use cases
+          presentation/
+             navigation/     # Decompose navigation
+             viewmodel/      # Shared ViewModels (MVI)
+          di/                 # Koin modules
+          util/               # Extensions, helpers
+       androidMain/kotlin/     # Android-specific code
+       iosMain/kotlin/         # iOS-specific code
+       commonTest/kotlin/      # Shared tests
+    build.gradle.kts
+ composeApp/                      # Compose Multiplatform UI + Android app shell
+    src/androidMain/kotlin/     # Android-specific entrypoints
+    src/iosMain/kotlin/         # Compose UIViewController for iOS host
+    src/desktopMain/kotlin/     # Desktop preview entrypoint
+    src/commonMain/kotlin/      # Shared Compose UI/theme/navigation
+ iosApp/                          # iOS app shell (SwiftUI hosting Compose)
+    iosApp/
+       Auth/                   # Native Telegram login sheet
+       Config/                 # Platform config
+       iOSApp.swift            # Entry point hosting Compose UI
+    ShareExtension/             # Share sheet extension (iOS)
+    RecentSummariesWidget/      # Home screen widget (iOS)
+    Info.plist                  # Main app config
+    Podfile                     # CocoaPods dependencies
+ gradle/
+    libs.versions.toml          # Version catalog
+ README.md                        # This file
+ TODO.md                          # Implementation checklist
+ ROADMAP.md                       # Development phases
 ```
 
 ## Backend API Integration

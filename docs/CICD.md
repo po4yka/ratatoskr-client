@@ -1,614 +1,474 @@
 # CI/CD Documentation
 
-This document describes the Continuous Integration and Continuous Deployment (CI/CD) setup for the Bite-Size Reader Client project.
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Workflows](#workflows)
-- [CI Workflow](#ci-workflow)
-- [Release Workflow](#release-workflow)
-- [Code Quality](#code-quality)
-- [Testing](#testing)
-- [Coverage Reporting](#coverage-reporting)
-- [Secrets and Configuration](#secrets-and-configuration)
-- [Troubleshooting](#troubleshooting)
-- [Local Development](#local-development)
+This document describes the comprehensive CI/CD setup for the Bite-Size Reader KMP (Kotlin Multiplatform) project.
 
 ## Overview
 
-The project uses GitHub Actions for CI/CD automation. The setup includes:
-
-- **Automated testing** for shared, Android, and iOS code
-- **Code quality checks** with ktlint
-- **Test coverage reporting** with Kover
-- **Security scanning** for dependencies
-- **Automated builds** for Android (APK/AAB) and iOS (framework)
-- **Release automation** with artifact generation
+The CI/CD pipeline is built using **GitHub Actions** and follows industry best practices for Kotlin Multiplatform projects. It provides automated building, testing, code quality checks, and deployment capabilities for both Android and iOS platforms.
 
 ## Workflows
 
-### Workflow Files
+### 1. PR Validation (`pr-validation.yml`)
 
-All workflows are located in `.github/workflows/`:
+**Trigger:** Pull requests to `main` or `develop` branches
 
-- `ci.yml` - Main CI workflow (runs on all PRs and pushes)
-- `release.yml` - Release workflow (triggered on version tags)
+**Purpose:** Validate code changes before merging
 
-### Workflow Triggers
+**Jobs:**
+-  **validate-shared**: Build and test shared KMP module
+-  **build-android**: Build Android APK and run unit tests
+-  **build-ios**: Build iOS frameworks and run tests (macOS runner)
+-  **code-quality**: Run detekt and dependency checks
+-  **validation-summary**: Aggregate results from all jobs
 
-**CI Workflow**:
-- Push to `main` branch
-- Pull requests to `main` branch
-- Manual trigger via workflow dispatch
+**Features:**
+- Concurrent job execution for faster feedback
+- Conditional execution based on PR labels (`skip-android`, `skip-ios`)
+- Test result artifacts uploaded for debugging
+- Automatic cancellation of outdated runs
 
-**Release Workflow**:
-- Push of version tags (format: `v*.*.*`, e.g., `v1.0.0`)
-- Manual trigger via workflow dispatch with version input
-
-## CI Workflow
-
-### Jobs Overview
-
-The CI workflow consists of multiple jobs that run in parallel for efficiency:
-
-```
-├── lint (Code quality checks)
-├── test-shared (Shared module tests + coverage)
-├── test-android (Android tests)
-├── build-android (Android APK build)
-├── build-ios (iOS framework build + tests)
-├── security-scan (Dependency scanning)
-└── status-check (Overall status verification)
+**Cost Optimization:**
+```yaml
+# Skip iOS build if only Android changes
+if: "!contains(github.event.pull_request.labels.*.name, 'skip-ios')"
 ```
 
-### 1. Lint Job
+### 2. Main CI (`ci.yml`)
 
-**Purpose**: Ensure code quality and consistency
+**Trigger:** Pushes to `main` or `develop` branches, or manual dispatch
 
-**Steps**:
+**Purpose:** Comprehensive validation and artifact generation for main branches
+
+**Jobs:**
+-  **build-all**: Matrix build for Android (ubuntu-latest) and iOS (macos-14)
+-  **coverage**: Generate test coverage reports (JaCoCo)
+-  **security-check**: Dependency vulnerability scanning
+-  **notify-failure**: Alert on build failures
+
+**Features:**
+- Full test suite execution
+- Release APK building (if signing keys configured)
+- Coverage report generation
+- Artifact retention (14 days)
+- Matrix strategy for parallel platform builds
+
+**Artifacts Generated:**
+- Android Debug APK
+- Android Release APK (if signing configured)
+- iOS XCFramework
+- Test results
+- Coverage reports
+
+### 3. Release Build (`release.yml`)
+
+**Trigger:** Git tags matching `v*.*.*` (e.g., `v1.0.0`) or manual dispatch
+
+**Purpose:** Build and publish production releases
+
+**Jobs:**
+-  **create-release**: Create GitHub release (draft)
+-  **build-android-release**: Build signed Android APK/AAB
+-  **build-ios-release**: Build iOS IPA and XCFramework
+-  **finalize-release**: Publish release after successful builds
+
+**Android Release Features:**
+- APK signing with release keystore
+- AAB (Android App Bundle) generation
+- Optional Google Play publishing via Gradle plugin
+- Automatic version tagging
+
+**iOS Release Features:**
+- XCFramework creation for distribution
+- Code signing with certificates and provisioning profiles
+- IPA export for App Store submission
+- Optional Fastlane deployment
+
+**Required Secrets:**
+
+Android:
+- `ANDROID_KEYSTORE_RELEASE_B64` - Base64-encoded release keystore
+- `ANDROID_KEYSTORE_PASSWORD` - Keystore password
+- `ANDROID_KEY_ALIAS` - Key alias
+- `ANDROID_KEY_PASSWORD` - Key password
+- `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` - Google Play service account (optional)
+
+iOS:
+- `IOS_CERTIFICATE_B64` - Base64-encoded .p12 certificate
+- `IOS_CERTIFICATE_PASSWORD` - Certificate password
+- `IOS_PROVISIONING_PROFILE_B64` - Base64-encoded provisioning profile
+- `IOS_CODE_SIGN_IDENTITY` - Code signing identity
+- `IOS_PROVISIONING_PROFILE_SPECIFIER` - Profile specifier
+- `KEYCHAIN_PASSWORD` - Temporary keychain password
+- `APP_STORE_CONNECT_API_KEY_B64` - App Store Connect API key (optional)
+
+### 4. Code Quality (`code-quality.yml`)
+
+**Trigger:** PRs, pushes to main/develop, weekly schedule (Mondays 9 AM UTC), or manual
+
+**Purpose:** Enforce code quality standards and detect issues
+
+**Jobs:**
+-  **kotlin-lint**: Run detekt for Kotlin code analysis
+-  **dependency-scan**: Check for dependency updates and vulnerabilities
+-  **gradle-validation**: Validate Gradle wrapper integrity
+-  **static-analysis**: Search for TODOs, FIXMEs, and potential secrets
+-  **code-metrics**: Generate code statistics
+-  **license-check**: Verify LICENSE file exists
+-  **quality-summary**: Aggregate quality check results
+
+**Security Checks:**
+- Hardcoded secrets detection
+- .gitignore compliance verification
+- Sensitive file detection
+
+**Code Metrics:**
+- Lines of code count
+- File count per module
+- Test file coverage
+
+### 5. Dependabot (`dependabot.yml`)
+
+**Purpose:** Automated dependency updates
+
+**Configuration:**
+- Weekly updates on Mondays at 9 AM UTC
+- Separate ecosystems: Gradle dependencies and GitHub Actions
+- Grouped updates for related packages (Kotlin, AndroidX, Compose)
+- Auto-assigned reviewers and labels
+- Limited to 10 Gradle PRs and 5 GitHub Actions PRs
+
+**Dependency Groups:**
+- `kotlin` - All Kotlin and KotlinX libraries
+- `androidx` - AndroidX libraries
+- `compose` - Compose Multiplatform and AndroidX Compose
+
+## Caching Strategy
+
+### Gradle Caching
+
+Uses `gradle/actions/setup-gradle@v4` with:
+- Automatic Gradle dependency caching
+- Gradle home cache cleanup (removes unused files before saving)
+- Optional cache encryption via `GRADLE_CACHE_ENCRYPTION_KEY` secret
+
+```yaml
+- name: Setup Gradle
+  uses: gradle/actions/setup-gradle@v4
+  with:
+    gradle-home-cache-cleanup: true
+    cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+```
+
+### Konan Caching (iOS)
+
+Caches `~/.konan` directory for Kotlin/Native dependencies:
+
+```yaml
+- name: Cache Konan dependencies
+  uses: actions/cache@v4
+  with:
+    path: ~/.konan
+    key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts', 'gradle/libs.versions.toml') }}
+```
+
+**Benefits:**
+- Faster iOS builds (10x cost savings on macOS runners)
+- Reduced network usage
+- Consistent build environments
+
+## Runner Configuration
+
+| Job | Runner | Cost | Reason |
+|-----|--------|------|--------|
+| Android builds | `ubuntu-latest` | Low | Standard JVM/Android SDK support |
+| iOS builds | `macos-14` | High (10x) | Required for Xcode and iOS toolchain |
+| Code quality | `ubuntu-latest` | Low | Text-based analysis only |
+
+**Cost Optimization Tips:**
+1. Use PR labels to skip unnecessary platform builds
+2. Enable concurrency cancellation to stop outdated runs
+3. Cache Gradle and Konan dependencies aggressively
+4. Run iOS builds only when needed (not for Android-only changes)
+
+## Setup Instructions
+
+### 1. Enable GitHub Actions
+
+GitHub Actions are enabled by default. Verify in repository **Settings → Actions → General**.
+
+### 2. Configure Secrets
+
+Navigate to **Settings → Secrets and variables → Actions** and add:
+
+**Optional (for caching):**
+- `GRADLE_CACHE_ENCRYPTION_KEY` - Any secure string for cache encryption
+
+**For Android releases:**
 ```bash
-./gradlew ktlintCheck
+# Generate keystore (if not already done)
+keytool -genkey -v -keystore release.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
+
+# Encode to Base64
+base64 -i release.keystore | pbcopy  # macOS
+base64 -w 0 release.keystore | xclip  # Linux
 ```
 
-**Runs on**: `ubuntu-latest`
+Add secrets:
+- `ANDROID_KEYSTORE_RELEASE_B64` - Paste Base64 output
+- `ANDROID_KEYSTORE_PASSWORD` - Your keystore password
+- `ANDROID_KEY_ALIAS` - Your key alias
+- `ANDROID_KEY_PASSWORD` - Your key password
 
-**Fails if**:
-- Code formatting violations found
-- Style issues detected
-
-**Fix locally**:
+**For iOS releases:**
 ```bash
-./gradlew ktlintFormat
+# Export certificate from Keychain as .p12
+# Then encode
+base64 -i certificate.p12 | pbcopy
+
+# Encode provisioning profile
+base64 -i profile.mobileprovision | pbcopy
 ```
 
-### 2. Test Shared Job
+Add secrets:
+- `IOS_CERTIFICATE_B64` - Certificate Base64
+- `IOS_CERTIFICATE_PASSWORD` - Certificate password
+- `IOS_PROVISIONING_PROFILE_B64` - Profile Base64
+- `IOS_CODE_SIGN_IDENTITY` - e.g., "Apple Distribution: Your Name (TEAM_ID)"
+- `IOS_PROVISIONING_PROFILE_SPECIFIER` - Profile name
+- `KEYCHAIN_PASSWORD` - Any secure string for temporary keychain
 
-**Purpose**: Run shared module tests and generate coverage report
+### 3. First Run
 
-**Steps**:
-1. Run all shared tests
-2. Generate Kover HTML coverage report
-3. Comment coverage on PR (if applicable)
-
-**Commands**:
-```bash
-./gradlew :shared:testDebugUnitTest
-./gradlew :shared:koverHtmlReportDebug
-```
-
-**Coverage Requirements**:
-- Overall: 75% minimum
-- Changed files: 80% minimum
-
-**Artifacts**:
-- Test results: `shared/build/test-results/`
-- Coverage report: `shared/build/reports/kover/htmlDebug/`
-
-### 3. Test Android Job
-
-**Purpose**: Run Android-specific tests
-
-**Steps**:
-1. Set up Android SDK
-2. Run Android unit tests
-
-**Commands**:
-```bash
-./gradlew :composeApp:testDebugUnitTest
-```
-
-**Runs on**: `ubuntu-latest`
-
-**Artifacts**:
-- Test results: `composeApp/build/test-results/`
-
-### 4. Build Android Job
-
-**Purpose**: Build Android APK to verify compilation
-
-**Steps**:
-1. Set up Android SDK
-2. Build debug APK
-
-**Commands**:
-```bash
-./gradlew :composeApp:assembleDebug
-```
-
-**Artifacts**:
-- APK: `composeApp/build/outputs/apk/debug/composeApp-debug.apk`
-
-### 5. Build iOS Job
-
-**Purpose**: Build iOS framework and run iOS tests
-
-**Steps**:
-1. Set up Xcode
-2. Install CocoaPods dependencies
-3. Build iOS framework
-4. Run iOS tests
-
-**Commands**:
-```bash
-cd iosApp && pod install
-xcodebuild -workspace iosApp.xcworkspace -scheme iosApp -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' build test
-```
-
-**Runs on**: `macos-14` (required for Xcode)
-
-**Artifacts**:
-- iOS framework: `shared/build/bin/iosSimulatorArm64/`
-
-### 6. Security Scan Job
-
-**Purpose**: Scan dependencies for known vulnerabilities
-
-**Steps**:
-1. Run Gradle dependency check
-2. Report vulnerabilities
-
-**Commands**:
-```bash
-./gradlew dependencyCheckAnalyze
-```
-
-**Fails if**:
-- High or critical vulnerabilities found
-
-### 7. Status Check Job
-
-**Purpose**: Aggregate status of all jobs
-
-**Depends on**: All previous jobs
-
-This job succeeds only if all other jobs pass, providing a single status check for branch protection rules.
-
-## Release Workflow
-
-### Triggering a Release
-
-#### Option 1: Git Tag (Recommended)
+Push code or create a PR to trigger workflows:
 
 ```bash
-# Create and push a version tag
+# For PRs
+git checkout -b feature/my-feature
+git push origin feature/my-feature
+# Create PR via GitHub UI
+
+# For releases
 git tag v1.0.0
 git push origin v1.0.0
 ```
 
-#### Option 2: Manual Dispatch
+### 4. Monitor Workflows
 
-1. Go to Actions → Release
-2. Click "Run workflow"
-3. Enter version (e.g., `1.0.0`)
-4. Click "Run workflow"
+View workflow runs in **Actions** tab:
+- Green  = Success
+- Red  = Failure (click for logs)
+- Yellow 🟡 = In progress
 
-### Release Process
+## Advanced Features
 
-1. **Version Validation**
-   - Validates semantic versioning format (MAJOR.MINOR.PATCH)
-   - Checks if version tag exists
+### Conditional Job Execution
 
-2. **Build Android**
-   - Builds signed release APK
-   - Builds signed release AAB (for Play Store)
-   - Signs with release keystore (from secrets)
-
-3. **Build iOS**
-   - Builds signed iOS IPA
-   - Uses provisioning profile and certificates (from secrets)
-   - Archives and exports for App Store distribution
-
-4. **Extract Changelog**
-   - Extracts version-specific changelog from CHANGELOG.md
-   - Uses changelog in GitHub release description
-
-5. **Create GitHub Release**
-   - Creates release with version tag
-   - Uploads artifacts (APK, AAB, IPA)
-   - Includes changelog and release notes
-
-### Release Artifacts
-
-- `app-release.apk` - Android APK for direct installation
-- `app-release.aab` - Android App Bundle for Play Store
-- `app-release.ipa` - iOS IPA for App Store
-
-Artifacts are retained for 30 days.
-
-## Code Quality
-
-### ktlint Configuration
-
-**Version**: 1.0.1 (ktlint binary)
-
-**Configuration** (`build.gradle.kts`):
-```kotlin
-configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    version.set("1.0.1")
-    android.set(true)
-    outputColorName.set("RED")
-}
-```
-
-### Running Checks Locally
+Skip platform builds using PR labels:
 
 ```bash
-# Check all code
-./gradlew ktlintCheck
-
-# Auto-format
-./gradlew ktlintFormat
-
-# Check specific module
-./gradlew :shared:ktlintCheck
+# Add label via GitHub UI or CLI
+gh pr edit <pr-number> --add-label "skip-ios"
 ```
 
-### Code Style Rules
+Available labels:
+- `skip-android` - Skip Android build
+- `skip-ios` - Skip iOS build
 
-- **Max line length**: 120 characters
-- **Indentation**: 4 spaces
-- **Import order**: Alphabetical, with separators
-- **Trailing commas**: Required in multi-line declarations
-- **Blank lines**: Maximum 1 consecutive
+### Manual Workflow Dispatch
 
-## Testing
+Trigger workflows manually via GitHub UI:
+1. Go to **Actions** tab
+2. Select workflow (e.g., "CI - Main Branch")
+3. Click **Run workflow** button
+4. Choose branch and inputs (if any)
 
-### Test Organization
+### Artifact Download
 
-```
-shared/src/
-├── commonTest/       # Shared tests
-│   ├── domain/       # Domain model tests
-│   ├── data/         # Repository, mapper tests
-│   ├── presentation/ # ViewModel tests
-│   └── util/         # Test utilities
-├── androidTest/      # Android instrumented tests
-└── iosTest/          # iOS-specific tests
+Download build artifacts from workflow runs:
+1. Go to workflow run page
+2. Scroll to **Artifacts** section
+3. Click artifact name to download
 
-composeApp/src/
-└── androidTest/      # Compose UI tests
+Artifacts available:
+- `android-debug-apk` - Debug APK for testing
+- `android-release-apk` - Signed release APK
+- `ios-xcframework` - iOS framework distribution
+- `test-results-*` - Test reports (HTML)
+- `coverage-reports` - Code coverage (JaCoCo)
 
-iosApp/
-└── iosAppTests/      # iOS UI tests (XCTest)
-```
+### Scheduled Runs
 
-### Running Tests Locally
-
-```bash
-# All tests
-./gradlew test
-
-# Shared tests
-./gradlew :shared:testDebugUnitTest
-
-# Android tests
-./gradlew :composeApp:testDebugUnitTest
-
-# With coverage
-./gradlew :shared:koverHtmlReportDebug
-
-# iOS tests (requires macOS)
-cd iosApp
-xcodebuild test -workspace iosApp.xcworkspace -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 15'
-```
-
-### Test Requirements
-
-- **Unit test coverage**: 75% minimum
-- **Critical paths**: 90% coverage recommended
-- **New features**: Tests required before merge
-- **Bug fixes**: Regression tests required
-
-## Coverage Reporting
-
-### Kover Configuration
-
-**Plugin**: `org.jetbrains.kotlinx.kover:0.8.3`
-
-**Configuration** (`shared/build.gradle.kts`):
-```kotlin
-kover {
-    reports {
-        filters {
-            excludes {
-                classes("*.BuildConfig", "*.R", "*.R$*")
-                packages("*.di", "*.util.test")
-            }
-        }
-    }
-}
-```
-
-### Coverage Reports
-
-**Generate locally**:
-```bash
-./gradlew :shared:koverHtmlReportDebug
-```
-
-**View report**:
-```bash
-open shared/build/reports/kover/htmlDebug/index.html
-```
-
-**CI Report**: Coverage is automatically commented on PRs via the `madrapps/jacoco-report` action.
-
-### Coverage Thresholds
-
-- **Overall**: 75% (enforced)
-- **Changed files**: 80% (enforced on PRs)
-- **New files**: 90% (recommended)
-
-## Secrets and Configuration
-
-### Required Secrets
-
-The following secrets must be configured in GitHub repository settings (Settings → Secrets and variables → Actions):
-
-#### Android Signing (Release Only)
-
-- `ANDROID_KEYSTORE_BASE64` - Base64-encoded release keystore
-- `ANDROID_KEYSTORE_PASSWORD` - Keystore password
-- `ANDROID_KEY_ALIAS` - Key alias
-- `ANDROID_KEY_PASSWORD` - Key password
-
-**Creating keystore**:
-```bash
-keytool -genkey -v -keystore release.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
-
-# Encode to base64
-base64 -i release.keystore -o release_keystore_base64.txt
-```
-
-#### iOS Signing (Release Only)
-
-- `IOS_CERTIFICATE_BASE64` - Base64-encoded P12 certificate
-- `IOS_CERTIFICATE_PASSWORD` - P12 password
-- `IOS_PROVISIONING_PROFILE_BASE64` - Base64-encoded provisioning profile
-- `IOS_TEAM_ID` - Apple Developer Team ID
-- `IOS_BUNDLE_ID` - App bundle identifier
-
-**Creating certificate**:
-```bash
-# Export from Keychain
-# File → Export Items → Save as .p12
-
-# Encode to base64
-base64 -i Certificates.p12 -o certificate_base64.txt
-```
-
-### Optional Secrets
-
-- `GITHUB_TOKEN` - Automatically provided by GitHub Actions
-- `CODECOV_TOKEN` - For Codecov integration (if used)
+Code quality checks run automatically every Monday at 9 AM UTC to catch issues early.
 
 ## Troubleshooting
 
-### Common CI Issues
+### Build Failures
 
-#### 1. ktlint Failures
+**Android build fails with "SDK not found":**
+- Ensure `ANDROID_HOME` is set (GitHub runners have this pre-configured)
+- Check `compileSdk` and `targetSdk` versions in `build.gradle.kts`
 
-**Error**: "Lint check failed"
+**iOS build fails with "Xcode not found":**
+- Verify `macos-14` runner is used (not `ubuntu-latest`)
+- Check Xcode version selection in workflow
 
-**Solution**:
-```bash
-./gradlew ktlintFormat
-git add .
-git commit -m "style: fix code formatting"
-git push
+**Gradle task not found:**
+- Verify task name matches your `build.gradle.kts`
+- Run locally first: `./gradlew tasks --all`
+
+### Caching Issues
+
+**Cache not restoring:**
+- Check cache key includes `hashFiles()` for dependency files
+- Verify cache size doesn't exceed GitHub's 10 GB limit
+
+**Builds slow despite caching:**
+- Review cache hit/miss rates in logs
+- Consider splitting caches by module or platform
+
+### Signing Issues
+
+**Android: "Keystore was tampered with":**
+- Re-encode keystore: `base64 -i release.keystore` (no line breaks)
+- Verify password matches
+
+**iOS: "No matching provisioning profiles":**
+- Check bundle ID matches provisioning profile
+- Verify certificate is not expired
+- Ensure profile is for App Store distribution (not development)
+
+### Secrets Not Found
+
+**Error: "Secret `XYZ` not found":**
+- Verify secret name matches exactly (case-sensitive)
+- Check secret is set at repository level (not organization)
+- Re-create secret if corrupted
+
+## Best Practices
+
+### 1. Commit Messages
+
+Follow Conventional Commits for automatic changelog generation:
+
+```
+feat: add offline sync capability
+fix: resolve crash on empty summary list
+docs: update CI/CD documentation
+ci: optimize iOS build caching
 ```
 
-#### 2. Test Failures
+### 2. PR Labels
 
-**Error**: "Tests failed"
+Use labels to optimize CI runs:
 
-**Solution**:
-```bash
-# Run tests locally
-./gradlew test
+- `skip-android` - Backend-only or iOS-only changes
+- `skip-ios` - Android-only changes
+- `dependencies` - Dependency updates (auto-added by Dependabot)
 
-# Check specific test
-./gradlew :shared:testDebugUnitTest --tests "*SpecificTest*"
+### 3. Branch Protection
 
-# View test report
-open shared/build/reports/tests/testDebugUnitTest/index.html
-```
+Enable branch protection on `main`:
+1. **Settings → Branches → Add rule**
+2. Branch name pattern: `main`
+3. Required checks:
+   -  Validate Shared Module
+   -  Build Android App
+   -  Build iOS Framework
+   -  Code Quality Checks
+4. Require pull request reviews (recommended: 1)
 
-#### 3. Coverage Below Threshold
+### 4. Security
 
-**Error**: "Coverage is below minimum threshold"
+- Never commit secrets to `.env`, `local.properties`, or source files
+- Use GitHub Secrets for sensitive data
+- Enable secret scanning in repository settings
+- Review Dependabot alerts weekly
+- Keep dependencies up-to-date
 
-**Solution**:
-- Add more tests for uncovered code
-- Check coverage report locally
-- Ensure test utilities are excluded from coverage
+### 5. Release Process
 
-#### 4. Build Failures
+Recommended release workflow:
 
-**Error**: "Compilation failed"
+1. Update version in `build.gradle.kts`:
+   ```kotlin
+   versionName = "1.2.0"
+   versionCode = 12
+   ```
 
-**Solution**:
-```bash
-# Clean and rebuild
-./gradlew clean build
+2. Update `CHANGELOG.md` with release notes
 
-# Check for dependency issues
-./gradlew dependencies
+3. Commit changes:
+   ```bash
+   git commit -m "chore: bump version to 1.2.0"
+   ```
 
-# Update dependencies
-./gradlew --refresh-dependencies
-```
+4. Create and push tag:
+   ```bash
+   git tag v1.2.0
+   git push origin main --tags
+   ```
 
-#### 5. iOS Build Failures (macOS Only)
+5. Release workflow automatically:
+   - Builds signed APK and AAB
+   - Builds iOS IPA
+   - Creates GitHub release (draft)
+   - Uploads artifacts
 
-**Error**: "xcodebuild failed"
+6. Manually:
+   - Review draft release
+   - Edit release notes
+   - Publish release
+   - Deploy to stores (if auto-deploy not configured)
 
-**Solution**:
-```bash
-# Clean derived data
-rm -rf ~/Library/Developer/Xcode/DerivedData
+## CI/CD Metrics
 
-# Update CocoaPods
-cd iosApp
-pod deintegrate
-pod install
+Monitor these metrics to optimize your pipeline:
 
-# Rebuild
-xcodebuild clean build -workspace iosApp.xcworkspace -scheme iosApp
-```
+- **PR Validation Time**: Target < 10 minutes
+- **Main CI Time**: Target < 15 minutes
+- **Release Build Time**: Target < 20 minutes
+- **Cache Hit Rate**: Target > 80%
+- **iOS/Android Cost Ratio**: ~10:1 (macOS vs Ubuntu runners)
 
-#### 6. Release Workflow Issues
+## Future Enhancements
 
-**Error**: "Failed to create release"
+Potential improvements for the CI/CD pipeline:
 
-**Solution**:
-- Ensure version tag follows format `v*.*.*`
-- Check that secrets are configured correctly
-- Verify CHANGELOG.md contains the version section
-- Ensure all CI checks pass before release
-
-### Debugging Workflows
-
-**Enable debug logging**:
-1. Go to Settings → Secrets
-2. Add secret: `ACTIONS_STEP_DEBUG` = `true`
-3. Re-run workflow
-
-**View detailed logs**:
-- Click on failed job
-- Expand failed step
-- Review error messages and stack traces
-
-## Local Development
-
-### Pre-commit Checks
-
-Run these commands before committing:
-
-```bash
-# Format code
-./gradlew ktlintFormat
-
-# Run tests
-./gradlew test
-
-# Check coverage
-./gradlew :shared:koverHtmlReportDebug
-
-# Build Android
-./gradlew :composeApp:assembleDebug
-
-# Build iOS (macOS only)
-cd iosApp
-xcodebuild -workspace iosApp.xcworkspace -scheme iosApp -configuration Debug build
-```
-
-### Git Hooks (Optional)
-
-Create `.git/hooks/pre-commit`:
-
-```bash
-#!/bin/bash
-
-echo "Running pre-commit checks..."
-
-# Format code
-./gradlew ktlintFormat
-
-# Run tests
-./gradlew test
-
-if [ $? -ne 0 ]; then
-  echo "Tests failed. Commit aborted."
-  exit 1
-fi
-
-echo "Pre-commit checks passed!"
-```
-
-Make executable:
-```bash
-chmod +x .git/hooks/pre-commit
-```
-
-### Continuous Integration Best Practices
-
-1. **Keep builds fast**: Current CI runs in ~10-15 minutes
-2. **Run tests locally first**: Catch issues before pushing
-3. **Small, focused commits**: Easier to review and debug
-4. **Clear commit messages**: Follow conventional commits
-5. **Update CHANGELOG.md**: For user-facing changes
-6. **Monitor CI failures**: Fix immediately, don't accumulate
-
-## Performance Optimization
-
-### Caching Strategy
-
-GitHub Actions caches:
-- Gradle dependencies: `~/.gradle/caches`
-- Gradle wrapper: `~/.gradle/wrapper`
-- Android SDK: Cached by `setup-android` action
-- CocoaPods: `~/.cocoapods`
-
-### Build Time Optimization
-
-**Gradle**:
-```kotlin
-// gradle.properties
-org.gradle.parallel=true
-org.gradle.caching=true
-org.gradle.configureondemand=true
-kotlin.incremental=true
-```
-
-**Workflow optimization**:
-- Use matrix strategy for parallel platform builds
-- Cache dependencies aggressively
-- Skip redundant steps (e.g., don't run iOS build for docs-only changes)
-
-## Future Improvements
-
-- [ ] Add screenshot testing
-- [ ] Implement visual regression testing
-- [ ] Add E2E tests with Maestro
-- [ ] Set up Fastlane for iOS deployment
-- [ ] Integrate with Google Play Store deployment
-- [ ] Add performance benchmarking
-- [ ] Implement automatic dependency updates (Dependabot)
-- [ ] Add SLSA provenance generation
+- [ ] Add UI testing with Maestro or Appium
+- [ ] Integrate SonarQube for advanced code quality
+- [ ] Add performance testing (startup time, memory usage)
+- [ ] Implement automatic screenshot generation
+- [ ] Add A/B testing deployment tracks
+- [ ] Integrate crash reporting (Sentry, Firebase Crashlytics)
+- [ ] Add automated release notes generation
+- [ ] Implement blue-green deployments
 
 ## Resources
 
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [ktlint](https://pinterest.github.io/ktlint/)
-- [Kover Coverage](https://github.com/Kotlin/kotlinx-kover)
-- [Semantic Versioning](https://semver.org/)
-- [Conventional Commits](https://www.conventionalcommits.org/)
+### Official Documentation
+- [GitHub Actions Docs](https://docs.github.com/en/actions)
+- [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)
+- [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html)
+
+### Community Resources
+- [AKJAW KMP GitHub Actions Examples](https://github.com/AKJAW/kotlin-multiplatform-github-actions)
+- [KMPShip CI/CD Guide](https://www.kmpship.app/blog/ci-cd-kotlin-multiplatform-2025)
+- [Marco Gomiero's KMP CI Series](https://www.marcogomiero.com/posts/2024/kmp-ci-android/)
+
+### Tools
+- [Gradle Build Scan](https://scans.gradle.com/) - Build performance analysis
+- [Fastlane](https://fastlane.tools/) - iOS/Android deployment automation
+- [Dependabot](https://github.com/dependabot) - Automated dependency updates
+
+## Support
+
+For issues with CI/CD:
+1. Check workflow logs in GitHub Actions tab
+2. Review this documentation
+3. Search [GitHub Actions community forum](https://github.community/c/code-to-cloud/52)
+4. Open issue in this repository with workflow logs
 
 ---
 
-For questions or issues with CI/CD, please:
-- Check existing [Issues](https://github.com/po4yka/bite-size-reader-client/issues)
-- Review workflow logs in the Actions tab
-- Consult [CONTRIBUTING.md](../CONTRIBUTING.md)
+**Last Updated:** 2025-01-16
+**Maintained By:** @po4yka

@@ -43,54 +43,54 @@ The sync strategy enables offline-first functionality by maintaining a local cop
 ### Data Flow
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Mobile Client                        │
-│                                                         │
-│  ┌───────────────┐      ┌──────────────┐              │
-│  │  UI Layer     │◄─────┤  ViewModel   │              │
-│  └───────────────┘      └──────┬───────┘              │
-│                                 │                       │
-│                         ┌───────▼────────┐             │
-│                         │  Use Cases     │             │
-│                         └───────┬────────┘             │
-│                                 │                       │
-│  ┌──────────────────────────────▼──────────────────┐   │
-│  │          Repository (Store Pattern)             │   │
-│  │                                                  │   │
-│  │  ┌──────────────┐         ┌─────────────────┐  │   │
-│  │  │              │         │                 │  │   │
-│  │  │   Local DB   │◄────────►   Remote API   │  │   │
-│  │  │  (SQLDelight)│         │     (Ktor)      │  │   │
-│  │  │              │         │                 │  │   │
-│  │  └──────────────┘         └─────────────────┘  │   │
-│  │         ▲                          ▲            │   │
-│  │         │                          │            │   │
-│  │    ┌────▼──────────────────────────▼────┐      │   │
-│  │    │       Sync Manager                 │      │   │
-│  │    │  - Full sync                       │      │   │
-│  │    │  - Delta sync                      │      │   │
-│  │    │  - Conflict resolution             │      │   │
-│  │    └────────────────────────────────────┘      │   │
-│  └──────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────┘
+
+                    Mobile Client
+
+
+    UI Layer       ViewModel
+
+
+
+                           Use Cases
+
+
+
+            Repository (Store Pattern)
+
+
+
+       Local DB      Remote API
+      (SQLDelight)              (Ktor)
+
+
+
+
+
+             Sync Manager
+        - Full sync
+        - Delta sync
+        - Conflict resolution
+
+
+
 ```
 
 ### Sync State Machine
 
 ```
-┌─────────┐
-│  IDLE   │
-└────┬────┘
-     │ sync()
-     ▼
-┌─────────┐
-│SYNCING  │──────── Error ─────► ERROR
-└────┬────┘                        │
-     │ Success                     │ retry()
-     ▼                            ▼
-┌─────────┐                  ┌─────────┐
-│SUCCESS  │                  │RETRYING │
-└─────────┘                  └─────────┘
+
+  IDLE
+
+      sync()
+
+
+SYNCING   Error  ERROR
+
+      Success                      retry()
+
+
+SUCCESS                    RETRYING
+
 ```
 
 **State Model**:
@@ -150,18 +150,18 @@ Full synchronization downloads entire summary database to local storage.
 
 ```
 1. Check if full sync needed
-   └─► GET /v1/sync/full
-       └─► Receive sync session ID + total chunks
+    GET /v1/sync/full
+        Receive sync session ID + total chunks
 
 2. Download chunks sequentially
-   └─► GET /v1/sync/full/{sync_id}/chunk/{chunk_num}
-       └─► Receive chunk data (summaries batch)
-       └─► Save to local DB
-       └─► Update progress (chunk_num / total_chunks)
+    GET /v1/sync/full/{sync_id}/chunk/{chunk_num}
+        Receive chunk data (summaries batch)
+        Save to local DB
+        Update progress (chunk_num / total_chunks)
 
 3. Finalize sync
-   └─► Update last_sync_timestamp
-   └─► Mark sync complete
+    Update last_sync_timestamp
+    Mark sync complete
 ```
 
 ### Chunked Download
@@ -295,19 +295,19 @@ Incremental synchronization downloads only changes since last sync.
 
 ```
 1. Get last sync timestamp from local preferences
-   └─► Read: last_sync_timestamp
+    Read: last_sync_timestamp
 
 2. Request delta changes
-   └─► GET /v1/sync/delta?since=<timestamp>
-       └─► Receive: new summaries, updated summaries, deleted IDs
+    GET /v1/sync/delta?since=<timestamp>
+        Receive: new summaries, updated summaries, deleted IDs
 
 3. Apply changes locally
-   └─► Insert new summaries
-   └─► Update existing summaries
-   └─► Delete summaries by ID
+    Insert new summaries
+    Update existing summaries
+    Delete summaries by ID
 
 4. Update last sync timestamp
-   └─► Write: last_sync_timestamp = current_time
+    Write: last_sync_timestamp = current_time
 ```
 
 ### API Request

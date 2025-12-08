@@ -3,7 +3,7 @@
 This document describes the iOS-specific features implemented in the Bite-Size Reader app.
 
 **Last Updated**: 2025-11-18
-**Status**: ✅ All Core Features Implemented
+**Status**:  All Core Features Implemented
 
 ---
 
@@ -25,7 +25,7 @@ This document describes the iOS-specific features implemented in the Bite-Size R
 
 The Share Extension allows users to submit URLs from Safari, Chrome, and other apps directly to Bite-Size Reader.
 
-### Status: ✅ **Fully Implemented**
+### Status:  **Fully Implemented**
 
 ### Implementation Details
 
@@ -88,9 +88,9 @@ private func checkForSharedURL() {
 ```
 
 **Supported Share Types**:
-- ✅ Web URLs (Safari, Chrome, Firefox)
-- ✅ Webpage objects (some browsers)
-- ✅ Auto-submits immediately (no user interaction needed)
+-  Web URLs (Safari, Chrome, Firefox)
+-  Webpage objects (some browsers)
+-  Auto-submits immediately (no user interaction needed)
 
 **Info.plist Configuration**:
 
@@ -122,7 +122,7 @@ private func checkForSharedURL() {
 
 Background tasks enable automatic syncing of summaries while the app is not in use, keeping data fresh without user intervention.
 
-### Status: ✅ **Fully Implemented**
+### Status:  **Fully Implemented**
 
 ### Implementation Details
 
@@ -219,15 +219,15 @@ func scheduleBackgroundSync() {
 
 ### Important Notes
 
-⚠️ **Simulator Limitation**: Background tasks do NOT work in the iOS Simulator. They only work on physical devices.
+ **Simulator Limitation**: Background tasks do NOT work in the iOS Simulator. They only work on physical devices.
 
-✅ **Device Testing**: To test on a real device, use Xcode's background task debugging:
+ **Device Testing**: To test on a real device, use Xcode's background task debugging:
 ```bash
 # Launch app on device, then in Xcode console:
 e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.po4yka.bitesizereader.sync"]
 ```
 
-🔍 **Logging**: Look for `[BackgroundTasks]` prefix in console logs
+ **Logging**: Look for `[BackgroundTasks]` prefix in console logs
 
 **Execution Conditions**:
 - iOS decides when to run based on:
@@ -250,7 +250,7 @@ e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWith
 
 iOS WidgetKit widget shows recent summaries on the home screen.
 
-### Status: ⚠️ **Partially Implemented**
+### Status:  **Partially Implemented**
 
 **Files**:
 - `iosApp/RecentSummariesWidget/RecentSummariesWidget.swift`
@@ -268,7 +268,7 @@ iOS WidgetKit widget shows recent summaries on the home screen.
 
 Custom URL scheme for opening summaries from widgets or external apps.
 
-### Status: ✅ **Fully Implemented**
+### Status:  **Fully Implemented**
 
 **URL Scheme**: `bitesizereader://`
 
@@ -315,13 +315,13 @@ private func handleDeepLink(_ url: URL) {
 
 App Groups enable data sharing between main app, Share Extension, and widgets.
 
-### Status: ✅ **Fully Configured**
+### Status:  **Fully Configured**
 
 **App Group Identifier**: `group.com.po4yka.bitesizereader`
 
 **Used For**:
-- ✅ Share Extension → Main App (shared URLs)
-- ⚠️ Main App → Widget (summary data) - needs testing
+-  Share Extension → Main App (shared URLs)
+-  Main App → Widget (summary data) - needs testing
 
 **Shared Data**:
 
@@ -377,7 +377,7 @@ Both Main App and Share Extension targets must have App Groups capability enable
 
 ### Background Tasks Testing
 
-**⚠️ DEVICE ONLY - Does not work in simulator**
+** DEVICE ONLY - Does not work in simulator**
 
 **Xcode Background Task Simulation**:
 
@@ -487,11 +487,11 @@ Create HTML file with link:
 
 | Feature | iOS | Android | Notes |
 |---------|-----|---------|-------|
-| Share Intent/Extension | ✅ Share Extension | ✅ Share Intent | Both working |
-| Background Sync | ✅ BGProcessingTask | ✅ WorkManager | Both every 6 hours |
-| Widgets | ⚠️ WidgetKit (needs testing) | ✅ Glance Widget | iOS needs verification |
-| Deep Links | ✅ URL Scheme | ✅ Intent Filters | iOS working, Android TBD |
-| Secure Storage | ✅ Keychain | ✅ EncryptedSharedPreferences | Both working |
+| Share Intent/Extension |  Share Extension |  Share Intent | Both working |
+| Background Sync |  BGProcessingTask |  WorkManager | Both every 6 hours |
+| Widgets |  WidgetKit (needs testing) |  Glance Widget | iOS needs verification |
+| Deep Links |  URL Scheme |  Intent Filters | iOS working, Android TBD |
+| Secure Storage |  Keychain |  EncryptedSharedPreferences | Both working |
 
 ---
 

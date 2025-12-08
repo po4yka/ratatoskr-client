@@ -229,22 +229,22 @@ data class SummaryListState(
 
 ### DO
 
-✅ Convert all exceptions to AppError
-✅ Provide user-friendly messages
-✅ Enable retry for network/server errors
-✅ Log errors with context
-✅ Clear errors on success
-✅ Show error state in UI
-✅ Provide dismiss/retry actions
+ Convert all exceptions to AppError
+ Provide user-friendly messages
+ Enable retry for network/server errors
+ Log errors with context
+ Clear errors on success
+ Show error state in UI
+ Provide dismiss/retry actions
 
 ### DON'T
 
-❌ Show raw exception messages to users
-❌ Silently swallow errors
-❌ Retry user input errors
-❌ Retry indefinitely without limit
-❌ Block UI during retry
-❌ Show technical stack traces
+ Show raw exception messages to users
+ Silently swallow errors
+ Retry user input errors
+ Retry indefinitely without limit
+ Block UI during retry
+ Show technical stack traces
 
 ---
 

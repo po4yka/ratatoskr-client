@@ -91,20 +91,20 @@ Bite-Size Reader is a Kotlin Multiplatform Mobile (KMM) application that provide
 The project follows Uncle Bob's Clean Architecture with three main layers:
 
 ```
-┌─────────────────────────────────────────┐
-│           Presentation Layer            │
-│  (ViewModels, UI States, Screens)       │
-└─────────────────────────────────────────┘
+
+           Presentation Layer
+  (ViewModels, UI States, Screens)
+
                     ↓
-┌─────────────────────────────────────────┐
-│            Domain Layer                 │
-│  (Use Cases, Models, Repositories)      │
-└─────────────────────────────────────────┘
+
+            Domain Layer
+  (Use Cases, Models, Repositories)
+
                     ↓
-┌─────────────────────────────────────────┐
-│             Data Layer                  │
-│  (API, Database, Local Storage)         │
-└─────────────────────────────────────────┘
+
+             Data Layer
+  (API, Database, Local Storage)
+
 ```
 
 #### Layer Responsibilities
@@ -202,71 +202,71 @@ val presentationModule = module {
 
 ```
 bite-size-reader-client/
-├── shared/                  # Kotlin Multiplatform shared code
-│   ├── commonMain/          # Shared code (Android + iOS)
-│   ├── androidMain/         # Android-specific implementations
-│   ├── iosMain/             # iOS-specific implementations
-│   ├── desktopMain/         # Desktop stubs (Hot Reload only)
-│   └── commonTest/          # Shared tests
-├── composeApp/              # Android app
-│   ├── androidMain/         # Android UI (Compose)
-│   └── desktopMain/         # Desktop UI (Hot Reload only)
-├── iosApp/                  # iOS app
-│   ├── iosApp/              # iOS UI (SwiftUI)
-│   ├── ShareExtension/      # Share Extension
-│   └── RecentSummariesWidget/  # WidgetKit widget
-└── docs/                    # Documentation
+ shared/                  # Kotlin Multiplatform shared code
+    commonMain/          # Shared code (Android + iOS)
+    androidMain/         # Android-specific implementations
+    iosMain/             # iOS-specific implementations
+    desktopMain/         # Desktop stubs (Hot Reload only)
+    commonTest/          # Shared tests
+ composeApp/              # Android app
+    androidMain/         # Android UI (Compose)
+    desktopMain/         # Desktop UI (Hot Reload only)
+ iosApp/                  # iOS app
+    iosApp/              # iOS UI (SwiftUI)
+    ShareExtension/      # Share Extension
+    RecentSummariesWidget/  # WidgetKit widget
+ docs/                    # Documentation
 ```
 
 ### Shared Module (`shared/`)
 
 ```
 shared/src/commonMain/kotlin/
-├── data/                    # Data layer
-│   ├── local/              # Database, storage
-│   ├── remote/             # API client, DTOs
-│   └── repository/         # Repository implementations
-├── domain/                  # Domain layer
-│   ├── model/              # Business models
-│   ├── repository/         # Repository interfaces
-│   └── usecase/            # Business logic use cases
-├── presentation/            # Presentation layer
-│   ├── navigation/         # Decompose navigation
-│   ├── state/              # UI states
-│   └── viewmodel/          # ViewModels
-├── util/                    # Utilities
-│   ├── error/              # Error handling
-│   └── network/            # Network utilities
-└── di/                      # Dependency injection
+ data/                    # Data layer
+    local/              # Database, storage
+    remote/             # API client, DTOs
+    repository/         # Repository implementations
+ domain/                  # Domain layer
+    model/              # Business models
+    repository/         # Repository interfaces
+    usecase/            # Business logic use cases
+ presentation/            # Presentation layer
+    navigation/         # Decompose navigation
+    state/              # UI states
+    viewmodel/          # ViewModels
+ util/                    # Utilities
+    error/              # Error handling
+    network/            # Network utilities
+ di/                      # Dependency injection
 ```
 
 ### Android Module (`composeApp/`)
 
 ```
 composeApp/src/androidMain/kotlin/
-├── ui/                      # UI components
-│   ├── screens/            # Full screens
-│   ├── components/         # Reusable components
-│   └── theme/              # Material 3 theme
-├── widget/                  # Glance widgets
-├── worker/                  # WorkManager background tasks
-├── auth/                    # Telegram auth activity
-└── App.kt                   # Main app composable
+ ui/                      # UI components
+    screens/            # Full screens
+    components/         # Reusable components
+    theme/              # Material 3 theme
+ widget/                  # Glance widgets
+ worker/                  # WorkManager background tasks
+ auth/                    # Telegram auth activity
+ App.kt                   # Main app composable
 ```
 
 ### iOS Module (`iosApp/`)
 
 ```
 iosApp/
-├── Views/                   # SwiftUI views
-│   ├── Auth/               # Auth screens
-│   ├── Summary/            # Summary screens
-│   ├── Search/             # Search screen
-│   └── Components/         # Reusable components
-├── ViewModels/              # ViewModel wrappers
-├── Helpers/                 # Swift utilities
-├── ShareExtension/          # Share extension
-└── RecentSummariesWidget/   # Widget extension
+ Views/                   # SwiftUI views
+    Auth/               # Auth screens
+    Summary/            # Summary screens
+    Search/             # Search screen
+    Components/         # Reusable components
+ ViewModels/              # ViewModel wrappers
+ Helpers/                 # Swift utilities
+ ShareExtension/          # Share extension
+ RecentSummariesWidget/   # Widget extension
 ```
 
 ---
@@ -276,14 +276,14 @@ iosApp/
 ### Read Flow (Get Summaries)
 
 ```
-┌──────────┐      ┌───────────┐      ┌────────────┐      ┌──────────┐      ┌──────────┐
-│   UI     │──1──→│ ViewModel │──2──→│  UseCase   │──3──→│Repository│──4──→│ Database │
-│ (Compose)│      │           │      │            │      │          │      │          │
-└──────────┘      └───────────┘      └────────────┘      └──────────┘      └──────────┘
-     ↑                                                           │                 │
-     │                                                           5                 │
-     │                                                           ↓                 │
-     └───────────────────────────────────────────────────────  API ←──────────────┘
+
+   UI     1→ ViewModel 2→  UseCase   3→Repository4→ Database
+ (Compose)
+
+     ↑
+                                                                5
+                                                                ↓
+       API ←
                                                                  ↓
                                                               Server
 ```
@@ -301,14 +301,14 @@ iosApp/
 ### Write Flow (Submit URL)
 
 ```
-┌──────────┐      ┌───────────┐      ┌────────────┐      ┌──────────┐      ┌──────────┐
-│   UI     │──1──→│ ViewModel │──2──→│  UseCase   │──3──→│Repository│──4──→│   API    │
-└──────────┘      └───────────┘      └────────────┘      └──────────┘      └──────────┘
-     ↑                                                           │                 │
-     │                                                           5                 │
-     │                                                           ↓                 ↓
-     └───────────────────────────────────────────────────────Database          Server
-                                                                                   │
+
+   UI     1→ ViewModel 2→  UseCase   3→Repository4→   API
+
+     ↑
+                                                                5
+                                                                ↓                 ↓
+     Database          Server
+
                                                                                    6
                                                                                    ↓
                                                                               Processing
@@ -328,11 +328,11 @@ iosApp/
 
 ```
 Request → Repository → Check DB → Data exists?
-                           ├─ Yes → Return from DB
-                           └─ No  → Queue for sync
-                                    └─ Network available?
-                                        ├─ Yes → Fetch immediately
-                                        └─ No  → Wait for connection
+                            Yes → Return from DB
+                            No  → Queue for sync
+                                     Network available?
+                                         Yes → Fetch immediately
+                                         No  → Wait for connection
 ```
 
 **Key Principles**:
@@ -379,10 +379,32 @@ val viewModel: SummaryListViewModel = koinInject()
 
 #### Platform Features
 
-- **Share Intent**: Receives URLs from other apps
-- **WorkManager**: Background sync every 6 hours
-- **Glance Widgets**: Show recent summaries on home screen
-- **Encrypted Storage**: Token storage using EncryptedSharedPreferences
+#### Platform Features
+
+##### 1. Share Intent (Deep Integration)
+- **Purpose**: Allows users to share URLs from any app (Chrome, Twitter, etc.) directly to Bite-Size Reader.
+- **Implementation**:
+  - `AndroidManifest.xml` defines `intent-filter` for `ACTION_SEND` (text/plain).
+  - `MainActivity` extracts the shared URL using `intent.getStringExtra(Intent.EXTRA_TEXT)`.
+  - App navigation handles the deep link, pre-filling the "Submit URL" screen.
+- **Testing**: Open browser -> Share -> Select "Bite-Size Reader".
+
+##### 2. Background Sync (WorkManager)
+- **Purpose**: Keeps content fresh by fetching new summaries periodically.
+- **Configuration**:
+  - Frequency: Every 6 hours.
+  - Constraints: Requires **Network Connection** and **Not Low Battery**.
+  - Backoff Policy: Exponential backoff on failure.
+- **Components**:
+  - `SyncWorker`: Executes the `SyncDataUseCase`.
+  - `WorkManagerInitializer`: Schedules the periodic work on app launch.
+
+##### 3. Glance Widgets
+- **Purpose**: Display recent summaries on the Android home screen.
+- **Tech**: Jetpack Glance (Compose-like API for AppWidgets).
+
+##### 4. Security
+- **Token Storage**: Uses `EncryptedSharedPreferences` via `androidx.security.crypto`.
 
 ### iOS
 
