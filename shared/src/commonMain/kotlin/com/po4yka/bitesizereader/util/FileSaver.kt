@@ -8,9 +8,16 @@ expect class FileSaver {
      * @return The final path or URI as a string, or null if failed.
      */
     suspend fun saveToDownloads(sourcePath: String, fileName: String): String?
-    
+
     /**
      * Gets a safe internal path for temporary storage before export.
      */
     fun getInternalStoragePath(fileName: String): String
+
+    /**
+     * Imports a database file from a source path to the application's internal database directory.
+     * @param sourcePath Absolute path to the source database file (e.g. from temp storage).
+     * @param targetDbName The name of the database to overwrite (e.g. "bite_size_reader.db").
+     */
+    suspend fun importDatabase(sourcePath: String, targetDbName: String)
 }

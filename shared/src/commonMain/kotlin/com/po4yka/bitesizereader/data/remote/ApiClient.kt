@@ -27,6 +27,10 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
 class ApiClient(
     engine: io.ktor.client.engine.HttpClientEngine,
     private val baseUrl: String,
@@ -98,6 +102,7 @@ class ApiClient(
                                 null
                             }
                         } catch (e: Exception) {
+                            logger.error(e) { "Failed to refresh tokens" }
                             null
                         }
                     } else {

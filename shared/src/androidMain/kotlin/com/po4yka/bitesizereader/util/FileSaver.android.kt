@@ -41,4 +41,21 @@ actual class FileSaver(private val context: Context) {
     actual fun getInternalStoragePath(fileName: String): String {
         return File(context.filesDir, fileName).absolutePath
     }
+
+    actual suspend fun importDatabase(sourcePath: String, targetDbName: String) {
+        val sourceFile = File(sourcePath)
+        if (!sourceFile.exists()) throw Exception("Source file not found")
+
+        val targetFile = context.getDatabasePath(targetDbName)
+
+        // Ensure parent directory exists
+        targetFile.parentFile?.mkdirs()
+
+        // Copy and overwrite
+        sourceFile.copyTo(targetFile, overwrite = true)
+
+        // Also try to close/delete WAL files if they exist to prevent corruption/inconsistency
+        File(targetFile.path + "-wal").delete()
+        File(targetFile.path + "-shm").delete()
+    }
 }

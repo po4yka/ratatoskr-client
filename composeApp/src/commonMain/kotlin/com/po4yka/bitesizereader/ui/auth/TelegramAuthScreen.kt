@@ -13,10 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
 import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
 import com.po4yka.bitesizereader.util.UrlDecoder
 import com.po4yka.bitesizereader.util.config.AppConfig
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 @Composable
 fun TelegramAuthScreen(
@@ -89,6 +93,7 @@ private fun parseTelegramAuthData(url: String): AuthRequestDto? {
             hash = hash
         )
     } catch (e: Exception) {
+        logger.error(e) { "Failed to parse Telegram auth data from URL: $url" }
         return null
     }
 }

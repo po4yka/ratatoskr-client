@@ -20,6 +20,10 @@ import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import com.po4yka.bitesizereader.data.mappers.toAuthTokens
 
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val secureStorage: SecureStorage,
@@ -110,6 +114,7 @@ class AuthRepositoryImpl(
                     null
                 }
             } catch (e: Exception) {
+                logger.error(e) { "Failed to get current user" }
                 // Token might be expired or invalid, clear and force re-login
                 secureStorage.clearTokens()
                 _isAuthenticated.value = false
@@ -139,6 +144,7 @@ class AuthRepositoryImpl(
                     null
                 }
             } catch (e: Exception) {
+                logger.error(e) { "Failed to refresh auth tokens" }
                 // Refresh failed, force re-login
                 secureStorage.clearTokens()
                 _isAuthenticated.value = false

@@ -13,6 +13,10 @@ import kotlinx.coroutines.launch
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
 
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
 class SummaryListViewModel(
     private val getSummariesUseCase: GetSummariesUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase
@@ -29,6 +33,7 @@ class SummaryListViewModel(
             _state.value = _state.value.copy(isLoading = true, error = null)
             getSummariesUseCase(_state.value.page, 20, listOfNotNull(_state.value.selectedTag))
                 .catch { e ->
+                    logger.error(e) { "Failed to load summaries" }
                     _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
                 }
                 .collect { summaries ->

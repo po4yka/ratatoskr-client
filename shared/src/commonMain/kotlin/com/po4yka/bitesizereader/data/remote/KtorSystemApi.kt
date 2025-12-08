@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.data.remote
 
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.header
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.bodyAsChannel
@@ -8,18 +9,11 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readAvailable
-import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.timeout
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import io.ktor.client.plugins.HttpRequestTimeoutException
-import io.ktor.client.network.sockets.SocketTimeoutException
-import io.ktor.client.network.sockets.ConnectTimeoutException
-import io.ktor.utils.io.errors.IOException
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
-import kotlinx.io.files.sink
 
 @Suppress("unused")
 class KtorSystemApi(private val client: HttpClient) : SystemApi {
@@ -43,13 +37,14 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                         header(HttpHeaders.Range, "bytes=$existingSize-")
                     }
                     timeout {
-                        requestTimeoutMillis = HttpTimeout.INFINITE_TIMEOUT_MS
-                        socketTimeoutMillis = HttpTimeout.INFINITE_TIMEOUT_MS
+                        requestTimeoutMillis = Long.MAX_VALUE
+                        socketTimeoutMillis = Long.MAX_VALUE
                     }
                 }.execute { response ->
                     val contentLength = response.headers[HttpHeaders.ContentLength]?.toLongOrNull()
                     val isPartial = response.status == HttpStatusCode.PartialContent
-                    val totalSize = if (isPartial) existingSize + (contentLength ?: 0) else (contentLength ?: 0)
+                    val totalSize =
+                        if (isPartial) existingSize + (contentLength ?: 0) else (contentLength ?: 0)
 
                     // If server didn't accept range (sent 200 OK), reset existingSize to 0 (overwrite)
                     val startByte = if (isPartial) existingSize else 0L
@@ -78,7 +73,13 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                             emit(DownloadProgress(currentTotal, totalSize))
                         }
                         // If we got here, download is complete
-                        emit(DownloadProgress(startByte + bytesCopied, totalSize, isComplete = true))
+                        emit(
+                            DownloadProgress(
+                                startByte + bytesCopied,
+                                totalSize,
+                                isComplete = true
+                            )
+                        )
                         return@execute // Successfully finished
                     } finally {
                         sink.close()
@@ -88,10 +89,10 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                 return@flow
             } catch (e: Exception) {
                 // Check if it's a network/IO error we should retry
-                val isRetryable = e is io.ktor.utils.io.errors.IOException ||
-                                  e is io.ktor.client.plugins.HttpRequestTimeoutException ||
-                                  e is io.ktor.client.network.sockets.SocketTimeoutException ||
-                                  e is io.ktor.client.network.sockets.ConnectTimeoutException
+                val isRetryable = e is kotlinx.io.IOException || // Changed from io.ktor.utils.io.errors.IOException
+                        e is io.ktor.client.plugins.HttpRequestTimeoutException ||
+                        e is io.ktor.client.network.sockets.SocketTimeoutException ||
+                        e is io.ktor.client.network.sockets.ConnectTimeoutException
 
                 if (isRetryable && currentRetry < maxRetries) {
                     currentRetry++

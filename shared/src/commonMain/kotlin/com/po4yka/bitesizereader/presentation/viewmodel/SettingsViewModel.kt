@@ -3,6 +3,7 @@ package com.po4yka.bitesizereader.presentation.viewmodel
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
 import com.po4yka.bitesizereader.domain.usecase.DownloadDatabaseUseCase
+import com.po4yka.bitesizereader.domain.usecase.DownloadMode
 import com.po4yka.bitesizereader.domain.usecase.GetTelegramLinkStatusUseCase
 import com.po4yka.bitesizereader.domain.usecase.LinkTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.UnlinkTelegramUseCase
@@ -100,8 +101,10 @@ class SettingsViewModel(
         }
     }
 
-    fun downloadDatabase(outputFile: String) {
+    fun downloadDatabase(mode: DownloadMode) {
         if (_state.value.isDownloading) return
+
+        val fileName = "bite_size_reader_backup.sqlite"
 
         downloadJob?.cancel()
         downloadJob = viewModelScope.launch {
@@ -111,7 +114,7 @@ class SettingsViewModel(
                 downloadTotal = 0,
                 downloadError = null
             )
-            runCatching { downloadDatabaseUseCase(outputFile) }
+            runCatching { downloadDatabaseUseCase(fileName, mode) }
                 .onSuccess { flow ->
                     flow
                         .catch { throwable ->
@@ -127,6 +130,9 @@ class SettingsViewModel(
                             )
                             if (progress.isComplete) {
                                 _state.value = _state.value.copy(isDownloading = false)
+                                // If import, maybe show specific success message?
+                                // For now generic success is implied by end of loading.
+                                // Consider adding a "toast" or "message" to state.
                             }
                         }
                 }

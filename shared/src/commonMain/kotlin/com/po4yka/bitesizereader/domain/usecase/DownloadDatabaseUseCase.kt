@@ -8,22 +8,35 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 
+
+enum class DownloadMode {
+    BACKUP,
+    IMPORT
+}
+
 class DownloadDatabaseUseCase(
     private val repository: SystemRepository,
     private val fileSaver: FileSaver
 ) {
-    suspend operator fun invoke(fileName: String): Flow<DownloadProgress> {
+    suspend operator fun invoke(fileName: String, mode: DownloadMode): Flow<DownloadProgress> {
         val tempPath = fileSaver.getInternalStoragePath(fileName)
-        
+
         return repository.downloadDatabase(tempPath).transform { progress ->
             emit(progress)
             if (progress.isComplete) {
-                // Download finished, move to public directory
-                val finalPath = fileSaver.saveToDownloads(tempPath, fileName)
-                if (finalPath == null) {
-                    throw Exception("Failed to save file to Downloads directory")
+                // Download finished, proceed based on mode
+                when (mode) {
+                    DownloadMode.BACKUP -> {
+                        val finalPath = fileSaver.saveToDownloads(tempPath, fileName)
+                        if (finalPath == null) {
+                            throw Exception("Failed to save file to Downloads directory")
+                        }
+                    }
+                    DownloadMode.IMPORT -> {
+                        // TODO: Extract database name constant if possible, currently hardcoded to match Android/iOS driver
+                        fileSaver.importDatabase(tempPath, "bite_size_reader.db")
+                    }
                 }
-                // Optional: Emit a special "Saved" state or just rely on completion
             }
         }
     }
