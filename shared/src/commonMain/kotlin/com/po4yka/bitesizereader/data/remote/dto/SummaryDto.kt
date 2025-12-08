@@ -42,6 +42,7 @@ data class SummaryDetailDto(
     @SerialName("request_id") val requestId: Long,
     @SerialName("lang") val lang: String? = null,
     @SerialName("is_read") val isRead: Boolean = false,
+    @SerialName("is_favorited") val isFavorited: Boolean = false,
     @SerialName("version") val version: Int? = null,
     @SerialName("created_at") val createdAt: String,
     @SerialName("json_payload") val jsonPayload: JsonElement? = null

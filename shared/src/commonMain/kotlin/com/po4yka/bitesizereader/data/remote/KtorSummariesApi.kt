@@ -11,8 +11,10 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
 import io.ktor.http.contentType
 
 class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
@@ -36,6 +38,10 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
 
     override suspend fun getSummaryById(id: Long): ApiResponseDto<SummaryDetailDataDto> {
         return client.get("v1/summaries/$id").body()
+    }
+
+    override suspend fun toggleFavorite(id: Long): ApiResponseDto<SuccessResponse> {
+        return client.post("v1/summaries/$id/favorite").body()
     }
 
     override suspend fun updateSummary(id: Long, isRead: Boolean): ApiResponseDto<UpdateSummaryResponseDto> {
