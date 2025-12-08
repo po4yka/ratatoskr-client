@@ -43,6 +43,9 @@ okhttp = "5.3.2"
 # iOS Specific
 skie = "0.10.8"
 
+# gRPC / Wire
+wire = "5.1.0"
+
 # Testing
 junit = "4.13.2"
 turbine = "1.2.1"
@@ -123,6 +126,10 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 
+# Wire / gRPC
+wire-runtime = { module = "com.squareup.wire:wire-runtime", version.ref = "wire" }
+wire-grpc-client = { module = "com.squareup.wire:wire-grpc-client", version.ref = "wire" }
+
 # Testing
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-testExt-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-testExt" }
@@ -149,6 +156,9 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 # SKIE (Swift/Kotlin Interop)
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
+
+# Wire
+wire = { id = "com.squareup.wire", version.ref = "wire" }
 
 # Code Coverage
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
