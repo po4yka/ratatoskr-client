@@ -8,6 +8,7 @@ import com.po4yka.bitesizereader.data.remote.KtorSearchApi
 import com.po4yka.bitesizereader.data.remote.KtorSummariesApi
 import com.po4yka.bitesizereader.data.remote.KtorSyncApi
 import com.po4yka.bitesizereader.data.remote.KtorSystemApi
+import com.po4yka.bitesizereader.data.remote.KtorUserApi
 import com.po4yka.bitesizereader.data.remote.RequestsApi
 import com.po4yka.bitesizereader.data.remote.SearchApi
 import com.po4yka.bitesizereader.data.remote.SummariesApi

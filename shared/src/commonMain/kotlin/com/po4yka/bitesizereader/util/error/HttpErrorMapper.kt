@@ -11,35 +11,69 @@ import io.ktor.http.HttpStatusCode
 fun HttpStatusCode.toAppError(response: HttpResponse? = null): AppError {
     return when (value) {
         // 4xx Client Errors
-        400 -> AppError.ValidationError("Bad request. Please check your input.")
-        401 -> AppError.AuthError(message = "Unauthorized. Please login again.")
-        403 -> AppError.AuthError(message = "Access forbidden. You don't have permission for this action.")
-        404 -> AppError.ServerError(code = 404, message = "Resource not found.")
-        408 -> AppError.NetworkError(message = "Request timeout. Please try again.")
-        429 -> AppError.ServerError(code = 429, message = "Too many requests. Please try again later.")
+        400 -> AppError.ValidationError(
+            messageKey = "error.http.400",
+            fallbackMessage = "Bad request. Please check your input."
+        )
+        401 -> AppError.AuthError(
+            messageKey = "error.auth.unauthorized",
+            fallbackMessage = "Unauthorized. Please login again."
+        )
+        403 -> AppError.AuthError(
+            messageKey = "error.auth.forbidden",
+            fallbackMessage = "Access forbidden. You don't have permission for this action."
+        )
+        404 -> AppError.ServerError(
+            code = 404,
+            messageKey = "error.http.404",
+            fallbackMessage = "Resource not found."
+        )
+        408 -> AppError.TimeoutError(
+            messageKey = "error.network.timeout",
+            fallbackMessage = "Request timed out. Please try again."
+        )
+        429 -> AppError.ServerError(
+            code = 429,
+            messageKey = "error.http.429",
+            fallbackMessage = "Too many requests. Please try again later."
+        )
 
         // 5xx Server Errors
-        500 -> AppError.ServerError(code = 500, message = "Internal server error.")
+        500 -> AppError.ServerError(
+            code = 500,
+            messageKey = "error.http.500",
+            fallbackMessage = "Internal server error."
+        )
         502 -> AppError.ServerError(
-            message = "Bad gateway. The server is having trouble processing your request.",
-            code = 502
+            code = 502,
+            messageKey = "error.http.502",
+            fallbackMessage = "Bad gateway. The server is having trouble processing your request."
         )
         503 -> AppError.ServerError(
-            message = "Service unavailable. The server is temporarily down for maintenance.",
-            code = 503
+            code = 503,
+            messageKey = "error.http.503",
+            fallbackMessage = "Service unavailable. The server is temporarily down for maintenance."
         )
         504 -> AppError.ServerError(
-            message = "Gateway timeout. The server took too long to respond.",
-            code = 504
+            code = 504,
+            messageKey = "error.http.504",
+            fallbackMessage = "Gateway timeout. The server took too long to respond."
         )
 
         else -> {
-            if (value in 400..499) {
-                AppError.ValidationError("Request failed with code $value")
-            } else if (value in 500..599) {
-                AppError.ServerError(code = value, message = "Server error $value")
-            } else {
-                AppError.UnknownError("Unexpected response code: $value")
+            when {
+                value in 400..499 -> AppError.ValidationError(
+                    messageKey = "error.http.${value}",
+                    fallbackMessage = "Request failed with code $value."
+                )
+                value in 500..599 -> AppError.ServerError(
+                    code = value,
+                    messageKey = "error.http.${value}",
+                    fallbackMessage = "Server error $value."
+                )
+                else -> AppError.UnknownError(
+                    fallbackMessage = "Unexpected response code: $value"
+                )
             }
         }
     }
