@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.skie)
+    alias(libs.plugins.wire)
     alias(libs.plugins.kover)
 }
 
@@ -51,6 +52,10 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.auth)
             implementation(libs.ktor.client.encoding)
+
+            // Wire gRPC
+            implementation(libs.wire.runtime)
+            implementation(libs.wire.grpc.client)
 
             // SQLDelight
             implementation(libs.sqldelight.runtime)
@@ -147,6 +152,14 @@ sqldelight {
             packageName.set("com.po4yka.bitesizereader.database")
             srcDirs.setFrom("src/commonMain/sqldelight")
         }
+    }
+}
+
+wire {
+    kotlin {
+    }
+    sourcePath {
+        srcDir("src/commonMain/proto")
     }
 }
 

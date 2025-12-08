@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package processing.v1;
+
+option java_package = "com.po4yka.bitesizereader.grpc.processing";
+option java_multiple_files = true;
+
+service ProcessingService {
+  // Submits a URL for processing and returns a server-side stream of ProcessingUpdate messages.
+  rpc SubmitUrl (SubmitUrlRequest) returns (stream ProcessingUpdate);
+}
+
+message SubmitUrlRequest {
+  string url = 1;
+  string language = 2; // Optional: "en", "ru", "auto"
+  bool force_refresh = 3;
+}
+
+message ProcessingUpdate {
+  int64 request_id = 1;
+  ProcessingStatus status = 2;
+  ProcessingStage stage = 3;
+  string message = 4;
+  float progress = 5;
+  int64 summary_id = 6;
+  string error = 7;
+}
+
+enum ProcessingStatus {
+  PROCESSING_STATUS_UNSPECIFIED = 0;
+  PROCESSING_STATUS_PENDING = 1;
+  PROCESSING_STATUS_PROCESSING = 2;
+  PROCESSING_STATUS_COMPLETED = 3;
+  PROCESSING_STATUS_FAILED = 4;
+}
+
+enum ProcessingStage {
+  PROCESSING_STAGE_UNSPECIFIED = 0;
+  PROCESSING_STAGE_QUEUED = 1;
+  PROCESSING_STAGE_EXTRACTION = 2;
+  PROCESSING_STAGE_SUMMARIZATION = 3;
+  PROCESSING_STAGE_SAVING = 4;
+  PROCESSING_STAGE_DONE = 5;
+}
