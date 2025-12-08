@@ -15,19 +15,19 @@ class KtorUserApi(
     private val client: HttpClient
 ) : UserApi {
     override suspend fun getTelegramLinkStatus(): ApiResponseDto<TelegramLinkStatusDto> {
-        return client.get("me/telegram").body()
+        return client.get("v1/me/telegram").body()
     }
 
     override suspend fun unlinkTelegram(): ApiResponseDto<TelegramLinkStatusDto> {
-        return client.delete("me/telegram").body()
+        return client.delete("v1/me/telegram").body()
     }
 
     override suspend fun beginTelegramLink(): ApiResponseDto<TelegramLinkBeginResponseDto> {
-        return client.post("me/telegram/link").body()
+        return client.post("v1/me/telegram/link").body()
     }
 
     override suspend fun completeTelegramLink(request: TelegramLinkCompleteRequestDto): ApiResponseDto<TelegramLinkStatusDto> {
-        return client.post("me/telegram/complete") {
+        return client.post("v1/me/telegram/complete") {
             setBody(request)
         }.body()
     }

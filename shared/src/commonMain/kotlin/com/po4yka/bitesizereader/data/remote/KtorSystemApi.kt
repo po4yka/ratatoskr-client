@@ -28,7 +28,7 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
         }
 
         // Using prepareGet to handle the stream manually
-        client.prepareGet("system/db-dump") {
+        client.prepareGet("v1/system/db-dump") {
             if (existingSize > 0) {
                 header(HttpHeaders.Range, "bytes=$existingSize-")
             }

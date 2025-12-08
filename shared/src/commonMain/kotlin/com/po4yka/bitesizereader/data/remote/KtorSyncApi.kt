@@ -9,7 +9,7 @@ import io.ktor.client.request.parameter
 
 class KtorSyncApi(private val client: HttpClient) : SyncApi {
     override suspend fun sync(sinceTimestamp: String?): ApiResponseDto<SyncDeltaResponseDto> {
-        return client.get("sync/delta") {
+        return client.get("v1/sync/delta") {
             sinceTimestamp?.let { parameter("since", it) }
         }.body()
     }

@@ -25,7 +25,7 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
     ): ApiResponseDto<SummaryListDataDto> {
         // Backend uses limit/offset; translate page to offset.
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
-        return client.get("summaries") {
+        return client.get("v1/summaries") {
             parameter("limit", pageSize)
             parameter("offset", offset)
             if (isRead != null) parameter("is_read", isRead)
@@ -35,17 +35,17 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
     }
 
     override suspend fun getSummaryById(id: Long): ApiResponseDto<SummaryDetailDataDto> {
-        return client.get("summaries/$id").body()
+        return client.get("v1/summaries/$id").body()
     }
 
     override suspend fun updateSummary(id: Long, isRead: Boolean): ApiResponseDto<UpdateSummaryResponseDto> {
-        return client.patch("summaries/$id") {
+        return client.patch("v1/summaries/$id") {
             contentType(ContentType.Application.Json)
             setBody(UpdateSummaryRequestDto(isRead = isRead))
         }.body()
     }
 
     override suspend fun deleteSummary(id: Long) {
-        client.delete("summaries/$id")
+        client.delete("v1/summaries/$id")
     }
 }
