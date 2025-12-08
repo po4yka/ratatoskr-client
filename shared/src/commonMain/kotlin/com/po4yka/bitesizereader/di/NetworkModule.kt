@@ -38,4 +38,18 @@ val networkModule = module {
     singleOf(::KtorSearchApi) bind SearchApi::class
     singleOf(::KtorSyncApi) bind SyncApi::class
     singleOf(::KtorSystemApi) bind SystemApi::class
+
+    single {
+        // Assume gRPC is on the same host but port 50051 for now if not in config
+        // Or if using Envoy/Traefik it might be same port.
+        // For local dev, often 50051.
+        com.squareup.wire.GrpcClient.Builder()
+            // hardcoded for now or derived
+            .baseUrl("http://10.0.2.2:50051") // Android Emulator localhost
+            .build()
+    }
+
+    single<com.po4yka.bitesizereader.domain.ProcessingService> {
+        com.po4yka.bitesizereader.data.remote.WireProcessingService(get<com.squareup.wire.GrpcClient>())
+    }
 }

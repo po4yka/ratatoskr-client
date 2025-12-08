@@ -29,7 +29,7 @@ val utilityModule = module {
 val viewModelModule = module {
     factory { SummaryListViewModel(get(), get()) }
     factory { (summaryId: String) -> SummaryDetailViewModel(get(), get(), get()) }
-    factory { SubmitURLViewModel(get(), get()) }
+    factory { SubmitURLViewModel(get()) }
     factory { SearchViewModel(get(), get()) }
     single { AuthViewModel(get(), get(), get(), get()) }
     factory { SettingsViewModel(get(), get(), get(), get()) }

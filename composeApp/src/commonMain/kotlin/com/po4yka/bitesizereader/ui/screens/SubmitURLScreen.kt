@@ -3,6 +3,7 @@ package com.po4yka.bitesizereader.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
@@ -59,11 +60,14 @@ fun SubmitURLScreen(
                 isSubmitting = state.isLoading,
             )
 
-            if (state.status != RequestStatus.PENDING || state.isLoading) {
+            if (state.isLoading || state.status != RequestStatus.PENDING) {
                 ProcessingStatus(
                     status = state.status,
-                    onCancel = { /* no-op */ },
-                    onSubmitAnother = { /* no-op for now */ },
+                    stage = state.stage,
+                    message = state.message,
+                    progress = state.progress,
+                    onCancel = { /* no-op for now */ },
+                    onSubmitAnother = { viewModel.onUrlChanged("") },
                 )
             }
         }
@@ -166,7 +170,10 @@ private fun URLInputForm(
 
 @Composable
 private fun ProcessingStatus(
-    status: RequestStatus?,
+    status: RequestStatus,
+    stage: ProcessingStage,
+    message: String?,
+    progress: Float,
     onCancel: () -> Unit,
     onSubmitAnother: () -> Unit,
 ) {
@@ -174,45 +181,80 @@ private fun ProcessingStatus(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        when (status) {
-            RequestStatus.COMPLETED -> {
-                Text(
-                    text = "Summary Ready!",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-            RequestStatus.FAILED -> {
-                Text(
-                    text = "Processing Failed",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-            else -> {
-                Text(
-                    text = "Processing Your Article",
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-            }
+        val title = when (status) {
+             RequestStatus.COMPLETED -> "Summary Ready!"
+             RequestStatus.FAILED -> "Processing Failed"
+             else -> "Processing Your Article"
         }
 
-        status?.let { ProgressIndicatorWithStages(status = it) }
+        val titleColor = when (status) {
+             RequestStatus.COMPLETED -> MaterialTheme.colorScheme.primary
+             RequestStatus.FAILED -> MaterialTheme.colorScheme.error
+             else -> MaterialTheme.colorScheme.onSurface
+        }
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineSmall,
+            color = titleColor,
+        )
+
+        // Show detailed status if running or failed
+        if (status != RequestStatus.COMPLETED) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier.fillMaxWidth().height(8.dp),
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stage.name.lowercase().replaceFirstChar { it.uppercase() },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    Text(
+                        text = "${(progress * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+
+                if (!message.isNullOrBlank()) {
+                     Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+             // Completed state - simpler progress or success indicator
+             LinearProgressIndicator(
+                progress = { 1f },
+                modifier = Modifier.fillMaxWidth().height(8.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
+             Text(
+                text = "Processing Complete",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Action Buttons
         when (status) {
             RequestStatus.COMPLETED -> {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                OutlinedButton(
+                    onClick = onSubmitAnother,
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    OutlinedButton(
-                        onClick = onSubmitAnother,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text("Submit Another URL")
-                    }
+                    Text("Submit Another URL")
                 }
             }
             RequestStatus.FAILED -> {
@@ -223,14 +265,16 @@ private fun ProcessingStatus(
                     Text("Try Again")
                 }
             }
-            else -> {
+            RequestStatus.PROCESSING, RequestStatus.PENDING -> {
                 OutlinedButton(
                     onClick = onCancel,
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = true // TODO: Implement cancel logic in VM
                 ) {
                     Text("Cancel")
                 }
             }
+            else -> {}
         }
     }
 }
