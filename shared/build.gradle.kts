@@ -86,7 +86,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
 
             // Android Security
-            implementation("io.insert-koin:koin-android:4.0.0")
+            implementation("io.insert-koin:koin-android:4.1.1")
             implementation(libs.androidx.security.crypto)
 
             // Logging - SLF4J backend for Android
