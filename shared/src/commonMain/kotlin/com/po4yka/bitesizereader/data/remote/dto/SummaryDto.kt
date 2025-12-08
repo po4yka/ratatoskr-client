@@ -22,7 +22,8 @@ data class SourceInfoDto(
     @SerialName("domain") val domain: String? = null,
     @SerialName("author") val author: String? = null,
     @SerialName("published_at") val publishedAt: String? = null,
-    @SerialName("http_status") val httpStatus: Int? = null
+    @SerialName("http_status") val httpStatus: Int? = null,
+    @SerialName("image_url") val imageUrl: String? = null
 )
 
 @Serializable

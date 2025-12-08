@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.DuplicateUrlCheckResponseEnvelope
 import com.po4yka.bitesizereader.data.remote.dto.RelatedSummariesResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.SearchResponseDataDto
 import com.po4yka.bitesizereader.data.remote.dto.TrendingTopicsResponseDto
@@ -10,6 +11,13 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 
 class KtorSearchApi(private val client: HttpClient) : SearchApi {
+    override suspend fun checkDuplicateUrl(url: String): ApiResponseDto<DuplicateUrlCheckResponseEnvelope> {
+        return client.get("v1/urls/check-duplicate") {
+            parameter("url", url)
+            parameter("include_summary", true)
+        }.body()
+    }
+
     override suspend fun search(query: String, page: Int, pageSize: Int): ApiResponseDto<SearchResponseDataDto> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
         return client.get("v1/search") {
