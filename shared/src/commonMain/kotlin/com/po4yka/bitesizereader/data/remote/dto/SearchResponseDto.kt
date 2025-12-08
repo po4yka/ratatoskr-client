@@ -25,3 +25,30 @@ data class SearchResponseDataDto(
     @SerialName("pagination") val pagination: PaginationDto,
     @SerialName("query") val query: String
 )
+
+@Serializable
+data class TrendingTopicDto(
+    @SerialName("tag") val tag: String,
+    @SerialName("count") val count: Int
+)
+
+@Serializable
+data class TrendingTopicsResponseDto(
+    @SerialName("topics") val topics: List<TrendingTopicDto>,
+    @SerialName("total") val total: Int
+)
+
+@Serializable
+data class RelatedSummaryDto(
+    @SerialName("summary_id") val summaryId: Long,
+    @SerialName("title") val title: String,
+    @SerialName("tldr") val tldr: String,
+    @SerialName("created_at") val createdAt: String
+)
+
+@Serializable
+data class RelatedSummariesResponseDto(
+    @SerialName("tag") val tag: String,
+    @SerialName("summaries") val summaries: List<RelatedSummaryDto>,
+    @SerialName("pagination") val pagination: PaginationDto
+)
