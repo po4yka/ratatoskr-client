@@ -195,7 +195,7 @@ jobs:
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request' && hashFiles('shared/build/reports/kover/htmlDebug/index.html') != ''
-        uses: madrapps/jacoco-report@v1.6.1
+        uses: madrapps/jacoco-report@v1.7.2
         with:
           paths: shared/build/reports/kover/htmlDebug/index.html
           token: ${{ secrets.GITHUB_TOKEN }}
