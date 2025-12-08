@@ -57,10 +57,10 @@ Bite-Size Reader uses a comprehensive testing strategy with multiple test types:
 
 | Layer | Target | Current | Priority |
 |-------|--------|---------|----------|
-| Domain (Use Cases) | 90% | 85% | ✅ Good |
+| Domain (Use Cases) | 90% | 85% |  Good |
 | Data (Repositories) | 80% | 70% | 🟡 Needs improvement |
-| Presentation (ViewModels) | 80% | 60% | 🔴 Priority |
-| UI (Composables/SwiftUI) | 50% | 20% | 🔴 Priority |
+| Presentation (ViewModels) | 80% | 60% |  Priority |
+| UI (Composables/SwiftUI) | 50% | 20% |  Priority |
 
 ---
 
@@ -283,7 +283,7 @@ fun `state flow emits multiple values`() = runTest {
 
 ## Best Practices
 
-### DO ✅
+### DO
 
 1. **Follow AAA Pattern** (Arrange, Act, Assert)
 2. **Use Descriptive Test Names**
@@ -291,7 +291,7 @@ fun `state flow emits multiple values`() = runTest {
 4. **Use Test Factories**
 5. **Clean Up Resources**
 
-### DON'T ❌
+### DON'T
 
 1. **Don't Test Implementation Details**
 2. **Don't Use Real Network/Database in Unit Tests**

@@ -8,9 +8,9 @@ Compose Hot Reload allows you to make changes to your Compose UI code and see th
 
 ## Requirements
 
-- **Kotlin**: 2.1.20 or higher ✅ (project uses 2.2.10)
-- **Compose Multiplatform**: 1.8.2 or higher ✅ (project uses 1.9.1)
-- **JVM Target**: Desktop or JVM target in your multiplatform project ✅
+- **Kotlin**: 2.1.20 or higher  (project uses 2.2.10)
+- **Compose Multiplatform**: 1.8.2 or higher  (project uses 1.9.1)
+- **JVM Target**: Desktop or JVM target in your multiplatform project
 - **JetBrains Runtime**: Downloaded automatically via Foojay resolver
 
 ## Configuration
@@ -57,14 +57,14 @@ The project is already configured with:
 
 ## What Can Be Hot Reloaded?
 
-✅ **Supported:**
+ **Supported:**
 - Compose UI functions (`@Composable` functions)
 - UI layout changes
 - Color, text, and style modifications
 - Conditional logic in UI code
 - State modifications in composables
 
-❌ **Not Supported (requires restart):**
+ **Not Supported (requires restart):**
 - Changes to ViewModel logic
 - Changes to repository/data layer
 - New dependencies
@@ -90,7 +90,7 @@ For hot reload development, the project includes a **desktop target** with stub 
 
 ### Development Notes
 
-⚠️ **Important**: The desktop target is primarily for **UI development with hot reload**. Desktop implementations are stubs that:
+ **Important**: The desktop target is primarily for **UI development with hot reload**. Desktop implementations are stubs that:
 - Store data in memory (lost on restart)
 - Don't provide real secure storage
 - Simulate network connectivity

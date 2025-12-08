@@ -46,11 +46,11 @@ open iosApp/iosApp.xcodeproj
 
 ```
 bite-size-reader-client/
-├── shared/              # Kotlin Multiplatform (90% code sharing)
-├── composeApp/          # Android app (Jetpack Compose)
-├── iosApp/              # iOS app (SwiftUI)
-├── gradle/              # Gradle configuration
-└── docs/                # Documentation
+ shared/              # Kotlin Multiplatform (90% code sharing)
+ composeApp/          # Android app (Jetpack Compose)
+ iosApp/              # iOS app (SwiftUI)
+ gradle/              # Gradle configuration
+ docs/                # Documentation
 ```
 
 ---

@@ -1,168 +1,95 @@
-# Phase 1 Setup Complete ✅
+# Phase 8 Setup Complete
 
-This document summarizes the Phase 1 setup that has been completed.
+This document summarizes the setup and implementation progress up to Phase 8.
 
 ## Completed Tasks
 
-### 1. Gradle & Build Configuration ✅
+### 1. Gradle & Build Configuration
 
-- ✅ Updated `gradle/libs.versions.toml` with all dependencies:
-  - Ktor Client 3.0.2
-  - SQLDelight 2.0.2
-  - Decompose 3.2.0-beta02
-  - Store 5.1.0
-  - Koin 3.6.0-Beta4
-  - kotlinx.serialization 1.7.3
-  - kotlinx-coroutines 1.9.0
-  - kotlinx-datetime 0.6.1
-  - Kermit 2.0.4
-  - SKIE 0.9.3
-  - And all supporting libraries
+-  Updated `gradle/libs.versions.toml` with all dependencies (Ktor 3.0.2, SQLDelight 2.0.2, Decompose 3.2.0, Koin 3.6.0, etc.)
+-  Configured `shared/build.gradle.kts` (SKIE, SQLDelight, Serialization)
+-  Configured `composeApp/build.gradle.kts` (Compose, WorkManager, Coil)
+-  ProGuard rules configured
 
-- ✅ Configured `shared/build.gradle.kts`:
-  - Added kotlinx.serialization plugin
-  - Added SQLDelight plugin
-  - Added SKIE plugin for iOS interop
-  - Configured commonMain dependencies (Ktor, SQLDelight, Decompose, Store, Koin, etc.)
-  - Configured androidMain dependencies (OkHttp engine, Android SQLDelight driver, Security)
-  - Configured iosMain dependencies (Darwin engine, Native SQLDelight driver)
-  - Configured SQLDelight database with package name
-  - Configured SKIE for SwiftUI observing
+### 2. Architecture & Modules
 
-- ✅ Configured `composeApp/build.gradle.kts`:
-  - Added kotlinx.serialization plugin
-  - Added Compose dependencies
-  - Added Koin Android extensions
-  - Added Coil image loading
-  - Added WorkManager for background sync
-  - Added Material 3 icons
-  - Configured BuildConfig with local.properties integration
-  - Added debug/release build types with ProGuard configuration
+-  **Data Layer**: API Client, SQLDelight Database, Repositories, Mappers complete.
+-  **Domain Layer**: Models, Use Cases (Sync, Auth, Summary), Repository Interfaces complete.
+-  **Presentation Layer**: ViewModels (MVI), Decompose Navigation, UI State models complete.
+-  **Dependency Injection**: Koin modules for all layers and platforms.
 
-- ✅ Created ProGuard rules (`composeApp/proguard-rules.pro`):
-  - Keep rules for kotlinx.serialization
-  - Keep rules for Ktor, SQLDelight, Koin, Decompose
-  - Keep model classes
-  - Obfuscation rules
+### 3. UI Implementation
 
-### 2. Project Configuration ✅
+-  **Android**: Jetpack Compose implementation complete (Material 3, all screens).
+-  **iOS**: SwiftUI implementation complete (all screens, native navigation).
 
-- ✅ Created comprehensive `.gitignore`:
-  - Excludes local.properties (secrets)
-  - Excludes IDE files
-  - Excludes build outputs
-  - Excludes Android, iOS, and Kotlin-specific files
-  - Excludes database files
+### 4. Platform Features
 
-- ✅ Created `local.properties.example`:
-  - Template for backend API configuration
-  - Template for authentication settings
-  - Template for debug/logging settings
-  - Comprehensive documentation and notes
+-  **Android**: Share Intent, WorkManager Sync, Glance Widgets.
+-  **iOS**: Share Extension, Background Tasks, WidgetKit, Deep Linking.
 
-### 3. Package Structure ✅
+### 5. Authentication
 
-- ✅ Created complete package structure in `shared/src/commonMain/kotlin/com/po4yka/bitesizereader/`:
-  - `data/local/` - SQLDelight database (future)
-  - `data/remote/dto/` - API response/request models (future)
-  - `data/remote/` - Ktor API clients (future)
-  - `data/repository/` - Repository implementations (future)
-  - `data/mappers/` - DTO ↔ Domain mappers (future)
-  - `domain/model/` - Domain entities (future)
-  - `domain/repository/` - Repository interfaces (future)
-  - `domain/usecase/` - Use cases (future)
-  - `presentation/navigation/` - Decompose navigation (future)
-  - `presentation/viewmodel/` - Shared ViewModels (future)
-  - `presentation/state/` - UI state models (future)
-  - `di/` - Koin modules (future)
-  - `util/` - Extensions and helpers (future)
+-  Telegram OAuth integrated.
+-  JWT Token management (Receive/Refresh/Store).
+-  Secure Storage (EncryptedSharedPreferences / Keychain).
 
-- ✅ Created SQLDelight directory: `shared/src/commonMain/sqldelight/com/po4yka/bitesizereader/database/`
+## iOS Xcode Setup
 
-### 4. iOS Configuration ✅
+To fully enable iOS platform features (Share Extension, Background Sync), Xcode configuration is required:
 
-- ✅ Created `iosApp/Podfile`:
-  - Platform iOS 15.0+
-  - References shared Kotlin framework
-  - Post-install configuration for build settings
-  - Code signing configuration
-  - Architecture support (arm64)
+### 1. App Groups
+- **Capability**: Enable "App Groups" for both `iosApp` and `ShareExtension` targets.
+- **Identifier**: `group.com.po4yka.bitesizereader` (Must match in code).
 
-## Next Steps (Phase 2)
+### 2. Background Modes
+- **Capability**: Enable "Background Modes" for `iosApp` target.
+- **Modes**: Check "Background fetch" and "Background processing".
+- **Info.plist**: Add `com.po4yka.bitesizereader.sync` to `BGTaskSchedulerPermittedIdentifiers`.
 
-The following tasks are ready to begin in Phase 2:
-
-1. **Domain Models** - Create domain entities in `domain/model/`
-2. **API DTOs** - Create data transfer objects in `data/remote/dto/`
-3. **SQLDelight Schema** - Create database schema in `.sq` files
-4. **Ktor API Client** - Implement HTTP client configuration
-5. **Data Mappers** - Create DTO ↔ Domain mappers
+### 3. Share Extension Target
+- Ensure `ShareExtension` target exists and is embedded in the main app.
+- Ensure `Info.plist` contains suitable `NSExtensionActivationRule` (WebURL, WebPage).
 
 ## Quick Start
 
 ### Prerequisites
 
-Before starting development:
-
 1. **Copy configuration template**:
    ```bash
    cp local.properties.example local.properties
    ```
-
-2. **Edit `local.properties`** with your settings:
-   - Set `api.base.url` (https://bitsizereaderapi.po4yka.com or http://10.0.2.2:8000 for local dev)
-   - Set `telegram.bot.token` (from @BotFather)
-   - Configure other settings as needed
-
-3. **Start backend service** (required):
-   ```bash
-   cd ../bite-size-reader
-   docker-compose up -d
-   curl http://localhost:8000/health  # Verify
-   ```
+2. **Edit `local.properties`** with your settings (`api.base.url`, `telegram.bot.token`).
+3. **Start backend service** (see backend repo).
 
 ### Build & Run
 
 #### Android
-
 ```bash
-# Sync dependencies
-./gradlew build
-
-# Run on emulator/device
 ./gradlew :composeApp:installDebug
 ```
 
 #### iOS
-
 ```bash
-# Install CocoaPods dependencies
-cd iosApp
-pod install
-cd ..
-
-# Generate Kotlin framework
+cd iosApp && pod install && cd ..
 ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
-
-# Open in Xcode
 open iosApp/iosApp.xcworkspace
 ```
 
 ## Project Status
 
-- **Phase 1**: ✅ Complete (Project Setup & Foundation)
-- **Phase 2**: 🔄 Ready to Start (Data Layer)
-- **Overall Progress**: 7/280 tasks (2.5%)
+- **Phase 1-8**:  Complete (Setup -> Auth)
+- **Current Focus**: Phase 9 (Testing) & Phase 10 (Polish)
+- **Overall Progress**: ~90% of MVP
 
 ## Documentation
 
-- **README.md** - Comprehensive project overview
-- **TODO.md** - Detailed implementation checklist
-- **ROADMAP.md** - Long-term development plan
-- **docs/BACKEND_INTEGRATION.md** - Backend API integration guide
-- **docs/SYNC_STRATEGY.md** - Offline-first sync implementation
-- **docs/SECURITY.md** - Security best practices
-- **docs/DEVELOPMENT.md** - Development environment setup
+- **README.md** - Project overview
+- **docs/ARCHITECTURE.md** - Architecture details
+- **ROADMAP.md** - Development plan
+- **docs/IOS_FEATURES.md** - iOS specific features
+- **docs/CICD.md** - CI/CD setup
+
 
 ---
 

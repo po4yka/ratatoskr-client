@@ -1,6 +1,6 @@
 # iOS Share Extension & Background Tasks - Xcode Setup Guide
 
-**Status**: All code files created ✅ | Requires Xcode project configuration
+**Status**: All code files created  | Requires Xcode project configuration
 
 This guide walks you through configuring the Xcode project to enable Share Extension and Background Tasks.
 
@@ -10,7 +10,7 @@ This guide walks you through configuring the Xcode project to enable Share Exten
 
 All Swift code files have been created and are ready to use:
 
-### Created Files ✅
+### Created Files
 
 1. **Share Extension**:
    - `iosApp/ShareExtension/ShareViewController.swift` (76 LOC)
@@ -115,8 +115,8 @@ Both targets should now show `group.com.po4yka.bitesizereader` in their App Grou
 3. Click **+ Capability**
 4. Select **Background Modes**
 5. Enable these checkboxes:
-   - ☑️ **Background fetch**
-   - ☑️ **Background processing**
+   -  **Background fetch**
+   -  **Background processing**
 
 ### Step 2: Register Background Task Identifier
 
@@ -188,7 +188,7 @@ Share Extension and Background Tasks work best on real devices, not simulator.
 1. Connect an iOS device
 2. Select device in Xcode
 3. Select **iosApp** scheme
-4. Click **Run** (▶️)
+4. Click **Run** ()
 5. App should install and launch
 
 ### Step 3: Test Share Extension
@@ -201,7 +201,7 @@ Share Extension and Background Tasks work best on real devices, not simulator.
 6. Tap **Done**
 7. Now tap **Share** again
 8. Tap **ShareExtension**
-9. App should open with URL prefilled! ✅
+9. App should open with URL prefilled!
 
 ---
 
@@ -220,7 +220,7 @@ Background tasks only run on real devices (not simulator).
 e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.po4yka.bitesizereader.sync"]
 ```
 
-5. Resume execution (▶️)
+5. Resume execution ()
 6. Check console output for:
    - `[BackgroundTasks] Background sync task started`
    - `[BackgroundTasks] Background sync completed successfully`
@@ -310,22 +310,22 @@ Before considering setup complete, verify:
 
 ```
 iosApp/
-├── iosApp/
-│   ├── iOSApp.swift (✅ UPDATED - Background tasks + shared URL)
-│   ├── ContentView.swift
-│   ├── Info.plist (✅ UPDATED - BGTaskSchedulerPermittedIdentifiers)
-│   ├── Views/
-│   ├── ViewModels/
-│   └── ...
-│
-├── ShareExtension/ (✅ NEW TARGET)
-│   ├── ShareViewController.swift (✅ CREATED)
-│   ├── Info.plist (✅ CREATED)
-│   └── Base.lproj/
-│       └── MainInterface.storyboard (✅ CREATED)
-│
-└── iosApp.xcodeproj/ (✅ MODIFIED in Xcode)
-    └── project.pbxproj (targets, capabilities, etc.)
+ iosApp/
+    iOSApp.swift ( UPDATED - Background tasks + shared URL)
+    ContentView.swift
+    Info.plist ( UPDATED - BGTaskSchedulerPermittedIdentifiers)
+    Views/
+    ViewModels/
+    ...
+
+ ShareExtension/ ( NEW TARGET)
+    ShareViewController.swift ( CREATED)
+    Info.plist ( CREATED)
+    Base.lproj/
+        MainInterface.storyboard ( CREATED)
+
+ iosApp.xcodeproj/ ( MODIFIED in Xcode)
+     project.pbxproj (targets, capabilities, etc.)
 ```
 
 ---
@@ -353,10 +353,10 @@ iosApp/
 
 ### What We Did
 
-✅ Created all Swift code files for Share Extension
-✅ Created all Swift code for Background Tasks
-✅ Updated main app to handle shared URLs
-✅ Updated main app with background sync scheduling
+ Created all Swift code files for Share Extension
+ Created all Swift code for Background Tasks
+ Updated main app to handle shared URLs
+ Updated main app with background sync scheduling
 
 ### What You Need to Do in Xcode
 
@@ -369,7 +369,7 @@ iosApp/
 
 **Total**: 15-20 minutes
 
-After following this guide, iOS will have full parity with Android for platform features! 🎉
+After following this guide, iOS will have full parity with Android for platform features!
 
 ---
 
