@@ -16,7 +16,6 @@ fun AuthScreen(
     component: AuthComponent,
     onLoginSuccess: () -> Unit = component::onLoginSuccess,
     modifier: Modifier = Modifier,
-    onLoginClick: (AuthViewModel) -> Unit = {},
 ) {
     val viewModel: AuthViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
@@ -73,8 +72,9 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Login Button
+            var showTelegramLogin by remember { mutableStateOf(false) }
             Button(
-                onClick = { onLoginClick(viewModel) },
+                onClick = { showTelegramLogin = true },
                 enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -89,6 +89,17 @@ fun AuthScreen(
                 } else {
                     Text("Login with Telegram")
                 }
+            }
+
+            if (showTelegramLogin) {
+                com.po4yka.bitesizereader.ui.auth.TelegramAuthScreen(
+                    authViewModel = viewModel,
+                    onAuthSuccess = {
+                        showTelegramLogin = false
+                        // onLoginSuccess will be called by the LaunchedEffect when state changes
+                    },
+                    onDismiss = { showTelegramLogin = false }
+                )
             }
 
             // Developer Login (Secret Key)

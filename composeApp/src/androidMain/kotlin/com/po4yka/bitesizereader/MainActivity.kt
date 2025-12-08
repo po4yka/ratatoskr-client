@@ -15,13 +15,10 @@ class MainActivity : ComponentActivity() {
 
         val root = DefaultRootComponent(defaultComponentContext())
 
-        setContent {
+            setContent {
             BiteSizeReaderTheme {
                 App(
                     rootComponent = root,
-                    onLoginClick = { _ ->
-                        com.po4yka.bitesizereader.auth.TelegramAuthHelper.launchTelegramAuth(this@MainActivity)
-                    }
                 )
             }
         }
