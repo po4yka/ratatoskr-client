@@ -4,6 +4,7 @@ import com.po4yka.bitesizereader.data.local.SecureStorage
 import com.po4yka.bitesizereader.data.mappers.toAuthTokens
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshResponseDto
+import com.po4yka.bitesizereader.util.config.AppConfig
 import kotlin.time.Clock
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
@@ -21,6 +22,7 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -41,11 +43,12 @@ class ApiClient(
             })
         }
 
-        if (com.po4yka.bitesizereader.util.config.AppConfig.Api.loggingEnabled) {
+        if (AppConfig.Api.loggingEnabled) {
             install(Logging) {
                 logger = Logger.DEFAULT
                 level = LogLevel.ALL
                 sanitizeHeader { header -> header == HttpHeaders.Authorization }
+                filter { request -> !request.url.encodedPath.contains("db-dump") }
             }
         }
 
