@@ -2,7 +2,6 @@ package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,169 +22,218 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
+import com.po4yka.bitesizereader.presentation.viewmodel.SettingsState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
+import kotlin.math.roundToInt
+
+private const val BytesPerMb = 1_048_576.0
+private const val RoundingFactor = 10.0
+private const val BackupFileName = "bite_size_reader_backup.sqlite"
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("FunctionNaming")
 @Composable
 fun SettingsScreen(component: SettingsComponent) {
     val viewModel: SettingsViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Settings") }
-            )
-        }
+        topBar = { TopAppBar(title = { Text("Settings") }) }
     ) { padding ->
-        Column(
+        SettingsContent(
+            state = state,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            onRetryLinkStatus = viewModel::loadLinkStatus,
+            onBeginLink = viewModel::beginTelegramLink,
+            onUnlink = viewModel::unlinkTelegram,
+            onDownload = { viewModel.downloadDatabase(BackupFileName) },
+            onCancelDownload = viewModel::cancelDownload
+        )
+    }
+}
+
+@Composable
+private fun SettingsContent(
+    state: SettingsState,
+    modifier: Modifier = Modifier,
+    onRetryLinkStatus: () -> Unit,
+    onBeginLink: () -> Unit,
+    onUnlink: () -> Unit,
+    onDownload: () -> Unit,
+    onCancelDownload: () -> Unit
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(text = "Account Binding", style = MaterialTheme.typography.titleLarge)
+
+        AccountBindingCard(
+            state = state,
+            onRetryLinkStatus = onRetryLinkStatus,
+            onBeginLink = onBeginLink,
+            onUnlink = onUnlink
+        )
+
+        state.linkNonce?.let { nonce ->
+            LinkNonceCard(nonce = nonce)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = "Data Management", style = MaterialTheme.typography.titleLarge)
+
+        BackupCard(
+            state = state,
+            onDownload = onDownload,
+            onCancelDownload = onCancelDownload
+        )
+    }
+}
+
+@Composable
+private fun AccountBindingCard(
+    state: SettingsState,
+    onRetryLinkStatus: () -> Unit,
+    onBeginLink: () -> Unit,
+    onUnlink: () -> Unit
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = "Account Binding",
-                style = MaterialTheme.typography.titleLarge
-            )
+            Text(text = "Telegram", style = MaterialTheme.typography.titleMedium)
 
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Telegram",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-
-                    if (state.isLoading) {
-                        CircularProgressIndicator()
-                    } else if (state.linkStatus != null) {
-                        if (state.linkStatus!!.linked) {
-                            Text("Status: Linked")
-                            state.linkStatus!!.username?.let {
-                                Text("Username: @$it")
-                            }
-                            state.linkStatus!!.telegramId?.let {
-                                Text("ID: $it")
-                            }
-                            Button(
-                                onClick = { viewModel.unlinkTelegram() },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.error
-                                )
-                            ) {
-                                Text("Unlink")
-                            }
-                        } else {
-                            Text("Status: Not Linked")
-                            Button(onClick = { viewModel.beginTelegramLink() }) {
-                                Text("Link Telegram Account")
-                            }
-                        }
-                    } else if (state.error != null) {
-                        Text(
-                            text = "Error: ${state.error}",
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        OutlinedButton(onClick = { viewModel.loadLinkStatus() }) {
-                            Text("Retry")
-                        }
-                    }
-                }
-            }
-
-            // Nonce display for manual linking if needed
-            state.linkNonce?.let { nonce ->
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text("Linking Started", style = MaterialTheme.typography.titleSmall)
-                        Text("Nonce generated. Use the Telegram Login Widget with this bot to complete linking.")
-                        SelectionContainer {
-                            Text(text = nonce, style = MaterialTheme.typography.bodySmall)
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Data Management",
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Backup",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "Download a full copy of your articles and summaries.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    if (state.isDownloading) {
-                        LinearProgressIndicator(
-                            progress = {
-                                if (state.downloadTotal > 0) {
-                                    state.downloadProgress.toFloat() / state.downloadTotal.toFloat()
-                                } else {
-                                    0f
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        
-                        val progressMb = state.downloadProgress / (1024 * 1024.0)
-                        val totalMb = state.downloadTotal / (1024 * 1024.0)
-                        // Use string concatenation instead of formatting to avoid stdlib issues
-                        val progressText = "${(progressMb * 10).toInt() / 10.0} MB / ${(totalMb * 10).toInt() / 10.0} MB"
-
-                        Text(
-                            text = "Downloaded: $progressText",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-
+            when {
+                state.isLoading -> CircularProgressIndicator()
+                state.linkStatus != null -> {
+                    val status = state.linkStatus
+                    if (status?.linked == true) {
+                        Text("Status: Linked")
+                        status.username?.let { Text("Username: @$it") }
+                        status.telegramId?.let { Text("ID: $it") }
                         Button(
-                            onClick = { viewModel.cancelDownload() },
+                            onClick = onUnlink,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.error
                             )
                         ) {
-                            Text("Cancel Download")
+                            Text("Unlink")
                         }
                     } else {
-                        Button(
-                            onClick = { viewModel.downloadDatabase("bite_size_reader_backup.sqlite") },
-                            enabled = !state.isLoading
-                        ) {
-                            Text("Download all articles")
+                        Text("Status: Not Linked")
+                        Button(onClick = onBeginLink) {
+                            Text("Link Telegram Account")
                         }
                     }
-
-                    state.downloadError?.let { error ->
-                        Text(
-                            text = "Download Failed: $error",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                }
+                state.error != null -> {
+                    Text(
+                        text = "Error: ${state.error}",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    OutlinedButton(onClick = onRetryLinkStatus) {
+                        Text("Retry")
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun LinkNonceCard(nonce: String) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text("Linking Started", style = MaterialTheme.typography.titleSmall)
+            Text(
+                "Nonce generated. Use the Telegram Login Widget with this bot to complete linking."
+            )
+            SelectionContainer {
+                Text(text = nonce, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
+}
+
+@Composable
+private fun BackupCard(
+    state: SettingsState,
+    onDownload: () -> Unit,
+    onCancelDownload: () -> Unit
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(text = "Backup", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = "Download a full copy of your articles and summaries.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            if (state.isDownloading) {
+                LinearProgressIndicator(
+                    progress = {
+                        if (state.downloadTotal > 0) {
+                            state.downloadProgress.toFloat() / state.downloadTotal.toFloat()
+                        } else {
+                            0f
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                val progressText = progressText(state.downloadProgress, state.downloadTotal)
+
+                Text(
+                    text = "Downloaded: $progressText",
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Button(
+                    onClick = onCancelDownload,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Cancel Download")
+                }
+            } else {
+                Button(onClick = onDownload, enabled = !state.isLoading) {
+                    Text("Download all articles")
+                }
+            }
+
+            state.downloadError?.let { error ->
+                Text(
+                    text = "Download Failed: $error",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+}
+
+private fun progressText(progressBytes: Long, totalBytes: Long): String {
+    val downloaded = formatMegabytes(progressBytes)
+    val total = if (totalBytes > 0) formatMegabytes(totalBytes) else 0.0
+    return "$downloaded MB / $total MB"
+}
+
+private fun formatMegabytes(bytes: Long): Double {
+    val mb = bytes / BytesPerMb
+    return (mb * RoundingFactor).roundToInt() / RoundingFactor
 }

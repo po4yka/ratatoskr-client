@@ -5,21 +5,25 @@ import com.po4yka.bitesizereader.data.repository.RequestRepositoryImpl
 import com.po4yka.bitesizereader.data.repository.SearchRepositoryImpl
 import com.po4yka.bitesizereader.data.repository.SummaryRepositoryImpl
 import com.po4yka.bitesizereader.data.repository.SyncRepositoryImpl
+import com.po4yka.bitesizereader.data.repository.SystemRepositoryImpl
 import com.po4yka.bitesizereader.data.repository.UserRepositoryImpl
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
 import com.po4yka.bitesizereader.domain.repository.RequestRepository
 import com.po4yka.bitesizereader.domain.repository.SearchRepository
 import com.po4yka.bitesizereader.domain.repository.SummaryRepository
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
+import com.po4yka.bitesizereader.domain.repository.SystemRepository
 import com.po4yka.bitesizereader.domain.repository.UserRepository
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val repositoryModule = module {
+    singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     singleOf(::SummaryRepositoryImpl) bind SummaryRepository::class
     singleOf(::RequestRepositoryImpl) bind RequestRepository::class
     singleOf(::SearchRepositoryImpl) bind SearchRepository::class
     singleOf(::SyncRepositoryImpl) bind SyncRepository::class
+    singleOf(::UserRepositoryImpl) bind UserRepository::class
     singleOf(::SystemRepositoryImpl) bind SystemRepository::class
 }
