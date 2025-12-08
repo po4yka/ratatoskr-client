@@ -23,6 +23,7 @@ val viewModelModule = module {
     factory { SubmitURLViewModel(get(), get()) }
     factory { SearchViewModel(get(), get()) }
     single { AuthViewModel(get(), get(), get(), get()) }
+    factory { SettingsViewModel(get(), get(), get(), get()) }
 }
 
 /**
