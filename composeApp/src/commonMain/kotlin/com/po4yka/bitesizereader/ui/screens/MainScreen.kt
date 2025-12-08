@@ -2,6 +2,10 @@ package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -30,8 +34,18 @@ fun MainScreen(component: MainComponent) {
                             component.onTabSelected(DefaultMainComponent.Config.SummaryList)
                         }
                     },
-                    icon = { Text("🏠") }, // Placeholder icon
-                    label = { Text("Home") }
+                    icon = { Icon(androidx.compose.material.icons.Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Read Later") }
+                )
+                NavigationBarItem(
+                    selected = activeChild is MainComponent.Child.Collections,
+                    onClick = {
+                        if (component is DefaultMainComponent) {
+                            component.onTabSelected(DefaultMainComponent.Config.Collections)
+                        }
+                    },
+                    icon = { Icon(androidx.compose.material.icons.Icons.Default.Folder, contentDescription = "Collections") },
+                    label = { Text("Collections") }
                 )
                 NavigationBarItem(
                     selected = activeChild is MainComponent.Child.Settings,
@@ -40,7 +54,7 @@ fun MainScreen(component: MainComponent) {
                             component.onTabSelected(DefaultMainComponent.Config.Settings)
                         }
                     },
-                    icon = { Text("⚙️") }, // Placeholder icon
+                    icon = { Icon(androidx.compose.material.icons.Icons.Default.Settings, contentDescription = "Settings") },
                     label = { Text("Settings") }
                 )
             }
@@ -54,6 +68,7 @@ fun MainScreen(component: MainComponent) {
         ) { child ->
             when (val instance = child.instance) {
                 is MainComponent.Child.SummaryList -> SummaryListScreen(component = instance.component)
+                is MainComponent.Child.Collections -> CollectionsScreen(onCollectionClick = instance.component::onCollectionClicked)
                 is MainComponent.Child.Settings -> SettingsScreen(component = instance.component)
             }
         }

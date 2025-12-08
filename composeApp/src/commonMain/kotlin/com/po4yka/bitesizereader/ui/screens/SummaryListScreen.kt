@@ -40,7 +40,7 @@ fun SummaryListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Summaries") },
+                title = { Text("Read Later") },
                 actions = {
                     IconButton(onClick = { viewModel.loadSummaries() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh")

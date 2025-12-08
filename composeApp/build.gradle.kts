@@ -64,6 +64,10 @@ kotlin {
 
             // Decompose
             implementation(libs.decompose.core)
+
+            // Coil for image loading
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
         }
 
         androidMain.dependencies {
@@ -79,8 +83,7 @@ kotlin {
             implementation(libs.decompose.compose)
 
             // Coil for image loading
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.ktor)
+            // Moved to commonMain
             implementation(libs.ktor.client.okhttp)
 
             // WorkManager for background sync

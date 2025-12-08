@@ -19,6 +19,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.toJavaInstant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import coil3.compose.AsyncImage
 
 /**
  * Card component for displaying a summary in a list
@@ -30,93 +31,73 @@ fun SummaryCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Header: Title and Read Indicator
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top,
-            ) {
+            // Image (if available)
+            if (!summary.imageUrl.isNullOrBlank()) {
+                AsyncImage(
+                    model = summary.imageUrl,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(end = 12.dp),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                )
+            }
+
+            Column(modifier = Modifier.weight(1f)) {
+                // Title
                 Text(
                     text = summary.title,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
+                    overflow = TextOverflow.Ellipsis
                 )
 
-                if (summary.isRead) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "Read",
-                        tint = ReadIndicator,
-                        modifier =
-                            Modifier
-                                .size(20.dp)
-                                .padding(start = 8.dp),
-                    )
-                }
-            }
+                Spacer(modifier = Modifier.height(4.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // TL;DR
-            Text(
-                text = summary.content.take(200) + if (summary.content.length > 200) "…" else "",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Topic Tags
-            if (summary.tags.isNotEmpty()) {
+                // Source and Icons
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    summary.tags.take(3).forEach { tag ->
-                        TagChip(tag = tag)
-                    }
-                    if (summary.tags.size > 3) {
-                        TagChip(tag = "+${summary.tags.size - 3}")
+                    // Favicon placeholder or generic icon could go here
+                    Text(
+                        text = extractDomain(summary.sourceUrl) ?: "Saved Article",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                         modifier = Modifier.weight(1f, fill = false)
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    if (summary.isRead) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = "Read",
+                            tint = ReadIndicator,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Footer: Source and Date
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = extractDomain(summary.sourceUrl) ?: "Unknown source",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-
-                Text(
-                    text = formatDate(summary.createdAt),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+             // More Options Icon (Placeholder for future)
+             IconButton(onClick = { /* TODO: More options */ }) {
+                 Text("···", style = MaterialTheme.typography.titleLarge)
+             }
         }
     }
 }
