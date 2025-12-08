@@ -1,8 +1,5 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.po4yka.bitesizereader.data.remote.DownloadProgress
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
 import com.po4yka.bitesizereader.domain.usecase.DownloadDatabaseUseCase
@@ -31,7 +28,7 @@ class SettingsViewModel(
     private val unlinkTelegramUseCase: UnlinkTelegramUseCase,
     private val linkTelegramUseCase: LinkTelegramUseCase,
     private val downloadDatabaseUseCase: DownloadDatabaseUseCase
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
@@ -45,53 +42,58 @@ class SettingsViewModel(
     fun loadLinkStatus() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
-            try {
-                val status = getTelegramLinkStatusUseCase()
-                _state.value = _state.value.copy(isLoading = false, linkStatus = status)
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.message)
-            }
+            runCatching { getTelegramLinkStatusUseCase() }
+                .onSuccess { status ->
+                    _state.value = _state.value.copy(isLoading = false, linkStatus = status)
+                }
+                .onFailure { throwable ->
+                    _state.value = _state.value.copy(isLoading = false, error = throwable.message)
+                }
         }
     }
 
     fun unlinkTelegram() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
-            try {
-                val status = unlinkTelegramUseCase()
-                _state.value = _state.value.copy(isLoading = false, linkStatus = status)
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.message)
-            }
+            runCatching { unlinkTelegramUseCase() }
+                .onSuccess { status ->
+                    _state.value = _state.value.copy(isLoading = false, linkStatus = status)
+                }
+                .onFailure { throwable ->
+                    _state.value = _state.value.copy(isLoading = false, error = throwable.message)
+                }
         }
     }
 
     fun beginTelegramLink() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
-            try {
-                val nonce = linkTelegramUseCase.begin()
-                _state.value = _state.value.copy(isLoading = false, linkNonce = nonce)
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.message)
-            }
+            runCatching { linkTelegramUseCase.begin() }
+                .onSuccess { nonce ->
+                    _state.value = _state.value.copy(isLoading = false, linkNonce = nonce)
+                }
+                .onFailure { throwable ->
+                    _state.value = _state.value.copy(isLoading = false, error = throwable.message)
+                }
         }
     }
 
+    @Suppress("unused")
     fun completeTelegramLink(telegramAuth: TelegramLoginRequestDto) {
         val nonce = _state.value.linkNonce ?: return
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
-            try {
-                val status = linkTelegramUseCase.complete(nonce, telegramAuth)
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    linkStatus = status,
-                    linkNonce = null // Reset nonce after success
-                )
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.message)
-            }
+            runCatching { linkTelegramUseCase.complete(nonce, telegramAuth) }
+                .onSuccess { status ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        linkStatus = status,
+                        linkNonce = null // Reset nonce after success
+                    )
+                }
+                .onFailure { throwable ->
+                    _state.value = _state.value.copy(isLoading = false, error = throwable.message)
+                }
         }
     }
 
@@ -106,22 +108,24 @@ class SettingsViewModel(
                 downloadTotal = 0,
                 downloadError = null
             )
-            try {
-                downloadDatabaseUseCase(outputFile).collect { progress ->
-                    _state.value = _state.value.copy(
-                        downloadProgress = progress.bytesDownloaded,
-                        downloadTotal = progress.totalBytes
-                    )
-                    if (progress.isComplete) {
-                        _state.value = _state.value.copy(isDownloading = false)
+            runCatching { downloadDatabaseUseCase(outputFile) }
+                .onSuccess { flow ->
+                    flow.collect { progress ->
+                        _state.value = _state.value.copy(
+                            downloadProgress = progress.bytesDownloaded,
+                            downloadTotal = progress.totalBytes
+                        )
+                        if (progress.isComplete) {
+                            _state.value = _state.value.copy(isDownloading = false)
+                        }
                     }
                 }
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(
-                    isDownloading = false,
-                    downloadError = e.message
-                )
-            }
+                .onFailure { throwable ->
+                    _state.value = _state.value.copy(
+                        isDownloading = false,
+                        downloadError = throwable.message
+                    )
+                }
         }
     }
 

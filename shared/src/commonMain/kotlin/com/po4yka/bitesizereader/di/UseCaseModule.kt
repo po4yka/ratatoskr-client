@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.di
 
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
+import com.po4yka.bitesizereader.domain.usecase.DownloadDatabaseUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetCurrentUserUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetRequestStatusUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
@@ -17,7 +18,6 @@ import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SubmitURLUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.domain.usecase.UnlinkTelegramUseCase
-import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -30,7 +30,6 @@ val useCaseModule = module {
     factoryOf(::GetRequestStatusUseCase)
     factoryOf(::RetryRequestUseCase)
     factoryOf(::SearchSummariesUseCase)
-    factoryOf(::SemanticSearchUseCase)
     factoryOf(::DownloadDatabaseUseCase)
     factoryOf(::GetTelegramLinkStatusUseCase)
     factoryOf(::UnlinkTelegramUseCase)
