@@ -37,3 +37,46 @@ data class RequestStatusResponseDto(
     @SerialName("correlation_id") val correlationId: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
 )
+
+@Serializable
+data class CrawlResultDto(
+    @SerialName("status") val status: String? = null,
+    @SerialName("http_status") val httpStatus: Int? = null,
+    @SerialName("latency_ms") val latencyMs: Int? = null,
+    @SerialName("error") val error: String? = null
+)
+
+@Serializable
+data class LlmCallDto(
+    @SerialName("id") val id: Long,
+    @SerialName("model") val model: String,
+    @SerialName("status") val status: String,
+    @SerialName("tokens_prompt") val tokensPrompt: Int? = null,
+    @SerialName("tokens_completion") val tokensCompletion: Int? = null,
+    @SerialName("cost_usd") val costUsd: Double? = null,
+    @SerialName("latency_ms") val latencyMs: Int? = null,
+    @SerialName("created_at") val createdAt: String
+)
+
+@Serializable
+data class SummarySimpleDto(
+    @SerialName("id") val id: Long,
+    @SerialName("status") val status: String,
+    @SerialName("created_at") val createdAt: String
+)
+
+@Serializable
+data class RequestDetailDto(
+    @SerialName("request") val request: RequestInfoDto,
+    @SerialName("crawl_result") val crawlResult: CrawlResultDto? = null,
+    @SerialName("llm_calls") val llmCalls: List<LlmCallDto> = emptyList(),
+    @SerialName("summary") val summary: SummarySimpleDto? = null
+)
+
+@Serializable
+data class RetryRequestResponseDto(
+    @SerialName("new_request_id") val newRequestId: Long,
+    @SerialName("correlation_id") val correlationId: String,
+    @SerialName("status") val status: String,
+    @SerialName("created_at") val createdAt: String
+)

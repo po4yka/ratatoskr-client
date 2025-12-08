@@ -53,3 +53,15 @@ data class SummaryDetailDataDto(
     @SerialName("source") val source: SourceInfoDto? = null,
     @SerialName("processing") val processing: ProcessingInfoDto? = null
 )
+
+@Serializable
+data class UpdateSummaryRequestDto(
+    @SerialName("is_read") val isRead: Boolean? = null
+)
+
+@Serializable
+data class UpdateSummaryResponseDto(
+    @SerialName("id") val id: Long,
+    @SerialName("is_read") val isRead: Boolean? = null,
+    @SerialName("updated_at") val updatedAt: String
+)
