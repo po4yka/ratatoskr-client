@@ -6,10 +6,13 @@ import com.po4yka.bitesizereader.domain.usecase.DownloadDatabaseUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetTelegramLinkStatusUseCase
 import com.po4yka.bitesizereader.domain.usecase.LinkTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.UnlinkTelegramUseCase
+import com.po4yka.bitesizereader.util.error.toAppError
+import com.po4yka.bitesizereader.util.error.userMessage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 data class SettingsState(
@@ -110,20 +113,27 @@ class SettingsViewModel(
             )
             runCatching { downloadDatabaseUseCase(outputFile) }
                 .onSuccess { flow ->
-                    flow.collect { progress ->
-                        _state.value = _state.value.copy(
-                            downloadProgress = progress.bytesDownloaded,
-                            downloadTotal = progress.totalBytes
-                        )
-                        if (progress.isComplete) {
-                            _state.value = _state.value.copy(isDownloading = false)
+                    flow
+                        .catch { throwable ->
+                            _state.value = _state.value.copy(
+                                isDownloading = false,
+                                downloadError = throwable.toAppError().userMessage()
+                            )
                         }
-                    }
+                        .collect { progress ->
+                            _state.value = _state.value.copy(
+                                downloadProgress = progress.bytesDownloaded,
+                                downloadTotal = progress.totalBytes
+                            )
+                            if (progress.isComplete) {
+                                _state.value = _state.value.copy(isDownloading = false)
+                            }
+                        }
                 }
                 .onFailure { throwable ->
                     _state.value = _state.value.copy(
                         isDownloading = false,
-                        downloadError = throwable.message
+                        downloadError = throwable.toAppError().userMessage()
                     )
                 }
         }

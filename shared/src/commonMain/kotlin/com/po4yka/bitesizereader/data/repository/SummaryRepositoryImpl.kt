@@ -18,13 +18,13 @@ class SummaryRepositoryImpl(
 ) : SummaryRepository {
 
     override fun getSummaries(page: Int, pageSize: Int, tags: List<String>?): Flow<List<Summary>> {
-        // Simple implementation without Store for now to get it compiling/working, 
+        // Simple implementation without Store for now to get it compiling/working,
         // or direct DB access if synced.
         // Ideally we check if we need to fetch from API, then update DB, then return Flow from DB.
-        
+
         // For this implementation, we'll return DB flow and trigger a background refresh (mocked logic for now)
         // TODO: Implement full Store logic or Sync logic
-        
+
         return database.databaseQueries.selectAllSummaries(
             limit = pageSize.toLong(),
             offset = ((page - 1) * pageSize).toLong()
@@ -44,10 +44,13 @@ class SummaryRepositoryImpl(
 
     override suspend fun deleteSummary(id: String) {
         database.databaseQueries.deleteSummary(id)
-        try {
-            api.deleteSummary(id)
-        } catch (e: Exception) {
-            // Handle offline delete or queue it
+        val remoteId = id.toLongOrNull()
+        if (remoteId != null) {
+            try {
+                api.deleteSummary(remoteId)
+            } catch (e: Exception) {
+                // Handle offline delete or queue it
+            }
         }
     }
 }

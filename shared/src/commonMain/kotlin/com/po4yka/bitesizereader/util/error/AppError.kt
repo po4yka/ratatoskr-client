@@ -5,34 +5,52 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class AppError : Throwable() {
+    abstract val messageKey: String
+    abstract val fallbackMessage: String?
+
+    override val message: String?
+        get() = fallbackMessage
+
     @Serializable
     @SerialName("network")
     data class NetworkError(
-        override val message: String = "Network error. Please check your connection."
+        override val messageKey: String = "error.network.unreachable",
+        override val fallbackMessage: String = "Network connection unavailable. Please check your connection."
+    ) : AppError()
+
+    @Serializable
+    @SerialName("timeout")
+    data class TimeoutError(
+        override val messageKey: String = "error.network.timeout",
+        override val fallbackMessage: String = "Request timed out. Please try again."
     ) : AppError()
 
     @Serializable
     @SerialName("server")
     data class ServerError(
         val code: Int,
-        override val message: String
+        override val messageKey: String = "error.http.$code",
+        override val fallbackMessage: String = "Request failed with code $code."
     ) : AppError()
 
     @Serializable
     @SerialName("auth")
     data class AuthError(
-        override val message: String = "Authentication failed."
+        override val messageKey: String = "error.auth.unauthorized",
+        override val fallbackMessage: String = "Authentication failed."
     ) : AppError()
 
     @Serializable
     @SerialName("validation")
     data class ValidationError(
-        override val message: String
+        override val messageKey: String = "error.validation",
+        override val fallbackMessage: String
     ) : AppError()
 
     @Serializable
     @SerialName("unknown")
     data class UnknownError(
-        override val message: String = "An unknown error occurred."
+        override val messageKey: String = "error.unknown",
+        override val fallbackMessage: String = "Something went wrong. Please try again."
     ) : AppError()
 }

@@ -30,7 +30,9 @@ class RequestRepositoryImpl(
     }
 
     override suspend fun getRequestStatus(id: String): Request {
-        val response = api.getRequestStatus(id)
+        val requestId = id.toLongOrNull()
+            ?: throw IllegalArgumentException("Request id must be numeric to query status")
+        val response = api.getRequestStatus(requestId)
         val statusDto = response.data ?: throw IllegalStateException("Failed to fetch request status")
         val existing = database.databaseQueries.selectAllRequests()
             .executeAsList()

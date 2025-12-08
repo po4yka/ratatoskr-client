@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 import com.po4yka.bitesizereader.util.error.toAppError
+import com.po4yka.bitesizereader.util.error.userMessage
 
 class AuthViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
@@ -50,7 +51,7 @@ class AuthViewModel(
                     error = null
                 )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().message)
+                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
             }
         }
     }
@@ -68,7 +69,7 @@ class AuthViewModel(
                     error = null
                 )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().message)
+                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
             }
         }
     }
