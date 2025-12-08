@@ -12,6 +12,10 @@ import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
 class SummaryRepositoryImpl(
     private val database: Database,
     private val api: SummariesApi
@@ -49,6 +53,7 @@ class SummaryRepositoryImpl(
             try {
                 api.deleteSummary(remoteId)
             } catch (e: Exception) {
+                logger.error(e) { "Failed to delete summary from API for id: $remoteId" }
                 // Handle offline delete or queue it
             }
         }

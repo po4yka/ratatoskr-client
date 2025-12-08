@@ -15,6 +15,10 @@ import kotlinx.coroutines.launch
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
 
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
 class AuthViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
     private val loginWithSecretUseCase: LoginWithSecretUseCase,
@@ -51,6 +55,7 @@ class AuthViewModel(
                     error = null
                 )
             } catch (e: Exception) {
+                logger.error(e) { "Login with Telegram failed" }
                 _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
             }
         }
@@ -69,6 +74,7 @@ class AuthViewModel(
                     error = null
                 )
             } catch (e: Exception) {
+                logger.error(e) { "Login with Secret failed" }
                 _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
             }
         }

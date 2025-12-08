@@ -27,11 +27,12 @@ import androidx.compose.ui.unit.dp
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
+import com.po4yka.bitesizereader.domain.usecase.DownloadMode
 import kotlin.math.roundToInt
 
 private const val BytesPerMb = 1_048_576.0
+
 private const val RoundingFactor = 10.0
-private const val BackupFileName = "bite_size_reader_backup.sqlite"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("FunctionNaming")
@@ -52,7 +53,8 @@ fun SettingsScreen(component: SettingsComponent) {
             onRetryLinkStatus = viewModel::loadLinkStatus,
             onBeginLink = viewModel::beginTelegramLink,
             onUnlink = viewModel::unlinkTelegram,
-            onDownload = { viewModel.downloadDatabase(BackupFileName) },
+            onBackup = { viewModel.downloadDatabase(DownloadMode.BACKUP) },
+            onImport = { viewModel.downloadDatabase(DownloadMode.IMPORT) },
             onCancelDownload = viewModel::cancelDownload
         )
     }
@@ -65,7 +67,8 @@ private fun SettingsContent(
     onRetryLinkStatus: () -> Unit,
     onBeginLink: () -> Unit,
     onUnlink: () -> Unit,
-    onDownload: () -> Unit,
+    onBackup: () -> Unit,
+    onImport: () -> Unit,
     onCancelDownload: () -> Unit
 ) {
     Column(
@@ -91,7 +94,8 @@ private fun SettingsContent(
 
         BackupCard(
             state = state,
-            onDownload = onDownload,
+            onBackup = onBackup,
+            onImport = onImport,
             onCancelDownload = onCancelDownload
         )
     }
@@ -169,7 +173,8 @@ private fun LinkNonceCard(nonce: String) {
 @Composable
 private fun BackupCard(
     state: SettingsState,
-    onDownload: () -> Unit,
+    onBackup: () -> Unit,
+    onImport: () -> Unit,
     onCancelDownload: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
@@ -198,7 +203,7 @@ private fun BackupCard(
                 val progressText = progressText(state.downloadProgress, state.downloadTotal)
 
                 Text(
-                    text = "Downloaded: $progressText",
+                    text = "Processing: $progressText",
                     style = MaterialTheme.typography.bodySmall
                 )
 
@@ -208,11 +213,29 @@ private fun BackupCard(
                         containerColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Cancel Download")
+                    Text("Cancel Operation")
                 }
             } else {
-                Button(onClick = onDownload, enabled = !state.isLoading) {
-                    Text("Download all articles")
+                Text(
+                    text = "Backup your data to a file or import the latest data from the cloud.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Button(
+                    onClick = onBackup,
+                    enabled = !state.isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Backup to File")
+                }
+
+                Button(
+                    onClick = onImport,
+                    enabled = !state.isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Import from Cloud")
                 }
             }
 

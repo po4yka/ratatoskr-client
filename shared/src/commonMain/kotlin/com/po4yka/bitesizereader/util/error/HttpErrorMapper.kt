@@ -5,6 +5,10 @@ import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
 /**
  * Map HTTP status codes to AppError
  */
@@ -101,6 +105,7 @@ suspend fun <T> handleApiError(block: suspend () -> T): Result<T> {
     } catch (e: ServerResponseException) {
         Result.failure(e.response.status.toAppError(e.response))
     } catch (e: Exception) {
+        logger.error(e) { "API call failed with generic exception" }
         Result.failure(e.toAppError())
     }
 }
