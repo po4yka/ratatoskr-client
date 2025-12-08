@@ -36,4 +36,5 @@ val networkModule = module {
     singleOf(::KtorRequestsApi) bind RequestsApi::class
     singleOf(::KtorSearchApi) bind SearchApi::class
     singleOf(::KtorSyncApi) bind SyncApi::class
+    singleOf(::KtorSystemApi) bind SystemApi::class
 }

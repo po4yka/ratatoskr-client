@@ -20,7 +20,6 @@ val repositoryModule = module {
     singleOf(::SummaryRepositoryImpl) bind SummaryRepository::class
     singleOf(::RequestRepositoryImpl) bind RequestRepository::class
     singleOf(::SearchRepositoryImpl) bind SearchRepository::class
-    single<SyncRepository> { SyncRepositoryImpl(get(), get()) }
-    single<UserRepository> { UserRepositoryImpl(get()) }
-    singleOf(::AuthRepositoryImpl) bind AuthRepository::class
+    singleOf(::SyncRepositoryImpl) bind SyncRepository::class
+    singleOf(::SystemRepositoryImpl) bind SystemRepository::class
 }
