@@ -46,14 +46,15 @@ fun SummaryListScreen(
     val state by viewModel.state.collectAsState()
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Carbon.theme.background)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Carbon.theme.background),
     ) {
         // Header
         CarbonHeader(
             title = "Read Later",
-            onRefresh = { viewModel.loadSummaries() }
+            onRefresh = { viewModel.loadSummaries() },
         )
 
         // Content
@@ -72,11 +73,12 @@ private fun CarbonHeader(
     onRefresh: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .background(Carbon.theme.layer01)
-            .padding(horizontal = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .background(Carbon.theme.layer01)
+                .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {

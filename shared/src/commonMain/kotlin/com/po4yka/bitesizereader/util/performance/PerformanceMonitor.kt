@@ -1,11 +1,11 @@
 package com.po4yka.bitesizereader.util.performance
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
-import kotlin.system.measureTimeMillis
+import kotlin.time.TimeSource
+import kotlin.time.measureTime
 
 @PublishedApi
 internal val logger = KotlinLogging.logger {}
@@ -23,18 +23,20 @@ object PerformanceMonitor {
         threshold: Long = 1000, // Log warning if > 1 second
         block: suspend () -> T
     ): T {
-        var result: T
-        val time = measureTimeMillis {
+        var result: T? = null
+        val duration = measureTime {
             result = block()
         }
+        val timeMs = duration.inWholeMilliseconds
 
-        if (time > threshold) {
-            logger.warn { "⚠️ SLOW OPERATION: $operation took ${time}ms (threshold: ${threshold}ms)" }
+        if (timeMs > threshold) {
+            logger.warn { "SLOW OPERATION: $operation took ${timeMs}ms (threshold: ${threshold}ms)" }
         } else {
-            logger.debug { "✓ $operation completed in ${time}ms" }
+            logger.debug { "$operation completed in ${timeMs}ms" }
         }
 
-        return result
+        @Suppress("UNCHECKED_CAST")
+        return result as T
     }
 
     /**
@@ -45,18 +47,20 @@ object PerformanceMonitor {
         threshold: Long = 1000,
         block: () -> T
     ): T {
-        var result: T
-        val time = measureTimeMillis {
+        var result: T? = null
+        val duration = measureTime {
             result = block()
         }
+        val timeMs = duration.inWholeMilliseconds
 
-        if (time > threshold) {
-            logger.warn { "⚠️ SLOW OPERATION: $operation took ${time}ms (threshold: ${threshold}ms)" }
+        if (timeMs > threshold) {
+            logger.warn { "SLOW OPERATION: $operation took ${timeMs}ms (threshold: ${threshold}ms)" }
         } else {
-            logger.debug { "✓ $operation completed in ${time}ms" }
+            logger.debug { "$operation completed in ${timeMs}ms" }
         }
 
-        return result
+        @Suppress("UNCHECKED_CAST")
+        return result as T
     }
 
     /**
@@ -66,22 +70,23 @@ object PerformanceMonitor {
         operation: String,
         threshold: Long = 1000
     ): Flow<T> {
-        var startTime = 0L
+        val timeSource = TimeSource.Monotonic
+        var startMark = timeSource.markNow()
 
         return this
             .onStart {
-                startTime = System.currentTimeMillis()
-                logger.debug { "▶ Started: $operation" }
+                startMark = timeSource.markNow()
+                logger.debug { "Started: $operation" }
             }
             .onCompletion { error ->
-                val duration = System.currentTimeMillis() - startTime
+                val duration = startMark.elapsedNow().inWholeMilliseconds
 
                 if (error != null) {
-                    logger.error(error) { "✗ Failed: $operation after ${duration}ms" }
+                    logger.error(error) { "Failed: $operation after ${duration}ms" }
                 } else if (duration > threshold) {
-                    logger.warn { "⚠️ SLOW FLOW: $operation took ${duration}ms (threshold: ${threshold}ms)" }
+                    logger.warn { "SLOW FLOW: $operation took ${duration}ms (threshold: ${threshold}ms)" }
                 } else {
-                    logger.debug { "✓ Completed: $operation in ${duration}ms" }
+                    logger.debug { "Completed: $operation in ${duration}ms" }
                 }
             }
     }
@@ -146,14 +151,6 @@ object MemoryMonitor {
         // This is a placeholder that can be implemented platform-specifically
         logger.debug { "[$tag] Memory usage: Platform-specific implementation needed" }
     }
-
-    /**
-     * Track object allocation
-     */
-    inline fun <reified T> trackAllocation(tag: String = T::class.simpleName ?: "Unknown"): T where T : Any {
-        logger.debug { "Allocated: $tag" }
-        return T::class.java.getDeclaredConstructor().newInstance()
-    }
 }
 
 /**
@@ -161,21 +158,22 @@ object MemoryMonitor {
  */
 object StartupTracker {
     private val checkpoints = mutableMapOf<String, Long>()
-    private val startTime = System.currentTimeMillis()
+    private val timeSource = TimeSource.Monotonic
+    private val startMark = timeSource.markNow()
 
     fun checkpoint(name: String) {
-        val time = System.currentTimeMillis() - startTime
+        val time = startMark.elapsedNow().inWholeMilliseconds
         checkpoints[name] = time
-        logger.info { "🚀 Startup: $name at ${time}ms" }
+        logger.info { "Startup: $name at ${time}ms" }
     }
 
     fun getCheckpoints(): Map<String, Long> = checkpoints.toMap()
 
     fun logSummary() {
-        val totalTime = System.currentTimeMillis() - startTime
-        logger.info { "🏁 Startup complete in ${totalTime}ms" }
+        val totalTime = startMark.elapsedNow().inWholeMilliseconds
+        logger.info { "Startup complete in ${totalTime}ms" }
         checkpoints.forEach { (name, time) ->
-            logger.info { "  ├─ $name: ${time}ms" }
+            logger.info { "  - $name: ${time}ms" }
         }
     }
 }

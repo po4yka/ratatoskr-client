@@ -12,7 +12,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 actual fun WebView(
     url: String,
     modifier: Modifier,
-    onDeepLink: (String) -> Unit
+    onDeepLink: (String) -> Unit,
 ) {
     AndroidView(
         modifier = modifier,
@@ -20,25 +20,26 @@ actual fun WebView(
             WebView(context).apply {
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
-                webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(
-                        view: WebView?,
-                        request: WebResourceRequest?
-                    ): Boolean {
-                        val requestUrl = request?.url?.toString() ?: return false
-                        if (requestUrl.startsWith("bitesizereader://")) {
-                            onDeepLink(requestUrl)
-                            return true
+                webViewClient =
+                    object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                        ): Boolean {
+                            val requestUrl = request?.url?.toString() ?: return false
+                            if (requestUrl.startsWith("bitesizereader://")) {
+                                onDeepLink(requestUrl)
+                                return true
+                            }
+                            return false
                         }
-                        return false
                     }
-                }
                 loadUrl(url)
             }
         },
         update = { webView ->
             // If we needed to update the URL dynamically we would do it here,
             // but for this auth flow it's usually static or one-off.
-        }
+        },
     )
 }

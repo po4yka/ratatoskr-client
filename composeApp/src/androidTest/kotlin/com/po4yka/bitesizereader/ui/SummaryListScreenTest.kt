@@ -16,7 +16,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class SummaryListScreenTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -24,22 +23,24 @@ class SummaryListScreenTest {
     fun displaysSummaries() {
         val mockViewModel = mockk<SummaryListViewModel>(relaxed = true)
         val mockComponent = mockk<SummaryListComponent>(relaxed = true)
-        
-        val summary = Summary(
-            id = "1",
-            title = "Test Summary UI",
-            content = "Content",
-            sourceUrl = "url",
-            imageUrl = null,
-            createdAt = Clock.System.now(),
-            isRead = false,
-            tags = emptyList()
-        )
+
+        val summary =
+            Summary(
+                id = "1",
+                title = "Test Summary UI",
+                content = "Content",
+                sourceUrl = "url",
+                imageUrl = null,
+                createdAt = Clock.System.now(),
+                isRead = false,
+                tags = emptyList(),
+            )
 
         every { mockComponent.viewModel } returns mockViewModel
-        every { mockViewModel.state } returns MutableStateFlow(
-            SummaryListState(summaries = listOf(summary))
-        )
+        every { mockViewModel.state } returns
+            MutableStateFlow(
+                SummaryListState(summaries = listOf(summary)),
+            )
 
         composeTestRule.setContent {
             SummaryListScreen(component = mockComponent)

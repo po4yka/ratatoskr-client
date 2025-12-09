@@ -47,14 +47,15 @@ fun DeveloperLoginDialog(
     var isUserIdError by remember { mutableStateOf(false) }
 
     Dialog(
-        onDismissRequest = { if (!isLoading) onDismiss() }
+        onDismissRequest = { if (!isLoading) onDismiss() },
     ) {
         Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(Carbon.theme.layer01)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier =
+                Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Carbon.theme.layer01)
+                    .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
                 text = "Developer Login",
@@ -69,13 +70,19 @@ fun DeveloperLoginDialog(
                     userId = it
                     isUserIdError = it.toIntOrNull() == null && it.isNotEmpty()
                 },
-                state = if (isUserIdError) TextInputState.Error else if (isLoading) TextInputState.Disabled else TextInputState.Enabled,
+                state =
+                    when {
+                        isUserIdError -> TextInputState.Error
+                        isLoading -> TextInputState.Disabled
+                        else -> TextInputState.Enabled
+                    },
                 helperText = if (isUserIdError) "User ID must be a number" else "",
                 placeholderText = "Enter user ID",
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next,
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next,
+                    ),
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -96,14 +103,15 @@ fun DeveloperLoginDialog(
                 state = if (isLoading) TextInputState.Disabled else TextInputState.Enabled,
                 placeholderText = "Enter secret",
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        val uid = userId.toIntOrNull()
-                        if (uid != null && clientId.isNotBlank() && secret.isNotBlank()) {
-                            onLogin(uid, clientId, secret)
-                        }
-                    },
-                ),
+                keyboardActions =
+                    KeyboardActions(
+                        onDone = {
+                            val uid = userId.toIntOrNull()
+                            if (uid != null && clientId.isNotBlank() && secret.isNotBlank()) {
+                                onLogin(uid, clientId, secret)
+                            }
+                        },
+                    ),
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -141,8 +149,9 @@ fun DeveloperLoginDialog(
                                 onLogin(uid, clientId, secret)
                             }
                         },
-                        isEnabled = !isLoading && !isUserIdError &&
-                            userId.isNotBlank() && clientId.isNotBlank() && secret.isNotBlank(),
+                        isEnabled =
+                            !isLoading && !isUserIdError &&
+                                userId.isNotBlank() && clientId.isNotBlank() && secret.isNotBlank(),
                         buttonType = ButtonType.Primary,
                     )
                 }

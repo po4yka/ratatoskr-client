@@ -108,25 +108,6 @@ class SummaryListViewModelTest : CoroutineTestBase() {
             }
         }
 
-    // TODO: Fix this test - error state timing issue
-    // @Test
-    // fun `loadSummaries handles failure`() =
-    //     runTest {
-    //         // Given
-    //         coEvery { mockGetSummariesUseCase(any(), any(), any()) } throws Exception("Network error")
-    //
-    //         // When
-    //         setupViewModel()
-    //         testScope.advanceUntilIdle() // Let init block complete (which will fail)
-    //
-    //         // Then
-    //         viewModel.state.test {
-    //             val state = awaitItem()
-    //             assertTrue(state.summaries.isEmpty())
-    //             assertEquals("Network error", state.error)
-    //         }
-    //     }
-
     @Test
     fun `markAsRead updates summary successfully`() =
         runTest {

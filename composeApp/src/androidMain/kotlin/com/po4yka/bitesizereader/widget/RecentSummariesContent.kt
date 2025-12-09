@@ -26,25 +26,27 @@ import com.po4yka.bitesizereader.domain.model.Summary
 @Composable
 fun RecentSummariesContent(summaries: List<Summary>) {
     Column(
-        modifier = GlanceModifier
-            .fillMaxSize()
-            .background(GlanceTheme.colors.background)
-            .padding(16.dp),
-        verticalAlignment = Alignment.Top
+        modifier =
+            GlanceModifier
+                .fillMaxSize()
+                .background(GlanceTheme.colors.background)
+                .padding(16.dp),
+        verticalAlignment = Alignment.Top,
     ) {
         // Widget header
         Row(
             modifier = GlanceModifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = "📚 Recent Summaries",
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = GlanceTheme.colors.onBackground
-                )
+                style =
+                    TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = GlanceTheme.colors.onBackground,
+                    ),
             )
         }
 
@@ -68,26 +70,29 @@ fun RecentSummariesContent(summaries: List<Summary>) {
 @Composable
 private fun EmptyState() {
     Column(
-        modifier = GlanceModifier
-            .fillMaxSize()
-            .padding(vertical = 24.dp),
+        modifier =
+            GlanceModifier
+                .fillMaxSize()
+                .padding(vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "No summaries yet",
-            style = TextStyle(
-                fontSize = 16.sp,
-                color = GlanceTheme.colors.onBackground
-            )
+            style =
+                TextStyle(
+                    fontSize = 16.sp,
+                    color = GlanceTheme.colors.onBackground,
+                ),
         )
         Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
             text = "Submit a URL to get started",
-            style = TextStyle(
-                fontSize = 14.sp,
-                color = GlanceTheme.colors.onSurfaceVariant
-            )
+            style =
+                TextStyle(
+                    fontSize = 14.sp,
+                    color = GlanceTheme.colors.onSurfaceVariant,
+                ),
         )
     }
 }
@@ -98,26 +103,29 @@ private fun EmptyState() {
 @Composable
 private fun SummaryItem(summary: Summary) {
     Column(
-        modifier = GlanceModifier
-            .fillMaxWidth()
-            .background(GlanceTheme.colors.surface)
-            .cornerRadius(8.dp)
-            .padding(12.dp)
-            .clickable(
-                onClick = actionStartActivity<MainActivity>(
-                    // For now, just open the app; deep links can be added later.
-                )
-            )
+        modifier =
+            GlanceModifier
+                .fillMaxWidth()
+                .background(GlanceTheme.colors.surface)
+                .cornerRadius(8.dp)
+                .padding(12.dp)
+                .clickable(
+                    onClick =
+                        actionStartActivity<MainActivity>(
+                            // For now, just open the app; deep links can be added later.
+                        ),
+                ),
     ) {
         // Title
         Text(
             text = summary.title,
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = GlanceTheme.colors.onSurface
-            ),
-            maxLines = 2
+            style =
+                TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = GlanceTheme.colors.onSurface,
+                ),
+            maxLines = 2,
         )
 
         Spacer(modifier = GlanceModifier.height(4.dp))
@@ -125,11 +133,12 @@ private fun SummaryItem(summary: Summary) {
         // TLDR preview
         Text(
             text = summary.content.take(120) + if (summary.content.length > 120) "…" else "",
-            style = TextStyle(
-                fontSize = 12.sp,
-                color = GlanceTheme.colors.onSurfaceVariant
-            ),
-            maxLines = 2
+            style =
+                TextStyle(
+                    fontSize = 12.sp,
+                    color = GlanceTheme.colors.onSurfaceVariant,
+                ),
+            maxLines = 2,
         )
 
         Spacer(modifier = GlanceModifier.height(6.dp))
@@ -138,17 +147,18 @@ private fun SummaryItem(summary: Summary) {
         Row(
             modifier = GlanceModifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             // Domain
             extractDomain(summary.sourceUrl)?.let { domain ->
                 Text(
                     text = "🌐 $domain",
-                    style = TextStyle(
-                        fontSize = 11.sp,
-                        color = GlanceTheme.colors.onSurfaceVariant
-                    ),
-                    maxLines = 1
+                    style =
+                        TextStyle(
+                            fontSize = 11.sp,
+                            color = GlanceTheme.colors.onSurfaceVariant,
+                        ),
+                    maxLines = 1,
                 )
             }
         }

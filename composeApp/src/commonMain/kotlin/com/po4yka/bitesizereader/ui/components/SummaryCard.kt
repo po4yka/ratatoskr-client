@@ -1,5 +1,3 @@
-@file:OptIn(kotlin.time.ExperimentalTime::class)
-
 package com.po4yka.bitesizereader.ui.components
 
 import androidx.compose.foundation.background
@@ -27,10 +25,6 @@ import androidx.compose.material3.Text
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.ui.theme.ReadIndicator
-import kotlin.time.ExperimentalTime
-import kotlin.time.toJavaInstant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 /**
  * Card component for displaying a summary in a list using Carbon Design System
@@ -42,22 +36,24 @@ fun SummaryCard(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp))
-            .background(Carbon.theme.layer01)
-            .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .clickable(onClick = onClick)
+                .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         // Image (if available)
         if (!summary.imageUrl.isNullOrBlank()) {
             AsyncImage(
                 model = summary.imageUrl,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(4.dp)),
+                modifier =
+                    Modifier
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(4.dp)),
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop,
             )
             Spacer(modifier = Modifier.width(12.dp))
@@ -70,7 +66,7 @@ fun SummaryCard(
                 style = Carbon.typography.headingCompact01,
                 color = Carbon.theme.textPrimary,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -78,7 +74,7 @@ fun SummaryCard(
             // Source and Icons
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
                     text = extractDomain(summary.sourceUrl) ?: "Saved Article",
@@ -86,7 +82,7 @@ fun SummaryCard(
                     color = Carbon.theme.textSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false)
+                    modifier = Modifier.weight(1f, fill = false),
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -96,7 +92,7 @@ fun SummaryCard(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Read",
                         tint = ReadIndicator,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }
@@ -107,15 +103,9 @@ fun SummaryCard(
         Text(
             text = "...",
             style = Carbon.typography.heading03,
-            color = Carbon.theme.textSecondary
+            color = Carbon.theme.textSecondary,
         )
     }
-}
-
-@OptIn(ExperimentalTime::class)
-private fun formatDate(instant: kotlin.time.Instant): String {
-    val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-    return formatter.format(instant.toJavaInstant().atZone(ZoneId.systemDefault()).toLocalDate())
 }
 
 private fun extractDomain(url: String): String? {

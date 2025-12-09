@@ -22,12 +22,10 @@ class SummaryRepositoryImpl(
 ) : SummaryRepository {
 
     override fun getSummaries(page: Int, pageSize: Int, tags: List<String>?): Flow<List<Summary>> {
-        // Simple implementation without Store for now to get it compiling/working,
-        // or direct DB access if synced.
-        // Ideally we check if we need to fetch from API, then update DB, then return Flow from DB.
-
-        // For this implementation, we'll return DB flow and trigger a background refresh (mocked logic for now)
-        // TODO: Implement full Store logic or Sync logic
+        // Current implementation: Direct database access with reactive Flow.
+        // Data synchronization is handled separately by SyncDataUseCase which fetches
+        // from the API and updates the local database. This repository observes
+        // database changes and emits updates automatically via SQLDelight's asFlow().
 
         return database.databaseQueries.selectAllSummaries(
             limit = pageSize.toLong(),

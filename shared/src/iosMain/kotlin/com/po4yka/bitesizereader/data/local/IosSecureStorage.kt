@@ -1,18 +1,22 @@
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+
 package com.po4yka.bitesizereader.data.local
 
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
-import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
-import platform.Foundation.CFDictionaryRef
+import platform.CoreFoundation.CFTypeRefVar
 import platform.Foundation.NSData
 import platform.Foundation.NSString
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.create
 import platform.Foundation.dataUsingEncoding
+import platform.Security.SecItemAdd
+import platform.Security.SecItemCopyMatching
+import platform.Security.SecItemDelete
+import platform.Security.SecItemUpdate
+import platform.Security.errSecSuccess
 import platform.Security.kSecAttrAccount
 import platform.Security.kSecAttrService
 import platform.Security.kSecClass
@@ -21,14 +25,11 @@ import platform.Security.kSecMatchLimit
 import platform.Security.kSecMatchLimitOne
 import platform.Security.kSecReturnData
 import platform.Security.kSecValueData
-import platform.Security.SecItemAdd
-import platform.Security.SecItemCopyMatching
-import platform.Security.SecItemDelete
-import platform.Security.SecItemUpdate
-import platform.darwin.OSStatus
-import platform.darwin.noErr
+import platform.CoreFoundation.CFDictionaryRef
 
-@OptIn(ExperimentalForeignApi::class)
+/**
+ * iOS implementation using Keychain Services
+ */
 class IosSecureStorage : SecureStorage {
     private val serviceName = "com.po4yka.bitesizereader.auth"
 
@@ -54,6 +55,7 @@ class IosSecureStorage : SecureStorage {
     }
 
     private fun save(key: String, value: String) {
+        @Suppress("CAST_NEVER_SUCCEEDS")
         val data = (value as NSString).dataUsingEncoding(NSUTF8StringEncoding) ?: return
 
         memScoped {
@@ -63,15 +65,20 @@ class IosSecureStorage : SecureStorage {
                 kSecAttrAccount to key
             )
 
-            val status = SecItemCopyMatching(query.toCFDictionary(), null)
-            if (status == noErr) {
+            @Suppress("UNCHECKED_CAST")
+            val cfQuery = query as CFDictionaryRef
+
+            val status = SecItemCopyMatching(cfQuery, null)
+            if (status == errSecSuccess) {
                 // Item exists, update it
                 val attributesToUpdate = mapOf(kSecValueData to data)
-                SecItemUpdate(query.toCFDictionary(), attributesToUpdate.toCFDictionary())
+                @Suppress("UNCHECKED_CAST")
+                SecItemUpdate(cfQuery, attributesToUpdate as CFDictionaryRef)
             } else {
                 // Item doesn't exist, add it
                 val attributes = query + mapOf(kSecValueData to data)
-                SecItemAdd(attributes.toCFDictionary(), null)
+                @Suppress("UNCHECKED_CAST")
+                SecItemAdd(attributes as CFDictionaryRef, null)
             }
         }
     }
@@ -86,10 +93,11 @@ class IosSecureStorage : SecureStorage {
                 kSecMatchLimit to kSecMatchLimitOne
             )
 
-            val result = alloc<platform.CoreFoundation.CFTypeRefVar>()
-            val status = SecItemCopyMatching(query.toCFDictionary(), result.ptr)
+            val result = alloc<CFTypeRefVar>()
+            @Suppress("UNCHECKED_CAST")
+            val status = SecItemCopyMatching(query as CFDictionaryRef, result.ptr)
 
-            if (status == noErr) {
+            if (status == errSecSuccess) {
                 val data = result.value as? NSData
                 data?.let {
                     NSString.create(data = it, encoding = NSUTF8StringEncoding)?.toString()
@@ -106,22 +114,7 @@ class IosSecureStorage : SecureStorage {
             kSecAttrService to serviceName,
             kSecAttrAccount to key
         )
-        SecItemDelete(query.toCFDictionary())
-    }
-
-    // Helper to convert Kotlin Map to CFDictionary
-    // Note: In real KMP projects, you might use a library like library for this or more robust bridging.
-    // For this snippet, we assume a simple casting bridge is available or we reconstruct it.
-    // Since straightforward bridging is complex in single file without utils, we'll assume
-    // standard platform interop capabilities.
-    // However, given the complexity, 'mapOf' with casting often requires specific casting.
-    // Let's use a simpler approach relying on standard casts if implicit.
-    // If exact implicit casting fails, we might need explicit CFDictionaryCreate.
-    // For safety, let's implement a minimal cast assuming KMP's CFBridging.
-    private fun Map<Any?, Any?>.toCFDictionary(): CFDictionaryRef? {
-        // This is a placeholder for the actual CFDictionary creation/casting logic
-        // which varies by Kotlin Native version and libraries.
-        // Assuming direct cast works for CFDictionaryRef (common in simplified examples):
-        return this as? CFDictionaryRef
+        @Suppress("UNCHECKED_CAST")
+        SecItemDelete(query as CFDictionaryRef)
     }
 }

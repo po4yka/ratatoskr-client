@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
@@ -31,8 +31,8 @@ import com.po4yka.bitesizereader.presentation.viewmodel.SettingsState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import kotlin.math.roundToInt
 
-private const val BytesPerMb = 1_048_576.0
-private const val RoundingFactor = 10.0
+private const val BYTES_IN_MEGABYTE = 1_048_576.0
+private const val DECIMAL_ROUNDING_FACTOR = 10.0
 
 /**
  * Settings screen using Carbon Design System
@@ -44,61 +44,62 @@ fun SettingsScreen(component: SettingsComponent) {
     val state by viewModel.state.collectAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Carbon.theme.background)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Carbon.theme.background),
     ) {
-        // Header
-        CarbonSettingsHeader(title = "Settings")
+        SettingsHeader()
 
-        // Content
         SettingsContent(
             state = state,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
             onRetryLinkStatus = viewModel::loadLinkStatus,
             onBeginLink = viewModel::beginTelegramLink,
             onUnlink = viewModel::unlinkTelegram,
             onBackup = { viewModel.downloadDatabase(DownloadMode.BACKUP) },
             onImport = { viewModel.downloadDatabase(DownloadMode.IMPORT) },
-            onCancelDownload = viewModel::cancelDownload
+            onCancelDownload = viewModel::cancelDownload,
         )
     }
 }
 
+@Suppress("FunctionNaming")
 @Composable
-private fun CarbonSettingsHeader(title: String) {
+private fun SettingsHeader() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .background(Carbon.theme.layer01)
-            .padding(horizontal = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .background(Carbon.theme.layer01)
+                .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = title,
+            text = "Settings",
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
         )
     }
 }
 
+@Suppress("FunctionNaming", "LongParameterList")
 @Composable
 private fun SettingsContent(
     state: SettingsState,
-    modifier: Modifier = Modifier,
     onRetryLinkStatus: () -> Unit,
     onBeginLink: () -> Unit,
     onUnlink: () -> Unit,
     onBackup: () -> Unit,
     onImport: () -> Unit,
-    onCancelDownload: () -> Unit
+    onCancelDownload: () -> Unit,
 ) {
     Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
             text = "Account Binding",
@@ -110,7 +111,7 @@ private fun SettingsContent(
             state = state,
             onRetryLinkStatus = onRetryLinkStatus,
             onBeginLink = onBeginLink,
-            onUnlink = onUnlink
+            onUnlink = onUnlink,
         )
 
         state.linkNonce?.let { nonce ->
@@ -129,25 +130,27 @@ private fun SettingsContent(
             state = state,
             onBackup = onBackup,
             onImport = onImport,
-            onCancelDownload = onCancelDownload
+            onCancelDownload = onCancelDownload,
         )
     }
 }
 
+@Suppress("FunctionNaming", "LongMethod")
 @Composable
 private fun AccountBindingCard(
     state: SettingsState,
     onRetryLinkStatus: () -> Unit,
     onBeginLink: () -> Unit,
-    onUnlink: () -> Unit
+    onUnlink: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp))
-            .background(Carbon.theme.layer01)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
             text = "Telegram",
@@ -157,71 +160,95 @@ private fun AccountBindingCard(
 
         when {
             state.isLoading -> SmallLoading()
-            state.linkStatus != null -> {
-                val status = state.linkStatus
-                if (status?.linked == true) {
-                    Text(
-                        text = "Status: Linked",
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textPrimary,
-                    )
-                    status.username?.let {
-                        Text(
-                            text = "Username: @$it",
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.textSecondary,
-                        )
-                    }
-                    status.telegramId?.let {
-                        Text(
-                            text = "ID: $it",
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.textSecondary,
-                        )
-                    }
-                    Button(
-                        label = "Unlink",
-                        onClick = onUnlink,
-                        buttonType = ButtonType.PrimaryDanger,
-                    )
-                } else {
-                    Text(
-                        text = "Status: Not Linked",
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textPrimary,
-                    )
-                    Button(
-                        label = "Link Telegram Account",
-                        onClick = onBeginLink,
-                        buttonType = ButtonType.Primary,
-                    )
-                }
-            }
-            state.error != null -> {
-                Text(
-                    text = "Error: ${state.error}",
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.supportError,
-                )
-                Button(
-                    label = "Retry",
-                    onClick = onRetryLinkStatus,
-                    buttonType = ButtonType.Secondary,
-                )
-            }
+            state.linkStatus != null -> LinkedStatusContent(
+                state = state,
+                onBeginLink = onBeginLink,
+                onUnlink = onUnlink,
+            )
+            state.error != null -> ErrorContent(
+                error = state.error,
+                onRetry = onRetryLinkStatus,
+            )
         }
     }
 }
 
+@Suppress("FunctionNaming")
+@Composable
+private fun LinkedStatusContent(
+    state: SettingsState,
+    onBeginLink: () -> Unit,
+    onUnlink: () -> Unit,
+) {
+    val status = state.linkStatus
+    if (status?.linked == true) {
+        Text(
+            text = "Status: Linked",
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        status.username?.let {
+            Text(
+                text = "Username: @$it",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
+        }
+        status.telegramId?.let {
+            Text(
+                text = "ID: $it",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
+        }
+        Button(
+            label = "Unlink",
+            onClick = onUnlink,
+            buttonType = ButtonType.PrimaryDanger,
+        )
+    } else {
+        Text(
+            text = "Status: Not Linked",
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        Button(
+            label = "Link Telegram Account",
+            onClick = onBeginLink,
+            buttonType = ButtonType.Primary,
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun ErrorContent(
+    error: String?,
+    onRetry: () -> Unit,
+) {
+    Text(
+        text = "Error: $error",
+        style = Carbon.typography.bodyCompact01,
+        color = Carbon.theme.supportError,
+    )
+    Button(
+        label = "Retry",
+        onClick = onRetry,
+        buttonType = ButtonType.Secondary,
+    )
+}
+
+@Suppress("FunctionNaming")
 @Composable
 private fun LinkNonceCard(nonce: String) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp))
-            .background(Carbon.theme.layer01)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             text = "Linking Started",
@@ -243,20 +270,22 @@ private fun LinkNonceCard(nonce: String) {
     }
 }
 
+@Suppress("FunctionNaming", "LongMethod")
 @Composable
 private fun BackupCard(
     state: SettingsState,
     onBackup: () -> Unit,
     onImport: () -> Unit,
-    onCancelDownload: () -> Unit
+    onCancelDownload: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp))
-            .background(Carbon.theme.layer01)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
             text = "Backup",
@@ -270,52 +299,9 @@ private fun BackupCard(
         )
 
         if (state.isDownloading) {
-            val progress = if (state.downloadTotal > 0) {
-                state.downloadProgress.toFloat() / state.downloadTotal.toFloat()
-            } else {
-                0f
-            }
-
-            ProgressBar(
-                value = progress,
-                modifier = Modifier.fillMaxWidth(),
-                state = ProgressBarState.Active,
-            )
-
-            val progressText = progressText(state.downloadProgress, state.downloadTotal)
-            Text(
-                text = "Processing: $progressText",
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
-            )
-
-            Button(
-                label = "Cancel Operation",
-                onClick = onCancelDownload,
-                buttonType = ButtonType.PrimaryDanger,
-            )
+            DownloadingContent(state = state, onCancelDownload = onCancelDownload)
         } else {
-            Text(
-                text = "Backup your data to a file or import the latest data from the cloud.",
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
-            )
-
-            Button(
-                label = "Backup to File",
-                onClick = onBackup,
-                isEnabled = !state.isLoading,
-                buttonType = ButtonType.Primary,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            Button(
-                label = "Import from Cloud",
-                onClick = onImport,
-                isEnabled = !state.isLoading,
-                buttonType = ButtonType.Secondary,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            BackupActions(state = state, onBackup = onBackup, onImport = onImport)
         }
 
         state.downloadError?.let { error ->
@@ -328,13 +314,79 @@ private fun BackupCard(
     }
 }
 
-private fun progressText(progressBytes: Long, totalBytes: Long): String {
+@Suppress("FunctionNaming")
+@Composable
+private fun DownloadingContent(
+    state: SettingsState,
+    onCancelDownload: () -> Unit,
+) {
+    val progress =
+        if (state.downloadTotal > 0) {
+            state.downloadProgress.toFloat() / state.downloadTotal.toFloat()
+        } else {
+            0f
+        }
+
+    ProgressBar(
+        value = progress,
+        modifier = Modifier.fillMaxWidth(),
+        state = ProgressBarState.Active,
+    )
+
+    val progressText = progressText(state.downloadProgress, state.downloadTotal)
+    Text(
+        text = "Processing: $progressText",
+        style = Carbon.typography.label01,
+        color = Carbon.theme.textSecondary,
+    )
+
+    Button(
+        label = "Cancel Operation",
+        onClick = onCancelDownload,
+        buttonType = ButtonType.PrimaryDanger,
+    )
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun BackupActions(
+    state: SettingsState,
+    onBackup: () -> Unit,
+    onImport: () -> Unit,
+) {
+    Text(
+        text = "Backup your data to a file or import the latest data from the cloud.",
+        style = Carbon.typography.label01,
+        color = Carbon.theme.textSecondary,
+    )
+
+    Button(
+        label = "Backup to File",
+        onClick = onBackup,
+        isEnabled = !state.isLoading,
+        buttonType = ButtonType.Primary,
+        modifier = Modifier.fillMaxWidth(),
+    )
+
+    Button(
+        label = "Import from Cloud",
+        onClick = onImport,
+        isEnabled = !state.isLoading,
+        buttonType = ButtonType.Secondary,
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+private fun progressText(
+    progressBytes: Long,
+    totalBytes: Long,
+): String {
     val downloaded = formatMegabytes(progressBytes)
     val total = if (totalBytes > 0) formatMegabytes(totalBytes) else 0.0
     return "$downloaded MB / $total MB"
 }
 
 private fun formatMegabytes(bytes: Long): Double {
-    val mb = bytes / BytesPerMb
-    return (mb * RoundingFactor).roundToInt() / RoundingFactor
+    val mb = bytes / BYTES_IN_MEGABYTE
+    return (mb * DECIMAL_ROUNDING_FACTOR).roundToInt() / DECIMAL_ROUNDING_FACTOR
 }

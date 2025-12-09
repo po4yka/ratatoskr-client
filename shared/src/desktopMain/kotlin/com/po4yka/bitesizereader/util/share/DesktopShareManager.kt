@@ -7,10 +7,11 @@ import com.po4yka.bitesizereader.domain.model.Summary
  * Prints share content to console (for development only)
  */
 class DesktopShareManager : ShareManager {
-    override fun shareSummary(summary: Summary) {
+    override fun shareSummary(summary: Summary, customMessage: String?) {
         println("Sharing summary: ${summary.title}")
-        println("URL: ${summary.url}")
+        println("URL: ${summary.sourceUrl}")
         println("Content: ${summary.content}")
+        customMessage?.let { println("Custom message: $it") }
     }
 
     override fun shareText(
@@ -21,7 +22,8 @@ class DesktopShareManager : ShareManager {
         subject?.let { println("Subject: $it") }
     }
 
-    override fun shareUrl(url: String) {
+    override fun shareUrl(url: String, title: String?) {
         println("Sharing URL: $url")
+        title?.let { println("Title: $it") }
     }
 }

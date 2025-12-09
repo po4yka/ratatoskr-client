@@ -139,11 +139,12 @@ private fun StageIndicator(
         Text(
             text = title,
             style = Carbon.typography.bodyCompact01,
-            color = when {
-                isFailed -> Carbon.theme.supportError
-                isCompleted || isCurrent -> Carbon.theme.textPrimary
-                else -> Carbon.theme.textSecondary
-            },
+            color =
+                when {
+                    isFailed -> Carbon.theme.supportError
+                    isCompleted || isCurrent -> Carbon.theme.textPrimary
+                    else -> Carbon.theme.textSecondary
+                },
         )
     }
 }

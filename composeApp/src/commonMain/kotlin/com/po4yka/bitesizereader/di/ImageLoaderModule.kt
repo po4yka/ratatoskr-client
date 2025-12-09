@@ -10,15 +10,16 @@ import io.ktor.client.HttpClient
 import okio.FileSystem
 import org.koin.dsl.module
 
-val imageLoaderModule = module {
-    single {
-        getImageLoader(get(), get())
+val imageLoaderModule =
+    module {
+        single {
+            getImageLoader(get(), get())
+        }
     }
-}
 
 fun getImageLoader(
     context: PlatformContext,
-    httpClient: HttpClient
+    httpClient: HttpClient,
 ): ImageLoader {
     return ImageLoader.Builder(context)
         .components {
