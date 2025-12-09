@@ -1,16 +1,40 @@
 package com.po4yka.bitesizereader.ui.screens
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
+import com.gabrieldrn.carbon.Carbon
+import com.gabrieldrn.carbon.button.Button
+import com.gabrieldrn.carbon.button.ButtonType
+import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.presentation.navigation.AuthComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
 
-/** Authentication screen with Telegram login */
+/**
+ * Authentication screen with Telegram login using Carbon Design System
+ */
 @Composable
 fun AuthScreen(
     component: AuthComponent,
@@ -22,50 +46,50 @@ fun AuthScreen(
 
     androidx.compose.runtime.LaunchedEffect(state.isAuthenticated) {
         if (state.isAuthenticated) {
-            // Dialog will be closed by recomposition if we navigate away,
-            // but explicitly handling it here is safer if navigation is delayed.
-             // We can't easily access showDevLogin from here as it's defined later in the function.
-             // However, onLoginSuccess() is called at the end of the function.
+            // Dialog will be closed by recomposition if we navigate away
         }
     }
 
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .background(Carbon.theme.background),
         contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            // App Logo/Icon (placeholder)
-            Surface(
-                modifier = Modifier.size(100.dp),
-                shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.primaryContainer,
+            // App Logo/Icon
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Carbon.theme.layer01),
+                contentAlignment = Alignment.Center
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "📚",
-                        style = MaterialTheme.typography.displayLarge,
-                    )
-                }
+                Text(
+                    text = "B",
+                    style = Carbon.typography.heading05,
+                    color = Carbon.theme.textPrimary,
+                )
             }
 
             // App Title
             Text(
                 text = "Bite-Size Reader",
-                style = MaterialTheme.typography.headlineLarge,
+                style = Carbon.typography.heading04,
+                color = Carbon.theme.textPrimary,
                 textAlign = TextAlign.Center,
             )
 
             Text(
                 text = "AI-powered summaries of web articles",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textSecondary,
                 textAlign = TextAlign.Center,
             )
 
@@ -73,22 +97,29 @@ fun AuthScreen(
 
             // Login Button
             var showTelegramLogin by remember { mutableStateOf(false) }
-            Button(
-                onClick = { showTelegramLogin = true },
-                enabled = !state.isLoading,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp,
-                    )
+
+            if (state.isLoading) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    SmallLoading()
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Logging in...")
-                } else {
-                    Text("Login with Telegram")
+                    Text(
+                        text = "Logging in...",
+                        style = Carbon.typography.bodyCompact01,
+                        color = Carbon.theme.textSecondary,
+                    )
                 }
+            } else {
+                Button(
+                    label = "Login with Telegram",
+                    onClick = { showTelegramLogin = true },
+                    isEnabled = !state.isLoading,
+                    buttonType = ButtonType.Primary,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
 
             if (showTelegramLogin) {
@@ -96,7 +127,6 @@ fun AuthScreen(
                     authViewModel = viewModel,
                     onAuthSuccess = {
                         showTelegramLogin = false
-                        // onLoginSuccess will be called by the LaunchedEffect when state changes
                     },
                     onDismiss = { showTelegramLogin = false }
                 )
@@ -104,12 +134,12 @@ fun AuthScreen(
 
             // Developer Login (Secret Key)
             var showDevLogin by remember { mutableStateOf(false) }
-            TextButton(
+            Button(
+                label = "Developer Login",
                 onClick = { showDevLogin = true },
-                enabled = !state.isLoading,
-            ) {
-                Text("Developer Login")
-            }
+                isEnabled = !state.isLoading,
+                buttonType = ButtonType.Ghost,
+            )
 
             if (showDevLogin) {
                 DeveloperLoginDialog(
@@ -124,18 +154,17 @@ fun AuthScreen(
 
             // Error message
             state.error?.let { error ->
-                Card(
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                        ),
-                    modifier = Modifier.fillMaxWidth(),
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Carbon.theme.supportErrorInverse)
+                        .padding(16.dp)
                 ) {
                     Text(
                         text = error,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        modifier = Modifier.padding(16.dp),
+                        style = Carbon.typography.bodyCompact01,
+                        color = Carbon.theme.textOnColorDisabled,
                     )
                 }
             }
@@ -147,15 +176,15 @@ fun AuthScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 FeatureItem(
-                    icon = "📖",
+                    icon = "[1]",
                     text = "Get concise summaries of any web article",
                 )
                 FeatureItem(
-                    icon = "🔍",
+                    icon = "[2]",
                     text = "Search and organize your reading history",
                 )
                 FeatureItem(
-                    icon = "📱",
+                    icon = "[3]",
                     text = "Sync across all your devices",
                 )
             }
@@ -179,12 +208,13 @@ private fun FeatureItem(
     ) {
         Text(
             text = icon,
-            style = MaterialTheme.typography.headlineSmall,
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textSecondary,
         )
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
         )
     }
 }

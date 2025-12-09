@@ -56,6 +56,9 @@ kover = "0.9.3"
 ktlint = "14.0.1"
 detekt = "1.23.8"
 
+# Design System
+carbon = "0.6.2"
+
 [libraries]
 # Kotlin
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -136,6 +139,9 @@ androidx-testExt-junit = { module = "androidx.test.ext:junit", version.ref = "an
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-espresso" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+# Carbon Design System
+carbon-compose = { module = "io.github.gabrieldrn:carbon", version.ref = "carbon" }
 
 [plugins]
 # Android

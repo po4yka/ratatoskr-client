@@ -68,6 +68,9 @@ kotlin {
             // Coil for image loading
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+
+            // Carbon Design System
+            implementation(libs.carbon.compose)
         }
 
         androidMain.dependencies {

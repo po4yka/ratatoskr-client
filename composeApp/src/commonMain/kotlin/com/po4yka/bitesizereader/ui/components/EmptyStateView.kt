@@ -1,18 +1,28 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
+import com.gabrieldrn.carbon.Carbon
+import com.gabrieldrn.carbon.button.Button
+import com.gabrieldrn.carbon.button.ButtonType
 
 /**
- * Empty state view component
+ * Empty state view component using Carbon Design System
  */
 @Composable
 fun EmptyStateView(
@@ -24,17 +34,16 @@ fun EmptyStateView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .padding(32.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = Carbon.theme.textSecondary,
             modifier = Modifier.size(64.dp),
         )
 
@@ -42,8 +51,8 @@ fun EmptyStateView(
 
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
             textAlign = TextAlign.Center,
         )
 
@@ -51,17 +60,19 @@ fun EmptyStateView(
 
         Text(
             text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
             textAlign = TextAlign.Center,
         )
 
         if (actionText != null && onAction != null) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = onAction) {
-                Text(actionText)
-            }
+            Button(
+                label = actionText,
+                onClick = onAction,
+                buttonType = ButtonType.Primary,
+            )
         }
     }
 }

@@ -2,11 +2,19 @@
 
 package com.po4yka.bitesizereader.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -14,21 +22,19 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
+import com.gabrieldrn.carbon.Carbon
+import com.gabrieldrn.carbon.loading.Loading
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.ErrorView
@@ -39,7 +45,9 @@ import kotlin.time.toJavaInstant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Summary detail screen using Carbon Design System
+ */
 @Composable
 fun SummaryDetailScreen(
     viewModel: SummaryDetailViewModel,
@@ -47,60 +55,48 @@ fun SummaryDetailScreen(
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
-    ) {
+) {
     val state by viewModel.state.collectAsState()
     androidx.compose.runtime.LaunchedEffect(summaryId) {
         viewModel.loadSummary(summaryId)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Summary") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    state.summary?.let { summary ->
-                        Icon(
-                            imageVector = if (summary.isRead) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
-                            contentDescription = null,
-                            tint = if (summary.isRead) ReadIndicator else MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        IconButton(onClick = onShareClick) {
-                            Icon(Icons.Default.Share, contentDescription = "Share")
-                        }
-                    }
-                },
-            )
-        },
-        modifier = modifier,
-    ) { paddingValues ->
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Carbon.theme.background)
+    ) {
+        // Header
+        CarbonDetailHeader(
+            title = "Summary",
+            summary = state.summary,
+            onBackClick = onBackClick,
+            onShareClick = onShareClick,
+        )
+
+        // Content
         when {
             state.error != null -> {
                 ErrorView(
                     message = state.error!!,
                     onRetry = { viewModel.loadSummary(summaryId) },
-                    modifier = Modifier.padding(paddingValues),
+                    modifier = Modifier.weight(1f),
                 )
             }
             state.isLoading -> {
-                androidx.compose.foundation.layout.Box(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
-                    contentAlignment = androidx.compose.ui.Alignment.Center,
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    CircularProgressIndicator()
+                    Loading(modifier = Modifier.size(88.dp))
                 }
             }
             state.summary != null -> {
                 SummaryDetailContent(
                     summary = state.summary!!,
-                    modifier = Modifier.padding(paddingValues),
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -108,72 +104,125 @@ fun SummaryDetailScreen(
 }
 
 @Composable
+private fun CarbonDetailHeader(
+    title: String,
+    summary: Summary?,
+    onBackClick: () -> Unit,
+    onShareClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .background(Carbon.theme.layer01)
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(onClick = onBackClick) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Carbon.theme.iconPrimary,
+            )
+        }
+
+        Text(
+            text = title,
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
+            modifier = Modifier.weight(1f),
+        )
+
+        summary?.let { s ->
+            Icon(
+                imageVector = if (s.isRead) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
+                contentDescription = if (s.isRead) "Read" else "Unread",
+                tint = if (s.isRead) ReadIndicator else Carbon.theme.iconSecondary,
+                modifier = Modifier.size(20.dp),
+            )
+
+            IconButton(onClick = onShareClick) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share",
+                    tint = Carbon.theme.iconPrimary,
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
 private fun SummaryDetailContent(
     summary: Summary,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
     ) {
         Text(
             text = summary.title,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
+            style = Carbon.typography.heading04,
+            color = Carbon.theme.textPrimary,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = extractDomain(summary.sourceUrl) ?: "Unknown source",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = Carbon.typography.label01,
+            color = Carbon.theme.textSecondary,
         )
 
         Text(
             text = formatDate(summary.createdAt),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = Carbon.typography.label01,
+            color = Carbon.theme.textSecondary,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         if (summary.tags.isNotEmpty()) {
-            androidx.compose.foundation.layout.Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 summary.tags.forEach { tag -> TagChip(tag = tag) }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        HorizontalDivider()
+        HorizontalDivider(color = Carbon.theme.borderSubtle00)
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = summary.content,
-            style = MaterialTheme.typography.bodyLarge,
+            style = Carbon.typography.body01,
+            color = Carbon.theme.textPrimary,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        HorizontalDivider()
+        HorizontalDivider(color = Carbon.theme.borderSubtle00)
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "Original Article",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 8.dp),
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             text = summary.sourceUrl,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary,
+            style = Carbon.typography.label01,
+            color = Carbon.theme.linkPrimary,
         )
     }
 }

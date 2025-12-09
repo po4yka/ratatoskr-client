@@ -1,17 +1,38 @@
 package com.po4yka.bitesizereader.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Diamond
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.Spa
+import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
+import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Collection
 
+/**
+ * Collection item component using Carbon Design System
+ */
 @Composable
 fun CollectionItem(
     collection: Collection,
@@ -29,7 +50,7 @@ fun CollectionItem(
         Icon(
             imageVector = getIconForName(collection.iconName),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            tint = Carbon.theme.iconPrimary,
             modifier = Modifier.size(24.dp)
         )
 
@@ -38,7 +59,8 @@ fun CollectionItem(
         // Name
         Text(
             text = collection.name,
-            style = MaterialTheme.typography.bodyLarge,
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textPrimary,
             modifier = Modifier.weight(1f)
         )
 
@@ -46,8 +68,8 @@ fun CollectionItem(
         if (collection.count > 0) {
             Text(
                 text = collection.count.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textSecondary
             )
         }
     }
@@ -64,7 +86,7 @@ private fun getIconForName(name: String?): ImageVector {
         "sports_esports" -> Icons.Default.SportsEsports
         "spa" -> Icons.Default.Spa
         "diamond" -> Icons.Default.Diamond
-        "architecture" -> Icons.Default.Home // Fallback for 'architecture' if not available
+        "architecture" -> Icons.Default.Home
         "delete" -> Icons.Default.Delete
         else -> Icons.Default.Folder
     }
