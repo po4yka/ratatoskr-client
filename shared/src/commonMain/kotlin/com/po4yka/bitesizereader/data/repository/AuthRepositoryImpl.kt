@@ -67,6 +67,7 @@ class AuthRepositoryImpl(
             val authTokens = response.data.toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
             secureStorage.saveRefreshToken(authTokens.refreshToken)
+            secureStorage.saveSessionId(response.data.sessionId)
             // Fetch current user on-demand
             _currentUser.value = null
             _isAuthenticated.value = true
@@ -91,6 +92,7 @@ class AuthRepositoryImpl(
             val authTokens = response.data.toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
             secureStorage.saveRefreshToken(authTokens.refreshToken)
+            secureStorage.saveSessionId(response.data.sessionId)
             // Fetch current user on-demand
             _currentUser.value = null
             _isAuthenticated.value = true

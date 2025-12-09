@@ -21,11 +21,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import compose.icons.FeatherIcons
-import compose.icons.feathericons.ArrowLeft
-import compose.icons.feathericons.CheckCircle
-import compose.icons.feathericons.Circle
-import compose.icons.feathericons.Share2
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -120,7 +116,7 @@ private fun SummaryDetailHeader(
     ) {
         IconButton(onClick = onBackClick) {
             Icon(
-                imageVector = FeatherIcons.ArrowLeft,
+                imageVector = CarbonIcons.ArrowLeft,
                 contentDescription = "Back",
                 tint = Carbon.theme.iconPrimary,
             )
@@ -135,7 +131,7 @@ private fun SummaryDetailHeader(
 
         summary?.let { s ->
             Icon(
-                imageVector = if (s.isRead) FeatherIcons.CheckCircle else FeatherIcons.Circle,
+                imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
                 contentDescription = if (s.isRead) "Read" else "Unread",
                 tint = if (s.isRead) ReadIndicator else Carbon.theme.iconSecondary,
                 modifier = Modifier.size(20.dp),
@@ -143,7 +139,7 @@ private fun SummaryDetailHeader(
 
             IconButton(onClick = onShareClick) {
                 Icon(
-                    imageVector = FeatherIcons.Share2,
+                    imageVector = CarbonIcons.Share,
                     contentDescription = "Share",
                     tint = Carbon.theme.iconPrimary,
                 )

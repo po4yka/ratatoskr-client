@@ -8,20 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
-import compose.icons.FeatherIcons
-import compose.icons.TablerIcons
-import compose.icons.feathericons.Bookmark
-import compose.icons.feathericons.Folder
-import compose.icons.feathericons.Home
-import compose.icons.feathericons.Inbox
-import compose.icons.feathericons.Map
-import compose.icons.feathericons.Trash2
-import compose.icons.tablericons.Bulb
-import compose.icons.tablericons.Diamond
-import compose.icons.tablericons.Droplet
-import compose.icons.tablericons.DeviceGamepad
-import compose.icons.tablericons.Palette
-import compose.icons.tablericons.ToolsKitchen2
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,17 +67,17 @@ fun CollectionItem(
 
 private fun getIconForName(name: String?): ImageVector {
     return when (name) {
-        "inbox" -> FeatherIcons.Inbox
-        "bookmark" -> FeatherIcons.Bookmark
-        "palette" -> TablerIcons.Palette
-        "lightbulb" -> TablerIcons.Bulb
-        "map" -> FeatherIcons.Map
-        "restaurant" -> TablerIcons.ToolsKitchen2
-        "sports_esports" -> TablerIcons.DeviceGamepad
-        "spa" -> TablerIcons.Droplet
-        "diamond" -> TablerIcons.Diamond
-        "architecture" -> FeatherIcons.Home
-        "delete" -> FeatherIcons.Trash2
-        else -> FeatherIcons.Folder
+        "inbox" -> CarbonIcons.Email
+        "bookmark" -> CarbonIcons.Bookmark
+        "palette" -> CarbonIcons.ColorPalette
+        "lightbulb" -> CarbonIcons.Idea
+        "map" -> CarbonIcons.Map
+        "restaurant" -> CarbonIcons.Restaurant
+        "sports_esports" -> CarbonIcons.GameWireless
+        "spa" -> CarbonIcons.RainDrop
+        "diamond" -> CarbonIcons.Gem
+        "architecture" -> CarbonIcons.Home
+        "delete" -> CarbonIcons.TrashCan
+        else -> CarbonIcons.Folder
     }
 }

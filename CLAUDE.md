@@ -109,7 +109,7 @@ composeApp/src/commonMain/kotlin/
 | Async | kotlinx.coroutines + Flow |
 | Image Loading | Coil 3.x |
 | Design System | Carbon Compose (IBM Carbon) |
-| Icons | Compose Icons |
+| Icons | Custom Carbon Icons (IBM Carbon Design) |
 
 ## Design System
 
@@ -157,39 +157,32 @@ This project uses **Carbon Compose** (IBM's Carbon Design System for Compose Mul
 
 ## Icons
 
-This project uses **Compose Icons** (by DevSrSouza) - a multiplatform icon library providing access to popular icon packs including Feather Icons, Tabler Icons, Font Awesome, and more.
+This project uses custom **IBM Carbon Design System icons** implemented as Compose ImageVectors. The icons are defined in `composeApp/src/commonMain/kotlin/com/po4yka/bitesizereader/ui/icons/CarbonIcons.kt`.
 
-### Available Icon Packs (in this project)
+### Available Icons
 
-- **Feather Icons**: Clean, minimalist icons - `compose.icons.FeatherIcons`
-- **Tabler Icons**: Consistent stroke icons - `compose.icons.TablerIcons`
+All icons are accessed via the `CarbonIcons` object:
 
-Additional packs available via gradle:
-- Font Awesome: `br.com.devsrsouza.compose.icons:font-awesome`
-- Simple Icons: `br.com.devsrsouza.compose.icons:simple-icons`
-- Eva Icons: `br.com.devsrsouza.compose.icons:eva-icons`
-- Octicons: `br.com.devsrsouza.compose.icons:octicons`
+- **Navigation**: `Bookmark`, `Folder`, `Settings`, `ArrowLeft`, `Home`
+- **Actions**: `Renew`, `Share`, `Close`, `Checkmark`, `CheckmarkFilled`
+- **Status**: `CircleOutline`, `WarningAlt`
+- **Content**: `Document`, `Email`, `Map`, `TrashCan`
+- **Categories**: `ColorPalette`, `Idea`, `Restaurant`, `GameWireless`, `RainDrop`, `Gem`
 
 ### Usage Rules
 
-1. **Import icons from the appropriate pack**:
+1. **Import from CarbonIcons**:
    ```kotlin
-   import compose.icons.FeatherIcons
-   import compose.icons.feathericons.Home
-   import compose.icons.feathericons.Settings
-
-   import compose.icons.TablerIcons
-   import compose.icons.tablericons.Bulb
+   import com.po4yka.bitesizereader.ui.icons.CarbonIcons
    ```
 
 2. **Use icons with Material3 Icon component**:
    ```kotlin
    import androidx.compose.material3.Icon
-   import compose.icons.FeatherIcons
-   import compose.icons.feathericons.Bookmark
+   import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 
    Icon(
-       imageVector = FeatherIcons.Bookmark,
+       imageVector = CarbonIcons.Bookmark,
        contentDescription = "Bookmark",
        tint = Carbon.theme.iconPrimary
    )
@@ -202,17 +195,15 @@ Additional packs available via gradle:
    - `Carbon.theme.supportError` - Error state icons
    - `Carbon.theme.supportSuccess` - Success state icons
 
-4. **Common icons used in this project**:
-   - Navigation: `FeatherIcons.Bookmark`, `FeatherIcons.Folder`, `FeatherIcons.Settings`
-   - Actions: `FeatherIcons.RefreshCw`, `FeatherIcons.Share2`, `FeatherIcons.ArrowLeft`
-   - Status: `FeatherIcons.CheckCircle`, `FeatherIcons.AlertCircle`, `FeatherIcons.X`
-   - Content: `FeatherIcons.FileText`, `FeatherIcons.Inbox`, `FeatherIcons.Trash2`
+4. **Adding new icons**:
+   - Get SVG path data from Carbon icons library: https://carbondesignsystem.com/elements/icons/library/
+   - Add to `CarbonIcons.kt` using the `ImageVector.Builder` pattern
+   - All icons should be 32x32dp (Carbon's standard size)
 
-### Compose Icons Documentation
+### Carbon Icons Documentation
 
-- GitHub: https://github.com/DevSrSouza/compose-icons
-- Icon Browser: https://composeicons.com/
-- Maven: `br.com.devsrsouza.compose.icons:{pack}:1.1.1`
+- Icons Library: https://carbondesignsystem.com/elements/icons/library/
+- GitHub: https://github.com/carbon-design-system/carbon
 
 ## Configuration
 

@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import compose.icons.FeatherIcons
-import compose.icons.feathericons.FileText
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +27,7 @@ import com.gabrieldrn.carbon.button.ButtonType
 fun EmptyStateView(
     title: String,
     message: String,
-    icon: ImageVector = FeatherIcons.FileText,
+    icon: ImageVector = CarbonIcons.Document,
     actionText: String? = null,
     onAction: (() -> Unit)? = null,
     modifier: Modifier = Modifier,

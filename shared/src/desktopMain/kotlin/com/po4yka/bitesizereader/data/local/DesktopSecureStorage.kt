@@ -19,6 +19,14 @@ class DesktopSecureStorage : SecureStorage {
         return prefs["refresh_token"]
     }
 
+    override suspend fun saveSessionId(sessionId: Long) {
+        prefs["session_id"] = sessionId.toString()
+    }
+
+    override suspend fun getSessionId(): Long? {
+        return prefs["session_id"]?.toLongOrNull()
+    }
+
     override suspend fun clearTokens() {
         prefs.clear()
     }

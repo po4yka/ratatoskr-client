@@ -57,7 +57,7 @@ See **[docs/CICD.md](docs/CICD.md)** for complete documentation including setup,
 | **Coroutines** | [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) | Async/await and Flow streams |
 | **Date/Time** | [kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime) | ISO 8601 parsing and timezone handling |
 | **Logging** | [kotlin-logging](https://github.com/oshai/kotlin-logging) | Structured multiplatform logging |
-| **Icons** | [Compose Icons](https://github.com/DevSrSouza/compose-icons) | Multiplatform icon library (Feather, Tabler, Font Awesome) |
+| **Icons** | Custom Carbon Icons | IBM Carbon Design System icons as ImageVectors |
 | **Dev Tools** | [Compose Hot Reload](https://github.com/JetBrains/compose-hot-reload) | Instant UI updates without restarts |
 
 ### iOS (Compose Multiplatform host)
