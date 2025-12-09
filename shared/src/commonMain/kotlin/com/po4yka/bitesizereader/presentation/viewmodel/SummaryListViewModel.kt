@@ -3,9 +3,11 @@ package com.po4yka.bitesizereader.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
+import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.presentation.state.SummaryListState
+import com.po4yka.bitesizereader.util.error.AppError
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -20,6 +22,7 @@ class SummaryListViewModel(
     private val getSummariesUseCase: GetSummariesUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val syncDataUseCase: SyncDataUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SummaryListState())
     val state = _state.asStateFlow()
@@ -38,6 +41,10 @@ class SummaryListViewModel(
             try {
                 syncDataUseCase()
                 logger.info { "Sync completed successfully" }
+            } catch (e: AppError.SessionExpiredError) {
+                logger.warn { "Session expired, triggering re-authentication" }
+                logoutUseCase()
+                return@launch
             } catch (e: Exception) {
                 logger.warn(e) { "Sync failed, loading from local cache" }
             }

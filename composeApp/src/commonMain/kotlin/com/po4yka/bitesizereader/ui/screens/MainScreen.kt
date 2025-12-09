@@ -1,5 +1,7 @@
 package com.po4yka.bitesizereader.ui.screens
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
@@ -35,7 +39,9 @@ fun MainScreen(component: MainComponent) {
     val activeChild = childStack.active.instance
 
     // Determine if bottom nav should be shown (hide for detail screens)
-    val showBottomNav = activeChild !is MainComponent.Child.SummaryDetail
+    val showBottomNav =
+        activeChild !is MainComponent.Child.SummaryDetail &&
+            activeChild !is MainComponent.Child.CollectionView
 
     Column(
         modifier =
@@ -67,6 +73,8 @@ fun MainScreen(component: MainComponent) {
                         CollectionsScreen(
                             onCollectionClick = instance.component::onCollectionClicked,
                         )
+                    is MainComponent.Child.CollectionView ->
+                        CollectionViewScreen(component = instance.component)
                     is MainComponent.Child.Settings -> SettingsScreen(component = instance.component)
                 }
             }
@@ -132,24 +140,57 @@ private fun NavItem(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
+    val iconColor by animateColorAsState(
+        targetValue = if (isSelected) Carbon.theme.iconPrimary else Carbon.theme.iconSecondary,
+        animationSpec = tween(durationMillis = 200),
+        label = "iconColor",
+    )
+    val textColor by animateColorAsState(
+        targetValue = if (isSelected) Carbon.theme.textPrimary else Carbon.theme.textSecondary,
+        animationSpec = tween(durationMillis = 200),
+        label = "textColor",
+    )
+    val indicatorColor by animateColorAsState(
+        targetValue = if (isSelected) Carbon.theme.borderInteractive else Carbon.theme.layer01,
+        animationSpec = tween(durationMillis = 200),
+        label = "indicatorColor",
+    )
+
     Column(
         modifier =
             Modifier
                 .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = if (isSelected) Carbon.theme.iconPrimary else Carbon.theme.iconSecondary,
-            modifier = Modifier.size(24.dp),
+        // Top indicator bar for active tab
+        Box(
+            modifier =
+                Modifier
+                    .width(48.dp)
+                    .height(3.dp)
+                    .background(
+                        color = indicatorColor,
+                        shape = RoundedCornerShape(bottomStart = 2.dp, bottomEnd = 2.dp),
+                    ),
         )
-        Text(
-            text = label,
-            style = Carbon.typography.label01,
-            color = if (isSelected) Carbon.theme.textPrimary else Carbon.theme.textSecondary,
-        )
+
+        Column(
+            modifier = Modifier.padding(top = 6.dp, bottom = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = iconColor,
+                modifier = Modifier.size(24.dp),
+            )
+            Text(
+                text = label,
+                style = Carbon.typography.label01,
+                color = textColor,
+            )
+        }
     }
 }

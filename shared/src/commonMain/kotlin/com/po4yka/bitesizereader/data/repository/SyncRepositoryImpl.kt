@@ -8,6 +8,7 @@ import com.po4yka.bitesizereader.data.remote.SyncApi
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.SyncState
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
+import com.po4yka.bitesizereader.util.error.AppError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +23,7 @@ class SyncRepositoryImpl(
     override suspend fun sync() {
         val sessionId =
             secureStorage.getSessionId()
-                ?: throw IllegalStateException("Session ID not found. Please re-authenticate.")
+                ?: throw AppError.SessionExpiredError()
 
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val sinceEpochSeconds = metadata?.lastSyncTime?.epochSeconds ?: 0L

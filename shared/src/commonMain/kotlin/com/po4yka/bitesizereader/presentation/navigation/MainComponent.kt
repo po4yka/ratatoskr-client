@@ -24,6 +24,8 @@ interface MainComponent {
 
         data class Collections(val component: CollectionsComponent) : Child()
 
+        data class CollectionView(val component: CollectionViewComponent) : Child()
+
         data class Settings(val component: SettingsComponent) : Child()
     }
 }
@@ -63,8 +65,17 @@ class DefaultMainComponent(
             is Config.Collections ->
                 MainComponent.Child.Collections(
                     DefaultCollectionsComponent { collectionId ->
-                        filterByCollection(collectionId)
+                        navigateToCollectionView(collectionId)
                     },
+                )
+            is Config.CollectionView ->
+                MainComponent.Child.CollectionView(
+                    DefaultCollectionViewComponent(
+                        collectionId = config.collectionId,
+                        onBack = { navigation.pop() },
+                        onNavigateToSummary = { summaryId -> navigation.push(Config.SummaryDetail(summaryId)) },
+                        onCollectionDeleted = { navigation.pop() },
+                    ),
                 )
             is Config.Settings ->
                 MainComponent.Child.Settings(
@@ -76,10 +87,9 @@ class DefaultMainComponent(
         navigation.push(Config.SummaryDetail(summaryId))
     }
 
-    private fun filterByCollection(collectionId: String) {
-        logger.info { "Filter by collection: $collectionId" }
-        // Navigate to summary list with the collection filter applied
-        navigation.bringToFront(Config.SummaryList(collectionId = collectionId))
+    private fun navigateToCollectionView(collectionId: String) {
+        logger.info { "Navigate to collection view: $collectionId" }
+        navigation.push(Config.CollectionView(collectionId = collectionId))
     }
 
     fun onTabSelected(config: Config) {
@@ -96,6 +106,9 @@ class DefaultMainComponent(
 
         @kotlinx.serialization.Serializable
         data object Collections : Config
+
+        @kotlinx.serialization.Serializable
+        data class CollectionView(val collectionId: String) : Config
 
         @kotlinx.serialization.Serializable
         data object Settings : Config

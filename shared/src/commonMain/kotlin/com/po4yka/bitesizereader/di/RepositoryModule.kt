@@ -14,8 +14,8 @@ import com.po4yka.bitesizereader.domain.repository.SummaryRepository
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
 import com.po4yka.bitesizereader.domain.repository.SystemRepository
 import com.po4yka.bitesizereader.domain.repository.UserRepository
+import com.po4yka.bitesizereader.data.repository.CollectionRepositoryImpl
 import com.po4yka.bitesizereader.domain.repository.CollectionRepository
-import com.po4yka.bitesizereader.domain.repository.MockCollectionRepository
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -29,5 +29,5 @@ val repositoryModule =
         singleOf(::SyncRepositoryImpl) bind SyncRepository::class
         singleOf(::UserRepositoryImpl) bind UserRepository::class
         singleOf(::SystemRepositoryImpl) bind SystemRepository::class
-        singleOf(::MockCollectionRepository) bind CollectionRepository::class
+        singleOf(::CollectionRepositoryImpl) bind CollectionRepository::class
     }
