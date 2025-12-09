@@ -6,21 +6,46 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
+import com.po4yka.bitesizereader.domain.repository.AuthRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class DefaultRootComponent(
     componentContext: ComponentContext,
-) : RootComponent, ComponentContext by componentContext {
+) : RootComponent, ComponentContext by componentContext, KoinComponent {
     private val navigation = StackNavigation<Config>()
+    private val authRepository: AuthRepository by inject()
+    private val scope: CoroutineScope by inject()
 
     override val childStack: Value<ChildStack<*, RootComponent.Child>> =
         childStack(
             source = navigation,
             serializer = Config.serializer(),
-            initialConfiguration = Config.Auth, // Start with Auth or Check logic
+            initialConfiguration = Config.Auth,
             handleBackButton = true,
             childFactory = ::createChild,
         )
+
+    init {
+        observeAuthState()
+    }
+
+    private fun observeAuthState() {
+        authRepository.isAuthenticated
+            .onEach { isAuthenticated ->
+                val currentConfig = childStack.value.active.configuration
+                if (isAuthenticated && currentConfig is Config.Auth) {
+                    navigation.replaceCurrent(Config.Main)
+                } else if (!isAuthenticated && currentConfig is Config.Main) {
+                    navigation.replaceCurrent(Config.Auth)
+                }
+            }
+            .launchIn(scope)
+    }
 
     private fun createChild(
         config: Config,

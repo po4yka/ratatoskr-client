@@ -41,6 +41,13 @@ sealed class AppError : Throwable() {
     ) : AppError()
 
     @Serializable
+    @SerialName("session_expired")
+    data class SessionExpiredError(
+        override val messageKey: String = "error.auth.session_expired",
+        override val fallbackMessage: String = "Your session has expired. Please log in again.",
+    ) : AppError()
+
+    @Serializable
     @SerialName("validation")
     data class ValidationError(
         override val messageKey: String = "error.validation",
