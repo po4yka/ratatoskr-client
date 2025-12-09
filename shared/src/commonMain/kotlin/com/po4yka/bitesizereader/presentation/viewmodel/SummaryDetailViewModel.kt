@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 class SummaryDetailViewModel(
     private val getSummaryByIdUseCase: GetSummaryByIdUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
-    private val deleteSummaryUseCase: DeleteSummaryUseCase
+    private val deleteSummaryUseCase: DeleteSummaryUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state = _state.asStateFlow()

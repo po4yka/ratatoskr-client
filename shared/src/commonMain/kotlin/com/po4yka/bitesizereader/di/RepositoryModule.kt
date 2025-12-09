@@ -20,13 +20,14 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val repositoryModule = module {
-    singleOf(::AuthRepositoryImpl) bind AuthRepository::class
-    singleOf(::SummaryRepositoryImpl) bind SummaryRepository::class
-    singleOf(::RequestRepositoryImpl) bind RequestRepository::class
-    singleOf(::SearchRepositoryImpl) bind SearchRepository::class
-    singleOf(::SyncRepositoryImpl) bind SyncRepository::class
-    singleOf(::UserRepositoryImpl) bind UserRepository::class
-    singleOf(::SystemRepositoryImpl) bind SystemRepository::class
-    singleOf(::MockCollectionRepository) bind CollectionRepository::class
-}
+val repositoryModule =
+    module {
+        singleOf(::AuthRepositoryImpl) bind AuthRepository::class
+        singleOf(::SummaryRepositoryImpl) bind SummaryRepository::class
+        singleOf(::RequestRepositoryImpl) bind RequestRepository::class
+        singleOf(::SearchRepositoryImpl) bind SearchRepository::class
+        singleOf(::SyncRepositoryImpl) bind SyncRepository::class
+        singleOf(::UserRepositoryImpl) bind UserRepository::class
+        singleOf(::SystemRepositoryImpl) bind SystemRepository::class
+        singleOf(::MockCollectionRepository) bind CollectionRepository::class
+    }

@@ -21,7 +21,6 @@ import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SummaryListViewModelTest {
-
     private val getSummariesUseCase: GetSummariesUseCase = mockk()
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase = mockk()
     private lateinit var viewModel: SummaryListViewModel
@@ -31,21 +30,22 @@ class SummaryListViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        
-        every { getSummariesUseCase(any(), any(), any()) } returns flowOf(
-            listOf(
-                Summary(
-                    id = "1",
-                    title = "Test Summary",
-                    content = "Content",
-                    sourceUrl = "url",
-                    imageUrl = null,
-                    createdAt = Clock.System.now(),
-                    isRead = false,
-                    tags = emptyList()
-                )
+
+        every { getSummariesUseCase(any(), any(), any()) } returns
+            flowOf(
+                listOf(
+                    Summary(
+                        id = "1",
+                        title = "Test Summary",
+                        content = "Content",
+                        sourceUrl = "url",
+                        imageUrl = null,
+                        createdAt = Clock.System.now(),
+                        isRead = false,
+                        tags = emptyList(),
+                    ),
+                ),
             )
-        )
 
         viewModel = SummaryListViewModel(getSummariesUseCase, markSummaryAsReadUseCase)
     }
@@ -56,10 +56,11 @@ class SummaryListViewModelTest {
     }
 
     @Test
-    fun `initial state loads summaries`() = runTest {
-        val state = viewModel.state.value
-        assertFalse(state.isLoading)
-        assertEquals(1, state.summaries.size)
-        assertEquals("Test Summary", state.summaries[0].title)
-    }
+    fun `initial state loads summaries`() =
+        runTest {
+            val state = viewModel.state.value
+            assertFalse(state.isLoading)
+            assertEquals(1, state.summaries.size)
+            assertEquals("Test Summary", state.summaries[0].title)
+        }
 }

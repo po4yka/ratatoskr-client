@@ -7,5 +7,5 @@ data class Request(
     val url: String,
     val status: RequestStatus,
     val createdAt: Instant,
-    val updatedAt: Instant
+    val updatedAt: Instant,
 )

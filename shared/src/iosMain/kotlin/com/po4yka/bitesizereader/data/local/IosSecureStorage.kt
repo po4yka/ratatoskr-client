@@ -54,16 +54,20 @@ class IosSecureStorage : SecureStorage {
         delete(key = "refresh_token")
     }
 
-    private fun save(key: String, value: String) {
+    private fun save(
+        key: String,
+        value: String,
+    ) {
         @Suppress("CAST_NEVER_SUCCEEDS")
         val data = (value as NSString).dataUsingEncoding(NSUTF8StringEncoding) ?: return
 
         memScoped {
-            val query = mapOf(
-                kSecClass to kSecClassGenericPassword,
-                kSecAttrService to serviceName,
-                kSecAttrAccount to key
-            )
+            val query =
+                mapOf(
+                    kSecClass to kSecClassGenericPassword,
+                    kSecAttrService to serviceName,
+                    kSecAttrAccount to key,
+                )
 
             @Suppress("UNCHECKED_CAST")
             val cfQuery = query as CFDictionaryRef
@@ -85,15 +89,17 @@ class IosSecureStorage : SecureStorage {
 
     private fun load(key: String): String? {
         return memScoped {
-            val query = mapOf(
-                kSecClass to kSecClassGenericPassword,
-                kSecAttrService to serviceName,
-                kSecAttrAccount to key,
-                kSecReturnData to true,
-                kSecMatchLimit to kSecMatchLimitOne
-            )
+            val query =
+                mapOf(
+                    kSecClass to kSecClassGenericPassword,
+                    kSecAttrService to serviceName,
+                    kSecAttrAccount to key,
+                    kSecReturnData to true,
+                    kSecMatchLimit to kSecMatchLimitOne,
+                )
 
             val result = alloc<CFTypeRefVar>()
+
             @Suppress("UNCHECKED_CAST")
             val status = SecItemCopyMatching(query as CFDictionaryRef, result.ptr)
 
@@ -109,11 +115,12 @@ class IosSecureStorage : SecureStorage {
     }
 
     private fun delete(key: String) {
-        val query = mapOf(
-            kSecClass to kSecClassGenericPassword,
-            kSecAttrService to serviceName,
-            kSecAttrAccount to key
-        )
+        val query =
+            mapOf(
+                kSecClass to kSecClassGenericPassword,
+                kSecAttrService to serviceName,
+                kSecAttrAccount to key,
+            )
         @Suppress("UNCHECKED_CAST")
         SecItemDelete(query as CFDictionaryRef)
     }

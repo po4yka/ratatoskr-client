@@ -8,7 +8,7 @@ import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
 import com.po4yka.bitesizereader.domain.repository.UserRepository
 
 class UserRepositoryImpl(
-    private val userApi: UserApi
+    private val userApi: UserApi,
 ) : UserRepository {
     override suspend fun getTelegramLinkStatus(): TelegramLinkStatus {
         val response = userApi.getTelegramLinkStatus()
@@ -39,7 +39,7 @@ class UserRepositoryImpl(
 
     override suspend fun completeTelegramLink(
         nonce: String,
-        telegramAuth: TelegramLoginRequestDto
+        telegramAuth: TelegramLoginRequestDto,
     ): TelegramLinkStatus {
         val request = TelegramLinkCompleteRequestDto(nonce, telegramAuth)
         val response = userApi.completeTelegramLink(request)

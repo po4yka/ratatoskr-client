@@ -12,14 +12,17 @@ interface SummariesApi {
         pageSize: Int,
         isRead: Boolean? = null,
         lang: String? = null,
-        sort: String? = null
+        sort: String? = null,
     ): ApiResponseDto<SummaryListDataDto>
 
     suspend fun getSummaryById(id: Long): ApiResponseDto<SummaryDetailDataDto>
 
     suspend fun toggleFavorite(id: Long): ApiResponseDto<SuccessResponse>
 
-    suspend fun updateSummary(id: Long, isRead: Boolean): ApiResponseDto<UpdateSummaryResponseDto>
+    suspend fun updateSummary(
+        id: Long,
+        isRead: Boolean,
+    ): ApiResponseDto<UpdateSummaryResponseDto>
 
     suspend fun deleteSummary(id: Long)
 }

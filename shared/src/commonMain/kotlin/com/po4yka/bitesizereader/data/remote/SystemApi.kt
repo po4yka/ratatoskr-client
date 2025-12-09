@@ -15,5 +15,5 @@ interface SystemApi {
 data class DownloadProgress(
     val bytesDownloaded: Long,
     val totalBytes: Long,
-    val isComplete: Boolean = false
+    val isComplete: Boolean = false,
 )

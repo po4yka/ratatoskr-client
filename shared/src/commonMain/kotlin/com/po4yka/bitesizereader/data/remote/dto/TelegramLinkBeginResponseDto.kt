@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TelegramLinkBeginResponseDto(
-    val nonce: String
+    val nonce: String,
 )

@@ -6,5 +6,5 @@ enum class ProcessingStage {
     EXTRACTION,
     SUMMARIZATION,
     SAVING,
-    DONE
+    DONE,
 }

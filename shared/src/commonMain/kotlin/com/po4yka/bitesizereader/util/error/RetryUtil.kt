@@ -8,27 +8,45 @@ private val logger = KotlinLogging.logger {}
 
 sealed class RetryStrategy {
     data object NoRetry : RetryStrategy()
+
     data class Immediate(val maxAttempts: Int) : RetryStrategy()
+
     data class FixedDelay(val maxAttempts: Int, val delayMs: Long) : RetryStrategy()
+
     data class ExponentialBackoff(val maxAttempts: Int, val initialDelayMs: Long = 1000, val maxDelayMs: Long = 32000, val multiplier: Double = 2.0) : RetryStrategy() {
-        fun getDelayForAttempt(attempt: Int): Long = calculateExponentialBackoff(attempt, initialDelayMs, maxDelayMs, multiplier)
+        fun getDelayForAttempt(attempt: Int): Long =
+            calculateExponentialBackoff(
+                attempt,
+                initialDelayMs,
+                maxDelayMs,
+                multiplier,
+            )
     }
+
     data object WhenOnline : RetryStrategy()
 }
 
 // Helper to get default strategy from AppError
-fun AppError.getRetryStrategy(): RetryStrategy = when (this) {
-    is AppError.NetworkError -> RetryStrategy.ExponentialBackoff(maxAttempts = 3)
-    is AppError.ServerError -> if (code in 500..599) RetryStrategy.ExponentialBackoff(maxAttempts = 3) else RetryStrategy.NoRetry
-    else -> RetryStrategy.NoRetry
-}
+fun AppError.getRetryStrategy(): RetryStrategy =
+    when (this) {
+        is AppError.NetworkError -> RetryStrategy.ExponentialBackoff(maxAttempts = 3)
+        is AppError.ServerError ->
+            if (code in 500..599) {
+                RetryStrategy.ExponentialBackoff(
+                    maxAttempts = 3,
+                )
+            } else {
+                RetryStrategy.NoRetry
+            }
+        else -> RetryStrategy.NoRetry
+    }
 
 /**
  * Retry a suspending operation with the specified strategy
  */
 suspend fun <T> retryWithStrategy(
     strategy: RetryStrategy,
-    operation: suspend (attempt: Int) -> T
+    operation: suspend (attempt: Int) -> T,
 ): Result<T> {
     when (strategy) {
         is RetryStrategy.NoRetry -> {
@@ -65,7 +83,9 @@ suspend fun <T> retryWithStrategy(
                     }
 
                     val delayMs = strategy.getDelayForAttempt(attempt)
-                    logger.debug { "Exponential backoff attempt ${attempt + 1}/${strategy.maxAttempts} failed, waiting ${delayMs}ms before retry..." }
+                    logger.debug {
+                        "Exponential backoff attempt ${attempt + 1}/${strategy.maxAttempts} failed, waiting ${delayMs}ms before retry..."
+                    }
                     delay(delayMs)
                 }
             }
@@ -81,7 +101,9 @@ suspend fun <T> retryWithStrategy(
                         return Result.failure(e)
                     }
 
-                    logger.debug { "Fixed delay attempt ${attempt + 1}/${strategy.maxAttempts} failed, waiting ${strategy.delayMs}ms before retry..." }
+                    logger.debug {
+                        "Fixed delay attempt ${attempt + 1}/${strategy.maxAttempts} failed, waiting ${strategy.delayMs}ms before retry..."
+                    }
                     delay(strategy.delayMs)
                 }
             }
@@ -115,7 +137,7 @@ fun calculateExponentialBackoff(
     attempt: Int,
     initialDelayMs: Long = 1000,
     maxDelayMs: Long = 32000,
-    multiplier: Double = 2.0
+    multiplier: Double = 2.0,
 ): Long {
     val delay = initialDelayMs * multiplier.pow(attempt.toDouble()).toLong()
     return minOf(delay, maxDelayMs)

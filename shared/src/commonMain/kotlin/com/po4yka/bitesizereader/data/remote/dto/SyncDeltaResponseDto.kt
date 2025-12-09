@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonElement
 data class SyncCreatedItemDto(
     @SerialName("summary_id") val summaryId: Long,
     @SerialName("created_at") val createdAt: String,
-    @SerialName("data") val data: SyncSummaryDataDto
+    @SerialName("data") val data: SyncSummaryDataDto,
 )
 
 @Serializable
@@ -17,19 +17,19 @@ data class SyncSummaryDataDto(
     @SerialName("request_id") val requestId: Long,
     @SerialName("json_payload") val jsonPayload: Map<String, JsonElement>? = null,
     @SerialName("is_read") val isRead: Boolean = false,
-    @SerialName("lang") val lang: String? = null
+    @SerialName("lang") val lang: String? = null,
 )
 
 @Serializable
 data class SyncChangesDto(
     @SerialName("created") val created: List<SyncCreatedItemDto> = emptyList(),
     @SerialName("updated") val updated: List<SyncCreatedItemDto> = emptyList(),
-    @SerialName("deleted") val deleted: List<Long> = emptyList()
+    @SerialName("deleted") val deleted: List<Long> = emptyList(),
 )
 
 @Serializable
 data class SyncDeltaResponseDto(
     @SerialName("changes") val changes: SyncChangesDto,
     @SerialName("sync_timestamp") val syncTimestamp: String,
-    @SerialName("has_more") val hasMore: Boolean
+    @SerialName("has_more") val hasMore: Boolean,
 )

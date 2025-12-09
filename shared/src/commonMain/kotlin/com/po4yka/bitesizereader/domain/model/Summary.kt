@@ -10,5 +10,5 @@ data class Summary(
     val imageUrl: String?,
     val createdAt: Instant,
     val isRead: Boolean,
-    val tags: List<String>
+    val tags: List<String>,
 )

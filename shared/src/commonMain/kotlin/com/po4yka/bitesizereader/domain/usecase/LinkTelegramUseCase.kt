@@ -9,7 +9,10 @@ class LinkTelegramUseCase(private val repository: UserRepository) {
         return repository.beginTelegramLink()
     }
 
-    suspend fun complete(nonce: String, telegramAuth: TelegramLoginRequestDto): TelegramLinkStatus {
+    suspend fun complete(
+        nonce: String,
+        telegramAuth: TelegramLoginRequestDto,
+    ): TelegramLinkStatus {
         return repository.completeTelegramLink(nonce, telegramAuth)
     }
 }

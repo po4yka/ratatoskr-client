@@ -18,7 +18,7 @@ data class SummaryCompactDto(
     @SerialName("lang") val lang: String = "auto",
     @SerialName("created_at") val createdAt: String,
     @SerialName("confidence") val confidence: Double? = null,
-    @SerialName("hallucination_risk") val hallucinationRisk: String? = null
+    @SerialName("hallucination_risk") val hallucinationRisk: String? = null,
 )
 
 @Serializable
@@ -26,18 +26,18 @@ data class PaginationDto(
     @SerialName("total") val total: Int,
     @SerialName("limit") val limit: Int,
     @SerialName("offset") val offset: Int,
-    @SerialName("has_more") val hasMore: Boolean
+    @SerialName("has_more") val hasMore: Boolean,
 )
 
 @Serializable
 data class SummaryStatsDto(
     @SerialName("total_summaries") val totalSummaries: Int,
-    @SerialName("unread_count") val unreadCount: Int
+    @SerialName("unread_count") val unreadCount: Int,
 )
 
 @Serializable
 data class SummaryListDataDto(
     @SerialName("summaries") val summaries: List<SummaryCompactDto>,
     @SerialName("pagination") val pagination: PaginationDto,
-    @SerialName("stats") val stats: SummaryStatsDto
+    @SerialName("stats") val stats: SummaryStatsDto,
 )

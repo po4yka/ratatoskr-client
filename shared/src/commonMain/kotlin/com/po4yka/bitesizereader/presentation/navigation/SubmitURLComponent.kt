@@ -6,11 +6,12 @@ import org.koin.core.component.inject
 
 interface SubmitURLComponent {
     val viewModel: SubmitURLViewModel
+
     fun onBackClicked()
 }
 
 class DefaultSubmitURLComponent(
-    private val onBack: () -> Unit
+    private val onBack: () -> Unit,
 ) : SubmitURLComponent, KoinComponent {
     override val viewModel: SubmitURLViewModel by inject()
 

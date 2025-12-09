@@ -27,9 +27,8 @@ private val logger = KotlinLogging.logger {}
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val secureStorage: SecureStorage,
-    private val externalScope: CoroutineScope
+    private val externalScope: CoroutineScope,
 ) : AuthRepository {
-
     private val _isAuthenticated = MutableStateFlow(false)
     override val isAuthenticated: Flow<Boolean> = _isAuthenticated.asStateFlow()
 
@@ -52,16 +51,17 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun login(authData: AuthRequestDto) {
-        val request = createTelegramLoginRequest(
-            telegramUserId = authData.id.toLong(),
-            authHash = authData.hash,
-            authDate = authData.authDate,
-            username = authData.username,
-            firstName = authData.firstName,
-            lastName = authData.lastName,
-            photoUrl = authData.photoUrl,
-            clientId = AppConfig.App.CLIENT_ID
-        )
+        val request =
+            createTelegramLoginRequest(
+                telegramUserId = authData.id.toLong(),
+                authHash = authData.hash,
+                authDate = authData.authDate,
+                username = authData.username,
+                firstName = authData.firstName,
+                lastName = authData.lastName,
+                photoUrl = authData.photoUrl,
+                clientId = AppConfig.App.CLIENT_ID,
+            )
         val response = authApi.loginWithTelegram(request)
         if (response.success && response.data != null) {
             val authTokens = response.data.toDomain()
@@ -75,12 +75,17 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun loginWithSecret(userId: Int, clientId: String, secret: String) {
-        val request = SecretLoginRequestDto(
-            userId = userId,
-            clientId = clientId,
-            secret = secret
-        )
+    override suspend fun loginWithSecret(
+        userId: Int,
+        clientId: String,
+        secret: String,
+    ) {
+        val request =
+            SecretLoginRequestDto(
+                userId = userId,
+                clientId = clientId,
+                secret = secret,
+            )
         val response = authApi.secretLogin(request)
         if (response.success && response.data != null) {
             val authTokens = response.data.toDomain()
@@ -130,10 +135,11 @@ class AuthRepositoryImpl(
             return try {
                 val response = authApi.refreshToken(TokenRefreshRequestDto(refreshToken))
                 if (response.success && response.data != null) {
-                    val authTokens = response.data.toAuthTokens(
-                        currentTime = Clock.System.now(),
-                        refreshToken = refreshToken
-                    )
+                    val authTokens =
+                        response.data.toAuthTokens(
+                            currentTime = Clock.System.now(),
+                            refreshToken = refreshToken,
+                        )
                     secureStorage.saveAccessToken(authTokens.accessToken)
                     secureStorage.saveRefreshToken(authTokens.refreshToken)
                     _isAuthenticated.value = true

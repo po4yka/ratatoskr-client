@@ -24,16 +24,15 @@ data class SettingsState(
     val isDownloading: Boolean = false,
     val downloadProgress: Long = 0,
     val downloadTotal: Long = 0,
-    val downloadError: String? = null
+    val downloadError: String? = null,
 )
 
 class SettingsViewModel(
     private val getTelegramLinkStatusUseCase: GetTelegramLinkStatusUseCase,
     private val unlinkTelegramUseCase: UnlinkTelegramUseCase,
     private val linkTelegramUseCase: LinkTelegramUseCase,
-    private val downloadDatabaseUseCase: DownloadDatabaseUseCase
+    private val downloadDatabaseUseCase: DownloadDatabaseUseCase,
 ) : BaseViewModel() {
-
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
 
@@ -89,11 +88,12 @@ class SettingsViewModel(
             _state.value = _state.value.copy(isLoading = true, error = null)
             runCatching { linkTelegramUseCase.complete(nonce, telegramAuth) }
                 .onSuccess { status ->
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        linkStatus = status,
-                        linkNonce = null // Reset nonce after success
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            isLoading = false,
+                            linkStatus = status,
+                            linkNonce = null, // Reset nonce after success
+                        )
                 }
                 .onFailure { throwable ->
                     _state.value = _state.value.copy(isLoading = false, error = throwable.message)
@@ -107,42 +107,47 @@ class SettingsViewModel(
         val fileName = "bite_size_reader_backup.sqlite"
 
         downloadJob?.cancel()
-        downloadJob = viewModelScope.launch {
-            _state.value = _state.value.copy(
-                isDownloading = true,
-                downloadProgress = 0,
-                downloadTotal = 0,
-                downloadError = null
-            )
-            runCatching { downloadDatabaseUseCase(fileName, mode) }
-                .onSuccess { flow ->
-                    flow
-                        .catch { throwable ->
-                            _state.value = _state.value.copy(
-                                isDownloading = false,
-                                downloadError = throwable.toAppError().userMessage()
-                            )
-                        }
-                        .collect { progress ->
-                            _state.value = _state.value.copy(
-                                downloadProgress = progress.bytesDownloaded,
-                                downloadTotal = progress.totalBytes
-                            )
-                            if (progress.isComplete) {
-                                _state.value = _state.value.copy(isDownloading = false)
-                                // If import, maybe show specific success message?
-                                // For now generic success is implied by end of loading.
-                                // Consider adding a "toast" or "message" to state.
-                            }
-                        }
-                }
-                .onFailure { throwable ->
-                    _state.value = _state.value.copy(
-                        isDownloading = false,
-                        downloadError = throwable.toAppError().userMessage()
+        downloadJob =
+            viewModelScope.launch {
+                _state.value =
+                    _state.value.copy(
+                        isDownloading = true,
+                        downloadProgress = 0,
+                        downloadTotal = 0,
+                        downloadError = null,
                     )
-                }
-        }
+                runCatching { downloadDatabaseUseCase(fileName, mode) }
+                    .onSuccess { flow ->
+                        flow
+                            .catch { throwable ->
+                                _state.value =
+                                    _state.value.copy(
+                                        isDownloading = false,
+                                        downloadError = throwable.toAppError().userMessage(),
+                                    )
+                            }
+                            .collect { progress ->
+                                _state.value =
+                                    _state.value.copy(
+                                        downloadProgress = progress.bytesDownloaded,
+                                        downloadTotal = progress.totalBytes,
+                                    )
+                                if (progress.isComplete) {
+                                    _state.value = _state.value.copy(isDownloading = false)
+                                    // If import, maybe show specific success message?
+                                    // For now generic success is implied by end of loading.
+                                    // Consider adding a "toast" or "message" to state.
+                                }
+                            }
+                    }
+                    .onFailure { throwable ->
+                        _state.value =
+                            _state.value.copy(
+                                isDownloading = false,
+                                downloadError = throwable.toAppError().userMessage(),
+                            )
+                    }
+            }
     }
 
     fun cancelDownload() {

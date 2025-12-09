@@ -8,7 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ErrorMapperTest {
-
     private val provider = DefaultErrorMessageProvider
 
     @Test
@@ -36,7 +35,7 @@ class ErrorMapperTest {
         assertEquals("error.network.unreachable", ioError.messageKey)
         assertEquals(
             "Network connection unavailable. Please check your connection.",
-            ioError.userMessage(provider)
+            ioError.userMessage(provider),
         )
 
         val timeout = HttpRequestTimeoutException().toAppError()
@@ -47,11 +46,11 @@ class ErrorMapperTest {
 
     @Test
     fun `falls back to provided message when key not mapped`() {
-        val validation = AppError.ValidationError(
-            messageKey = "error.validation.custom",
-            fallbackMessage = "Validation failed"
-        )
+        val validation =
+            AppError.ValidationError(
+                messageKey = "error.validation.custom",
+                fallbackMessage = "Validation failed",
+            )
         assertEquals("Validation failed", validation.userMessage(provider))
     }
 }
-

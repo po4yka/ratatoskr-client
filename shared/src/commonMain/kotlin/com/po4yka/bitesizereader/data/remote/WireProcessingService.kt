@@ -10,18 +10,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class WireProcessingService(
-    private val client: GrpcProcessingServiceClient
+    private val client: GrpcProcessingServiceClient,
 ) : ProcessingService {
-
     constructor(grpcClient: GrpcClient) : this(GrpcProcessingServiceClient(grpcClient))
 
     @Suppress("DEPRECATION")
-    override fun submitUrl(url: String, language: String?, forceRefresh: Boolean): Flow<ProcessingUpdate> {
-        val request = SubmitUrlRequest(
-            url = url,
-            language = language ?: "auto",
-            force_refresh = forceRefresh
-        )
+    override fun submitUrl(
+        url: String,
+        language: String?,
+        forceRefresh: Boolean,
+    ): Flow<ProcessingUpdate> {
+        val request =
+            SubmitUrlRequest(
+                url = url,
+                language = language ?: "auto",
+                force_refresh = forceRefresh,
+            )
 
         return flow {
             coroutineScope {

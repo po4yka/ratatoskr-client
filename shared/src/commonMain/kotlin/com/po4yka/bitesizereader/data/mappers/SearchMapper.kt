@@ -14,7 +14,7 @@ fun SearchResponseDataDto.toDomain(): List<Summary> {
             imageUrl = null,
             createdAt = result.createdAt?.let { Instant.parse(it) } ?: Instant.DISTANT_PAST,
             isRead = result.isRead,
-            tags = result.topicTags
+            tags = result.topicTags,
         )
     }
 }

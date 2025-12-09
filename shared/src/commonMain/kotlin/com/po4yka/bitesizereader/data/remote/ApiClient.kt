@@ -34,82 +34,87 @@ private val logger = KotlinLogging.logger {}
 class ApiClient(
     engine: io.ktor.client.engine.HttpClientEngine,
     private val baseUrl: String,
-    private val secureStorage: SecureStorage
+    private val secureStorage: SecureStorage,
 ) {
-    val client = HttpClient(engine) {
-        expectSuccess = true
+    val client =
+        HttpClient(engine) {
+            expectSuccess = true
 
-        install(ContentNegotiation) {
-            json(Json {
-                prettyPrint = true
-                isLenient = true
-                ignoreUnknownKeys = true
-            })
-        }
-
-        install(io.ktor.client.plugins.HttpTimeout) {
-            requestTimeoutMillis = 60_000
-            connectTimeoutMillis = 60_000
-            socketTimeoutMillis = 60_000
-        }
-
-        if (AppConfig.Api.loggingEnabled) {
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.ALL
-                sanitizeHeader { header -> header == HttpHeaders.Authorization }
-                filter { request -> !request.url.encodedPath.contains("db-dump") }
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        prettyPrint = true
+                        isLenient = true
+                        ignoreUnknownKeys = true
+                    },
+                )
             }
-        }
 
-        install(DefaultRequest) {
-            url(this@ApiClient.baseUrl)
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
-            header(HttpHeaders.Accept, ContentType.Application.Json)
-        }
+            install(io.ktor.client.plugins.HttpTimeout) {
+                requestTimeoutMillis = 60_000
+                connectTimeoutMillis = 60_000
+                socketTimeoutMillis = 60_000
+            }
 
-        install(Auth) {
-            bearer {
-                loadTokens {
-                    val accessToken = secureStorage.getAccessToken()
-                    val refreshToken = secureStorage.getRefreshToken()
-                    if (accessToken != null && refreshToken != null) {
-                        BearerTokens(accessToken, refreshToken)
-                    } else {
-                        null
-                    }
+            if (AppConfig.Api.loggingEnabled) {
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    level = LogLevel.ALL
+                    sanitizeHeader { header -> header == HttpHeaders.Authorization }
+                    filter { request -> !request.url.encodedPath.contains("db-dump") }
                 }
-                refreshTokens {
-                    val refreshToken = secureStorage.getRefreshToken()
-                    if (refreshToken != null) {
-                        try {
-                            val response = client.post("auth/refresh") {
-                                setBody(mapOf("refresh_token" to refreshToken))
-                            }
-                            val parsed: ApiResponseDto<TokenRefreshResponseDto> =
-                                Json.decodeFromString(response.bodyAsText())
+            }
 
-                            if (parsed.success && parsed.data != null) {
-                                val tokens = parsed.data.toAuthTokens(
-                                    currentTime = Clock.System.now(),
-                                    refreshToken = refreshToken
-                                )
-                                secureStorage.saveAccessToken(tokens.accessToken)
-                                secureStorage.saveRefreshToken(tokens.refreshToken)
-                                BearerTokens(tokens.accessToken, tokens.refreshToken)
-                            } else {
-                                secureStorage.clearTokens()
-                                null
-                            }
-                        } catch (e: Exception) {
-                            logger.error(e) { "Failed to refresh tokens" }
+            install(DefaultRequest) {
+                url(this@ApiClient.baseUrl)
+                header(HttpHeaders.ContentType, ContentType.Application.Json)
+                header(HttpHeaders.Accept, ContentType.Application.Json)
+            }
+
+            install(Auth) {
+                bearer {
+                    loadTokens {
+                        val accessToken = secureStorage.getAccessToken()
+                        val refreshToken = secureStorage.getRefreshToken()
+                        if (accessToken != null && refreshToken != null) {
+                            BearerTokens(accessToken, refreshToken)
+                        } else {
                             null
                         }
-                    } else {
-                        null
+                    }
+                    refreshTokens {
+                        val refreshToken = secureStorage.getRefreshToken()
+                        if (refreshToken != null) {
+                            try {
+                                val response =
+                                    client.post("auth/refresh") {
+                                        setBody(mapOf("refresh_token" to refreshToken))
+                                    }
+                                val parsed: ApiResponseDto<TokenRefreshResponseDto> =
+                                    Json.decodeFromString(response.bodyAsText())
+
+                                if (parsed.success && parsed.data != null) {
+                                    val tokens =
+                                        parsed.data.toAuthTokens(
+                                            currentTime = Clock.System.now(),
+                                            refreshToken = refreshToken,
+                                        )
+                                    secureStorage.saveAccessToken(tokens.accessToken)
+                                    secureStorage.saveRefreshToken(tokens.refreshToken)
+                                    BearerTokens(tokens.accessToken, tokens.refreshToken)
+                                } else {
+                                    secureStorage.clearTokens()
+                                    null
+                                }
+                            } catch (e: Exception) {
+                                logger.error(e) { "Failed to refresh tokens" }
+                                null
+                            }
+                        } else {
+                            null
+                        }
                     }
                 }
             }
         }
-    }
 }

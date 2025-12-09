@@ -8,10 +8,13 @@ import com.po4yka.bitesizereader.domain.repository.SearchRepository
 
 class SearchRepositoryImpl(
     private val database: Database,
-    private val api: SearchApi
+    private val api: SearchApi,
 ) : SearchRepository {
-
-    override suspend fun search(query: String, page: Int, pageSize: Int): List<Summary> {
+    override suspend fun search(
+        query: String,
+        page: Int,
+        pageSize: Int,
+    ): List<Summary> {
         // Try local FTS first or API?
         // Usually hybrid: API for fresh results, DB for offline.
         // Here we simply call API and return results.
@@ -23,7 +26,7 @@ class SearchRepositoryImpl(
             database.databaseQueries.searchSummaries(
                 query = query,
                 limit = pageSize.toLong(),
-                offset = ((page - 1) * pageSize).toLong()
+                offset = ((page - 1) * pageSize).toLong(),
             )
                 .executeAsList()
                 .map { it.toDomain() }

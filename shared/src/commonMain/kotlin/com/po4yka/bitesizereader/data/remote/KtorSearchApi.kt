@@ -18,7 +18,11 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
         }.body()
     }
 
-    override suspend fun search(query: String, page: Int, pageSize: Int): ApiResponseDto<SearchResponseDataDto> {
+    override suspend fun search(
+        query: String,
+        page: Int,
+        pageSize: Int,
+    ): ApiResponseDto<SearchResponseDataDto> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
         return client.get("v1/search") {
             parameter("q", query)
@@ -27,7 +31,11 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
         }.body()
     }
 
-    override suspend fun semanticSearch(query: String, page: Int, pageSize: Int): ApiResponseDto<SearchResponseDataDto> {
+    override suspend fun semanticSearch(
+        query: String,
+        page: Int,
+        pageSize: Int,
+    ): ApiResponseDto<SearchResponseDataDto> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
         return client.get("v1/search/semantic") {
             parameter("q", query)
@@ -36,14 +44,21 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
         }.body()
     }
 
-    override suspend fun getTrendingTopics(limit: Int, days: Int): ApiResponseDto<TrendingTopicsResponseDto> {
+    override suspend fun getTrendingTopics(
+        limit: Int,
+        days: Int,
+    ): ApiResponseDto<TrendingTopicsResponseDto> {
         return client.get("v1/topics/trending") {
             parameter("limit", limit)
             parameter("days", days)
         }.body()
     }
 
-    override suspend fun getRelatedSummaries(tag: String, page: Int, pageSize: Int): ApiResponseDto<RelatedSummariesResponseDto> {
+    override suspend fun getRelatedSummaries(
+        tag: String,
+        page: Int,
+        pageSize: Int,
+    ): ApiResponseDto<RelatedSummariesResponseDto> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
         return client.get("v1/topics/related") {
             parameter("tag", tag)

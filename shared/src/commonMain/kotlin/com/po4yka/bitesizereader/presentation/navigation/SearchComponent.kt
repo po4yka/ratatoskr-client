@@ -6,11 +6,12 @@ import org.koin.core.component.inject
 
 interface SearchComponent {
     val viewModel: SearchViewModel
+
     fun onSummaryClicked(id: String)
 }
 
 class DefaultSearchComponent(
-    private val onSummarySelected: (String) -> Unit
+    private val onSummarySelected: (String) -> Unit,
 ) : SearchComponent, KoinComponent {
     override val viewModel: SearchViewModel by inject()
 

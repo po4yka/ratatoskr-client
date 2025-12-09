@@ -4,5 +4,5 @@ import kotlin.time.Instant
 
 data class SyncState(
     val lastSyncTime: Instant?,
-    val lastSyncHash: String?
+    val lastSyncHash: String?,
 )

@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface RequestRepository {
     suspend fun submitUrl(url: String): Request
+
     suspend fun getRequestStatus(id: String): Request
+
     fun getRequests(): Flow<List<Request>>
 }

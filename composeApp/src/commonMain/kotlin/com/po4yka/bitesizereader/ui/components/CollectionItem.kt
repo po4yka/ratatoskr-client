@@ -7,20 +7,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Diamond
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Inbox
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.Spa
-import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.Icon
+import compose.icons.FeatherIcons
+import compose.icons.TablerIcons
+import compose.icons.feathericons.Bookmark
+import compose.icons.feathericons.Folder
+import compose.icons.feathericons.Home
+import compose.icons.feathericons.Inbox
+import compose.icons.feathericons.Map
+import compose.icons.feathericons.Trash2
+import compose.icons.tablericons.Bulb
+import compose.icons.tablericons.Diamond
+import compose.icons.tablericons.Droplet
+import compose.icons.tablericons.DeviceGamepad
+import compose.icons.tablericons.Palette
+import compose.icons.tablericons.ToolsKitchen2
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,17 +80,17 @@ fun CollectionItem(
 
 private fun getIconForName(name: String?): ImageVector {
     return when (name) {
-        "inbox" -> Icons.Default.Inbox
-        "bookmark" -> Icons.Default.Bookmark
-        "palette" -> Icons.Default.Palette
-        "lightbulb" -> Icons.Default.Lightbulb
-        "map" -> Icons.Default.Map
-        "restaurant" -> Icons.Default.Restaurant
-        "sports_esports" -> Icons.Default.SportsEsports
-        "spa" -> Icons.Default.Spa
-        "diamond" -> Icons.Default.Diamond
-        "architecture" -> Icons.Default.Home
-        "delete" -> Icons.Default.Delete
-        else -> Icons.Default.Folder
+        "inbox" -> FeatherIcons.Inbox
+        "bookmark" -> FeatherIcons.Bookmark
+        "palette" -> TablerIcons.Palette
+        "lightbulb" -> TablerIcons.Bulb
+        "map" -> FeatherIcons.Map
+        "restaurant" -> TablerIcons.ToolsKitchen2
+        "sports_esports" -> TablerIcons.DeviceGamepad
+        "spa" -> TablerIcons.Droplet
+        "diamond" -> TablerIcons.Diamond
+        "architecture" -> FeatherIcons.Home
+        "delete" -> FeatherIcons.Trash2
+        else -> FeatherIcons.Folder
     }
 }

@@ -14,19 +14,19 @@ internal val logger = KotlinLogging.logger {}
  * Performance monitoring utilities for tracking operation timing
  */
 object PerformanceMonitor {
-
     /**
      * Measure execution time of a suspending function
      */
     suspend fun <T> measureSuspend(
         operation: String,
         threshold: Long = 1000, // Log warning if > 1 second
-        block: suspend () -> T
+        block: suspend () -> T,
     ): T {
         var result: T? = null
-        val duration = measureTime {
-            result = block()
-        }
+        val duration =
+            measureTime {
+                result = block()
+            }
         val timeMs = duration.inWholeMilliseconds
 
         if (timeMs > threshold) {
@@ -45,12 +45,13 @@ object PerformanceMonitor {
     inline fun <T> measure(
         operation: String,
         threshold: Long = 1000,
-        block: () -> T
+        block: () -> T,
     ): T {
         var result: T? = null
-        val duration = measureTime {
-            result = block()
-        }
+        val duration =
+            measureTime {
+                result = block()
+            }
         val timeMs = duration.inWholeMilliseconds
 
         if (timeMs > threshold) {
@@ -68,7 +69,7 @@ object PerformanceMonitor {
      */
     fun <T> Flow<T>.measureFlow(
         operation: String,
-        threshold: Long = 1000
+        threshold: Long = 1000,
     ): Flow<T> {
         val timeSource = TimeSource.Monotonic
         var startMark = timeSource.markNow()
@@ -98,7 +99,7 @@ object PerformanceMonitor {
 suspend fun <T> measured(
     operation: String,
     threshold: Long = 1000,
-    block: suspend () -> T
+    block: suspend () -> T,
 ): T = PerformanceMonitor.measureSuspend(operation, threshold, block)
 
 /**
@@ -107,7 +108,10 @@ suspend fun <T> measured(
 class QueryPerformanceTracker {
     private val queryTimes = mutableMapOf<String, MutableList<Long>>()
 
-    fun trackQuery(queryName: String, timeMs: Long) {
+    fun trackQuery(
+        queryName: String,
+        timeMs: Long,
+    ) {
         queryTimes.getOrPut(queryName) { mutableListOf() }.add(timeMs)
     }
 
@@ -118,7 +122,7 @@ class QueryPerformanceTracker {
             count = times.size,
             avgTimeMs = times.average(),
             minTimeMs = times.minOrNull() ?: 0,
-            maxTimeMs = times.maxOrNull() ?: 0
+            maxTimeMs = times.maxOrNull() ?: 0,
         )
     }
 
@@ -136,7 +140,7 @@ data class QueryStats(
     val count: Int,
     val avgTimeMs: Double,
     val minTimeMs: Long,
-    val maxTimeMs: Long
+    val maxTimeMs: Long,
 )
 
 /**

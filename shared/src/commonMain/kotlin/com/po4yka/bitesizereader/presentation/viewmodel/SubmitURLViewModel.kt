@@ -1,6 +1,5 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.po4yka.bitesizereader.domain.ProcessingService
@@ -18,7 +17,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class SubmitURLViewModel(
-    private val processingService: ProcessingService
+    private val processingService: ProcessingService,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SubmitURLState())
     val state = _state.asStateFlow()
@@ -37,37 +36,40 @@ class SubmitURLViewModel(
 
             processingService.submitUrl(url)
                 .onStart {
-                    _state.value = _state.value.copy(
-                        isLoading = true,
-                        error = null,
-                        status = RequestStatus.PENDING,
-                        stage = ProcessingStage.QUEUED,
-                        progress = 0f,
-                        message = "Starting..."
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            isLoading = true,
+                            error = null,
+                            status = RequestStatus.PENDING,
+                            stage = ProcessingStage.QUEUED,
+                            progress = 0f,
+                            message = "Starting...",
+                        )
                 }
                 .catch { e ->
                     // Handle error
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        status = RequestStatus.FAILED,
-                        error = e.toAppError().userMessage()
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            isLoading = false,
+                            status = RequestStatus.FAILED,
+                            error = e.toAppError().userMessage(),
+                        )
                 }
                 .collect { update ->
                     val appStatus = mapStatus(update.status)
                     val appStage = mapStage(update.stage)
 
-                    _state.value = _state.value.copy(
-                        isLoading = appStatus != RequestStatus.COMPLETED && appStatus != RequestStatus.FAILED,
-                        status = appStatus,
-                        stage = appStage,
-                        progress = update.progress,
-                        message = update.message
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            isLoading = appStatus != RequestStatus.COMPLETED && appStatus != RequestStatus.FAILED,
+                            status = appStatus,
+                            stage = appStage,
+                            progress = update.progress,
+                            message = update.message,
+                        )
 
                     if (appStatus == RequestStatus.FAILED) {
-                         _state.value = _state.value.copy(error = update.error)
+                        _state.value = _state.value.copy(error = update.error)
                     }
                 }
         }

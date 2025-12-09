@@ -4,5 +4,5 @@ enum class RequestStatus {
     PENDING,
     PROCESSING,
     COMPLETED,
-    FAILED
+    FAILED,
 }

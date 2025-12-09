@@ -5,7 +5,7 @@ interface CollectionsComponent {
 }
 
 class DefaultCollectionsComponent(
-    private val onCollectionSelected: (String) -> Unit
+    private val onCollectionSelected: (String) -> Unit,
 ) : CollectionsComponent {
     override fun onCollectionClicked(id: String) {
         onCollectionSelected(id)

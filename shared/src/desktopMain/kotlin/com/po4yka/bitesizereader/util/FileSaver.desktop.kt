@@ -7,7 +7,10 @@ import java.nio.file.Paths
  * Desktop implementation of FileSaver
  */
 actual class FileSaver {
-    actual suspend fun saveToDownloads(sourcePath: String, fileName: String): String? {
+    actual suspend fun saveToDownloads(
+        sourcePath: String,
+        fileName: String,
+    ): String? {
         val sourceFile = File(sourcePath)
         if (!sourceFile.exists()) return null
 
@@ -36,7 +39,10 @@ actual class FileSaver {
         }
     }
 
-    actual suspend fun importDatabase(sourcePath: String, targetDbName: String) {
+    actual suspend fun importDatabase(
+        sourcePath: String,
+        targetDbName: String,
+    ) {
         val sourceFile = File(sourcePath)
         if (!sourceFile.exists()) throw Exception("Source file not found")
 

@@ -8,5 +8,5 @@ data class SummaryListState(
     val error: String? = null,
     val page: Int = 1,
     val hasMore: Boolean = true,
-    val selectedTag: String? = null
+    val selectedTag: String? = null,
 )

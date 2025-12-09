@@ -12,5 +12,5 @@ data class TelegramLoginRequestDto(
     @SerialName("first_name") val firstName: String?,
     @SerialName("last_name") val lastName: String?,
     @SerialName("photo_url") val photoUrl: String?,
-    @SerialName("client_id") val clientId: String
+    @SerialName("client_id") val clientId: String,
 )

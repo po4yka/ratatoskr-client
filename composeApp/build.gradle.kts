@@ -43,6 +43,11 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    // Enable ExpectActualClasses feature to suppress beta warnings
+    sourceSets.all {
+        languageSettings.enableLanguageFeature("ExpectActualClasses")
+    }
+
     sourceSets {
         commonMain.dependencies {
             // Compose Multiplatform
@@ -72,6 +77,10 @@ kotlin {
 
             // Carbon Design System
             implementation(libs.carbon.compose)
+
+            // Compose Icons
+            implementation(libs.compose.icons.feather)
+            implementation(libs.compose.icons.tabler)
         }
 
         androidMain.dependencies {

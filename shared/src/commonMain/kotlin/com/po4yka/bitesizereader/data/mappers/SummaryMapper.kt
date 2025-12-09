@@ -21,7 +21,7 @@ fun SummaryCompactDto.toDomain(): Summary {
         imageUrl = null,
         createdAt = Instant.parse(createdAt),
         isRead = isRead,
-        tags = topicTags
+        tags = topicTags,
     )
 }
 
@@ -34,7 +34,7 @@ fun SummaryEntity.toDomain(): Summary {
         imageUrl = imageUrl,
         createdAt = createdAt,
         isRead = isRead,
-        tags = tags
+        tags = tags,
     )
 }
 
@@ -47,19 +47,24 @@ fun SummaryCompactDto.toEntity(isReadOverride: Boolean? = null): SummaryEntity {
         imageUrl = null,
         createdAt = Instant.parse(createdAt),
         isRead = isReadOverride ?: isRead,
-        tags = topicTags
+        tags = topicTags,
     )
 }
 
-fun SyncSummaryDataDto.toEntity(isReadOverride: Boolean? = null, createdAt: String? = null): SummaryEntity {
-    val createdAtValue = createdAt
-        ?: jsonPayload?.stringValue("created_at")
-        ?: createdAtFallback()
+fun SyncSummaryDataDto.toEntity(
+    isReadOverride: Boolean? = null,
+    createdAt: String? = null,
+): SummaryEntity {
+    val createdAtValue =
+        createdAt
+            ?: jsonPayload?.stringValue("created_at")
+            ?: createdAtFallback()
     val tagsValue = jsonPayload?.get("topic_tags")
-    val tags = when (tagsValue) {
-        is JsonElement -> tagsValue.jsonArray.mapNotNull { it.jsonPrimitive.contentOrNull }
-        else -> emptyList()
-    }
+    val tags =
+        when (tagsValue) {
+            is JsonElement -> tagsValue.jsonArray.mapNotNull { it.jsonPrimitive.contentOrNull }
+            else -> emptyList()
+        }
     return SummaryEntity(
         id = id.toString(),
         title = jsonPayload?.stringValue("title") ?: "Untitled",
@@ -68,14 +73,13 @@ fun SyncSummaryDataDto.toEntity(isReadOverride: Boolean? = null, createdAt: Stri
         imageUrl = null,
         createdAt = Instant.parse(createdAtValue),
         isRead = isReadOverride ?: isRead,
-        tags = tags
+        tags = tags,
     )
 }
 
 private fun SyncSummaryDataDto.createdAtFallback(): String = Clock.System.now().toString()
 
-private fun Map<String, JsonElement>.stringValue(key: String): String? =
-    (this[key] as? JsonPrimitive)?.contentOrNull
+private fun Map<String, JsonElement>.stringValue(key: String): String? = (this[key] as? JsonPrimitive)?.contentOrNull
 
 fun Summary.toEntity(): SummaryEntity {
     return SummaryEntity(
@@ -86,6 +90,6 @@ fun Summary.toEntity(): SummaryEntity {
         imageUrl = imageUrl,
         createdAt = createdAt,
         isRead = isRead,
-        tags = tags
+        tags = tags,
     )
 }

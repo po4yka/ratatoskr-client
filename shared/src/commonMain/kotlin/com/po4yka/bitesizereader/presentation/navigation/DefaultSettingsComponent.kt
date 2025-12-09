@@ -6,7 +6,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class DefaultSettingsComponent(
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : SettingsComponent, ComponentContext by componentContext, KoinComponent {
     override val viewModel: SettingsViewModel by inject()
 }

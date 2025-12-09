@@ -19,7 +19,7 @@ private val logger = KotlinLogging.logger {}
 
 class SummaryListViewModel(
     private val getSummariesUseCase: GetSummariesUseCase,
-    private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase
+    private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SummaryListState())
     val state = _state.asStateFlow()
@@ -37,11 +37,12 @@ class SummaryListViewModel(
                     _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
                 }
                 .collect { summaries ->
-                    _state.value = _state.value.copy(
-                        summaries = summaries,
-                        isLoading = false,
-                        error = null
-                    )
+                    _state.value =
+                        _state.value.copy(
+                            summaries = summaries,
+                            isLoading = false,
+                            error = null,
+                        )
                 }
         }
     }

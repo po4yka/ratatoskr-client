@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 data class TelegramLinkStatusDto(
     val linked: Boolean,
     val username: String? = null,
-    @SerialName("telegram_id") val telegramId: Long? = null
+    @SerialName("telegram_id") val telegramId: Long? = null,
 )

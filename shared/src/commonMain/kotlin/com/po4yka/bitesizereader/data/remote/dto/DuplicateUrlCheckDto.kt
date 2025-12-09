@@ -11,11 +11,11 @@ data class DuplicateUrlCheckDataDto(
     @SerialName("request_id") val requestId: Long? = null,
     @SerialName("summary_id") val summaryId: Long? = null,
     @SerialName("summarized_at") val summarizedAt: String? = null,
-    @SerialName("summary") val summary: SummaryCompactDto? = null
+    @SerialName("summary") val summary: SummaryCompactDto? = null,
 )
 
 @Serializable
 data class DuplicateUrlCheckResponseEnvelope(
     @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: DuplicateUrlCheckDataDto
+    @SerialName("data") val data: DuplicateUrlCheckDataDto,
 )

@@ -7,17 +7,19 @@ import com.po4yka.bitesizereader.util.config.AppConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform
 
-
 enum class DownloadMode {
     BACKUP,
-    IMPORT
+    IMPORT,
 }
 
 class DownloadDatabaseUseCase(
     private val repository: SystemRepository,
-    private val fileSaver: FileSaver
+    private val fileSaver: FileSaver,
 ) {
-    suspend operator fun invoke(fileName: String, mode: DownloadMode): Flow<DownloadProgress> {
+    suspend operator fun invoke(
+        fileName: String,
+        mode: DownloadMode,
+    ): Flow<DownloadProgress> {
         val tempPath = fileSaver.getInternalStoragePath(fileName)
 
         return repository.downloadDatabase(tempPath).transform { progress ->

@@ -12,7 +12,7 @@ data class RequestInfoDto(
     @SerialName("input_url") val inputUrl: String? = null,
     @SerialName("normalized_url") val normalizedUrl: String? = null,
     @SerialName("correlation_id") val correlationId: String? = null,
-    @SerialName("created_at") val createdAt: String? = null
+    @SerialName("created_at") val createdAt: String? = null,
 )
 
 @Serializable
@@ -23,7 +23,7 @@ data class SourceInfoDto(
     @SerialName("author") val author: String? = null,
     @SerialName("published_at") val publishedAt: String? = null,
     @SerialName("http_status") val httpStatus: Int? = null,
-    @SerialName("image_url") val imageUrl: String? = null
+    @SerialName("image_url") val imageUrl: String? = null,
 )
 
 @Serializable
@@ -33,7 +33,7 @@ data class ProcessingInfoDto(
     @SerialName("cost_usd") val costUsd: Double? = null,
     @SerialName("latency_ms") val latencyMs: Int? = null,
     @SerialName("crawl_latency_ms") val crawlLatencyMs: Int? = null,
-    @SerialName("llm_latency_ms") val llmLatencyMs: Int? = null
+    @SerialName("llm_latency_ms") val llmLatencyMs: Int? = null,
 )
 
 @Serializable
@@ -45,7 +45,7 @@ data class SummaryDetailDto(
     @SerialName("is_favorited") val isFavorited: Boolean = false,
     @SerialName("version") val version: Int? = null,
     @SerialName("created_at") val createdAt: String,
-    @SerialName("json_payload") val jsonPayload: JsonElement? = null
+    @SerialName("json_payload") val jsonPayload: JsonElement? = null,
 )
 
 @Serializable
@@ -53,17 +53,17 @@ data class SummaryDetailDataDto(
     @SerialName("summary") val summary: SummaryDetailDto,
     @SerialName("request") val request: RequestInfoDto? = null,
     @SerialName("source") val source: SourceInfoDto? = null,
-    @SerialName("processing") val processing: ProcessingInfoDto? = null
+    @SerialName("processing") val processing: ProcessingInfoDto? = null,
 )
 
 @Serializable
 data class UpdateSummaryRequestDto(
-    @SerialName("is_read") val isRead: Boolean? = null
+    @SerialName("is_read") val isRead: Boolean? = null,
 )
 
 @Serializable
 data class UpdateSummaryResponseDto(
     @SerialName("id") val id: Long,
     @SerialName("is_read") val isRead: Boolean? = null,
-    @SerialName("updated_at") val updatedAt: String
+    @SerialName("updated_at") val updatedAt: String,
 )

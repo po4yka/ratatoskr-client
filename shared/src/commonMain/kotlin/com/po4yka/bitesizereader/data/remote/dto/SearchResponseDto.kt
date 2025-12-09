@@ -16,26 +16,26 @@ data class SearchResultDto(
     @SerialName("created_at") val createdAt: String? = null,
     @SerialName("relevance_score") val relevanceScore: Double? = null,
     @SerialName("topic_tags") val topicTags: List<String> = emptyList(),
-    @SerialName("is_read") val isRead: Boolean = false
+    @SerialName("is_read") val isRead: Boolean = false,
 )
 
 @Serializable
 data class SearchResponseDataDto(
     @SerialName("results") val results: List<SearchResultDto>,
     @SerialName("pagination") val pagination: PaginationDto,
-    @SerialName("query") val query: String
+    @SerialName("query") val query: String,
 )
 
 @Serializable
 data class TrendingTopicDto(
     @SerialName("tag") val tag: String,
-    @SerialName("count") val count: Int
+    @SerialName("count") val count: Int,
 )
 
 @Serializable
 data class TrendingTopicsResponseDto(
     @SerialName("topics") val topics: List<TrendingTopicDto>,
-    @SerialName("total") val total: Int
+    @SerialName("total") val total: Int,
 )
 
 @Serializable
@@ -43,12 +43,12 @@ data class RelatedSummaryDto(
     @SerialName("summary_id") val summaryId: Long,
     @SerialName("title") val title: String,
     @SerialName("tldr") val tldr: String,
-    @SerialName("created_at") val createdAt: String
+    @SerialName("created_at") val createdAt: String,
 )
 
 @Serializable
 data class RelatedSummariesResponseDto(
     @SerialName("tag") val tag: String,
     @SerialName("summaries") val summaries: List<RelatedSummaryDto>,
-    @SerialName("pagination") val pagination: PaginationDto
+    @SerialName("pagination") val pagination: PaginationDto,
 )

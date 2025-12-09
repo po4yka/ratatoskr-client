@@ -8,5 +8,5 @@ data class ErrorResponseDto(
     @SerialName("code") val code: String,
     @SerialName("message") val message: String,
     @SerialName("correlation_id") val correlationId: String? = null,
-    @SerialName("retry_after") val retryAfter: Int? = null
+    @SerialName("retry_after") val retryAfter: Int? = null,
 )

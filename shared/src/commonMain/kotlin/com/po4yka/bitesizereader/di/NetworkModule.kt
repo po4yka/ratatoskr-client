@@ -20,25 +20,26 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val networkModule = module {
-    single {
-        // Append /v1 so relative paths map to the Mobile API routes exposed by the backend
-        val baseUrl = AppConfig.Api.baseUrl.trimEnd('/') + "/v1"
-        ApiClient(
-            engine = get(),
-            baseUrl = baseUrl,
-            secureStorage = get()
-        ).client
+val networkModule =
+    module {
+        single {
+            // Append /v1 so relative paths map to the Mobile API routes exposed by the backend
+            val baseUrl = AppConfig.Api.baseUrl.trimEnd('/') + "/v1"
+            ApiClient(
+                engine = get(),
+                baseUrl = baseUrl,
+                secureStorage = get(),
+            ).client
+        }
+
+        single<AuthApi> { KtorAuthApi(get()) }
+        single<UserApi> { KtorUserApi(get()) }
+        singleOf(::KtorSummariesApi) bind SummariesApi::class
+        singleOf(::KtorRequestsApi) bind RequestsApi::class
+        singleOf(::KtorSearchApi) bind SearchApi::class
+        singleOf(::KtorSyncApi) bind SyncApi::class
+        singleOf(::KtorSystemApi) bind SystemApi::class
+
+        // gRPC ProcessingService is disabled - Wire GrpcClient requires platform-specific setup
+        // TODO: Re-enable gRPC support when needed with platform-specific implementations
     }
-
-    single<AuthApi> { KtorAuthApi(get()) }
-    single<UserApi> { KtorUserApi(get()) }
-    singleOf(::KtorSummariesApi) bind SummariesApi::class
-    singleOf(::KtorRequestsApi) bind RequestsApi::class
-    singleOf(::KtorSearchApi) bind SearchApi::class
-    singleOf(::KtorSyncApi) bind SyncApi::class
-    singleOf(::KtorSystemApi) bind SystemApi::class
-
-    // gRPC ProcessingService is disabled - Wire GrpcClient requires platform-specific setup
-    // TODO: Re-enable gRPC support when needed with platform-specific implementations
-}

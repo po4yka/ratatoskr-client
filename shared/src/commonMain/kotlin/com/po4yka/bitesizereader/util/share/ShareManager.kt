@@ -56,7 +56,7 @@ fun Summary.toShareText(customMessage: String? = null): String {
         // Use available fields from current Summary model
         // Note: tldr, keyIdeas, topicTags might not be present in the new Summary model
         // Adjusting to what's available: content, sourceUrl, tags
-        
+
         if (content.isNotBlank()) {
             appendLine("Summary:")
             appendLine(content)

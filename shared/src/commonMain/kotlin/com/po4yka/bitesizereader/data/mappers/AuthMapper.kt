@@ -16,7 +16,7 @@ fun UserDto.toDomain(): User {
         username = username,
         firstName = null,
         lastName = null,
-        photoUrl = null
+        photoUrl = null,
     )
 }
 
@@ -33,7 +33,7 @@ fun AuthResponseDto.toDomain(): AuthTokens {
 
 fun TokenRefreshResponseDto.toAuthTokens(
     currentTime: Instant = Clock.System.now(),
-    refreshToken: String
+    refreshToken: String,
 ): AuthTokens {
     return AuthTokens(
         accessToken = accessToken,

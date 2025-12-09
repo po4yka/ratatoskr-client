@@ -17,15 +17,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.RadioButtonUnchecked
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.ArrowLeft
+import compose.icons.feathericons.CheckCircle
+import compose.icons.feathericons.Circle
+import compose.icons.feathericons.Share2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -120,7 +120,7 @@ private fun SummaryDetailHeader(
     ) {
         IconButton(onClick = onBackClick) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                imageVector = FeatherIcons.ArrowLeft,
                 contentDescription = "Back",
                 tint = Carbon.theme.iconPrimary,
             )
@@ -135,7 +135,7 @@ private fun SummaryDetailHeader(
 
         summary?.let { s ->
             Icon(
-                imageVector = if (s.isRead) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
+                imageVector = if (s.isRead) FeatherIcons.CheckCircle else FeatherIcons.Circle,
                 contentDescription = if (s.isRead) "Read" else "Unread",
                 tint = if (s.isRead) ReadIndicator else Carbon.theme.iconSecondary,
                 modifier = Modifier.size(20.dp),
@@ -143,7 +143,7 @@ private fun SummaryDetailHeader(
 
             IconButton(onClick = onShareClick) {
                 Icon(
-                    imageVector = Icons.Default.Share,
+                    imageVector = FeatherIcons.Share2,
                     contentDescription = "Share",
                     tint = Carbon.theme.iconPrimary,
                 )
