@@ -6,8 +6,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     suspend fun login(authData: AuthRequestDto)
-    suspend fun loginWithSecret(userId: Int, clientId: String, secret: String)
+
+    suspend fun loginWithSecret(
+        userId: Int,
+        clientId: String,
+        secret: String,
+    )
+
     suspend fun logout()
+
     suspend fun getCurrentUser(): User?
+
     val isAuthenticated: Flow<Boolean>
 }

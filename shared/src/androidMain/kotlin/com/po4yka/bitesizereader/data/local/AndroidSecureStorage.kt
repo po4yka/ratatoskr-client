@@ -37,18 +37,23 @@ class AndroidSecureStorage(context: Context) : SecureStorage {
         prefs.edit().clear().apply()
     }
 
-    private fun saveEncrypted(key: String, value: String) {
+    private fun saveEncrypted(
+        key: String,
+        value: String,
+    ) {
         val secretKey = getOrCreateKey()
-        val cipher = Cipher.getInstance(cipherTransformation).apply {
-            init(Cipher.ENCRYPT_MODE, secretKey)
-        }
+        val cipher =
+            Cipher.getInstance(cipherTransformation).apply {
+                init(Cipher.ENCRYPT_MODE, secretKey)
+            }
         val iv = cipher.iv
         val encrypted = cipher.doFinal(value.toByteArray(Charsets.UTF_8))
-        val payload = ByteBuffer.allocate(4 + iv.size + encrypted.size).apply {
-            putInt(iv.size)
-            put(iv)
-            put(encrypted)
-        }.array()
+        val payload =
+            ByteBuffer.allocate(4 + iv.size + encrypted.size).apply {
+                putInt(iv.size)
+                put(iv)
+                put(encrypted)
+            }.array()
         prefs.edit().putString(key, Base64.encodeToString(payload, Base64.NO_WRAP)).apply()
     }
 
@@ -61,9 +66,10 @@ class AndroidSecureStorage(context: Context) : SecureStorage {
         val ciphertext = ByteArray(buffer.remaining()).also { buffer.get(it) }
 
         val secretKey = getOrCreateKey()
-        val cipher = Cipher.getInstance(cipherTransformation).apply {
-            init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, iv))
-        }
+        val cipher =
+            Cipher.getInstance(cipherTransformation).apply {
+                init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, iv))
+            }
         return runCatching { cipher.doFinal(ciphertext).toString(Charsets.UTF_8) }.getOrNull()
     }
 
@@ -72,14 +78,15 @@ class AndroidSecureStorage(context: Context) : SecureStorage {
         if (existing != null) return existing
 
         val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
-        val parameterSpec = KeyGenParameterSpec.Builder(
-            keyAlias,
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-        )
-            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-            .setUserAuthenticationRequired(false)
-            .build()
+        val parameterSpec =
+            KeyGenParameterSpec.Builder(
+                keyAlias,
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
+            )
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setUserAuthenticationRequired(false)
+                .build()
 
         keyGenerator.init(parameterSpec)
         return keyGenerator.generateKey()

@@ -85,7 +85,7 @@ object AppConfig {
          */
         fun getTelegramAuthUrl(botId: String = this.botId): String {
             val origin = "$DEEP_LINK_SCHEME://$DEEP_LINK_HOST"
-             return "https://oauth.telegram.org/auth?bot_id=$botId&origin=$origin&embed=1&request_access=write&return_to=$origin"
+            return "https://oauth.telegram.org/auth?bot_id=$botId&origin=$origin&embed=1&request_access=write&return_to=$origin"
         }
     }
 

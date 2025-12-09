@@ -21,23 +21,24 @@ import com.po4yka.bitesizereader.domain.usecase.UnlinkTelegramUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
-val useCaseModule = module {
-    factoryOf(::GetSummariesUseCase)
-    factoryOf(::GetSummaryByIdUseCase)
-    factoryOf(::MarkSummaryAsReadUseCase)
-    factoryOf(::DeleteSummaryUseCase)
-    factoryOf(::SubmitURLUseCase)
-    factoryOf(::GetRequestStatusUseCase)
-    factoryOf(::RetryRequestUseCase)
-    factoryOf(::SearchSummariesUseCase)
-    factoryOf(::DownloadDatabaseUseCase)
-    factoryOf(::GetTelegramLinkStatusUseCase)
-    factoryOf(::UnlinkTelegramUseCase)
-    factoryOf(::LinkTelegramUseCase)
-    factoryOf(::LoginWithSecretUseCase)
-    factoryOf(::LoginWithTelegramUseCase)
-    factoryOf(::LogoutUseCase)
-    factoryOf(::GetCurrentUserUseCase)
-    factoryOf(::GetTrendingTopicsUseCase)
-    factoryOf(::SyncDataUseCase)
-}
+val useCaseModule =
+    module {
+        factoryOf(::GetSummariesUseCase)
+        factoryOf(::GetSummaryByIdUseCase)
+        factoryOf(::MarkSummaryAsReadUseCase)
+        factoryOf(::DeleteSummaryUseCase)
+        factoryOf(::SubmitURLUseCase)
+        factoryOf(::GetRequestStatusUseCase)
+        factoryOf(::RetryRequestUseCase)
+        factoryOf(::SearchSummariesUseCase)
+        factoryOf(::DownloadDatabaseUseCase)
+        factoryOf(::GetTelegramLinkStatusUseCase)
+        factoryOf(::UnlinkTelegramUseCase)
+        factoryOf(::LinkTelegramUseCase)
+        factoryOf(::LoginWithSecretUseCase)
+        factoryOf(::LoginWithTelegramUseCase)
+        factoryOf(::LogoutUseCase)
+        factoryOf(::GetCurrentUserUseCase)
+        factoryOf(::GetTrendingTopicsUseCase)
+        factoryOf(::SyncDataUseCase)
+    }

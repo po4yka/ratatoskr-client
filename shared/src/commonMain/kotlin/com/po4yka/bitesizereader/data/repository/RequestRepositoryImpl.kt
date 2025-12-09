@@ -17,9 +17,8 @@ import kotlin.time.Clock
 
 class RequestRepositoryImpl(
     private val database: Database,
-    private val api: RequestsApi
+    private val api: RequestsApi,
 ) : RequestRepository {
-
     override suspend fun submitUrl(url: String): Request {
         val request = SubmitURLRequestDto(inputUrl = url)
         val response = api.submitUrl(request)
@@ -30,19 +29,22 @@ class RequestRepositoryImpl(
     }
 
     override suspend fun getRequestStatus(id: String): Request {
-        val requestId = id.toLongOrNull()
-            ?: throw IllegalArgumentException("Request id must be numeric to query status")
+        val requestId =
+            id.toLongOrNull()
+                ?: throw IllegalArgumentException("Request id must be numeric to query status")
         val response = api.getRequestStatus(requestId)
         val statusDto = response.data ?: throw IllegalStateException("Failed to fetch request status")
-        val existing = database.databaseQueries.selectAllRequests()
-            .executeAsList()
-            .find { it.id == id }
-            ?: throw NoSuchElementException("Request not found locally")
+        val existing =
+            database.databaseQueries.selectAllRequests()
+                .executeAsList()
+                .find { it.id == id }
+                ?: throw NoSuchElementException("Request not found locally")
 
-        val updatedEntity = existing.copy(
-            status = statusDto.status,
-            updatedAt = Clock.System.now()
-        )
+        val updatedEntity =
+            existing.copy(
+                status = statusDto.status,
+                updatedAt = Clock.System.now(),
+            )
         database.databaseQueries.insertRequest(updatedEntity)
         return updatedEntity.toDomain()
     }

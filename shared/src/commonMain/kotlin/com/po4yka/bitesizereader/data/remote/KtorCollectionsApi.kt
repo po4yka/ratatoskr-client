@@ -36,7 +36,9 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         return client.get("v1/collections").body()
     }
 
-    override suspend fun createCollection(request: CollectionCreateRequest): ApiResponseDto<CollectionResponseEnvelope> {
+    override suspend fun createCollection(
+        request: CollectionCreateRequest,
+    ): ApiResponseDto<CollectionResponseEnvelope> {
         return client.post("v1/collections") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -47,7 +49,10 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         return client.get("v1/collections/$id").body()
     }
 
-    override suspend fun updateCollection(id: Int, request: CollectionUpdateRequest): ApiResponseDto<CollectionResponseEnvelope> {
+    override suspend fun updateCollection(
+        id: Int,
+        request: CollectionUpdateRequest,
+    ): ApiResponseDto<CollectionResponseEnvelope> {
         return client.patch("v1/collections/$id") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -58,21 +63,31 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         return client.delete("v1/collections/$id").body()
     }
 
-    override suspend fun addItem(id: Int, request: CollectionItemCreateRequest): ApiResponseDto<SuccessResponse> {
+    override suspend fun addItem(
+        id: Int,
+        request: CollectionItemCreateRequest,
+    ): ApiResponseDto<SuccessResponse> {
         return client.post("v1/collections/$id/items") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    override suspend fun listItems(id: Int, limit: Int, offset: Int): ApiResponseDto<CollectionItemsResponseEnvelope> {
+    override suspend fun listItems(
+        id: Int,
+        limit: Int,
+        offset: Int,
+    ): ApiResponseDto<CollectionItemsResponseEnvelope> {
         return client.get("v1/collections/$id/items") {
             parameter("limit", limit)
             parameter("offset", offset)
         }.body()
     }
 
-    override suspend fun removeItem(id: Int, summaryId: Long): ApiResponseDto<SuccessResponse> {
+    override suspend fun removeItem(
+        id: Int,
+        summaryId: Long,
+    ): ApiResponseDto<SuccessResponse> {
         return client.delete("v1/collections/$id/items/$summaryId").body()
     }
 
@@ -86,18 +101,27 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         return client.get("v1/collections/$id/acl").body()
     }
 
-    override suspend fun addCollaborator(id: Int, request: CollectionShareRequest): ApiResponseDto<SuccessResponse> {
+    override suspend fun addCollaborator(
+        id: Int,
+        request: CollectionShareRequest,
+    ): ApiResponseDto<SuccessResponse> {
         return client.post("v1/collections/$id/share") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    override suspend fun removeCollaborator(id: Int, userId: Int): ApiResponseDto<SuccessResponse> {
+    override suspend fun removeCollaborator(
+        id: Int,
+        userId: Int,
+    ): ApiResponseDto<SuccessResponse> {
         return client.delete("v1/collections/$id/share/$userId").body()
     }
 
-    override suspend fun createInvite(id: Int, request: CollectionInviteRequest): ApiResponseDto<CollectionInviteResponseEnvelope> {
+    override suspend fun createInvite(
+        id: Int,
+        request: CollectionInviteRequest,
+    ): ApiResponseDto<CollectionInviteResponseEnvelope> {
         return client.post("v1/collections/$id/invite") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -108,28 +132,40 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         return client.post("v1/collections/invites/$token/accept").body()
     }
 
-    override suspend fun reorderCollections(id: Int, request: CollectionReorderRequest): ApiResponseDto<CollectionReorderResponseEnvelope> {
+    override suspend fun reorderCollections(
+        id: Int,
+        request: CollectionReorderRequest,
+    ): ApiResponseDto<CollectionReorderResponseEnvelope> {
         return client.post("v1/collections/$id/reorder") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    override suspend fun reorderItems(id: Int, request: CollectionItemReorderRequest): ApiResponseDto<CollectionReorderResponseEnvelope> {
+    override suspend fun reorderItems(
+        id: Int,
+        request: CollectionItemReorderRequest,
+    ): ApiResponseDto<CollectionReorderResponseEnvelope> {
         return client.post("v1/collections/$id/items/reorder") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    override suspend fun moveCollection(id: Int, request: CollectionMoveRequest): ApiResponseDto<CollectionMoveResponseEnvelope> {
+    override suspend fun moveCollection(
+        id: Int,
+        request: CollectionMoveRequest,
+    ): ApiResponseDto<CollectionMoveResponseEnvelope> {
         return client.post("v1/collections/$id/move") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    override suspend fun moveItems(id: Int, request: CollectionItemMoveRequest): ApiResponseDto<CollectionItemsMoveResponseEnvelope> {
+    override suspend fun moveItems(
+        id: Int,
+        request: CollectionItemMoveRequest,
+    ): ApiResponseDto<CollectionItemsMoveResponseEnvelope> {
         return client.post("v1/collections/$id/items/move") {
             contentType(ContentType.Application.Json)
             setBody(request)

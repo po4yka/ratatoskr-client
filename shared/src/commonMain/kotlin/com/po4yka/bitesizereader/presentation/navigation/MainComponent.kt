@@ -1,3 +1,5 @@
+@file:OptIn(com.arkivanov.decompose.DelicateDecomposeApi::class)
+
 package com.po4yka.bitesizereader.presentation.navigation
 
 import com.arkivanov.decompose.ComponentContext
@@ -17,8 +19,11 @@ interface MainComponent {
 
     sealed class Child {
         data class SummaryList(val component: SummaryListComponent) : Child()
+
         data class SummaryDetail(val component: SummaryDetailComponent) : Child()
+
         data class Collections(val component: CollectionsComponent) : Child()
+
         data class Settings(val component: SettingsComponent) : Child()
     }
 }
@@ -26,7 +31,6 @@ interface MainComponent {
 class DefaultMainComponent(
     componentContext: ComponentContext,
 ) : MainComponent, ComponentContext by componentContext {
-
     private val navigation = StackNavigation<Config>()
 
     override val childStack: Value<ChildStack<*, MainComponent.Child>> =
@@ -38,27 +42,34 @@ class DefaultMainComponent(
             childFactory = ::createChild,
         )
 
-    private fun createChild(config: Config, componentContext: ComponentContext): MainComponent.Child =
+    private fun createChild(
+        config: Config,
+        componentContext: ComponentContext,
+    ): MainComponent.Child =
         when (config) {
-            is Config.SummaryList -> MainComponent.Child.SummaryList(
-                DefaultSummaryListComponent { id ->
-                    navigateToSummaryDetail(id)
-                },
-            )
-            is Config.SummaryDetail -> MainComponent.Child.SummaryDetail(
-                DefaultSummaryDetailComponent(
-                    summaryId = config.summaryId,
-                    onBack = { navigation.pop() },
-                ),
-            )
-            is Config.Collections -> MainComponent.Child.Collections(
-                DefaultCollectionsComponent { collectionId ->
-                    filterByCollection(collectionId)
-                },
-            )
-            is Config.Settings -> MainComponent.Child.Settings(
-                DefaultSettingsComponent(componentContext),
-            )
+            is Config.SummaryList ->
+                MainComponent.Child.SummaryList(
+                    DefaultSummaryListComponent { id ->
+                        navigateToSummaryDetail(id)
+                    },
+                )
+            is Config.SummaryDetail ->
+                MainComponent.Child.SummaryDetail(
+                    DefaultSummaryDetailComponent(
+                        summaryId = config.summaryId,
+                        onBack = { navigation.pop() },
+                    ),
+                )
+            is Config.Collections ->
+                MainComponent.Child.Collections(
+                    DefaultCollectionsComponent { collectionId ->
+                        filterByCollection(collectionId)
+                    },
+                )
+            is Config.Settings ->
+                MainComponent.Child.Settings(
+                    DefaultSettingsComponent(componentContext),
+                )
         }
 
     private fun navigateToSummaryDetail(summaryId: String) {

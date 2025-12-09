@@ -9,9 +9,10 @@ import io.ktor.client.engine.darwin.Darwin
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-actual fun platformModule(): Module = module {
-    single { DatabaseDriverFactory() }
-    single<SecureStorage> { IosSecureStorage() }
-    single<HttpClientEngine> { Darwin.create() }
-    single { FileSaver() }
-}
+actual fun platformModule(): Module =
+    module {
+        single { DatabaseDriverFactory() }
+        single<SecureStorage> { IosSecureStorage() }
+        single<HttpClientEngine> { Darwin.create() }
+        single { FileSaver() }
+    }

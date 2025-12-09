@@ -23,7 +23,7 @@ actual fun WebView(
     // and show a message to the user
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text("Opening authentication in browser...")
     }

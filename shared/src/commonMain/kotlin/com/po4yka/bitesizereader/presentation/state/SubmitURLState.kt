@@ -10,5 +10,5 @@ data class SubmitURLState(
     val error: String? = null,
     val progress: Float = 0f,
     val stage: ProcessingStage = ProcessingStage.UNSPECIFIED,
-    val message: String? = null
+    val message: String? = null,
 )

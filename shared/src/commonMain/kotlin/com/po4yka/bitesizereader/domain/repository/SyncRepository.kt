@@ -5,5 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface SyncRepository {
     suspend fun sync()
+
     fun getSyncState(): Flow<SyncState>
 }

@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
-    private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase
+    private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SearchState())
     val state = _state.asStateFlow()
@@ -27,12 +27,13 @@ class SearchViewModel(
     fun onQueryChanged(query: String) {
         _state.value = _state.value.copy(query = query)
         searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(500) // Debounce
-            if (query.isNotBlank()) {
-                performSearch(query)
+        searchJob =
+            viewModelScope.launch {
+                delay(500) // Debounce
+                if (query.isNotBlank()) {
+                    performSearch(query)
+                }
             }
-        }
     }
 
     private fun loadTrendingTopics() {

@@ -11,11 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Bookmark
+import compose.icons.feathericons.Folder
+import compose.icons.feathericons.Settings
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,12 +59,13 @@ fun MainScreen(component: MainComponent) {
             ) { child ->
                 when (val instance = child.instance) {
                     is MainComponent.Child.SummaryList -> SummaryListScreen(component = instance.component)
-                    is MainComponent.Child.SummaryDetail -> SummaryDetailScreen(
-                        viewModel = instance.component.viewModel,
-                        summaryId = "",
-                        onBackClick = instance.component::onBackClicked,
-                        onShareClick = { },
-                    )
+                    is MainComponent.Child.SummaryDetail ->
+                        SummaryDetailScreen(
+                            viewModel = instance.component.viewModel,
+                            summaryId = "",
+                            onBackClick = instance.component::onBackClicked,
+                            onShareClick = { },
+                        )
                     is MainComponent.Child.Collections ->
                         CollectionsScreen(
                             onCollectionClick = instance.component::onCollectionClicked,
@@ -104,21 +105,21 @@ private fun BottomNavigation(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         NavItem(
-            icon = Icons.Default.Home,
+            icon = FeatherIcons.Bookmark,
             label = "Read Later",
             isSelected = activeChild is MainComponent.Child.SummaryList,
             onClick = { onTabSelected(DefaultMainComponent.Config.SummaryList()) },
         )
 
         NavItem(
-            icon = Icons.Default.Folder,
+            icon = FeatherIcons.Folder,
             label = "Collections",
             isSelected = activeChild is MainComponent.Child.Collections,
             onClick = { onTabSelected(DefaultMainComponent.Config.Collections) },
         )
 
         NavItem(
-            icon = Icons.Default.Settings,
+            icon = FeatherIcons.Settings,
             label = "Settings",
             isSelected = activeChild is MainComponent.Child.Settings,
             onClick = { onTabSelected(DefaultMainComponent.Config.Settings) },

@@ -6,7 +6,7 @@ import com.po4yka.bitesizereader.domain.repository.SystemRepository
 import kotlinx.coroutines.flow.Flow
 
 class SystemRepositoryImpl(
-    private val api: SystemApi
+    private val api: SystemApi,
 ) : SystemRepository {
     override suspend fun downloadDatabase(outputFile: String): Flow<DownloadProgress> {
         return api.downloadDatabase(outputFile)

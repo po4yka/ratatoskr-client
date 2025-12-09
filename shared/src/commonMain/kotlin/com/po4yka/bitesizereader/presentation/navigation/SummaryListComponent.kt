@@ -6,11 +6,12 @@ import org.koin.core.component.inject
 
 interface SummaryListComponent {
     val viewModel: SummaryListViewModel
+
     fun onSummaryClicked(id: String)
 }
 
 class DefaultSummaryListComponent(
-    private val onSummarySelected: (String) -> Unit
+    private val onSummarySelected: (String) -> Unit,
 ) : SummaryListComponent, KoinComponent {
     override val viewModel: SummaryListViewModel by inject()
 

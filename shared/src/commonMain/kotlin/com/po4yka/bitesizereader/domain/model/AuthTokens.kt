@@ -7,5 +7,5 @@ data class AuthTokens(
     val refreshToken: String,
     val tokenType: String = "Bearer",
     val expiresIn: Long,
-    val expiresAt: Instant
+    val expiresAt: Instant,
 )

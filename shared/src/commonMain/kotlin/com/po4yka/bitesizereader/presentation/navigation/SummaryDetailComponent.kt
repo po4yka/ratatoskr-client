@@ -6,12 +6,13 @@ import org.koin.core.component.inject
 
 interface SummaryDetailComponent {
     val viewModel: SummaryDetailViewModel
+
     fun onBackClicked()
 }
 
 class DefaultSummaryDetailComponent(
     private val summaryId: String,
-    private val onBack: () -> Unit
+    private val onBack: () -> Unit,
 ) : SummaryDetailComponent, KoinComponent {
     override val viewModel: SummaryDetailViewModel by inject()
 

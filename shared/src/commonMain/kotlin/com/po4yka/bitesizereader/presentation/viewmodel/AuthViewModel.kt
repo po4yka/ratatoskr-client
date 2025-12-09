@@ -23,7 +23,7 @@ class AuthViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
     private val loginWithSecretUseCase: LoginWithSecretUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(AuthState())
     val state = _state.asStateFlow()
@@ -35,10 +35,11 @@ class AuthViewModel(
     private fun checkAuthStatus() {
         viewModelScope.launch {
             val user = getCurrentUserUseCase()
-            _state.value = _state.value.copy(
-                user = user,
-                isAuthenticated = user != null
-            )
+            _state.value =
+                _state.value.copy(
+                    user = user,
+                    isAuthenticated = user != null,
+                )
         }
     }
 
@@ -48,12 +49,13 @@ class AuthViewModel(
             try {
                 loginWithTelegramUseCase(authData)
                 val user = getCurrentUserUseCase()
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    isAuthenticated = true,
-                    user = user,
-                    error = null
-                )
+                _state.value =
+                    _state.value.copy(
+                        isLoading = false,
+                        isAuthenticated = true,
+                        user = user,
+                        error = null,
+                    )
             } catch (e: Exception) {
                 logger.error(e) { "Login with Telegram failed" }
                 _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
@@ -61,18 +63,23 @@ class AuthViewModel(
         }
     }
 
-    fun loginWithSecret(userId: Int, clientId: String, secret: String) {
+    fun loginWithSecret(
+        userId: Int,
+        clientId: String,
+        secret: String,
+    ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
                 loginWithSecretUseCase(userId, clientId, secret)
                 val user = getCurrentUserUseCase()
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    isAuthenticated = true,
-                    user = user,
-                    error = null
-                )
+                _state.value =
+                    _state.value.copy(
+                        isLoading = false,
+                        isAuthenticated = true,
+                        user = user,
+                        error = null,
+                    )
             } catch (e: Exception) {
                 logger.error(e) { "Login with Secret failed" }
                 _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())

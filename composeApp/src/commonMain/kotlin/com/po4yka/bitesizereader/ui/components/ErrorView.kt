@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Icon
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.AlertCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +38,7 @@ fun ErrorView(
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
-            imageVector = Icons.Default.ErrorOutline,
+            imageVector = FeatherIcons.AlertCircle,
             contentDescription = "Error",
             tint = Carbon.theme.supportError,
             modifier = Modifier.size(64.dp),

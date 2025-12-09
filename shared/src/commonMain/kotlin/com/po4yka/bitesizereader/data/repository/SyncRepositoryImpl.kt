@@ -15,9 +15,8 @@ import kotlin.time.Clock
 
 class SyncRepositoryImpl(
     private val database: Database,
-    private val api: SyncApi
+    private val api: SyncApi,
 ) : SyncRepository {
-
     override suspend fun sync() {
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val since = metadata?.lastSyncTime?.toString() ?: "1970-01-01T00:00:00Z"
@@ -33,13 +32,13 @@ class SyncRepositoryImpl(
             changes.created.forEach { created ->
                 val payload = created.data
                 database.databaseQueries.insertSummary(
-                    payload.toEntity(isReadOverride = payload.isRead, createdAt = created.createdAt)
+                    payload.toEntity(isReadOverride = payload.isRead, createdAt = created.createdAt),
                 )
             }
             changes.updated.forEach { updated ->
                 val payload = updated.data
                 database.databaseQueries.insertSummary(
-                    payload.toEntity(isReadOverride = payload.isRead, createdAt = updated.createdAt)
+                    payload.toEntity(isReadOverride = payload.isRead, createdAt = updated.createdAt),
                 )
             }
             changes.deleted.forEach { id ->
@@ -48,7 +47,7 @@ class SyncRepositoryImpl(
 
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
-                syncToken = syncTimestamp
+                syncToken = syncTimestamp,
             )
         }
     }
@@ -58,7 +57,7 @@ class SyncRepositoryImpl(
             .asFlow().mapToOneOrNull(Dispatchers.IO).map { entity ->
                 SyncState(
                     lastSyncTime = entity?.lastSyncTime,
-                    lastSyncHash = entity?.syncToken
+                    lastSyncHash = entity?.syncToken,
                 )
             }
     }

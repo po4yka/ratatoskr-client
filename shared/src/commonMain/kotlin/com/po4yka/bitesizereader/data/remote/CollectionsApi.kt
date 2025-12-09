@@ -23,27 +23,69 @@ import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
 
 interface CollectionsApi {
     suspend fun listCollections(): ApiResponseDto<CollectionListResponseEnvelope>
+
     suspend fun createCollection(request: CollectionCreateRequest): ApiResponseDto<CollectionResponseEnvelope>
+
     suspend fun getCollection(id: Int): ApiResponseDto<CollectionResponseEnvelope>
-    suspend fun updateCollection(id: Int, request: CollectionUpdateRequest): ApiResponseDto<CollectionResponseEnvelope>
+
+    suspend fun updateCollection(
+        id: Int,
+        request: CollectionUpdateRequest,
+    ): ApiResponseDto<CollectionResponseEnvelope>
+
     suspend fun deleteCollection(id: Int): ApiResponseDto<SuccessResponse>
 
-    suspend fun addItem(id: Int, request: CollectionItemCreateRequest): ApiResponseDto<SuccessResponse>
-    suspend fun listItems(id: Int, limit: Int = 50, offset: Int = 0): ApiResponseDto<CollectionItemsResponseEnvelope>
-    suspend fun removeItem(id: Int, summaryId: Long): ApiResponseDto<SuccessResponse>
+    suspend fun addItem(
+        id: Int,
+        request: CollectionItemCreateRequest,
+    ): ApiResponseDto<SuccessResponse>
+
+    suspend fun listItems(
+        id: Int,
+        limit: Int = 50,
+        offset: Int = 0,
+    ): ApiResponseDto<CollectionItemsResponseEnvelope>
+
+    suspend fun removeItem(
+        id: Int,
+        summaryId: Long,
+    ): ApiResponseDto<SuccessResponse>
 
     suspend fun getTree(maxDepth: Int = 3): ApiResponseDto<CollectionTreeResponseEnvelope>
 
     suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponseEnvelope> // Note: CollectionAclResponseEnvelope not defined in DTOs yet, will need to check or assume generic
-    suspend fun addCollaborator(id: Int, request: CollectionShareRequest): ApiResponseDto<SuccessResponse>
-    suspend fun removeCollaborator(id: Int, userId: Int): ApiResponseDto<SuccessResponse>
 
-    suspend fun createInvite(id: Int, request: CollectionInviteRequest): ApiResponseDto<CollectionInviteResponseEnvelope>
+    suspend fun addCollaborator(
+        id: Int,
+        request: CollectionShareRequest,
+    ): ApiResponseDto<SuccessResponse>
+
+    suspend fun removeCollaborator(
+        id: Int,
+        userId: Int,
+    ): ApiResponseDto<SuccessResponse>
+
+    suspend fun createInvite(
+        id: Int,
+        request: CollectionInviteRequest,
+    ): ApiResponseDto<CollectionInviteResponseEnvelope>
+
     suspend fun acceptInvite(token: String): ApiResponseDto<SuccessResponse>
 
-    suspend fun reorderCollections(id: Int, request: CollectionReorderRequest): ApiResponseDto<CollectionReorderResponseEnvelope>
+    suspend fun reorderCollections(
+        id: Int,
+        request: CollectionReorderRequest,
+    ): ApiResponseDto<CollectionReorderResponseEnvelope>
+
     suspend fun reorderItems(id: Int, request: CollectionItemReorderRequest): ApiResponseDto<CollectionReorderResponseEnvelope> // Assuming same response type based on similarity
 
-    suspend fun moveCollection(id: Int, request: CollectionMoveRequest): ApiResponseDto<CollectionMoveResponseEnvelope>
-    suspend fun moveItems(id: Int, request: CollectionItemMoveRequest): ApiResponseDto<CollectionItemsMoveResponseEnvelope>
+    suspend fun moveCollection(
+        id: Int,
+        request: CollectionMoveRequest,
+    ): ApiResponseDto<CollectionMoveResponseEnvelope>
+
+    suspend fun moveItems(
+        id: Int,
+        request: CollectionItemMoveRequest,
+    ): ApiResponseDto<CollectionItemsMoveResponseEnvelope>
 }

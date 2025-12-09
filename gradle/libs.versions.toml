@@ -51,6 +51,9 @@ detekt = "1.23.8"
 # Design System
 carbon = "0.6.2"
 
+# Icons
+composeIcons = "1.1.1"
+
 [libraries]
 # Kotlin
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -126,6 +129,12 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 # Carbon Design System
 carbon-compose = { module = "io.github.gabrieldrn:carbon", version.ref = "carbon" }
+
+# Compose Icons
+compose-icons-feather = { module = "br.com.devsrsouza.compose.icons:feather", version.ref = "composeIcons" }
+compose-icons-tabler = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "composeIcons" }
+compose-icons-simple = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "composeIcons" }
+compose-icons-fontawesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "composeIcons" }
 
 [plugins]
 # Android

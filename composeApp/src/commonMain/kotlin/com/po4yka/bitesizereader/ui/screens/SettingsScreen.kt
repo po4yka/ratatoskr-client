@@ -160,15 +160,17 @@ private fun AccountBindingCard(
 
         when {
             state.isLoading -> SmallLoading()
-            state.linkStatus != null -> LinkedStatusContent(
-                state = state,
-                onBeginLink = onBeginLink,
-                onUnlink = onUnlink,
-            )
-            state.error != null -> ErrorContent(
-                error = state.error,
-                onRetry = onRetryLinkStatus,
-            )
+            state.linkStatus != null ->
+                LinkedStatusContent(
+                    state = state,
+                    onBeginLink = onBeginLink,
+                    onUnlink = onUnlink,
+                )
+            state.error != null ->
+                ErrorContent(
+                    error = state.error,
+                    onRetry = onRetryLinkStatus,
+                )
         }
     }
 }

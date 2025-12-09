@@ -11,5 +11,5 @@ data class AuthRequestDto(
     @SerialName("username") val username: String? = null,
     @SerialName("photo_url") val photoUrl: String? = null,
     @SerialName("auth_date") val authDate: Long,
-    @SerialName("hash") val hash: String
+    @SerialName("hash") val hash: String,
 )

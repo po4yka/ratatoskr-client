@@ -7,6 +7,6 @@ fun TelegramLinkStatusDto.toDomain(): TelegramLinkStatus {
     return TelegramLinkStatus(
         linked = linked,
         username = username,
-        telegramId = telegramId
+        telegramId = telegramId,
     )
 }

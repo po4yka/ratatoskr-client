@@ -9,9 +9,8 @@ import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 
 class DefaultRootComponent(
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
 ) : RootComponent, ComponentContext by componentContext {
-
     private val navigation = StackNavigation<Config>()
 
     override val childStack: Value<ChildStack<*, RootComponent.Child>> =
@@ -20,14 +19,20 @@ class DefaultRootComponent(
             serializer = Config.serializer(),
             initialConfiguration = Config.Auth, // Start with Auth or Check logic
             handleBackButton = true,
-            childFactory = ::createChild
+            childFactory = ::createChild,
         )
 
-    private fun createChild(config: Config, componentContext: ComponentContext): RootComponent.Child =
+    private fun createChild(
+        config: Config,
+        componentContext: ComponentContext,
+    ): RootComponent.Child =
         when (config) {
-            is Config.Auth -> RootComponent.Child.Auth(DefaultAuthComponent(componentContext) {
-                navigation.replaceCurrent(Config.Main)
-            })
+            is Config.Auth ->
+                RootComponent.Child.Auth(
+                    DefaultAuthComponent(componentContext) {
+                        navigation.replaceCurrent(Config.Main)
+                    },
+                )
             is Config.Main -> RootComponent.Child.Main(DefaultMainComponent(componentContext))
         }
 

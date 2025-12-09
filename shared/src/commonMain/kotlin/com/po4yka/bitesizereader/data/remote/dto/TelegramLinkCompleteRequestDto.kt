@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TelegramLinkCompleteRequestDto(
     val nonce: String,
-    @SerialName("telegram_auth") val telegramAuth: TelegramLoginRequestDto
+    @SerialName("telegram_auth") val telegramAuth: TelegramLoginRequestDto,
 )

@@ -18,10 +18,13 @@ private val logger = KotlinLogging.logger {}
 
 class SummaryRepositoryImpl(
     private val database: Database,
-    private val api: SummariesApi
+    private val api: SummariesApi,
 ) : SummaryRepository {
-
-    override fun getSummaries(page: Int, pageSize: Int, tags: List<String>?): Flow<List<Summary>> {
+    override fun getSummaries(
+        page: Int,
+        pageSize: Int,
+        tags: List<String>?,
+    ): Flow<List<Summary>> {
         // Current implementation: Direct database access with reactive Flow.
         // Data synchronization is handled separately by SyncDataUseCase which fetches
         // from the API and updates the local database. This repository observes
@@ -29,7 +32,7 @@ class SummaryRepositoryImpl(
 
         return database.databaseQueries.selectAllSummaries(
             limit = pageSize.toLong(),
-            offset = ((page - 1) * pageSize).toLong()
+            offset = ((page - 1) * pageSize).toLong(),
         ).asFlow().mapToList(Dispatchers.IO).map { entities ->
             entities.map { it.toDomain() }
         }

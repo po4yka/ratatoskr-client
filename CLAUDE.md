@@ -109,6 +109,7 @@ composeApp/src/commonMain/kotlin/
 | Async | kotlinx.coroutines + Flow |
 | Image Loading | Coil 3.x |
 | Design System | Carbon Compose (IBM Carbon) |
+| Icons | Compose Icons |
 
 ## Design System
 
@@ -153,6 +154,65 @@ This project uses **Carbon Compose** (IBM's Carbon Design System for Compose Mul
 
 - GitHub: https://github.com/gabrieldrn/carbon-compose
 - Docs: https://gabrieldrn.github.io/carbon-compose/
+
+## Icons
+
+This project uses **Compose Icons** (by DevSrSouza) - a multiplatform icon library providing access to popular icon packs including Feather Icons, Tabler Icons, Font Awesome, and more.
+
+### Available Icon Packs (in this project)
+
+- **Feather Icons**: Clean, minimalist icons - `compose.icons.FeatherIcons`
+- **Tabler Icons**: Consistent stroke icons - `compose.icons.TablerIcons`
+
+Additional packs available via gradle:
+- Font Awesome: `br.com.devsrsouza.compose.icons:font-awesome`
+- Simple Icons: `br.com.devsrsouza.compose.icons:simple-icons`
+- Eva Icons: `br.com.devsrsouza.compose.icons:eva-icons`
+- Octicons: `br.com.devsrsouza.compose.icons:octicons`
+
+### Usage Rules
+
+1. **Import icons from the appropriate pack**:
+   ```kotlin
+   import compose.icons.FeatherIcons
+   import compose.icons.feathericons.Home
+   import compose.icons.feathericons.Settings
+
+   import compose.icons.TablerIcons
+   import compose.icons.tablericons.Bulb
+   ```
+
+2. **Use icons with Material3 Icon component**:
+   ```kotlin
+   import androidx.compose.material3.Icon
+   import compose.icons.FeatherIcons
+   import compose.icons.feathericons.Bookmark
+
+   Icon(
+       imageVector = FeatherIcons.Bookmark,
+       contentDescription = "Bookmark",
+       tint = Carbon.theme.iconPrimary
+   )
+   ```
+
+3. **Always apply Carbon theme colors** for consistency:
+   - `Carbon.theme.iconPrimary` - Primary icons
+   - `Carbon.theme.iconSecondary` - Secondary/less important icons
+   - `Carbon.theme.iconOnColor` - Icons on colored backgrounds
+   - `Carbon.theme.supportError` - Error state icons
+   - `Carbon.theme.supportSuccess` - Success state icons
+
+4. **Common icons used in this project**:
+   - Navigation: `FeatherIcons.Bookmark`, `FeatherIcons.Folder`, `FeatherIcons.Settings`
+   - Actions: `FeatherIcons.RefreshCw`, `FeatherIcons.Share2`, `FeatherIcons.ArrowLeft`
+   - Status: `FeatherIcons.CheckCircle`, `FeatherIcons.AlertCircle`, `FeatherIcons.X`
+   - Content: `FeatherIcons.FileText`, `FeatherIcons.Inbox`, `FeatherIcons.Trash2`
+
+### Compose Icons Documentation
+
+- GitHub: https://github.com/DevSrSouza/compose-icons
+- Icon Browser: https://composeicons.com/
+- Maven: `br.com.devsrsouza.compose.icons:{pack}:1.1.1`
 
 ## Configuration
 

@@ -11,23 +11,27 @@ import platform.Foundation.NSUserDomainMask
 import platform.Foundation.URLByAppendingPathComponent
 
 actual class FileSaver {
-    actual suspend fun saveToDownloads(sourcePath: String, fileName: String): String? {
+    actual suspend fun saveToDownloads(
+        sourcePath: String,
+        fileName: String,
+    ): String? {
         val fileManager = NSFileManager.defaultManager
-        
+
         // On iOS, "Downloads" isn't a standard accessible folder in the same way.
         // We typically save to Documents and ensure UIFileSharingEnabled is true,
         // or let the UI layer present a share sheet.
         // For this logic, we'll copy it to the Documents directory which is accessible via Files app
         // if Info.plist has LSSupportsOpeningDocumentsInPlace / UIFileSharingEnabled.
-        
-        val documentsUrl = fileManager.URLForDirectory(
-            NSDocumentDirectory,
-            NSUserDomainMask,
-            null,
-            true,
-            null
-        ) as? NSURL ?: return null
-        
+
+        val documentsUrl =
+            fileManager.URLForDirectory(
+                NSDocumentDirectory,
+                NSUserDomainMask,
+                null,
+                true,
+                null,
+            ) as? NSURL ?: return null
+
         val destUrl = documentsUrl.URLByAppendingPathComponent(fileName) ?: return null
         val sourceUrl = NSURL.fileURLWithPath(sourcePath)
 
@@ -50,21 +54,26 @@ actual class FileSaver {
         return cacheDir.URLByAppendingPathComponent(fileName)?.path ?: fileName
     }
 
-    actual suspend fun importDatabase(sourcePath: String, targetDbName: String) {
+    actual suspend fun importDatabase(
+        sourcePath: String,
+        targetDbName: String,
+    ) {
         val fileManager = NSFileManager.defaultManager
 
         // iOS databases are typically stored in Library/Application Support
         // or directly in the Documents directory depending on SQLDelight configuration
-        val libraryUrl = fileManager.URLForDirectory(
-            NSLibraryDirectory,
-            NSUserDomainMask,
-            null,
-            true,
-            null
-        ) as? NSURL ?: throw Exception("Could not access Library directory")
+        val libraryUrl =
+            fileManager.URLForDirectory(
+                NSLibraryDirectory,
+                NSUserDomainMask,
+                null,
+                true,
+                null,
+            ) as? NSURL ?: throw Exception("Could not access Library directory")
 
-        val destUrl = libraryUrl.URLByAppendingPathComponent(targetDbName)
-            ?: throw Exception("Could not create destination URL")
+        val destUrl =
+            libraryUrl.URLByAppendingPathComponent(targetDbName)
+                ?: throw Exception("Could not create destination URL")
         val sourceUrl = NSURL.fileURLWithPath(sourcePath)
 
         // Remove existing database if present

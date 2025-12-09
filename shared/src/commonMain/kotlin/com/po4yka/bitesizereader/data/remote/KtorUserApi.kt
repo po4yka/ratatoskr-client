@@ -12,7 +12,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 
 class KtorUserApi(
-    private val client: HttpClient
+    private val client: HttpClient,
 ) : UserApi {
     override suspend fun getTelegramLinkStatus(): ApiResponseDto<TelegramLinkStatusDto> {
         return client.get("v1/me/telegram").body()
@@ -26,7 +26,9 @@ class KtorUserApi(
         return client.post("v1/me/telegram/link").body()
     }
 
-    override suspend fun completeTelegramLink(request: TelegramLinkCompleteRequestDto): ApiResponseDto<TelegramLinkStatusDto> {
+    override suspend fun completeTelegramLink(
+        request: TelegramLinkCompleteRequestDto,
+    ): ApiResponseDto<TelegramLinkStatusDto> {
         return client.post("v1/me/telegram/complete") {
             setBody(request)
         }.body()

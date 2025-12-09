@@ -11,5 +11,5 @@ data class UserDto(
     @SerialName("is_owner") val isOwner: Boolean = false,
     @SerialName("favorite_topics") val favoriteTopics: List<String> = emptyList(),
     @SerialName("favorite_domains") val favoriteDomains: List<String> = emptyList(),
-    @SerialName("created_at") val createdAt: String? = null
+    @SerialName("created_at") val createdAt: String? = null,
 )

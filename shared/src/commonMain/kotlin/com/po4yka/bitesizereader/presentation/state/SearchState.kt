@@ -8,5 +8,5 @@ data class SearchState(
     val recentSearches: List<String> = emptyList(),
     val trendingTopics: List<String> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
 )

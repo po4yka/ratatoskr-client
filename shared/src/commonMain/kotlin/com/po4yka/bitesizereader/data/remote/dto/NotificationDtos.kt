@@ -7,11 +7,11 @@ import kotlinx.serialization.Serializable
 data class DeviceRegistrationPayload(
     @SerialName("token") val token: String,
     @SerialName("platform") val platform: String, // "ios" or "android"
-    @SerialName("device_id") val deviceId: String? = null
+    @SerialName("device_id") val deviceId: String? = null,
 )
 
 @Serializable
 data class BaseResponse(
     @SerialName("success") val success: Boolean,
-    @SerialName("message") val message: String? = null
+    @SerialName("message") val message: String? = null,
 )
