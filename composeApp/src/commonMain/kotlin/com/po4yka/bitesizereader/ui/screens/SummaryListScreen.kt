@@ -16,8 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import compose.icons.FeatherIcons
-import compose.icons.feathericons.RefreshCw
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,14 +53,14 @@ fun SummaryListScreen(
         // Header
         CarbonHeader(
             title = "Read Later",
-            onRefresh = { viewModel.loadSummaries() },
+            onRefresh = { viewModel.syncAndLoad() },
         )
 
         // Content
         SummaryListContent(
             state = state,
             onSummaryClick = { id -> component.onSummaryClicked(id) },
-            onRefresh = { viewModel.loadSummaries() },
+            onRefresh = { viewModel.syncAndLoad() },
             modifier = Modifier.weight(1f),
         )
     }
@@ -90,7 +89,7 @@ private fun CarbonHeader(
 
         IconButton(onClick = onRefresh) {
             Icon(
-                imageVector = FeatherIcons.RefreshCw,
+                imageVector = CarbonIcons.Renew,
                 contentDescription = "Refresh",
                 tint = Carbon.theme.iconPrimary,
             )

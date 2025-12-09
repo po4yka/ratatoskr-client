@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AuthResponseDto(
     @SerialName("tokens") val tokens: TokensDto,
+    @SerialName("session_id") val sessionId: Long,
 )
 
 @Serializable

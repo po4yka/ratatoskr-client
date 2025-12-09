@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import compose.icons.FeatherIcons
-import compose.icons.feathericons.Check
-import compose.icons.feathericons.X
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -108,7 +106,7 @@ private fun StageIndicator(
         when {
             isFailed -> {
                 Icon(
-                    imageVector = FeatherIcons.X,
+                    imageVector = CarbonIcons.Close,
                     contentDescription = null,
                     tint = Carbon.theme.supportError,
                     modifier = Modifier.size(24.dp),
@@ -116,7 +114,7 @@ private fun StageIndicator(
             }
             isCompleted -> {
                 Icon(
-                    imageVector = FeatherIcons.Check,
+                    imageVector = CarbonIcons.Checkmark,
                     contentDescription = null,
                     tint = Carbon.theme.supportSuccess,
                     modifier = Modifier.size(24.dp),

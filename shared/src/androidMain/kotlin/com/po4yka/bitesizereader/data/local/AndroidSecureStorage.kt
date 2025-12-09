@@ -14,7 +14,8 @@ import javax.crypto.spec.GCMParameterSpec
 class AndroidSecureStorage(context: Context) : SecureStorage {
     private val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
     private val keyAlias = "bite_size_reader_secure_key"
-    private val cipherTransformation = "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_GCM}/${KeyProperties.ENCRYPTION_PADDING_NONE}"
+    private val cipherTransformation =
+        "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_GCM}/${KeyProperties.ENCRYPTION_PADDING_NONE}"
     private val keyStore: KeyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
 
     override suspend fun saveAccessToken(token: String) {
@@ -31,6 +32,14 @@ class AndroidSecureStorage(context: Context) : SecureStorage {
 
     override suspend fun getRefreshToken(): String? {
         return loadDecrypted("refresh_token")
+    }
+
+    override suspend fun saveSessionId(sessionId: Long) {
+        saveEncrypted("session_id", sessionId.toString())
+    }
+
+    override suspend fun getSessionId(): Long? {
+        return loadDecrypted("session_id")?.toLongOrNull()
     }
 
     override suspend fun clearTokens() {

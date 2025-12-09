@@ -12,11 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import compose.icons.FeatherIcons
-import compose.icons.feathericons.Bookmark
-import compose.icons.feathericons.Folder
-import compose.icons.feathericons.Settings
 import androidx.compose.material3.Text
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -105,21 +102,21 @@ private fun BottomNavigation(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         NavItem(
-            icon = FeatherIcons.Bookmark,
+            icon = CarbonIcons.Bookmark,
             label = "Read Later",
             isSelected = activeChild is MainComponent.Child.SummaryList,
             onClick = { onTabSelected(DefaultMainComponent.Config.SummaryList()) },
         )
 
         NavItem(
-            icon = FeatherIcons.Folder,
+            icon = CarbonIcons.Folder,
             label = "Collections",
             isSelected = activeChild is MainComponent.Child.Collections,
             onClick = { onTabSelected(DefaultMainComponent.Config.Collections) },
         )
 
         NavItem(
-            icon = FeatherIcons.Settings,
+            icon = CarbonIcons.Settings,
             label = "Settings",
             isSelected = activeChild is MainComponent.Child.Settings,
             onClick = { onTabSelected(DefaultMainComponent.Config.Settings) },

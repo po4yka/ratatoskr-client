@@ -12,8 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import compose.icons.FeatherIcons
-import compose.icons.feathericons.CheckCircle
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,7 +88,7 @@ fun SummaryCard(
 
                 if (summary.isRead) {
                     Icon(
-                        imageVector = FeatherIcons.CheckCircle,
+                        imageVector = CarbonIcons.CheckmarkFilled,
                         contentDescription = "Read",
                         tint = ReadIndicator,
                         modifier = Modifier.size(16.dp),

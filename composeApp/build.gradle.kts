@@ -77,10 +77,6 @@ kotlin {
 
             // Carbon Design System
             implementation(libs.carbon.compose)
-
-            // Compose Icons
-            implementation(libs.compose.icons.feather)
-            implementation(libs.compose.icons.tabler)
         }
 
         androidMain.dependencies {

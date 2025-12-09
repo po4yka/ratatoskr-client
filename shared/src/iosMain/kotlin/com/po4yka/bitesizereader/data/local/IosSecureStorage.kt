@@ -49,9 +49,18 @@ class IosSecureStorage : SecureStorage {
         return load(key = "refresh_token")
     }
 
+    override suspend fun saveSessionId(sessionId: Long) {
+        save(key = "session_id", value = sessionId.toString())
+    }
+
+    override suspend fun getSessionId(): Long? {
+        return load(key = "session_id")?.toLongOrNull()
+    }
+
     override suspend fun clearTokens() {
         delete(key = "access_token")
         delete(key = "refresh_token")
+        delete(key = "session_id")
     }
 
     private fun save(
