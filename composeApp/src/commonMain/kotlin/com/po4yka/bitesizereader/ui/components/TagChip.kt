@@ -1,11 +1,13 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.gabrieldrn.carbon.tag.ReadOnlyTag
+import com.gabrieldrn.carbon.tag.TagSize
+import com.gabrieldrn.carbon.tag.TagType
 
 /**
- * Chip component for displaying topic tags
+ * Tag component for displaying topic tags using Carbon Design System
  */
 @Composable
 fun TagChip(
@@ -13,34 +15,19 @@ fun TagChip(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    if (onClick != null) {
-        FilterChip(
-            selected = false,
-            onClick = onClick,
-            label = {
-                Text(
-                    text = tag,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            },
-            modifier = modifier,
-        )
-    } else {
-        SuggestionChip(
-            onClick = { },
-            label = {
-                Text(
-                    text = tag,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            },
-            modifier = modifier,
-        )
-    }
+    // Carbon ReadOnlyTag is used for display-only tags
+    // For interactive tags, we use the same component since Carbon doesn't have
+    // a separate interactive tag in the current version
+    ReadOnlyTag(
+        text = tag,
+        modifier = modifier,
+        type = TagType.Gray,
+        size = TagSize.Small,
+    )
 }
 
 /**
- * Selectable tag chip for filters
+ * Selectable tag chip for filters using Carbon Design System
  */
 @Composable
 fun SelectableTagChip(
@@ -49,15 +36,11 @@ fun SelectableTagChip(
     onSelectedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FilterChip(
-        selected = selected,
-        onClick = { onSelectedChange(!selected) },
-        label = {
-            Text(
-                text = tag,
-                style = MaterialTheme.typography.labelSmall,
-            )
-        },
+    // Use different tag types to indicate selection state
+    ReadOnlyTag(
+        text = tag,
         modifier = modifier,
+        type = if (selected) TagType.Blue else TagType.Gray,
+        size = TagSize.Small,
     )
 }

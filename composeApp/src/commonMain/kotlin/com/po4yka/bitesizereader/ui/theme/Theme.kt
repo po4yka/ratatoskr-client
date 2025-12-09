@@ -5,6 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import com.gabrieldrn.carbon.CarbonDesignSystem
+import com.gabrieldrn.carbon.foundation.color.Gray100Theme
+import com.gabrieldrn.carbon.foundation.color.WhiteTheme
 
 private val LightColorScheme =
     lightColorScheme(
@@ -63,7 +66,10 @@ private val DarkColorScheme =
     )
 
 /**
- * Bite-Size Reader Material 3 theme for all Compose targets
+ * Bite-Size Reader theme combining Carbon Design System with Material 3.
+ *
+ * This theme wraps CarbonDesignSystem to provide access to Carbon components
+ * while maintaining Material 3 theming for existing components.
  */
 @Composable
 fun BiteSizeReaderTheme(
@@ -71,10 +77,15 @@ fun BiteSizeReaderTheme(
     content: @Composable () -> Unit,
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val carbonTheme = if (darkTheme) Gray100Theme else WhiteTheme
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography,
-        content = content,
-    )
+    CarbonDesignSystem(
+        theme = carbonTheme,
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content,
+        )
+    }
 }

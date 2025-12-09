@@ -1,20 +1,33 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
+import com.gabrieldrn.carbon.Carbon
+import com.gabrieldrn.carbon.loading.SmallLoading
+import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
+import com.gabrieldrn.carbon.progressbar.ProgressBar
+import com.gabrieldrn.carbon.progressbar.ProgressBarState
 import com.po4yka.bitesizereader.domain.model.RequestStatus
 import com.po4yka.bitesizereader.ui.theme.FailedIndicator
 import com.po4yka.bitesizereader.ui.theme.ProcessingIndicator
 
 /**
- * Progress indicator showing request processing stages
+ * Progress indicator showing request processing stages using Carbon Design System
  */
 @Composable
 fun ProgressIndicatorWithStages(
@@ -25,25 +38,26 @@ fun ProgressIndicatorWithStages(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Overall progress bar
+        // Overall progress bar using Carbon ProgressBar
         when (status) {
             RequestStatus.PENDING, RequestStatus.PROCESSING -> {
-                LinearProgressIndicator(
+                IndeterminateProgressBar(
                     modifier = Modifier.fillMaxWidth(),
-                    color = ProcessingIndicator,
+                    state = ProgressBarState.Active,
                 )
             }
             RequestStatus.COMPLETED -> {
-                LinearProgressIndicator(
-                    progress = { 1f },
+                ProgressBar(
+                    value = 1f,
                     modifier = Modifier.fillMaxWidth(),
+                    state = ProgressBarState.Success,
                 )
             }
             RequestStatus.FAILED -> {
-                LinearProgressIndicator(
-                    progress = { 1f },
+                ProgressBar(
+                    value = 1f,
                     modifier = Modifier.fillMaxWidth(),
-                    color = FailedIndicator,
+                    state = ProgressBarState.Error,
                 )
             }
         }
@@ -96,7 +110,7 @@ private fun StageIndicator(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = null,
-                    tint = FailedIndicator,
+                    tint = Carbon.theme.supportError,
                     modifier = Modifier.size(24.dp),
                 )
             }
@@ -104,21 +118,19 @@ private fun StageIndicator(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Carbon.theme.supportSuccess,
                     modifier = Modifier.size(24.dp),
                 )
             }
             isCurrent -> {
-                CircularProgressIndicator(
+                SmallLoading(
                     modifier = Modifier.size(24.dp),
-                    strokeWidth = 2.dp,
                 )
             }
             else -> {
                 Surface(
                     modifier = Modifier.size(24.dp),
-                    shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    color = Carbon.theme.layer02,
                 ) {}
             }
         }
@@ -126,13 +138,12 @@ private fun StageIndicator(
         // Stage title
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyMedium,
-            color =
-                when {
-                    isFailed -> FailedIndicator
-                    isCompleted || isCurrent -> MaterialTheme.colorScheme.onSurface
-                    else -> MaterialTheme.colorScheme.onSurfaceVariant
-                },
+            style = Carbon.typography.bodyCompact01,
+            color = when {
+                isFailed -> Carbon.theme.supportError
+                isCompleted || isCurrent -> Carbon.theme.textPrimary
+                else -> Carbon.theme.textSecondary
+            },
         )
     }
 }

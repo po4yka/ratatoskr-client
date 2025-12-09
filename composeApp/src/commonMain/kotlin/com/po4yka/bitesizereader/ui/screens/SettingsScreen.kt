@@ -1,54 +1,61 @@
 package com.po4yka.bitesizereader.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
+import com.gabrieldrn.carbon.Carbon
+import com.gabrieldrn.carbon.button.Button
+import com.gabrieldrn.carbon.button.ButtonType
+import com.gabrieldrn.carbon.loading.SmallLoading
+import com.gabrieldrn.carbon.progressbar.ProgressBar
+import com.gabrieldrn.carbon.progressbar.ProgressBarState
+import com.po4yka.bitesizereader.domain.usecase.DownloadMode
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
-import com.po4yka.bitesizereader.domain.usecase.DownloadMode
 import kotlin.math.roundToInt
 
 private const val BytesPerMb = 1_048_576.0
-
 private const val RoundingFactor = 10.0
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Settings screen using Carbon Design System
+ */
 @Suppress("FunctionNaming")
 @Composable
 fun SettingsScreen(component: SettingsComponent) {
     val viewModel: SettingsViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
 
-    Scaffold(
-        topBar = { TopAppBar(title = { Text("Settings") }) }
-    ) { padding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Carbon.theme.background)
+    ) {
+        // Header
+        CarbonSettingsHeader(title = "Settings")
+
+        // Content
         SettingsContent(
             state = state,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
                 .padding(16.dp),
             onRetryLinkStatus = viewModel::loadLinkStatus,
             onBeginLink = viewModel::beginTelegramLink,
@@ -56,6 +63,24 @@ fun SettingsScreen(component: SettingsComponent) {
             onBackup = { viewModel.downloadDatabase(DownloadMode.BACKUP) },
             onImport = { viewModel.downloadDatabase(DownloadMode.IMPORT) },
             onCancelDownload = viewModel::cancelDownload
+        )
+    }
+}
+
+@Composable
+private fun CarbonSettingsHeader(title: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .background(Carbon.theme.layer01)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = title,
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
         )
     }
 }
@@ -75,7 +100,11 @@ private fun SettingsContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "Account Binding", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Account Binding",
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
+        )
 
         AccountBindingCard(
             state = state,
@@ -90,7 +119,11 @@ private fun SettingsContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Data Management", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Data Management",
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
+        )
 
         BackupCard(
             state = state,
@@ -108,45 +141,73 @@ private fun AccountBindingCard(
     onBeginLink: () -> Unit,
     onUnlink: () -> Unit
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(text = "Telegram", style = MaterialTheme.typography.titleMedium)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(4.dp))
+            .background(Carbon.theme.layer01)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "Telegram",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+        )
 
-            when {
-                state.isLoading -> CircularProgressIndicator()
-                state.linkStatus != null -> {
-                    val status = state.linkStatus
-                    if (status?.linked == true) {
-                        Text("Status: Linked")
-                        status.username?.let { Text("Username: @$it") }
-                        status.telegramId?.let { Text("ID: $it") }
-                        Button(
-                            onClick = onUnlink,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text("Unlink")
-                        }
-                    } else {
-                        Text("Status: Not Linked")
-                        Button(onClick = onBeginLink) {
-                            Text("Link Telegram Account")
-                        }
-                    }
-                }
-                state.error != null -> {
+        when {
+            state.isLoading -> SmallLoading()
+            state.linkStatus != null -> {
+                val status = state.linkStatus
+                if (status?.linked == true) {
                     Text(
-                        text = "Error: ${state.error}",
-                        color = MaterialTheme.colorScheme.error
+                        text = "Status: Linked",
+                        style = Carbon.typography.bodyCompact01,
+                        color = Carbon.theme.textPrimary,
                     )
-                    OutlinedButton(onClick = onRetryLinkStatus) {
-                        Text("Retry")
+                    status.username?.let {
+                        Text(
+                            text = "Username: @$it",
+                            style = Carbon.typography.label01,
+                            color = Carbon.theme.textSecondary,
+                        )
                     }
+                    status.telegramId?.let {
+                        Text(
+                            text = "ID: $it",
+                            style = Carbon.typography.label01,
+                            color = Carbon.theme.textSecondary,
+                        )
+                    }
+                    Button(
+                        label = "Unlink",
+                        onClick = onUnlink,
+                        buttonType = ButtonType.PrimaryDanger,
+                    )
+                } else {
+                    Text(
+                        text = "Status: Not Linked",
+                        style = Carbon.typography.bodyCompact01,
+                        color = Carbon.theme.textPrimary,
+                    )
+                    Button(
+                        label = "Link Telegram Account",
+                        onClick = onBeginLink,
+                        buttonType = ButtonType.Primary,
+                    )
                 }
+            }
+            state.error != null -> {
+                Text(
+                    text = "Error: ${state.error}",
+                    style = Carbon.typography.bodyCompact01,
+                    color = Carbon.theme.supportError,
+                )
+                Button(
+                    label = "Retry",
+                    onClick = onRetryLinkStatus,
+                    buttonType = ButtonType.Secondary,
+                )
             }
         }
     }
@@ -154,18 +215,30 @@ private fun AccountBindingCard(
 
 @Composable
 private fun LinkNonceCard(nonce: String) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text("Linking Started", style = MaterialTheme.typography.titleSmall)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(4.dp))
+            .background(Carbon.theme.layer01)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "Linking Started",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        Text(
+            text = "Nonce generated. Use the Telegram Login Widget with this bot to complete linking.",
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
+        )
+        SelectionContainer {
             Text(
-                "Nonce generated. Use the Telegram Login Widget with this bot to complete linking."
+                text = nonce,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textPrimary,
             )
-            SelectionContainer {
-                Text(text = nonce, style = MaterialTheme.typography.bodySmall)
-            }
         }
     }
 }
@@ -177,75 +250,80 @@ private fun BackupCard(
     onImport: () -> Unit,
     onCancelDownload: () -> Unit
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(text = "Backup", style = MaterialTheme.typography.titleMedium)
-            Text(
-                text = "Download a full copy of your articles and summaries.",
-                style = MaterialTheme.typography.bodyMedium
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(4.dp))
+            .background(Carbon.theme.layer01)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "Backup",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        Text(
+            text = "Download a full copy of your articles and summaries.",
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
+        )
+
+        if (state.isDownloading) {
+            val progress = if (state.downloadTotal > 0) {
+                state.downloadProgress.toFloat() / state.downloadTotal.toFloat()
+            } else {
+                0f
+            }
+
+            ProgressBar(
+                value = progress,
+                modifier = Modifier.fillMaxWidth(),
+                state = ProgressBarState.Active,
             )
 
-            if (state.isDownloading) {
-                LinearProgressIndicator(
-                    progress = {
-                        if (state.downloadTotal > 0) {
-                            state.downloadProgress.toFloat() / state.downloadTotal.toFloat()
-                        } else {
-                            0f
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            val progressText = progressText(state.downloadProgress, state.downloadTotal)
+            Text(
+                text = "Processing: $progressText",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
 
-                val progressText = progressText(state.downloadProgress, state.downloadTotal)
+            Button(
+                label = "Cancel Operation",
+                onClick = onCancelDownload,
+                buttonType = ButtonType.PrimaryDanger,
+            )
+        } else {
+            Text(
+                text = "Backup your data to a file or import the latest data from the cloud.",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
 
-                Text(
-                    text = "Processing: $progressText",
-                    style = MaterialTheme.typography.bodySmall
-                )
+            Button(
+                label = "Backup to File",
+                onClick = onBackup,
+                isEnabled = !state.isLoading,
+                buttonType = ButtonType.Primary,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-                Button(
-                    onClick = onCancelDownload,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
-                    )
-                ) {
-                    Text("Cancel Operation")
-                }
-            } else {
-                Text(
-                    text = "Backup your data to a file or import the latest data from the cloud.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Button(
+                label = "Import from Cloud",
+                onClick = onImport,
+                isEnabled = !state.isLoading,
+                buttonType = ButtonType.Secondary,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
-                Button(
-                    onClick = onBackup,
-                    enabled = !state.isLoading,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Backup to File")
-                }
-
-                Button(
-                    onClick = onImport,
-                    enabled = !state.isLoading,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Import from Cloud")
-                }
-            }
-
-            state.downloadError?.let { error ->
-                Text(
-                    text = "Download Failed: $error",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+        state.downloadError?.let { error ->
+            Text(
+                text = "Download Failed: $error",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.supportError,
+            )
         }
     }
 }

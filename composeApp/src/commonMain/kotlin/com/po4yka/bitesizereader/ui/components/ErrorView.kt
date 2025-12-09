@@ -1,17 +1,27 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
+import com.gabrieldrn.carbon.Carbon
+import com.gabrieldrn.carbon.button.Button
+import com.gabrieldrn.carbon.button.ButtonType
 
 /**
- * Error state view component
+ * Error state view component using Carbon Design System
  */
 @Composable
 fun ErrorView(
@@ -20,17 +30,16 @@ fun ErrorView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .padding(32.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             imageVector = Icons.Default.ErrorOutline,
             contentDescription = "Error",
-            tint = MaterialTheme.colorScheme.error,
+            tint = Carbon.theme.supportError,
             modifier = Modifier.size(64.dp),
         )
 
@@ -38,8 +47,8 @@ fun ErrorView(
 
         Text(
             text = "Oops! Something went wrong",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
             textAlign = TextAlign.Center,
         )
 
@@ -47,17 +56,19 @@ fun ErrorView(
 
         Text(
             text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
             textAlign = TextAlign.Center,
         )
 
         if (onRetry != null) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = onRetry) {
-                Text("Retry")
-            }
+            Button(
+                label = "Retry",
+                onClick = onRetry,
+                buttonType = ButtonType.Primary,
+            )
         }
     }
 }
