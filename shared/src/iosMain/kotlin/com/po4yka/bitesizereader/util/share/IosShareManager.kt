@@ -15,7 +15,7 @@ class IosShareManager : ShareManager {
         customMessage: String?,
     ) {
         val shareText = summary.toShareText(customMessage)
-        val url = NSURL.URLWithString(summary.url)
+        val url = NSURL.URLWithString(summary.sourceUrl)
 
         // Call the Swift ShareHelper to present the share sheet
         shareItems(listOfNotNull(shareText, url))

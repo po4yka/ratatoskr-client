@@ -7,5 +7,5 @@ import androidx.compose.ui.Modifier
 expect fun WebView(
     url: String,
     modifier: Modifier = Modifier,
-    onDeepLink: (String) -> Unit
+    onDeepLink: (String) -> Unit,
 )

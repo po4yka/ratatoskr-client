@@ -18,25 +18,26 @@ import platform.darwin.NSObject
 actual fun WebView(
     url: String,
     modifier: Modifier,
-    onDeepLink: (String) -> Unit
+    onDeepLink: (String) -> Unit,
 ) {
-    val navigationDelegate = remember {
-        object : NSObject(), WKNavigationDelegateProtocol {
-            override fun webView(
-                webView: WKWebView,
-                decidePolicyForNavigationAction: WKNavigationAction,
-                decisionHandler: (WKNavigationActionPolicy) -> Unit
-            ) {
-                val requestUrl = decidePolicyForNavigationAction.request.URL?.absoluteString
-                if (requestUrl != null && requestUrl.startsWith("bitesizereader://")) {
-                    onDeepLink(requestUrl)
-                    decisionHandler(platform.WebKit.WKNavigationActionPolicyCancel)
-                } else {
-                    decisionHandler(platform.WebKit.WKNavigationActionPolicyAllow)
+    val navigationDelegate =
+        remember {
+            object : NSObject(), WKNavigationDelegateProtocol {
+                override fun webView(
+                    webView: WKWebView,
+                    decidePolicyForNavigationAction: WKNavigationAction,
+                    decisionHandler: (WKNavigationActionPolicy) -> Unit,
+                ) {
+                    val requestUrl = decidePolicyForNavigationAction.request.URL?.absoluteString
+                    if (requestUrl != null && requestUrl.startsWith("bitesizereader://")) {
+                        onDeepLink(requestUrl)
+                        decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyCancel)
+                    } else {
+                        decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyAllow)
+                    }
                 }
             }
         }
-    }
 
     UIKitView(
         modifier = modifier,
@@ -51,6 +52,6 @@ actual fun WebView(
         },
         update = {
             // Update logic if needed
-        }
+        },
     )
 }

@@ -64,6 +64,7 @@ kotlin {
 
             // Decompose
             implementation(libs.decompose.core)
+            implementation(libs.decompose.compose)
 
             // Coil for image loading
             implementation(libs.coil.compose)
@@ -108,6 +109,8 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.decompose.compose)
+                implementation(libs.ktor.client.okhttp)
+                implementation(libs.androidx.lifecycle.viewmodel)
             }
         }
 
@@ -118,6 +121,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(libs.decompose.core)
+            implementation(libs.decompose.compose)
+            implementation(libs.androidx.lifecycle.viewmodel)
         }
 
         commonTest.dependencies {
@@ -148,22 +153,22 @@ android {
         buildConfigField(
             "String",
             "API_BASE_URL",
-            "\"${localProperties.getProperty("api.base.url", "http://10.0.2.2:8000")}\""
+            "\"${localProperties.getProperty("api.base.url", "http://10.0.2.2:8000")}\"",
         )
         buildConfigField(
             "String",
             "CLIENT_ID",
-            "\"${localProperties.getProperty("client.id", "android-app-v1.0")}\""
+            "\"${localProperties.getProperty("client.id", "android-app-v1.0")}\"",
         )
         buildConfigField(
             "int",
             "API_TIMEOUT_SECONDS",
-            localProperties.getProperty("api.timeout.seconds", "30")
+            localProperties.getProperty("api.timeout.seconds", "30"),
         )
         buildConfigField(
             "boolean",
             "API_LOGGING_ENABLED",
-            localProperties.getProperty("api.logging.enabled", "true")
+            localProperties.getProperty("api.logging.enabled", "true"),
         )
     }
 
@@ -190,7 +195,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }

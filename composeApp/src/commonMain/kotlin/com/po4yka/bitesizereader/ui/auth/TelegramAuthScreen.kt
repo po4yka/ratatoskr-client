@@ -28,18 +28,20 @@ private val logger = KotlinLogging.logger {}
 fun TelegramAuthScreen(
     authViewModel: AuthViewModel,
     onAuthSuccess: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val botUsername = AppConfig.Telegram.botUsername
     val origin = AppConfig.Telegram.callbackUrl
-    val loginUrl = remember {
-        "${AppConfig.Api.baseUrl}/v1/auth/login-widget?bot=$botUsername&origin=$origin"
-    }
+    val loginUrl =
+        remember {
+            "${AppConfig.Api.baseUrl}/v1/auth/login-widget?bot=$botUsername&origin=$origin"
+        }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Carbon.theme.background)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Carbon.theme.background),
     ) {
         // Close button
         Box(Modifier.padding(top = 16.dp, start = 16.dp)) {
@@ -55,9 +57,10 @@ fun TelegramAuthScreen(
         // WebView for authentication
         WebView(
             url = loginUrl,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 56.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = 56.dp),
             onDeepLink = { url ->
                 val authData = parseTelegramAuthData(url)
                 if (authData != null) {
@@ -66,7 +69,7 @@ fun TelegramAuthScreen(
                 } else {
                     onDismiss()
                 }
-            }
+            },
         )
     }
 }
@@ -76,12 +79,13 @@ private fun parseTelegramAuthData(url: String): AuthRequestDto? {
         val query = url.substringAfter("?", "")
         if (query.isEmpty()) return null
 
-        val params = query.split("&").associate {
-            val parts = it.split("=")
-            val key = parts[0]
-            val value = if (parts.size > 1) UrlDecoder.decode(parts[1]) else ""
-            key to value
-        }
+        val params =
+            query.split("&").associate {
+                val parts = it.split("=")
+                val key = parts[0]
+                val value = if (parts.size > 1) UrlDecoder.decode(parts[1]) else ""
+                key to value
+            }
 
         val id = params["id"] ?: return null
         val hash = params["hash"] ?: return null
@@ -93,7 +97,7 @@ private fun parseTelegramAuthData(url: String): AuthRequestDto? {
             username = params["username"],
             photoUrl = params["photo_url"],
             authDate = params["auth_date"]?.toLongOrNull() ?: 0L,
-            hash = hash
+            hash = hash,
         )
     } catch (e: Exception) {
         logger.error(e) { "Failed to parse Telegram auth data from URL: $url" }

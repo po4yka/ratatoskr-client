@@ -10,21 +10,23 @@ import java.util.concurrent.TimeUnit
 
 object WorkManagerInitializer {
     fun schedulePeriodicSync(context: Context) {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
+        val constraints =
+            Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
 
-        val syncRequest = PeriodicWorkRequestBuilder<SyncWorker>(
-            repeatInterval = 15, // Minimum 15 minutes
-            repeatIntervalTimeUnit = TimeUnit.MINUTES
-        )
-            .setConstraints(constraints)
-            .build()
+        val syncRequest =
+            PeriodicWorkRequestBuilder<SyncWorker>(
+                repeatInterval = 15, // Minimum 15 minutes
+                repeatIntervalTimeUnit = TimeUnit.MINUTES,
+            )
+                .setConstraints(constraints)
+                .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "SyncWorker",
             ExistingPeriodicWorkPolicy.KEEP,
-            syncRequest
+            syncRequest,
         )
     }
 }

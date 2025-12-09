@@ -8,7 +8,7 @@ import org.koin.core.module.Module
  */
 actual class PlatformConfiguration actual constructor()
 
-actual fun platformModules(configuration: PlatformConfiguration): List<Module> = listOf(iosModule)
+actual fun platformModules(configuration: PlatformConfiguration): List<Module> = listOf(platformModule())
 
 actual fun KoinApplication.platformExtras(configuration: PlatformConfiguration) {
     // No-op for iOS

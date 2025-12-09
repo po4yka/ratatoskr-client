@@ -11,7 +11,7 @@ import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshRequestDto
 import com.po4yka.bitesizereader.domain.model.AuthTokens
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
-import com.po4yka.bitesizereader.util.error.toAppError
+import com.po4yka.bitesizereader.util.config.AppConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,7 +60,7 @@ class AuthRepositoryImpl(
             firstName = authData.firstName,
             lastName = authData.lastName,
             photoUrl = authData.photoUrl,
-            clientId = "android-app" // TODO: From AppConfig
+            clientId = AppConfig.App.CLIENT_ID
         )
         val response = authApi.loginWithTelegram(request)
         if (response.success && response.data != null) {

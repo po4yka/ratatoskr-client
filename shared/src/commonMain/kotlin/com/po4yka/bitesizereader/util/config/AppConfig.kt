@@ -109,6 +109,11 @@ object AppConfig {
         const val VERSION = "0.1.0"
 
         /**
+         * Client identifier for API authentication
+         */
+        const val CLIENT_ID = "bitesizereader-mobile-v1"
+
+        /**
          * Support email
          */
         const val SUPPORT_EMAIL = "support@bitesizereader.example.com"
@@ -117,6 +122,16 @@ object AppConfig {
          * Website URL
          */
         const val WEBSITE_URL = "https://bitesizereader.example.com"
+    }
+
+    /**
+     * Database Configuration
+     */
+    object Database {
+        /**
+         * Database file name used across all platforms
+         */
+        const val NAME = "bite_size_reader.db"
     }
 
     /**

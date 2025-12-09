@@ -23,9 +23,10 @@ fun App(
         modifier = modifier.fillMaxSize(),
     ) { child ->
         when (val instance = child.instance) {
-            is RootComponent.Child.Auth -> AuthScreen(
-                component = instance.component,
-            )
+            is RootComponent.Child.Auth ->
+                AuthScreen(
+                    component = instance.component,
+                )
 
             is RootComponent.Child.Main -> MainScreen(component = instance.component)
         }

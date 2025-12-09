@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import androidx.compose.material3.Text
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.presentation.navigation.DefaultMainComponent
 import com.po4yka.bitesizereader.presentation.navigation.MainComponent
@@ -31,95 +31,114 @@ import com.po4yka.bitesizereader.presentation.navigation.MainComponent
 /**
  * Main screen with bottom navigation using Carbon Design System
  */
+@Suppress("FunctionNaming")
 @Composable
 fun MainScreen(component: MainComponent) {
     val childStack by component.childStack.subscribeAsState()
     val activeChild = childStack.active.instance
 
+    // Determine if bottom nav should be shown (hide for detail screens)
+    val showBottomNav = activeChild !is MainComponent.Child.SummaryDetail
+
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Carbon.theme.background)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Carbon.theme.background),
     ) {
         // Content area
         Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
         ) {
             Children(
                 stack = childStack,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             ) { child ->
                 when (val instance = child.instance) {
                     is MainComponent.Child.SummaryList -> SummaryListScreen(component = instance.component)
-                    is MainComponent.Child.Collections -> CollectionsScreen(
-                        onCollectionClick = instance.component::onCollectionClicked
+                    is MainComponent.Child.SummaryDetail -> SummaryDetailScreen(
+                        viewModel = instance.component.viewModel,
+                        summaryId = "",
+                        onBackClick = instance.component::onBackClicked,
+                        onShareClick = { },
                     )
+                    is MainComponent.Child.Collections ->
+                        CollectionsScreen(
+                            onCollectionClick = instance.component::onCollectionClicked,
+                        )
                     is MainComponent.Child.Settings -> SettingsScreen(component = instance.component)
                 }
             }
         }
 
-        // Carbon-style bottom navigation bar
-        CarbonBottomNavigation(
-            activeChild = activeChild,
-            onTabSelected = { config ->
-                if (component is DefaultMainComponent) {
-                    component.onTabSelected(config)
-                }
-            }
-        )
+        // Carbon-style bottom navigation bar (hidden for detail screens)
+        if (showBottomNav) {
+            BottomNavigation(
+                activeChild = activeChild,
+                onTabSelected = { config ->
+                    if (component is DefaultMainComponent) {
+                        component.onTabSelected(config)
+                    }
+                },
+            )
+        }
     }
 }
 
+@Suppress("FunctionNaming")
 @Composable
-private fun CarbonBottomNavigation(
+private fun BottomNavigation(
     activeChild: MainComponent.Child,
     onTabSelected: (DefaultMainComponent.Config) -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .background(Carbon.theme.layer01),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .background(Carbon.theme.layer01),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CarbonNavItem(
+        NavItem(
             icon = Icons.Default.Home,
             label = "Read Later",
             isSelected = activeChild is MainComponent.Child.SummaryList,
-            onClick = { onTabSelected(DefaultMainComponent.Config.SummaryList) }
+            onClick = { onTabSelected(DefaultMainComponent.Config.SummaryList()) },
         )
 
-        CarbonNavItem(
+        NavItem(
             icon = Icons.Default.Folder,
             label = "Collections",
             isSelected = activeChild is MainComponent.Child.Collections,
-            onClick = { onTabSelected(DefaultMainComponent.Config.Collections) }
+            onClick = { onTabSelected(DefaultMainComponent.Config.Collections) },
         )
 
-        CarbonNavItem(
+        NavItem(
             icon = Icons.Default.Settings,
             label = "Settings",
             isSelected = activeChild is MainComponent.Child.Settings,
-            onClick = { onTabSelected(DefaultMainComponent.Config.Settings) }
+            onClick = { onTabSelected(DefaultMainComponent.Config.Settings) },
         )
     }
 }
 
+@Suppress("FunctionNaming")
 @Composable
-private fun CarbonNavItem(
+private fun NavItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            Modifier
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {

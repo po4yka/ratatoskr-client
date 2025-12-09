@@ -33,25 +33,27 @@ import com.po4yka.bitesizereader.domain.model.Collection
 /**
  * Collection item component using Carbon Design System
  */
+@Suppress("FunctionNaming")
 @Composable
 fun CollectionItem(
     collection: Collection,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         // Icon
         Icon(
             imageVector = getIconForName(collection.iconName),
             contentDescription = null,
             tint = Carbon.theme.iconPrimary,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -61,7 +63,7 @@ fun CollectionItem(
             text = collection.name,
             style = Carbon.typography.bodyCompact01,
             color = Carbon.theme.textPrimary,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         // Count (if > 0)
@@ -69,7 +71,7 @@ fun CollectionItem(
             Text(
                 text = collection.count.toString(),
                 style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary
+                color = Carbon.theme.textSecondary,
             )
         }
     }

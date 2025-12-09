@@ -1,6 +1,14 @@
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+
 package com.po4yka.bitesizereader.util
 
-import platform.Foundation.*
+import platform.Foundation.NSCachesDirectory
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSLibraryDirectory
+import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
+import platform.Foundation.URLByAppendingPathComponent
 
 actual class FileSaver {
     actual suspend fun saveToDownloads(sourcePath: String, fileName: String): String? {
@@ -40,5 +48,34 @@ actual class FileSaver {
         val urls = fileManager.URLsForDirectory(NSCachesDirectory, NSUserDomainMask)
         val cacheDir = urls.first() as NSURL
         return cacheDir.URLByAppendingPathComponent(fileName)?.path ?: fileName
+    }
+
+    actual suspend fun importDatabase(sourcePath: String, targetDbName: String) {
+        val fileManager = NSFileManager.defaultManager
+
+        // iOS databases are typically stored in Library/Application Support
+        // or directly in the Documents directory depending on SQLDelight configuration
+        val libraryUrl = fileManager.URLForDirectory(
+            NSLibraryDirectory,
+            NSUserDomainMask,
+            null,
+            true,
+            null
+        ) as? NSURL ?: throw Exception("Could not access Library directory")
+
+        val destUrl = libraryUrl.URLByAppendingPathComponent(targetDbName)
+            ?: throw Exception("Could not create destination URL")
+        val sourceUrl = NSURL.fileURLWithPath(sourcePath)
+
+        // Remove existing database if present
+        if (fileManager.fileExistsAtPath(destUrl.path!!)) {
+            fileManager.removeItemAtURL(destUrl, null)
+        }
+
+        // Copy the new database file
+        val success = fileManager.copyItemAtURL(sourceUrl, destUrl, null)
+        if (!success) {
+            throw Exception("Failed to copy database file")
+        }
     }
 }

@@ -12,11 +12,7 @@ android-targetSdk = "36"
 
 # AndroidX
 androidx-activity = "1.12.1"
-androidx-appcompat = "1.7.1"
-androidx-core = "1.17.0"
-androidx-espresso = "3.7.0"
 androidx-lifecycle = "2.9.6"
-androidx-testExt = "1.3.0"
 androidx-security = "1.1.0"
 androidx-work = "2.11.0"
 androidx-glance = "1.1.1"
@@ -30,26 +26,22 @@ koin = "4.1.1"
 koin-android = "4.1.1"
 kotlinx-serialization = "1.9.0"
 kotlinx-coroutines = "1.10.2"
-kotlinx-datetime = "0.7.1-0.6.x-compat"
-kermit = "2.0.8"
 kotlin-logging = "7.0.13"
 slf4j = "2.0.17"
 logback-android = "3.0.0"
 
 # Android Specific
 coil = "3.3.0"
-okhttp = "5.3.2"
 
 # iOS Specific
 skie = "0.10.8"
 
 # gRPC / Wire
-wire = "5.1.0"
+wire = "5.4.0"
 
 # Testing
-junit = "4.13.2"
 turbine = "1.2.1"
-mockk = "1.14.6"
+mockk = "1.14.7"
 kover = "0.9.3"
 
 # Code Quality
@@ -62,12 +54,10 @@ carbon = "0.6.2"
 [libraries]
 # Kotlin
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 
 # AndroidX Core
-androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 
@@ -116,10 +106,8 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 # Logging
-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 logback-android = { module = "com.github.tony19:logback-android", version.ref = "logback-android" }
@@ -127,16 +115,12 @@ logback-android = { module = "com.github.tony19:logback-android", version.ref = 
 # Android Specific
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 
 # Wire / gRPC
 wire-runtime = { module = "com.squareup.wire:wire-runtime", version.ref = "wire" }
 wire-grpc-client = { module = "com.squareup.wire:wire-grpc-client", version.ref = "wire" }
 
 # Testing
-junit = { module = "junit:junit", version.ref = "junit" }
-androidx-testExt-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-testExt" }
-androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-espresso" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 

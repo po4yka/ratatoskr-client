@@ -9,9 +9,8 @@ import org.koin.core.component.inject
 
 class SyncWorker(
     context: Context,
-    params: WorkerParameters
+    params: WorkerParameters,
 ) : CoroutineWorker(context, params), KoinComponent {
-
     private val syncDataUseCase: SyncDataUseCase by inject()
 
     override suspend fun doWork(): Result {

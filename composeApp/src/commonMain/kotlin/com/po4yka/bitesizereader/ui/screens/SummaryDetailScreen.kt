@@ -25,14 +25,14 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.Loading
 import com.po4yka.bitesizereader.domain.model.Summary
@@ -40,14 +40,12 @@ import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.TagChip
 import com.po4yka.bitesizereader.ui.theme.ReadIndicator
-import kotlin.time.ExperimentalTime
-import kotlin.time.toJavaInstant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import kotlin.time.Instant
 
 /**
  * Summary detail screen using Carbon Design System
  */
+@Suppress("FunctionNaming")
 @Composable
 fun SummaryDetailScreen(
     viewModel: SummaryDetailViewModel,
@@ -57,18 +55,18 @@ fun SummaryDetailScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
-    androidx.compose.runtime.LaunchedEffect(summaryId) {
+    LaunchedEffect(summaryId) {
         viewModel.loadSummary(summaryId)
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Carbon.theme.background)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Carbon.theme.background),
     ) {
         // Header
-        CarbonDetailHeader(
-            title = "Summary",
+        SummaryDetailHeader(
             summary = state.summary,
             onBackClick = onBackClick,
             onShareClick = onShareClick,
@@ -85,9 +83,10 @@ fun SummaryDetailScreen(
             }
             state.isLoading -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .weight(1f),
                     contentAlignment = Alignment.Center,
                 ) {
                     Loading(modifier = Modifier.size(88.dp))
@@ -103,19 +102,20 @@ fun SummaryDetailScreen(
     }
 }
 
+@Suppress("FunctionNaming")
 @Composable
-private fun CarbonDetailHeader(
-    title: String,
+private fun SummaryDetailHeader(
     summary: Summary?,
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .background(Carbon.theme.layer01)
-            .padding(horizontal = 8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .background(Carbon.theme.layer01)
+                .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackClick) {
@@ -127,7 +127,7 @@ private fun CarbonDetailHeader(
         }
 
         Text(
-            text = title,
+            text = "Summary",
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
             modifier = Modifier.weight(1f),
@@ -152,6 +152,7 @@ private fun CarbonDetailHeader(
     }
 }
 
+@Suppress("FunctionNaming")
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SummaryDetailContent(
@@ -159,10 +160,11 @@ private fun SummaryDetailContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
     ) {
         Text(
             text = summary.title,
@@ -227,10 +229,24 @@ private fun SummaryDetailContent(
     }
 }
 
-@OptIn(ExperimentalTime::class)
-private fun formatDate(instant: kotlin.time.Instant): String {
-    val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-    return formatter.format(instant.toJavaInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+private fun formatDate(instant: Instant): String {
+    val epochSeconds = instant.epochSeconds
+    // Convert epoch seconds to date components
+    // Using a simplified calculation for date formatting
+    val days = (epochSeconds / 86400).toInt() + 719468 // Days since year 0
+    var year = (10000L * days.toLong() + 14780) / 3652425
+    var doy = days - (365 * year + year / 4 - year / 100 + year / 400).toInt()
+    if (doy < 0) {
+        year--
+        doy = days - (365 * year + year / 4 - year / 100 + year / 400).toInt()
+    }
+    val mi = (100 * doy + 52) / 3060
+    val month = (mi + 2) % 12 + 1
+    year += (mi + 2) / 12
+    val day = doy - (mi * 306 + 5) / 10 + 1
+
+    val monthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    return "${monthNames[month - 1]} ${day.toString().padStart(2, '0')}, $year"
 }
 
 private fun extractDomain(url: String): String? {

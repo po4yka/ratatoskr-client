@@ -3,9 +3,8 @@ package com.po4yka.bitesizereader.domain.usecase
 import com.po4yka.bitesizereader.data.remote.DownloadProgress
 import com.po4yka.bitesizereader.domain.repository.SystemRepository
 import com.po4yka.bitesizereader.util.FileSaver
+import com.po4yka.bitesizereader.util.config.AppConfig
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 
 
@@ -33,8 +32,7 @@ class DownloadDatabaseUseCase(
                         }
                     }
                     DownloadMode.IMPORT -> {
-                        // TODO: Extract database name constant if possible, currently hardcoded to match Android/iOS driver
-                        fileSaver.importDatabase(tempPath, "bite_size_reader.db")
+                        fileSaver.importDatabase(tempPath, AppConfig.Database.NAME)
                     }
                 }
             }

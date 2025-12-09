@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
 
         val root = DefaultRootComponent(defaultComponentContext())
 
-            setContent {
+        setContent {
             BiteSizeReaderTheme {
                 App(
                     rootComponent = root,

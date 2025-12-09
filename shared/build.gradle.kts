@@ -45,6 +45,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            // AndroidX Lifecycle (Multiplatform)
+            implementation(libs.androidx.lifecycle.viewmodel)
+
             // Ktor Client
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)

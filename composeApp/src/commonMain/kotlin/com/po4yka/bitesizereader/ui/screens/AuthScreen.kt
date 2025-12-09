@@ -51,25 +51,28 @@ fun AuthScreen(
     }
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Carbon.theme.background),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Carbon.theme.background),
         contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             // App Logo/Icon
             Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Carbon.theme.layer01),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Carbon.theme.layer01),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = "B",
@@ -102,7 +105,7 @@ fun AuthScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     SmallLoading()
                     Spacer(modifier = Modifier.width(8.dp))
@@ -128,7 +131,7 @@ fun AuthScreen(
                     onAuthSuccess = {
                         showTelegramLogin = false
                     },
-                    onDismiss = { showTelegramLogin = false }
+                    onDismiss = { showTelegramLogin = false },
                 )
             }
 
@@ -148,18 +151,19 @@ fun AuthScreen(
                     onDismiss = { showDevLogin = false },
                     onLogin = { userId, clientId, secret ->
                         viewModel.loginWithSecret(userId, clientId, secret)
-                    }
+                    },
                 )
             }
 
             // Error message
             state.error?.let { error ->
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Carbon.theme.supportErrorInverse)
-                        .padding(16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Carbon.theme.supportErrorInverse)
+                            .padding(16.dp),
                 ) {
                     Text(
                         text = error,
