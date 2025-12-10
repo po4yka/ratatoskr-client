@@ -31,4 +31,10 @@ expect class FileSaver {
      * Deletes a file at the given path if it exists.
      */
     fun deleteIfExists(path: String)
+
+    /**
+     * Gets the size of the file at the given path in bytes.
+     * Returns 0 if the file does not exist.
+     */
+    fun getFileSize(path: String): Long
 }

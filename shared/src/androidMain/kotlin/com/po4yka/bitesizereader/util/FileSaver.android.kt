@@ -91,4 +91,9 @@ actual class FileSaver(private val context: Context) {
             file.delete()
         }
     }
+
+    actual fun getFileSize(path: String): Long {
+        val file = File(path)
+        return if (file.exists()) file.length() else 0L
+    }
 }
