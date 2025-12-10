@@ -27,19 +27,25 @@ class SyncRepositoryImpl(
         if (sessionId == null) {
             // If using secret login (debug), session ID might be missing.
             // Skip sync instead of throwing error to avoid infinite re-auth loop.
-            // logger.warn { "Skipping sync: No session ID found" } // Logger not available here yet, need to inject or use Kermit if available, or just skip.
+             println("SyncRepositoryImpl: Skipping sync: No session ID found")
             return
         }
+        println("SyncRepositoryImpl: Starting sync with sessionId $sessionId")
 
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val sinceEpochSeconds = metadata?.lastSyncTime?.epochSeconds ?: 0L
 
         val response = api.sync(sessionId, sinceEpochSeconds)
 
-        if (!response.success || response.data == null) return
+        if (!response.success || response.data == null) {
+            println("SyncRepositoryImpl: Sync failed or empty response: ${response.error}")
+            return
+        }
 
         val changes = response.data.changes
         val syncTimestamp = response.data.syncTimestamp
+
+        println("SyncRepositoryImpl: Sync success. Created: ${changes.created.size}, Updated: ${changes.updated.size}, Deleted: ${changes.deleted.size}")
 
         database.transaction {
             changes.created.forEach { created ->

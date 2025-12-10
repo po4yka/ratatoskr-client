@@ -60,4 +60,11 @@ sealed class AppError : Throwable() {
         override val messageKey: String = "error.unknown",
         override val fallbackMessage: String = "Something went wrong. Please try again.",
     ) : AppError()
+
+    @Serializable
+    @SerialName("storage")
+    data class StorageError(
+        override val messageKey: String = "error.storage.nospace",
+        override val fallbackMessage: String = "Not enough space on device. Please free up some space and try again.",
+    ) : AppError()
 }

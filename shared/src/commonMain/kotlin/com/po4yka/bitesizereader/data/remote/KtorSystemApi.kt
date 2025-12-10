@@ -2,12 +2,16 @@ package com.po4yka.bitesizereader.data.remote
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.timeout
+import io.ktor.client.request.get
 import io.ktor.client.request.head
 import io.ktor.client.request.header
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.isSuccess
+import com.po4yka.bitesizereader.util.error.AppError
+import io.ktor.client.plugins.expectSuccess
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readAvailable
 import kotlinx.coroutines.flow.Flow
@@ -27,15 +31,40 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
             val fileSystem = SystemFileSystem
             val remoteSize =
                 runCatching {
-                    client.head("v1/system/db-dump") {
+                    var size: Long? = null
+                    // Try HEAD first
+                    val headResponse = client.head("v1/system/db-dump") {
+                        expectSuccess = false
                         timeout {
                             requestTimeoutMillis = 30_000
                             socketTimeoutMillis = 30_000
                         }
-                    }.takeIf { it.status.value in 200..299 }
-                        ?.headers
-                        ?.get(HttpHeaders.ContentLength)
-                        ?.toLongOrNull()
+                    }
+
+                    if (headResponse.status.isSuccess()) {
+                        size = headResponse.headers[HttpHeaders.ContentLength]?.toLongOrNull()
+                    }
+
+                    // If HEAD failed or no size, try GET with Range: bytes=0-0
+                    // This handles servers returning 405 Method Not Allowed for HEAD
+                    if (size == null) {
+                        val getResponse = client.get("v1/system/db-dump") {
+                            expectSuccess = false
+                            header(HttpHeaders.Range, "bytes=0-0")
+                            timeout {
+                                requestTimeoutMillis = 30_000
+                                socketTimeoutMillis = 30_000
+                            }
+                        }
+                        if (getResponse.status == HttpStatusCode.PartialContent) {
+                            // Content-Range: bytes 0-0/12345
+                            val contentRange = getResponse.headers[HttpHeaders.ContentRange]
+                            if (contentRange != null) {
+                                size = contentRange.substringAfterLast("/").toLongOrNull()
+                            }
+                        }
+                    }
+                    size
                 }.getOrNull()
 
             while (true) {
@@ -135,6 +164,7 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                                 if (msg.contains("ENOSPC") || msg.contains("No space left")) {
                                     if (fileSystem.exists(path)) fileSystem.delete(path)
                                     if (fileSystem.exists(etagPath)) fileSystem.delete(etagPath)
+                                    throw AppError.StorageError()
                                 }
                                 throw e
                             }
