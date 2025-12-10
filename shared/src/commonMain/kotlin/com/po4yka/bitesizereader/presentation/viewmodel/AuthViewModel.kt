@@ -8,17 +8,17 @@ import com.po4yka.bitesizereader.domain.usecase.LoginWithSecretUseCase
 import com.po4yka.bitesizereader.domain.usecase.LoginWithTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.presentation.state.AuthState
+import com.po4yka.bitesizereader.util.error.toAppError
+import com.po4yka.bitesizereader.util.error.userMessage
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-import com.po4yka.bitesizereader.util.error.toAppError
-import com.po4yka.bitesizereader.util.error.userMessage
-
-import io.github.oshai.kotlinlogging.KotlinLogging
+import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
+@Single
 class AuthViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
     private val loginWithSecretUseCase: LoginWithSecretUseCase,

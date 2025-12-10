@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.skie)
     alias(libs.plugins.wire)
     alias(libs.plugins.kover)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -75,6 +76,7 @@ kotlin {
 
             // Koin DI
             api(libs.koin.core)
+            api(libs.koin.annotations)
 
             // Kotlinx
             implementation(libs.kotlinx.serialization.json)
@@ -100,7 +102,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
 
             // Android DI
-            implementation("io.insert-koin:koin-android:4.0.0")
+            implementation(libs.koin.android)
 
             // Android Secure Storage (Tink + DataStore)
             implementation(libs.tink.android)
@@ -187,4 +189,38 @@ skie {
     features {
         enableSwiftUIObservingPreview = true
     }
+}
+
+// KSP configuration for Koin Annotations
+dependencies {
+    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
+    add("kspAndroid", libs.koin.ksp.compiler)
+    add("kspIosX64", libs.koin.ksp.compiler)
+    add("kspIosArm64", libs.koin.ksp.compiler)
+    add("kspIosSimulatorArm64", libs.koin.ksp.compiler)
+    add("kspDesktop", libs.koin.ksp.compiler)
+}
+
+ksp {
+    arg("KOIN_CONFIG_CHECK", "false")
+    arg("KOIN_DEFAULT_MODULE", "false")
+}
+
+// Required for KMP: Make KSP-generated code visible to common source sets
+// See: https://insert-koin.io/docs/reference/koin-annotations/kmp/
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+
+// Make KSP tasks for each platform depend on the metadata KSP task
+afterEvaluate {
+    tasks.matching { it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata" }.configureEach {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+
+kotlin.sourceSets.commonMain {
+    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 }

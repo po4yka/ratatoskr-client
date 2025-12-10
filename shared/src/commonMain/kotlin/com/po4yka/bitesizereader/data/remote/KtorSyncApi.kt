@@ -6,7 +6,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import org.koin.core.annotation.Single
 
+@Single
 class KtorSyncApi(private val client: HttpClient) : SyncApi {
     override suspend fun sync(
         sessionId: Long,

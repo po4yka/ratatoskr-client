@@ -5,12 +5,19 @@ import com.po4yka.bitesizereader.data.local.DesktopSecureStorage
 import com.po4yka.bitesizereader.data.local.SecureStorage
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
-import org.koin.core.module.Module
-import org.koin.dsl.module
+import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 
-actual fun platformModule(): Module =
-    module {
-        single { DatabaseDriverFactory() }
-        single<SecureStorage> { DesktopSecureStorage() }
-        single<HttpClientEngine> { OkHttp.create() }
-    }
+@Module
+class DesktopPlatformModule {
+    @Single
+    fun provideDatabaseDriverFactory(): DatabaseDriverFactory =
+        DatabaseDriverFactory()
+
+    @Single
+    fun provideSecureStorage(): SecureStorage =
+        DesktopSecureStorage()
+
+    @Single
+    fun provideHttpClientEngine(): HttpClientEngine = OkHttp.create()
+}

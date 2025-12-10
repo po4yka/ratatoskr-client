@@ -10,7 +10,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Factory
 
+@Factory
 class SearchViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
     private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase,

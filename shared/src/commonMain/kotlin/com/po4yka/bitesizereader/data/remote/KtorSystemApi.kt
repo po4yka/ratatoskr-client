@@ -14,8 +14,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import org.koin.core.annotation.Single
 
 @Suppress("unused")
+@Single
 class KtorSystemApi(private val client: HttpClient) : SystemApi {
     override suspend fun downloadDatabase(outputFile: String): Flow<DownloadProgress> =
         flow {

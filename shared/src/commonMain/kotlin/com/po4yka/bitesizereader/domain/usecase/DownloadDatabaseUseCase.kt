@@ -6,12 +6,14 @@ import com.po4yka.bitesizereader.util.FileSaver
 import com.po4yka.bitesizereader.util.config.AppConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform
+import org.koin.core.annotation.Factory
 
 enum class DownloadMode {
     BACKUP,
     IMPORT,
 }
 
+@Factory
 class DownloadDatabaseUseCase(
     private val repository: SystemRepository,
     private val fileSaver: FileSaver,

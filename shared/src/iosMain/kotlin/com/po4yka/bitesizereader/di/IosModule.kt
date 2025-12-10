@@ -6,13 +6,23 @@ import com.po4yka.bitesizereader.data.local.SecureStorage
 import com.po4yka.bitesizereader.util.FileSaver
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
-import org.koin.core.module.Module
-import org.koin.dsl.module
+import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 
-actual fun platformModule(): Module =
-    module {
-        single { DatabaseDriverFactory() }
-        single<SecureStorage> { IosSecureStorage() }
-        single<HttpClientEngine> { Darwin.create() }
-        single { FileSaver() }
-    }
+@Module
+class IosPlatformModule {
+    @Single
+    fun provideDatabaseDriverFactory(): DatabaseDriverFactory =
+        DatabaseDriverFactory()
+
+    @Single
+    fun provideSecureStorage(): SecureStorage =
+        IosSecureStorage()
+
+    @Single
+    fun provideHttpClientEngine(): HttpClientEngine = Darwin.create()
+
+    @Single
+    fun provideFileSaver(): FileSaver =
+        FileSaver()
+}

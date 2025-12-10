@@ -16,7 +16,9 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
 import io.ktor.http.contentType
+import org.koin.core.annotation.Single
 
+@Single
 class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
     override suspend fun getSummaries(
         page: Int,

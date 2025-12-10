@@ -3,7 +3,9 @@ package com.po4yka.bitesizereader.domain.usecase
 import com.po4yka.bitesizereader.domain.model.CollaboratorRole
 import com.po4yka.bitesizereader.domain.model.CollectionInvite
 import com.po4yka.bitesizereader.domain.repository.CollectionRepository
+import org.koin.core.annotation.Factory
 
+@Factory
 class CreateInviteLinkUseCase(private val repository: CollectionRepository) {
     suspend operator fun invoke(
         collectionId: String,

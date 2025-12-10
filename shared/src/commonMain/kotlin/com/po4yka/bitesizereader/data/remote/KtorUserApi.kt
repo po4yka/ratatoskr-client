@@ -10,7 +10,9 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import org.koin.core.annotation.Single
 
+@Single
 class KtorUserApi(
     private val client: HttpClient,
 ) : UserApi {

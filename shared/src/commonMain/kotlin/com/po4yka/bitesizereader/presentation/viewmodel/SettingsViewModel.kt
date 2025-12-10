@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Factory
 
 data class SettingsState(
     val isLoading: Boolean = false,
@@ -27,6 +28,7 @@ data class SettingsState(
     val downloadError: String? = null,
 )
 
+@Factory
 class SettingsViewModel(
     private val getTelegramLinkStatusUseCase: GetTelegramLinkStatusUseCase,
     private val unlinkTelegramUseCase: UnlinkTelegramUseCase,

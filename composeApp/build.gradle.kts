@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
     kotlin("native.cocoapods")
 }
 
@@ -92,6 +93,7 @@ kotlin {
             // Koin for Android
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.koin.androidx.startup)
 
             // Decompose for Compose
             implementation(libs.decompose.compose)
@@ -218,4 +220,6 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    add("kspAndroid", libs.koin.ksp.compiler)
+    add("kspDesktop", libs.koin.ksp.compiler)
 }

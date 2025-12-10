@@ -17,11 +17,13 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
 private const val PAGE_SIZE = 20
 
+@Factory
 class CollectionViewViewModel(
     private val getCollectionUseCase: GetCollectionUseCase,
     private val getCollectionItemsUseCase: GetCollectionItemsUseCase,
