@@ -1,14 +1,17 @@
 package com.po4yka.bitesizereader.data.mappers
 
-import com.po4yka.bitesizereader.data.remote.dto.*
-import com.po4yka.bitesizereader.domain.model.*
+import com.po4yka.bitesizereader.data.remote.dto.AuthResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
+import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshRequestDto
+import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.UserDto
+import com.po4yka.bitesizereader.domain.model.AuthTokens
+import com.po4yka.bitesizereader.domain.model.User
 import kotlin.time.Clock
-import kotlin.time.Instant
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
-/**
- * Maps Auth DTOs to domain models and vice versa
- */
+/** Maps Auth DTOs to domain models and vice versa */
 
 fun UserDto.toDomain(): User {
     return User(
@@ -24,7 +27,7 @@ fun AuthResponseDto.toDomain(): AuthTokens {
     val now = Clock.System.now()
     return AuthTokens(
         accessToken = tokens.accessToken,
-        refreshToken = tokens.refreshToken,
+        refreshToken = tokens.refreshToken ?: "",
         tokenType = tokens.tokenType,
         expiresIn = tokens.expiresIn,
         expiresAt = now + tokens.expiresIn.seconds,

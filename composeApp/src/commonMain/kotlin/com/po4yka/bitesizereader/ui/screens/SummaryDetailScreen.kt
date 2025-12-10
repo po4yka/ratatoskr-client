@@ -21,26 +21,30 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.Loading
+import com.mikepenz.markdown.compose.Markdown
+import com.mikepenz.markdown.m3.markdownTypography
+import com.mikepenz.markdown.model.DefaultMarkdownColors
+import com.mikepenz.markdown.model.MarkdownColors
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.TagChip
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.ReadIndicator
 import kotlin.time.Instant
 
-/**
- * Summary detail screen using Carbon Design System
- */
+/** Summary detail screen using Carbon Design System */
 @Suppress("FunctionNaming")
 @Composable
 fun SummaryDetailScreen(
@@ -77,6 +81,7 @@ fun SummaryDetailScreen(
                     modifier = Modifier.weight(1f),
                 )
             }
+
             state.isLoading -> {
                 Box(
                     modifier =
@@ -88,6 +93,7 @@ fun SummaryDetailScreen(
                     Loading(modifier = Modifier.size(88.dp))
                 }
             }
+
             state.summary != null -> {
                 SummaryDetailContent(
                     summary = state.summary!!,
@@ -198,10 +204,30 @@ private fun SummaryDetailContent(
         HorizontalDivider(color = Carbon.theme.borderSubtle00)
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = summary.content,
-            style = Carbon.typography.body01,
-            color = Carbon.theme.textPrimary,
+        // Markdown content with Carbon-themed colors
+        val markdownColors = carbonMarkdownColors()
+        val markdownTypography =
+            markdownTypography(
+                h1 = Carbon.typography.heading04,
+                h2 = Carbon.typography.heading03,
+                h3 = Carbon.typography.headingCompact01,
+                h4 = Carbon.typography.headingCompact01,
+                h5 = Carbon.typography.headingCompact01,
+                h6 = Carbon.typography.headingCompact01,
+                paragraph = Carbon.typography.body01,
+                text = Carbon.typography.body01,
+                quote = Carbon.typography.body01.copy(fontStyle = FontStyle.Italic),
+                code = Carbon.typography.body01.copy(fontFamily = FontFamily.Monospace),
+                bullet = Carbon.typography.body01,
+                list = Carbon.typography.body01,
+                ordered = Carbon.typography.body01,
+            )
+
+        Markdown(
+            content = summary.content,
+            colors = markdownColors,
+            typography = markdownTypography,
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -241,11 +267,24 @@ private fun formatDate(instant: Instant): String {
     year += (mi + 2) / 12
     val day = doy - (mi * 306 + 5) / 10 + 1
 
-    val monthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    val monthNames =
+        listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
     return "${monthNames[month - 1]} ${day.toString().padStart(2, '0')}, $year"
 }
 
 private fun extractDomain(url: String): String? {
     val noProtocol = url.substringAfter("://", url)
     return noProtocol.substringBefore("/").ifBlank { null }
+}
+
+/** Creates markdown colors that match the Carbon Design System theme. */
+@Composable
+private fun carbonMarkdownColors(): MarkdownColors {
+    return DefaultMarkdownColors(
+        text = Carbon.theme.textPrimary,
+        codeBackground = Carbon.theme.layer01,
+        inlineCodeBackground = Carbon.theme.layer01,
+        dividerColor = Carbon.theme.borderSubtle00,
+        tableBackground = Carbon.theme.layer01,
+    )
 }

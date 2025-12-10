@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TelegramLoginRequestDto(
-    @SerialName("telegram_user_id") val telegramUserId: Long,
-    @SerialName("auth_hash") val authHash: String,
+    @SerialName("id") val telegramUserId: Long,
+    @SerialName("hash") val authHash: String,
     @SerialName("auth_date") val authDate: Long,
     @SerialName("username") val username: String?,
     @SerialName("first_name") val firstName: String?,

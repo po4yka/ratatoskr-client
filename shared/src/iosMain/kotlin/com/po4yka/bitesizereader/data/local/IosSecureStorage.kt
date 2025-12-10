@@ -1,136 +1,43 @@
-@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
-
 package com.po4yka.bitesizereader.data.local
 
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
-import kotlinx.cinterop.value
-import platform.CoreFoundation.CFTypeRefVar
-import platform.Foundation.NSData
-import platform.Foundation.NSString
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.create
-import platform.Foundation.dataUsingEncoding
-import platform.Security.SecItemAdd
-import platform.Security.SecItemCopyMatching
-import platform.Security.SecItemDelete
-import platform.Security.SecItemUpdate
-import platform.Security.errSecSuccess
-import platform.Security.kSecAttrAccount
-import platform.Security.kSecAttrService
-import platform.Security.kSecClass
-import platform.Security.kSecClassGenericPassword
-import platform.Security.kSecMatchLimit
-import platform.Security.kSecMatchLimitOne
-import platform.Security.kSecReturnData
-import platform.Security.kSecValueData
-import platform.CoreFoundation.CFDictionaryRef
+import com.russhwolf.settings.KeychainSettings
+import com.russhwolf.settings.coroutines.toSuspendSettings
 
-/**
- * iOS implementation using Keychain Services
- */
 class IosSecureStorage : SecureStorage {
-    private val serviceName = "com.po4yka.bitesizereader.auth"
+    private val settings = KeychainSettings(service = SERVICE_NAME).toSuspendSettings()
 
     override suspend fun saveAccessToken(token: String) {
-        save(key = "access_token", value = token)
+        settings.putString(KEY_ACCESS_TOKEN, token)
     }
 
     override suspend fun getAccessToken(): String? {
-        return load(key = "access_token")
+        return settings.getStringOrNull(KEY_ACCESS_TOKEN)
     }
 
     override suspend fun saveRefreshToken(token: String) {
-        save(key = "refresh_token", value = token)
+        settings.putString(KEY_REFRESH_TOKEN, token)
     }
 
     override suspend fun getRefreshToken(): String? {
-        return load(key = "refresh_token")
+        return settings.getStringOrNull(KEY_REFRESH_TOKEN)
     }
 
     override suspend fun saveSessionId(sessionId: Long) {
-        save(key = "session_id", value = sessionId.toString())
+        settings.putLong(KEY_SESSION_ID, sessionId)
     }
 
     override suspend fun getSessionId(): Long? {
-        return load(key = "session_id")?.toLongOrNull()
+        return settings.getLongOrNull(KEY_SESSION_ID)
     }
 
     override suspend fun clearTokens() {
-        delete(key = "access_token")
-        delete(key = "refresh_token")
-        delete(key = "session_id")
+        settings.clear()
     }
 
-    private fun save(
-        key: String,
-        value: String,
-    ) {
-        @Suppress("CAST_NEVER_SUCCEEDS")
-        val data = (value as NSString).dataUsingEncoding(NSUTF8StringEncoding) ?: return
-
-        memScoped {
-            val query =
-                mapOf(
-                    kSecClass to kSecClassGenericPassword,
-                    kSecAttrService to serviceName,
-                    kSecAttrAccount to key,
-                )
-
-            @Suppress("UNCHECKED_CAST")
-            val cfQuery = query as CFDictionaryRef
-
-            val status = SecItemCopyMatching(cfQuery, null)
-            if (status == errSecSuccess) {
-                // Item exists, update it
-                val attributesToUpdate = mapOf(kSecValueData to data)
-                @Suppress("UNCHECKED_CAST")
-                SecItemUpdate(cfQuery, attributesToUpdate as CFDictionaryRef)
-            } else {
-                // Item doesn't exist, add it
-                val attributes = query + mapOf(kSecValueData to data)
-                @Suppress("UNCHECKED_CAST")
-                SecItemAdd(attributes as CFDictionaryRef, null)
-            }
-        }
-    }
-
-    private fun load(key: String): String? {
-        return memScoped {
-            val query =
-                mapOf(
-                    kSecClass to kSecClassGenericPassword,
-                    kSecAttrService to serviceName,
-                    kSecAttrAccount to key,
-                    kSecReturnData to true,
-                    kSecMatchLimit to kSecMatchLimitOne,
-                )
-
-            val result = alloc<CFTypeRefVar>()
-
-            @Suppress("UNCHECKED_CAST")
-            val status = SecItemCopyMatching(query as CFDictionaryRef, result.ptr)
-
-            if (status == errSecSuccess) {
-                val data = result.value as? NSData
-                data?.let {
-                    NSString.create(data = it, encoding = NSUTF8StringEncoding)?.toString()
-                }
-            } else {
-                null
-            }
-        }
-    }
-
-    private fun delete(key: String) {
-        val query =
-            mapOf(
-                kSecClass to kSecClassGenericPassword,
-                kSecAttrService to serviceName,
-                kSecAttrAccount to key,
-            )
-        @Suppress("UNCHECKED_CAST")
-        SecItemDelete(query as CFDictionaryRef)
+    private companion object {
+        const val SERVICE_NAME = "com.po4yka.bitesizereader.auth"
+        const val KEY_ACCESS_TOKEN = "access_token"
+        const val KEY_REFRESH_TOKEN = "refresh_token"
+        const val KEY_SESSION_ID = "session_id"
     }
 }

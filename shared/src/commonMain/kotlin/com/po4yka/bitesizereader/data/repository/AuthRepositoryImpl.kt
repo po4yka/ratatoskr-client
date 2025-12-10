@@ -2,25 +2,23 @@ package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.data.local.SecureStorage
 import com.po4yka.bitesizereader.data.mappers.createTelegramLoginRequest
+import com.po4yka.bitesizereader.data.mappers.toAuthTokens
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.AuthApi
 import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SecretLoginRequestDto
-import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshRequestDto
 import com.po4yka.bitesizereader.domain.model.AuthTokens
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
 import com.po4yka.bitesizereader.util.config.AppConfig
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.time.Clock
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
-import com.po4yka.bitesizereader.data.mappers.toAuthTokens
-
-import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
@@ -66,8 +64,10 @@ class AuthRepositoryImpl(
         if (response.success && response.data != null) {
             val authTokens = response.data.toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
-            secureStorage.saveRefreshToken(authTokens.refreshToken)
-            secureStorage.saveSessionId(response.data.sessionId)
+            if (authTokens.refreshToken.isNotEmpty()) {
+                secureStorage.saveRefreshToken(authTokens.refreshToken)
+            }
+            response.data.sessionId?.let { secureStorage.saveSessionId(it) }
             // Fetch current user on-demand
             _currentUser.value = null
             _isAuthenticated.value = true
@@ -91,8 +91,10 @@ class AuthRepositoryImpl(
         if (response.success && response.data != null) {
             val authTokens = response.data.toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
-            secureStorage.saveRefreshToken(authTokens.refreshToken)
-            secureStorage.saveSessionId(response.data.sessionId)
+            if (authTokens.refreshToken.isNotEmpty()) {
+                secureStorage.saveRefreshToken(authTokens.refreshToken)
+            }
+            response.data.sessionId?.let { secureStorage.saveSessionId(it) }
             // Fetch current user on-demand
             _currentUser.value = null
             _isAuthenticated.value = true

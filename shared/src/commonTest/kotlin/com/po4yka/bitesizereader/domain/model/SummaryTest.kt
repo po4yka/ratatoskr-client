@@ -1,97 +1,97 @@
 package com.po4yka.bitesizereader.domain.model
 
-import com.po4yka.bitesizereader.util.MockDataFactory
-import kotlin.time.Clock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Clock
 
-/**
- * Unit tests for Summary domain model
- */
+/** Unit tests for the Summary domain model */
 class SummaryTest {
     @Test
-    fun `Summary is created with correct properties`() {
+    fun `Summary model has correct values`() {
         // Given
+        val now = Clock.System.now()
         val summary =
-            MockDataFactory.createSummary(
-                id = 1,
+            Summary(
+                id = "1",
                 title = "Test Article",
+                content = "Test content",
+                sourceUrl = "https://example.com/article",
+                imageUrl = "https://example.com/image.jpg",
+                createdAt = now,
                 isRead = false,
+                tags = listOf("tech", "ai"),
             )
 
         // Then
-        assertEquals(1, summary.id)
+        assertEquals("1", summary.id)
         assertEquals("Test Article", summary.title)
+        assertEquals("Test content", summary.content)
+        assertEquals("https://example.com/article", summary.sourceUrl)
+        assertEquals("https://example.com/image.jpg", summary.imageUrl)
         assertFalse(summary.isRead)
+        assertEquals(listOf("tech", "ai"), summary.tags)
     }
 
     @Test
-    fun `Summary copy works correctly`() {
+    fun `Summary can have null imageUrl`() {
         // Given
-        val summary = MockDataFactory.createSummary(id = 1, isRead = false)
-
-        // When
-        val updatedSummary = summary.copy(isRead = true)
-
-        // Then
-        assertEquals(summary.id, updatedSummary.id)
-        assertEquals(summary.title, updatedSummary.title)
-        assertFalse(summary.isRead)
-        assertTrue(updatedSummary.isRead)
-    }
-
-    @Test
-    fun `Summary with topic tags is categorized correctly`() {
-        // Given
-        val techTags = listOf("technology", "ai", "machine-learning")
-        val summary = MockDataFactory.createSummary(topicTags = techTags)
-
-        // Then
-        assertEquals(3, summary.topicTags.size)
-        assertTrue(summary.topicTags.contains("technology"))
-        assertTrue(summary.topicTags.contains("ai"))
-    }
-
-    @Test
-    fun `Summary created date is in the past`() {
-        // Given
-        val summary = MockDataFactory.createSummary()
-
-        // Then
         val now = Clock.System.now()
-        assertTrue(summary.createdAt <= now)
+        val summary =
+            Summary(
+                id = "2",
+                title = "No Image Article",
+                content = "Content without image",
+                sourceUrl = "https://example.com/no-image",
+                imageUrl = null,
+                createdAt = now,
+                isRead = false,
+                tags = emptyList(),
+            )
+
+        // Then
+        assertNull(summary.imageUrl)
     }
 
     @Test
-    fun `Summary estimated reading time is positive`() {
+    fun `Summary can have empty tags`() {
         // Given
-        val summary = MockDataFactory.createSummary(readingTimeMin = 5)
+        val now = Clock.System.now()
+        val summary =
+            Summary(
+                id = "3",
+                title = "Untagged Article",
+                content = "Content",
+                sourceUrl = "https://example.com/untagged",
+                imageUrl = null,
+                createdAt = now,
+                isRead = false,
+                tags = emptyList(),
+            )
 
         // Then
-        assertTrue(summary.readingTimeMin > 0)
+        assertTrue(summary.tags.isEmpty())
     }
 
     @Test
-    fun `Summary key ideas can be empty`() {
+    fun `Summary isRead can be true`() {
         // Given
-        val summary = MockDataFactory.createSummary(keyIdeas = emptyList())
+        val now = Clock.System.now()
+        val summary =
+            Summary(
+                id = "4",
+                title = "Read Article",
+                content = "Already read",
+                sourceUrl = "https://example.com/read",
+                imageUrl = null,
+                createdAt = now,
+                isRead = true,
+                tags = emptyList(),
+            )
 
         // Then
-        assertTrue(summary.keyIdeas.isEmpty())
-    }
-
-    @Test
-    fun `Summary equality works correctly`() {
-        // Given
-        val summary1 = MockDataFactory.createSummary(id = 1)
-        val summary2 = summary1.copy()
-        val summary3 = MockDataFactory.createSummary(id = 2)
-
-        // Then
-        assertEquals(summary1, summary2)
-        assertEquals(summary1.id, summary2.id)
-        assert(summary1.id != summary3.id)
+        assertTrue(summary.isRead)
     }
 }

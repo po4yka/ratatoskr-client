@@ -8,8 +8,10 @@ import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -37,11 +39,13 @@ class DefaultRootComponent(
     private fun observeAuthState() {
         authRepository.isAuthenticated
             .onEach { isAuthenticated ->
-                val currentConfig = childStack.value.active.configuration
-                if (isAuthenticated && currentConfig is Config.Auth) {
-                    navigation.replaceCurrent(Config.Main)
-                } else if (!isAuthenticated && currentConfig is Config.Main) {
-                    navigation.replaceCurrent(Config.Auth)
+                withContext(Dispatchers.Main) {
+                    val currentConfig = childStack.value.active.configuration
+                    if (isAuthenticated && currentConfig is Config.Auth) {
+                        navigation.replaceCurrent(Config.Main)
+                    } else if (!isAuthenticated && currentConfig is Config.Main) {
+                        navigation.replaceCurrent(Config.Auth)
+                    }
                 }
             }
             .launchIn(scope)
@@ -58,6 +62,7 @@ class DefaultRootComponent(
                         navigation.replaceCurrent(Config.Main)
                     },
                 )
+
             is Config.Main -> RootComponent.Child.Main(DefaultMainComponent(componentContext))
         }
 

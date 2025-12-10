@@ -48,8 +48,14 @@ kover = "0.9.3"
 ktlint = "14.0.1"
 detekt = "1.23.8"
 
+# Multiplatform Settings
+multiplatform-settings = "1.3.0"
+
 # Design System
 carbon = "0.6.2"
+
+# Markdown
+markdown-renderer = "0.38.1"
 
 [libraries]
 # Kotlin
@@ -124,8 +130,18 @@ wire-grpc-client = { module = "com.squareup.wire:wire-grpc-client", version.ref 
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
+# Multiplatform Settings
+multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
+multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
+multiplatform-settings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "multiplatform-settings" }
+
 # Carbon Design System
 carbon-compose = { module = "io.github.gabrieldrn:carbon", version.ref = "carbon" }
+
+# Markdown Renderer
+markdown-renderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdown-renderer" }
+markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdown-renderer" }
+markdown-renderer-coil3 = { module = "com.mikepenz:multiplatform-markdown-renderer-coil3", version.ref = "markdown-renderer" }
 
 [plugins]
 # Android

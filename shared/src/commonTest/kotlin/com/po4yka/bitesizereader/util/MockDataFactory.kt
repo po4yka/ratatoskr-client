@@ -1,125 +1,65 @@
 package com.po4yka.bitesizereader.util
 
-import com.po4yka.bitesizereader.domain.model.*
+import com.po4yka.bitesizereader.domain.model.AuthTokens
+import com.po4yka.bitesizereader.domain.model.Request
+import com.po4yka.bitesizereader.domain.model.RequestStatus
+import com.po4yka.bitesizereader.domain.model.SearchQuery
+import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.domain.model.SyncState
+import com.po4yka.bitesizereader.domain.model.User
 import kotlin.time.Clock
-import kotlin.time.Instant
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Instant
 
-/**
- * Factory for creating mock domain model instances for testing
- */
+/** Factory for creating mock domain model instances for testing */
 object MockDataFactory {
-    /**
-     * Create a mock Summary with customizable properties
-     */
+    /** Create a mock Summary with customizable properties */
     fun createSummary(
-        id: Int = 1,
-        requestId: Int = 1,
+        id: String = "1",
         title: String = "Test Article $id",
-        url: String = "https://example.com/article-$id",
-        domain: String? = "example.com",
-        tldr: String = "This is a test summary for article $id",
-        summary250: String = "A concise 250-char summary",
-        summary1000: String? = "A detailed 1000-char summary with more information about the article",
-        keyIdeas: List<String> = listOf("Key idea 1", "Key idea 2", "Key idea 3"),
-        topicTags: List<String> = listOf("technology", "ai"),
-        answeredQuestions: List<String> = listOf("Question 1?", "Question 2?"),
-        seoKeywords: List<String> = listOf("keyword1", "keyword2"),
-        readingTimeMin: Int = 5,
-        lang: String = "en",
-        entities: Entities? =
-            Entities(
-                people = listOf("John Doe"),
-                organizations = listOf("Tech Corp"),
-                locations = listOf("San Francisco"),
-            ),
-        keyStats: List<KeyStat> =
-            listOf(
-                KeyStat(label = "Users", value = 1000.0, unit = "million", sourceExcerpt = "1M users"),
-            ),
-        readability: Readability? = Readability(method = "flesch", score = 60.0, level = "standard"),
+        content: String = "This is a test summary content for article $id",
+        sourceUrl: String = "https://example.com/article-$id",
+        imageUrl: String? = "https://example.com/images/$id.jpg",
+        createdAt: Instant = Clock.System.now() - 1.days,
         isRead: Boolean = false,
-        isFavorite: Boolean = false,
-        createdAt: Instant = Clock.System.now() - (id * 1).days,
-        updatedAt: Instant? = null,
-        syncStatus: SyncStatus = SyncStatus.SYNCED,
-        locallyModified: Boolean = false,
+        tags: List<String> = listOf("technology", "ai"),
     ) = Summary(
         id = id,
-        requestId = requestId,
         title = title,
-        url = url,
-        domain = domain,
-        tldr = tldr,
-        summary250 = summary250,
-        summary1000 = summary1000,
-        keyIdeas = keyIdeas,
-        topicTags = topicTags,
-        answeredQuestions = answeredQuestions,
-        seoKeywords = seoKeywords,
-        readingTimeMin = readingTimeMin,
-        lang = lang,
-        entities = entities,
-        keyStats = keyStats,
-        readability = readability,
-        isRead = isRead,
-        isFavorite = isFavorite,
+        content = content,
+        sourceUrl = sourceUrl,
+        imageUrl = imageUrl,
         createdAt = createdAt,
-        updatedAt = updatedAt,
-        syncStatus = syncStatus,
-        locallyModified = locallyModified,
+        isRead = isRead,
+        tags = tags,
     )
 
-    /**
-     * Create a list of mock Summaries
-     */
+    /** Create a list of mock Summaries */
     fun createSummaryList(count: Int = 5): List<Summary> {
-        return (1..count).map { createSummary(id = it) }
+        return (1..count).map { createSummary(id = it.toString()) }
     }
 
-    /**
-     * Create a mock Request with customizable properties
-     */
+    /** Create a mock Request with customizable properties */
     fun createRequest(
-        id: Int = 1,
-        inputUrl: String = "https://example.com/article-$id",
-        type: RequestType = RequestType.URL,
+        id: String = "1",
+        url: String = "https://example.com/article-$id",
         status: RequestStatus = RequestStatus.PENDING,
-        stage: ProcessingStage? = null,
-        progress: Int = 0,
-        langPreference: String = "en",
-        summaryId: Int? = null,
-        errorMessage: String? = null,
-        canRetry: Boolean = false,
-        estimatedSecondsRemaining: Int? = null,
         createdAt: Instant = Clock.System.now() - 1.hours,
-        updatedAt: Instant? = null,
-        completedAt: Instant? = null,
+        updatedAt: Instant = Clock.System.now(),
     ) = Request(
         id = id,
-        inputUrl = inputUrl,
-        type = type,
+        url = url,
         status = status,
-        stage = stage,
-        progress = progress,
-        langPreference = langPreference,
-        summaryId = summaryId,
-        errorMessage = errorMessage,
-        canRetry = canRetry,
-        estimatedSecondsRemaining = estimatedSecondsRemaining,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        completedAt = completedAt,
     )
 
-    /**
-     * Create a list of mock Requests
-     */
+    /** Create a list of mock Requests */
     fun createRequestList(count: Int = 3): List<Request> {
         return (1..count).map {
             createRequest(
-                id = it,
+                id = it.toString(),
                 status =
                     when (it % 3) {
                         0 -> RequestStatus.COMPLETED
@@ -130,33 +70,27 @@ object MockDataFactory {
         }
     }
 
-    /**
-     * Create a mock User with customizable properties
-     */
+    /** Create a mock User with customizable properties */
     fun createUser(
-        id: Long = 123456789L,
+        id: String = "123456789",
         username: String? = "testuser",
         firstName: String? = "Test",
         lastName: String? = "User",
         photoUrl: String? = "https://example.com/photo.jpg",
-        isOwner: Boolean = false,
     ) = User(
         id = id,
         username = username,
         firstName = firstName,
         lastName = lastName,
         photoUrl = photoUrl,
-        isOwner = isOwner,
     )
 
-    /**
-     * Create a mock AuthTokens with customizable properties
-     */
+    /** Create a mock AuthTokens with customizable properties */
     fun createAuthTokens(
         accessToken: String = "mock-access-token",
         refreshToken: String = "mock-refresh-token",
         tokenType: String = "Bearer",
-        expiresIn: Int = 3600,
+        expiresIn: Long = 3600L,
         expiresAt: Instant = Clock.System.now() + 1.hours,
     ) = AuthTokens(
         accessToken = accessToken,
@@ -166,59 +100,23 @@ object MockDataFactory {
         expiresAt = expiresAt,
     )
 
-    /**
-     * Create a mock SearchQuery
-     */
+    /** Create a mock SearchQuery */
     fun createSearchQuery(
         query: String = "test query",
-        filters: SearchFilters = SearchFilters(),
+        page: Int = 1,
+        pageSize: Int = 20,
     ) = SearchQuery(
         query = query,
-        filters = filters,
+        page = page,
+        pageSize = pageSize,
     )
 
-    /**
-     * Create mock SearchFilters
-     */
-    fun createSearchFilters(
-        isRead: Boolean? = null,
-        readStatus: String? = null,
-        lang: String? = null,
-        topicTags: List<String> = emptyList(),
-        fromDate: String? = null,
-        toDate: String? = null,
-        sortBy: SortField = SortField.CREATED_AT,
-        sortOrder: SortOrder = SortOrder.DESC,
-    ) = SearchFilters(
-        isRead = isRead,
-        readStatus = readStatus,
-        lang = lang,
-        topicTags = topicTags,
-        fromDate = fromDate,
-        toDate = toDate,
-        sortBy = sortBy,
-        sortOrder = sortOrder,
-    )
-
-    /**
-     * Create a mock SyncState (returns Idle by default)
-     */
-    fun createSyncState(): SyncState = SyncState.Idle
-
-    /**
-     * Create a mock SyncMetadata
-     */
-    fun createSyncMetadata(
-        lastFullSync: Instant? = null,
-        lastDeltaSync: Instant? = null,
-        lastSyncTimestamp: Instant? = Clock.System.now() - 1.hours,
-        deviceId: String = "test-device-id",
-        pendingChanges: Int = 0,
-    ) = SyncMetadata(
-        lastFullSync = lastFullSync,
-        lastDeltaSync = lastDeltaSync,
-        lastSyncTimestamp = lastSyncTimestamp,
-        deviceId = deviceId,
-        pendingChanges = pendingChanges,
+    /** Create a mock SyncState */
+    fun createSyncState(
+        lastSyncTime: Instant? = Clock.System.now() - 1.hours,
+        lastSyncHash: String? = "abc123hash",
+    ) = SyncState(
+        lastSyncTime = lastSyncTime,
+        lastSyncHash = lastSyncHash,
     )
 }

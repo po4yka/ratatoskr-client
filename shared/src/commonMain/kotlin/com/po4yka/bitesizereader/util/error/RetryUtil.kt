@@ -1,8 +1,8 @@
 package com.po4yka.bitesizereader.util.error
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.delay
 import kotlin.math.pow
+import kotlinx.coroutines.delay
 
 private val logger = KotlinLogging.logger {}
 
@@ -13,7 +13,12 @@ sealed class RetryStrategy {
 
     data class FixedDelay(val maxAttempts: Int, val delayMs: Long) : RetryStrategy()
 
-    data class ExponentialBackoff(val maxAttempts: Int, val initialDelayMs: Long = 1000, val maxDelayMs: Long = 32000, val multiplier: Double = 2.0) : RetryStrategy() {
+    data class ExponentialBackoff(
+        val maxAttempts: Int,
+        val initialDelayMs: Long = 1000,
+        val maxDelayMs: Long = 32000,
+        val multiplier: Double = 2.0,
+    ) : RetryStrategy() {
         fun getDelayForAttempt(attempt: Int): Long =
             calculateExponentialBackoff(
                 attempt,
@@ -38,12 +43,11 @@ fun AppError.getRetryStrategy(): RetryStrategy =
             } else {
                 RetryStrategy.NoRetry
             }
+
         else -> RetryStrategy.NoRetry
     }
 
-/**
- * Retry a suspending operation with the specified strategy
- */
+/** Retry a suspending operation with the specified strategy */
 suspend fun <T> retryWithStrategy(
     strategy: RetryStrategy,
     operation: suspend (attempt: Int) -> T,
@@ -66,7 +70,9 @@ suspend fun <T> retryWithStrategy(
                         logger.warn(e) { "All ${strategy.maxAttempts} immediate retry attempts failed" }
                         return Result.failure(e)
                     }
-                    logger.debug { "Immediate retry attempt ${attempt + 1}/${strategy.maxAttempts} failed, retrying..." }
+                    logger.debug {
+                        "Immediate retry attempt ${attempt + 1}/${strategy.maxAttempts} failed, retrying..."
+                    }
                     // No delay for immediate retry
                 }
             }
@@ -84,7 +90,8 @@ suspend fun <T> retryWithStrategy(
 
                     val delayMs = strategy.getDelayForAttempt(attempt)
                     logger.debug {
-                        "Exponential backoff attempt ${attempt + 1}/${strategy.maxAttempts} failed, waiting ${delayMs}ms before retry..."
+                        "Exponential backoff attempt ${attempt + 1}/${strategy.maxAttempts} failed, " +
+                                "waiting ${delayMs}ms before retry..."
                     }
                     delay(delayMs)
                 }
@@ -102,7 +109,8 @@ suspend fun <T> retryWithStrategy(
                     }
 
                     logger.debug {
-                        "Fixed delay attempt ${attempt + 1}/${strategy.maxAttempts} failed, waiting ${strategy.delayMs}ms before retry..."
+                        "Fixed delay attempt ${attempt + 1}/${strategy.maxAttempts} failed, " +
+                                "waiting ${strategy.delayMs}ms before retry..."
                     }
                     delay(strategy.delayMs)
                 }
@@ -123,16 +131,12 @@ suspend fun <T> retryWithStrategy(
     return Result.failure(IllegalStateException("Retry logic error"))
 }
 
-/**
- * Extension for easier retryable operations
- */
+/** Extension for easier retryable operations */
 suspend fun <T> AppError.retryOperation(operation: suspend (attempt: Int) -> T): Result<T> {
     return retryWithStrategy(getRetryStrategy(), operation)
 }
 
-/**
- * Calculate exponential backoff delay
- */
+/** Calculate exponential backoff delay */
 fun calculateExponentialBackoff(
     attempt: Int,
     initialDelayMs: Long = 1000,
