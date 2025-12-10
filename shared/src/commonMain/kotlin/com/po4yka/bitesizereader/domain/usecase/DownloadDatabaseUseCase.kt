@@ -8,6 +8,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform
 import org.koin.core.annotation.Factory
+import com.po4yka.bitesizereader.util.error.AppError
 
 enum class DownloadMode {
     BACKUP,
@@ -48,6 +49,12 @@ class DownloadDatabaseUseCase(
                     }
                     DownloadMode.IMPORT -> {
                         logger.info { "Executing IMPORT flow. Importing database from temp path." }
+                        val size = fileSaver.getFileSize(tempPath)
+                        if (size < 100) { // arbitrary small size for valid sqlite header (100 bytes is generous, header is 16 bytes but empty db is 4KB usually)
+                             val msg = "Downloaded database file is too small ($size bytes). Aborting import."
+                             logger.error { msg }
+                             throw AppError.ValidationError("error.import.invalid", "Downloaded backup file is invalid or empty.")
+                        }
                         fileSaver.importDatabase(tempPath, AppConfig.Database.NAME)
                         logger.info { "Database import executed successfully." }
                     }
