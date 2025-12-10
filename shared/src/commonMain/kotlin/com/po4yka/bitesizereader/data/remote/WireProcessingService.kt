@@ -14,7 +14,6 @@ class WireProcessingService(
 ) : ProcessingService {
     constructor(grpcClient: GrpcClient) : this(GrpcProcessingServiceClient(grpcClient))
 
-    @Suppress("DEPRECATION")
     override fun submitUrl(
         url: String,
         language: String?,
@@ -29,9 +28,7 @@ class WireProcessingService(
 
         return flow {
             coroutineScope {
-                val (requestChannel, responseChannel) = client.SubmitUrl().execute()
-                requestChannel.send(request)
-                requestChannel.close()
+                val responseChannel = client.SubmitUrl().executeIn(this, request)
 
                 for (item in responseChannel) {
                     emit(item)

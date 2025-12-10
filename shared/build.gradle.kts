@@ -99,9 +99,12 @@ kotlin {
             // Android Coroutines
             implementation(libs.kotlinx.coroutines.android)
 
-            // Android Security
+            // Android DI
             implementation("io.insert-koin:koin-android:4.0.0")
-            implementation(libs.androidx.security.crypto)
+
+            // Android Secure Storage (Tink + DataStore)
+            implementation(libs.tink.android)
+            implementation(libs.datastore.preferences)
 
             // Logging - SLF4J backend for Android
             implementation(libs.logback.android)
@@ -170,6 +173,9 @@ sqldelight {
 
 wire {
     kotlin {
+        // Use explicit streaming call classes (GrpcServerStreamingCall, etc.)
+        // instead of deprecated GrpcStreamingCall for non-bidirectional streaming
+        explicitStreamingCalls = true
     }
     sourcePath {
         srcDir("src/commonMain/proto")

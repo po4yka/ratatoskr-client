@@ -1,60 +1,77 @@
 package com.po4yka.bitesizereader.data.local
 
 import android.content.Context
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
-import com.russhwolf.settings.SharedPreferencesSettings
-import com.russhwolf.settings.coroutines.toSuspendSettings
+import android.util.Base64
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import com.google.crypto.tink.Aead
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
-class AndroidSecureStorage(context: Context) : SecureStorage {
-    private val masterKey =
-        MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+private val Context.secureDataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "secure_prefs_v3",
+)
 
-    private val encryptedPrefs =
-        EncryptedSharedPreferences.create(
-            context,
-            PREFS_NAME,
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
-        )
-
-    private val settings = SharedPreferencesSettings(encryptedPrefs).toSuspendSettings()
+class AndroidSecureStorage(private val context: Context) : SecureStorage {
+    private val aead: Aead by lazy { TinkKeyManager.getAead(context) }
+    private val dataStore: DataStore<Preferences> get() = context.secureDataStore
 
     override suspend fun saveAccessToken(token: String) {
-        settings.putString(KEY_ACCESS_TOKEN, token)
+        saveEncrypted(KEY_ACCESS_TOKEN, token)
     }
 
     override suspend fun getAccessToken(): String? {
-        return settings.getStringOrNull(KEY_ACCESS_TOKEN)
+        return getDecrypted(KEY_ACCESS_TOKEN)
     }
 
     override suspend fun saveRefreshToken(token: String) {
-        settings.putString(KEY_REFRESH_TOKEN, token)
+        saveEncrypted(KEY_REFRESH_TOKEN, token)
     }
 
     override suspend fun getRefreshToken(): String? {
-        return settings.getStringOrNull(KEY_REFRESH_TOKEN)
+        return getDecrypted(KEY_REFRESH_TOKEN)
     }
 
     override suspend fun saveSessionId(sessionId: Long) {
-        settings.putLong(KEY_SESSION_ID, sessionId)
+        saveEncrypted(KEY_SESSION_ID, sessionId.toString())
     }
 
     override suspend fun getSessionId(): Long? {
-        return settings.getLongOrNull(KEY_SESSION_ID)
+        return getDecrypted(KEY_SESSION_ID)?.toLongOrNull()
     }
 
     override suspend fun clearTokens() {
-        settings.clear()
+        dataStore.edit { it.clear() }
+    }
+
+    private suspend fun saveEncrypted(
+        key: Preferences.Key<String>,
+        value: String,
+    ) {
+        val encrypted = aead.encrypt(value.toByteArray(Charsets.UTF_8), null)
+        val encoded = Base64.encodeToString(encrypted, Base64.NO_WRAP)
+        dataStore.edit { prefs ->
+            prefs[key] = encoded
+        }
+    }
+
+    private suspend fun getDecrypted(key: Preferences.Key<String>): String? {
+        val encoded = dataStore.data.map { prefs -> prefs[key] }.first() ?: return null
+        return try {
+            val encrypted = Base64.decode(encoded, Base64.NO_WRAP)
+            val decrypted = aead.decrypt(encrypted, null)
+            String(decrypted, Charsets.UTF_8)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private companion object {
-        const val PREFS_NAME = "secure_prefs_v2"
-        const val KEY_ACCESS_TOKEN = "access_token"
-        const val KEY_REFRESH_TOKEN = "refresh_token"
-        const val KEY_SESSION_ID = "session_id"
+        val KEY_ACCESS_TOKEN = stringPreferencesKey("access_token")
+        val KEY_REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+        val KEY_SESSION_ID = stringPreferencesKey("session_id")
     }
 }
