@@ -1,33 +1,42 @@
 package com.po4yka.bitesizereader.data.local
 
+import com.russhwolf.settings.MapSettings
+import com.russhwolf.settings.coroutines.toSuspendSettings
+
 class DesktopSecureStorage : SecureStorage {
-    private val prefs = mutableMapOf<String, String>()
+    private val settings = MapSettings().toSuspendSettings()
 
     override suspend fun saveAccessToken(token: String) {
-        prefs["access_token"] = token
+        settings.putString(KEY_ACCESS_TOKEN, token)
     }
 
     override suspend fun getAccessToken(): String? {
-        return prefs["access_token"]
+        return settings.getStringOrNull(KEY_ACCESS_TOKEN)
     }
 
     override suspend fun saveRefreshToken(token: String) {
-        prefs["refresh_token"] = token
+        settings.putString(KEY_REFRESH_TOKEN, token)
     }
 
     override suspend fun getRefreshToken(): String? {
-        return prefs["refresh_token"]
+        return settings.getStringOrNull(KEY_REFRESH_TOKEN)
     }
 
     override suspend fun saveSessionId(sessionId: Long) {
-        prefs["session_id"] = sessionId.toString()
+        settings.putLong(KEY_SESSION_ID, sessionId)
     }
 
     override suspend fun getSessionId(): Long? {
-        return prefs["session_id"]?.toLongOrNull()
+        return settings.getLongOrNull(KEY_SESSION_ID)
     }
 
     override suspend fun clearTokens() {
-        prefs.clear()
+        settings.clear()
+    }
+
+    private companion object {
+        const val KEY_ACCESS_TOKEN = "access_token"
+        const val KEY_REFRESH_TOKEN = "refresh_token"
+        const val KEY_SESSION_ID = "session_id"
     }
 }

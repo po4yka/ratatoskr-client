@@ -53,7 +53,8 @@ interface CollectionsApi {
 
     suspend fun getTree(maxDepth: Int = 3): ApiResponseDto<CollectionTreeResponseEnvelope>
 
-    suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponseEnvelope> // Note: CollectionAclResponseEnvelope not defined in DTOs yet, will need to check or assume generic
+    // Note: CollectionAclResponseEnvelope not defined in DTOs yet, will need to check or assume generic
+    suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponseEnvelope>
 
     suspend fun addCollaborator(
         id: Int,
@@ -77,7 +78,11 @@ interface CollectionsApi {
         request: CollectionReorderRequest,
     ): ApiResponseDto<CollectionReorderResponseEnvelope>
 
-    suspend fun reorderItems(id: Int, request: CollectionItemReorderRequest): ApiResponseDto<CollectionReorderResponseEnvelope> // Assuming same response type based on similarity
+    // Assuming same response type based on similarity
+    suspend fun reorderItems(
+        id: Int,
+        request: CollectionItemReorderRequest,
+    ): ApiResponseDto<CollectionReorderResponseEnvelope>
 
     suspend fun moveCollection(
         id: Int,

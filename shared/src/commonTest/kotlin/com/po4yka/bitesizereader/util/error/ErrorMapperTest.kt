@@ -2,10 +2,10 @@ package com.po4yka.bitesizereader.util.error
 
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.http.HttpStatusCode
-import kotlinx.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.io.IOException
 
 class ErrorMapperTest {
     private val provider = DefaultErrorMessageProvider
@@ -38,7 +38,7 @@ class ErrorMapperTest {
             ioError.userMessage(provider),
         )
 
-        val timeout = HttpRequestTimeoutException().toAppError()
+        val timeout = HttpRequestTimeoutException("https://example.com", 30000L).toAppError()
         assertTrue(timeout is AppError.TimeoutError)
         assertEquals("error.network.timeout", timeout.messageKey)
         assertEquals("Request timed out. Please try again.", timeout.userMessage(provider))

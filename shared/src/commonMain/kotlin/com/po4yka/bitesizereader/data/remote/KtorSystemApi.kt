@@ -41,10 +41,12 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                             socketTimeoutMillis = Long.MAX_VALUE
                         }
                     }.execute { response ->
-                        val contentLength = response.headers[HttpHeaders.ContentLength]?.toLongOrNull()
+                        val contentLength =
+                            response.headers[HttpHeaders.ContentLength]?.toLongOrNull()
                         val isPartial = response.status == HttpStatusCode.PartialContent
                         val totalSize =
-                            if (isPartial) existingSize + (contentLength ?: 0) else (contentLength ?: 0)
+                            if (isPartial) existingSize + (contentLength ?: 0) else (contentLength
+                                ?: 0)
 
                         // If server didn't accept range (sent 200 OK), reset existingSize to 0 (overwrite)
                         val startByte = if (isPartial) existingSize else 0L
@@ -91,15 +93,17 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                     // Check if it's a network/IO error we should retry
                     val isRetryable =
                         e is kotlinx.io.IOException || // Changed from io.ktor.utils.io.errors.IOException
-                            e is io.ktor.client.plugins.HttpRequestTimeoutException ||
-                            e is io.ktor.client.network.sockets.SocketTimeoutException ||
-                            e is io.ktor.client.network.sockets.ConnectTimeoutException
+                                e is io.ktor.client.plugins.HttpRequestTimeoutException ||
+                                e is io.ktor.client.network.sockets.SocketTimeoutException ||
+                                e is io.ktor.client.network.sockets.ConnectTimeoutException
 
                     if (isRetryable && currentRetry < maxRetries) {
                         currentRetry++
                         val delayMs = 1000L * (1 shl (currentRetry - 1)) // 1s, 2s, 4s, 8s, 16s
+                        val delaySec = delayMs / 1000
                         println(
-                            "Download failed: ${e.message}. Retrying in ${delayMs / 1000}s (Attempt $currentRetry/$maxRetries)",
+                            "Download failed: ${e.message}. " +
+                                    "Retrying in ${delaySec}s (Attempt $currentRetry/$maxRetries)",
                         )
                         kotlinx.coroutines.delay(delayMs)
                     } else {

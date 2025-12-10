@@ -25,6 +25,8 @@ kotlin {
 
     sourceSets.all {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
+        languageSettings.optIn("com.russhwolf.settings.ExperimentalSettingsApi")
+        languageSettings.optIn("com.russhwolf.settings.ExperimentalSettingsImplementation")
         languageSettings.enableLanguageFeature("ExpectActualClasses")
     }
 
@@ -81,6 +83,10 @@ kotlin {
             // Logging
             implementation(libs.kotlin.logging)
             implementation(libs.slf4j.api)
+
+            // Multiplatform Settings
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.coroutines)
         }
 
         androidMain.dependencies {
@@ -119,6 +125,9 @@ kotlin {
 
                 // Logging - SLF4J backend for Desktop
                 implementation(libs.logback.android)
+
+                // MapSettings for in-memory storage (dev only, no persistence needed)
+                implementation(libs.multiplatform.settings.test)
             }
         }
 
@@ -127,6 +136,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
             implementation(libs.turbine)
+            implementation(libs.multiplatform.settings.test)
             // MockK only supports JVM, moved to androidUnitTest
             // implementation(libs.mockk)
         }

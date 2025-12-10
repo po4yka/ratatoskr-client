@@ -1,103 +1,88 @@
 package com.po4yka.bitesizereader.domain.model
 
-import com.po4yka.bitesizereader.util.MockDataFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlin.time.Clock
 
-/**
- * Unit tests for Request domain model
- */
+/** Unit tests for the Request domain model */
 class RequestTest {
     @Test
-    fun `Request is created with correct properties`() {
+    fun `Request model has correct default values`() {
         // Given
+        val now = Clock.System.now()
         val request =
-            MockDataFactory.createRequest(
-                id = 1,
-                inputUrl = "https://example.com/article",
+            Request(
+                id = "1",
+                url = "https://example.com/article",
                 status = RequestStatus.PENDING,
+                createdAt = now,
+                updatedAt = now,
             )
 
         // Then
-        assertEquals(1, request.id)
-        assertEquals("https://example.com/article", request.inputUrl)
+        assertEquals("1", request.id)
+        assertEquals("https://example.com/article", request.url)
         assertEquals(RequestStatus.PENDING, request.status)
     }
 
     @Test
-    fun `Request status can transition from PENDING to PROCESSING`() {
+    fun `Request status can be PROCESSING`() {
         // Given
-        val request = MockDataFactory.createRequest(status = RequestStatus.PENDING)
-
-        // When
-        val updatedRequest = request.copy(status = RequestStatus.PROCESSING)
+        val now = Clock.System.now()
+        val request =
+            Request(
+                id = "2",
+                url = "https://example.com/processing",
+                status = RequestStatus.PROCESSING,
+                createdAt = now,
+                updatedAt = now,
+            )
 
         // Then
-        assertEquals(RequestStatus.PENDING, request.status)
-        assertEquals(RequestStatus.PROCESSING, updatedRequest.status)
+        assertEquals(RequestStatus.PROCESSING, request.status)
     }
 
     @Test
-    fun `Request status can transition to COMPLETED with summaryId`() {
+    fun `Request status can be COMPLETED`() {
         // Given
-        val request = MockDataFactory.createRequest(status = RequestStatus.PROCESSING)
-
-        // When
-        val updatedRequest =
-            request.copy(
+        val now = Clock.System.now()
+        val request =
+            Request(
+                id = "3",
+                url = "https://example.com/completed",
                 status = RequestStatus.COMPLETED,
-                summaryId = 123,
+                createdAt = now,
+                updatedAt = now,
             )
 
         // Then
-        assertEquals(RequestStatus.COMPLETED, updatedRequest.status)
-        assertEquals(123, updatedRequest.summaryId)
+        assertEquals(RequestStatus.COMPLETED, request.status)
     }
 
     @Test
-    fun `Request status can transition to ERROR with error message`() {
+    fun `Request status can be FAILED`() {
         // Given
-        val request = MockDataFactory.createRequest(status = RequestStatus.PROCESSING)
-
-        // When
-        val updatedRequest =
-            request.copy(
-                status = RequestStatus.ERROR,
-                errorMessage = "Failed to fetch article",
+        val now = Clock.System.now()
+        val request =
+            Request(
+                id = "4",
+                url = "https://example.com/failed",
+                status = RequestStatus.FAILED,
+                createdAt = now,
+                updatedAt = now,
             )
 
         // Then
-        assertEquals(RequestStatus.ERROR, updatedRequest.status)
-        assertEquals("Failed to fetch article", updatedRequest.errorMessage)
+        assertEquals(RequestStatus.FAILED, request.status)
     }
 
     @Test
-    fun `Request without summaryId has null value`() {
-        // Given
-        val request = MockDataFactory.createRequest(summaryId = null)
-
+    fun `all RequestStatus values exist`() {
         // Then
-        assertNull(request.summaryId)
-    }
-
-    @Test
-    fun `Request without errorMessage has null value`() {
-        // Given
-        val request = MockDataFactory.createRequest(errorMessage = null)
-
-        // Then
-        assertNull(request.errorMessage)
-    }
-
-    @Test
-    fun `Request type can be URL or YOUTUBE_VIDEO`() {
-        // Given
-        val urlRequest = MockDataFactory.createRequest(id = 1, type = RequestType.URL)
-        val videoRequest = MockDataFactory.createRequest(id = 2, type = RequestType.YOUTUBE_VIDEO)
-
-        // Then
-        assertEquals(RequestType.URL, urlRequest.type)
-        assertEquals(RequestType.YOUTUBE_VIDEO, videoRequest.type)
+        assertEquals(4, RequestStatus.entries.size)
+        assertEquals(RequestStatus.PENDING, RequestStatus.valueOf("PENDING"))
+        assertEquals(RequestStatus.PROCESSING, RequestStatus.valueOf("PROCESSING"))
+        assertEquals(RequestStatus.COMPLETED, RequestStatus.valueOf("COMPLETED"))
+        assertEquals(RequestStatus.FAILED, RequestStatus.valueOf("FAILED"))
     }
 }
