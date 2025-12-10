@@ -32,4 +32,8 @@ class AndroidPlatformModule {
     @Single
     fun provideFileSaver(context: Context): FileSaver =
         FileSaver(context)
+
+    @Single
+    fun providePlatform(): com.po4yka.bitesizereader.Platform =
+        com.po4yka.bitesizereader.AndroidPlatform()
 }
