@@ -57,6 +57,7 @@ class SettingsViewModel(
     private val unlinkTelegramUseCase: UnlinkTelegramUseCase,
     private val linkTelegramUseCase: LinkTelegramUseCase,
     private val downloadDatabaseUseCase: DownloadDatabaseUseCase,
+    private val platform: com.po4yka.bitesizereader.Platform,
 ) : BaseViewModel() {
     private companion object {
         const val MAX_ATTEMPT_HISTORY = 10
@@ -198,6 +199,10 @@ class SettingsViewModel(
                                     // For now generic success is implied by end of loading.
                                     // Consider adding a "toast" or "message" to state.
                                     logger.info { "Download/Import completed successfully." }
+                                    if (mode == DownloadMode.IMPORT) {
+                                        logger.info { "Restarting app to apply database changes" }
+                                        platform.restartApp()
+                                    }
                                 }
                             }
                     }

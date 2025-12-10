@@ -13,4 +13,5 @@ actual fun platformModules(configuration: PlatformConfiguration): List<Module> =
 
 actual fun KoinApplication.platformExtras(configuration: PlatformConfiguration) {
     // Android context is provided via the appDeclaration lambda (androidContext)
+    platformContext = koin.get()
 }

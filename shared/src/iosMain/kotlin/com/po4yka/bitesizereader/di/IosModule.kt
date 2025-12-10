@@ -25,4 +25,8 @@ class IosPlatformModule {
     @Single
     fun provideFileSaver(): FileSaver =
         FileSaver()
+
+    @Single
+    fun providePlatform(): com.po4yka.bitesizereader.Platform =
+        com.po4yka.bitesizereader.IOSPlatform()
 }
