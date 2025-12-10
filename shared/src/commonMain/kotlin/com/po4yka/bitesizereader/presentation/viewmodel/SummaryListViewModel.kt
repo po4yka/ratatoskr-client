@@ -46,7 +46,8 @@ class SummaryListViewModel(
             } catch (e: AppError.SessionExpiredError) {
                 logger.warn { "Session expired, triggering re-authentication" }
                 logoutUseCase()
-                return@launch
+                logoutUseCase()
+                // return@launch -- Removed to allow loading local data despite auth error
             } catch (e: Exception) {
                 logger.warn(e) { "Sync failed, loading from local cache" }
             }

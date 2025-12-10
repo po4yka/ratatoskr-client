@@ -76,6 +76,12 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                                 val currentTotal = startByte + bytesCopied
                                 emit(DownloadProgress(currentTotal, totalSize))
                             }
+
+
+                            // Flush and close the sink BEFORE emitting completion to ensure data is safely on disk.
+                            sink.flush()
+                            sink.close()
+
                             // If we got here, download is complete
                             emit(
                                 DownloadProgress(
@@ -85,12 +91,24 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                                 ),
                             )
                             return@execute // Successfully finished
-                        } finally {
+                        } catch (e: Exception) {
+                            // If an error occurs (e.g. ENOSPC during write/close), ensure sink is closed.
+                            // We don't propagate the exception here immediately if we want the outer loop to handle it?
+                            // Actually, outer loop catches 'Exception'. So we just rethrow or let it bubble.
                             sink.close()
+                            throw e
                         }
                     }
                     // If execute returned normally, we are done
                     return@flow
+                } catch (e: io.ktor.client.plugins.ClientRequestException) {
+                   if (e.response.status.value == 416) {
+                        // 416 means our local file is likely fully downloaded or invalid (bad range).
+                        // Delete and retry from scratch.
+                        fileSystem.delete(path)
+                        continue
+                   }
+                   throw e
                 } catch (e: Exception) {
                     // Check if it's a network/IO error we should retry
                     val isRetryable =

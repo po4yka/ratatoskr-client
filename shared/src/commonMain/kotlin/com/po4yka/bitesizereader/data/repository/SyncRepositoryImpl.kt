@@ -23,9 +23,13 @@ class SyncRepositoryImpl(
     private val secureStorage: SecureStorage,
 ) : SyncRepository {
     override suspend fun sync() {
-        val sessionId =
-            secureStorage.getSessionId()
-                ?: throw AppError.SessionExpiredError()
+        val sessionId = secureStorage.getSessionId()
+        if (sessionId == null) {
+            // If using secret login (debug), session ID might be missing.
+            // Skip sync instead of throwing error to avoid infinite re-auth loop.
+            // logger.warn { "Skipping sync: No session ID found" } // Logger not available here yet, need to inject or use Kermit if available, or just skip.
+            return
+        }
 
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val sinceEpochSeconds = metadata?.lastSyncTime?.epochSeconds ?: 0L

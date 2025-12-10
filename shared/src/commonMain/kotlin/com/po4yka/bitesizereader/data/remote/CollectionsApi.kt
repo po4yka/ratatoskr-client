@@ -1,37 +1,36 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
-import com.po4yka.bitesizereader.data.remote.dto.CollectionAclResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionAclResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionCreateRequest
+import com.po4yka.bitesizereader.data.remote.dto.CollectionDto
 import com.po4yka.bitesizereader.data.remote.dto.CollectionInviteRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionInviteResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionInviteResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionItemCreateRequest
 import com.po4yka.bitesizereader.data.remote.dto.CollectionItemMoveRequest
 import com.po4yka.bitesizereader.data.remote.dto.CollectionItemReorderRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionItemsMoveResponseEnvelope
-import com.po4yka.bitesizereader.data.remote.dto.CollectionItemsResponseEnvelope
-import com.po4yka.bitesizereader.data.remote.dto.CollectionListResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionItemsMoveResponse
+import com.po4yka.bitesizereader.data.remote.dto.CollectionItemsResponse
+import com.po4yka.bitesizereader.data.remote.dto.CollectionListResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionMoveRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionMoveResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionMoveResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionReorderRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionReorderResponseEnvelope
-import com.po4yka.bitesizereader.data.remote.dto.CollectionResponseEnvelope
 import com.po4yka.bitesizereader.data.remote.dto.CollectionShareRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionTreeResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionTreeResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionUpdateRequest
 import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
 
 interface CollectionsApi {
-    suspend fun listCollections(): ApiResponseDto<CollectionListResponseEnvelope>
+    suspend fun listCollections(): ApiResponseDto<CollectionListResponse>
 
-    suspend fun createCollection(request: CollectionCreateRequest): ApiResponseDto<CollectionResponseEnvelope>
+    suspend fun createCollection(request: CollectionCreateRequest): ApiResponseDto<CollectionDto>
 
-    suspend fun getCollection(id: Int): ApiResponseDto<CollectionResponseEnvelope>
+    suspend fun getCollection(id: Int): ApiResponseDto<CollectionDto>
 
     suspend fun updateCollection(
         id: Int,
         request: CollectionUpdateRequest,
-    ): ApiResponseDto<CollectionResponseEnvelope>
+    ): ApiResponseDto<CollectionDto>
 
     suspend fun deleteCollection(id: Int): ApiResponseDto<SuccessResponse>
 
@@ -44,17 +43,17 @@ interface CollectionsApi {
         id: Int,
         limit: Int = 50,
         offset: Int = 0,
-    ): ApiResponseDto<CollectionItemsResponseEnvelope>
+    ): ApiResponseDto<CollectionItemsResponse>
 
     suspend fun removeItem(
         id: Int,
         summaryId: Long,
     ): ApiResponseDto<SuccessResponse>
 
-    suspend fun getTree(maxDepth: Int = 3): ApiResponseDto<CollectionTreeResponseEnvelope>
+    suspend fun getTree(maxDepth: Int = 3): ApiResponseDto<CollectionTreeResponse>
 
     // Note: CollectionAclResponseEnvelope not defined in DTOs yet, will need to check or assume generic
-    suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponseEnvelope>
+    suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponse>
 
     suspend fun addCollaborator(
         id: Int,
@@ -69,28 +68,28 @@ interface CollectionsApi {
     suspend fun createInvite(
         id: Int,
         request: CollectionInviteRequest,
-    ): ApiResponseDto<CollectionInviteResponseEnvelope>
+    ): ApiResponseDto<CollectionInviteResponse>
 
     suspend fun acceptInvite(token: String): ApiResponseDto<SuccessResponse>
 
     suspend fun reorderCollections(
         id: Int,
         request: CollectionReorderRequest,
-    ): ApiResponseDto<CollectionReorderResponseEnvelope>
+    ): ApiResponseDto<SuccessResponse>
 
     // Assuming same response type based on similarity
     suspend fun reorderItems(
         id: Int,
         request: CollectionItemReorderRequest,
-    ): ApiResponseDto<CollectionReorderResponseEnvelope>
+    ): ApiResponseDto<SuccessResponse>
 
     suspend fun moveCollection(
         id: Int,
         request: CollectionMoveRequest,
-    ): ApiResponseDto<CollectionMoveResponseEnvelope>
+    ): ApiResponseDto<CollectionMoveResponse>
 
     suspend fun moveItems(
         id: Int,
         request: CollectionItemMoveRequest,
-    ): ApiResponseDto<CollectionItemsMoveResponseEnvelope>
+    ): ApiResponseDto<CollectionItemsMoveResponse>
 }

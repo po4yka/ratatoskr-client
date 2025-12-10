@@ -8,13 +8,17 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSLibraryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
+import io.github.oshai.kotlinlogging.KotlinLogging
 import platform.Foundation.URLByAppendingPathComponent
+
+private val logger = KotlinLogging.logger {}
 
 actual class FileSaver {
     actual suspend fun saveToDownloads(
         sourcePath: String,
         fileName: String,
     ): String? {
+        logger.info { "saveToDownloads called. Source: $sourcePath, FileName: $fileName" }
         val fileManager = NSFileManager.defaultManager
 
         // On iOS, "Downloads" isn't a standard accessible folder in the same way.
@@ -30,18 +34,24 @@ actual class FileSaver {
                 null,
                 true,
                 null,
-            ) as? NSURL ?: return null
+            ) as? NSURL ?: run {
+                logger.error { "Could not access Documents directory" }
+                return null
+            }
 
         val destUrl = documentsUrl.URLByAppendingPathComponent(fileName) ?: return null
         val sourceUrl = NSURL.fileURLWithPath(sourcePath)
 
         return try {
             if (fileManager.fileExistsAtPath(destUrl.path!!)) {
+                logger.info { "Destination file exists, removing: ${destUrl.path}" }
                 fileManager.removeItemAtURL(destUrl, null)
             }
             fileManager.copyItemAtURL(sourceUrl, destUrl, null)
+            logger.info { "File saved successfully to: ${destUrl.path}" }
             destUrl.path
         } catch (e: Exception) {
+            logger.error(e) { "Error saving file to Documents" }
             e.printStackTrace()
             null
         }
@@ -71,6 +81,8 @@ actual class FileSaver {
                 null,
             ) as? NSURL ?: throw Exception("Could not access Library directory")
 
+        logger.info { "Importing database. Copying from $sourcePath to Library directory with name $targetDbName" }
+
         val destUrl =
             libraryUrl.URLByAppendingPathComponent(targetDbName)
                 ?: throw Exception("Could not create destination URL")
@@ -82,9 +94,12 @@ actual class FileSaver {
         }
 
         // Copy the new database file
+        // Copy the new database file
         val success = fileManager.copyItemAtURL(sourceUrl, destUrl, null)
         if (!success) {
+            logger.error { "Failed to copy database file to ${destUrl.path}" }
             throw Exception("Failed to copy database file")
         }
+        logger.info { "Database import successful." }
     }
 }

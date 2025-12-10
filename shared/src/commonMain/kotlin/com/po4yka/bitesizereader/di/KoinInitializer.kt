@@ -43,15 +43,26 @@ fun initKoin(
     extraModules: List<Module> = emptyList(),
 ): KoinApplication =
     startKoin {
-        platformExtras(configuration)
+        setupKoin(configuration, extraModules)
         appDeclaration()
-        modules(platformModules(configuration) + commonModules() + extraModules)
-        properties(
-            mapOf(
-                "api.base.url" to AppConfig.Api.baseUrl,
-                "api.logging.enabled" to AppConfig.Api.loggingEnabled.toString(),
-                "telegram.bot.username" to AppConfig.Telegram.botUsername,
-                "telegram.bot.id" to AppConfig.Telegram.botId,
-            ),
-        )
     }
+
+/**
+ * Setup Koin configuration without starting it.
+ * Useful for platform-specific startup integration (e.g. AndroidX Startup).
+ */
+fun KoinApplication.setupKoin(
+    configuration: PlatformConfiguration = PlatformConfiguration(),
+    extraModules: List<Module> = emptyList(),
+) {
+    platformExtras(configuration)
+    modules(platformModules(configuration) + commonModules() + extraModules)
+    properties(
+        mapOf(
+            "api.base.url" to AppConfig.Api.baseUrl,
+            "api.logging.enabled" to AppConfig.Api.loggingEnabled.toString(),
+            "telegram.bot.username" to AppConfig.Telegram.botUsername,
+            "telegram.bot.id" to AppConfig.Telegram.botId,
+        ),
+    )
+}
