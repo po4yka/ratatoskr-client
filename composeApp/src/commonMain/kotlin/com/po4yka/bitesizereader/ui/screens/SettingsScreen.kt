@@ -1,3 +1,5 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
 package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.background
@@ -27,9 +29,12 @@ import com.gabrieldrn.carbon.progressbar.ProgressBar
 import com.gabrieldrn.carbon.progressbar.ProgressBarState
 import com.po4yka.bitesizereader.domain.usecase.DownloadMode
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
+import com.po4yka.bitesizereader.presentation.viewmodel.DownloadAttemptSnapshot
+import com.po4yka.bitesizereader.presentation.viewmodel.DownloadStatus
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import kotlin.math.roundToInt
+import kotlin.time.Instant
 
 private const val BYTES_IN_MEGABYTE = 1_048_576.0
 private const val DECIMAL_ROUNDING_FACTOR = 10.0
@@ -59,6 +64,7 @@ fun SettingsScreen(component: SettingsComponent) {
             onBackup = { viewModel.downloadDatabase(DownloadMode.BACKUP) },
             onImport = { viewModel.downloadDatabase(DownloadMode.IMPORT) },
             onCancelDownload = viewModel::cancelDownload,
+            onCleanup = viewModel::clearDownloadArtifacts,
         )
     }
 }
@@ -93,6 +99,7 @@ private fun SettingsContent(
     onBackup: () -> Unit,
     onImport: () -> Unit,
     onCancelDownload: () -> Unit,
+    onCleanup: () -> Unit,
 ) {
     Column(
         modifier =
@@ -303,8 +310,10 @@ private fun BackupCard(
         if (state.isDownloading) {
             DownloadingContent(state = state, onCancelDownload = onCancelDownload)
         } else {
-            BackupActions(state = state, onBackup = onBackup, onImport = onImport)
+            BackupActions(state = state, onBackup = onBackup, onImport = onImport, onCleanup = onCleanup)
         }
+
+        DownloadAnalytics(state = state)
 
         state.downloadError?.let { error ->
             Text(
@@ -355,6 +364,7 @@ private fun BackupActions(
     state: SettingsState,
     onBackup: () -> Unit,
     onImport: () -> Unit,
+    onCleanup: () -> Unit,
 ) {
     Text(
         text = "Backup your data to a file or import the latest data from the cloud.",
@@ -377,6 +387,68 @@ private fun BackupActions(
         buttonType = ButtonType.Secondary,
         modifier = Modifier.fillMaxWidth(),
     )
+
+    Button(
+        label = "Remove previous download files",
+        onClick = onCleanup,
+        isEnabled = !state.isDownloading,
+        buttonType = ButtonType.Tertiary,
+        modifier = Modifier.fillMaxWidth(),
+    )
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun DownloadAnalytics(state: SettingsState) {
+    val attempts = state.downloadAttempts
+    if (attempts.isEmpty()) return
+
+    val total = attempts.size
+    val successCount = attempts.count { it.status == DownloadStatus.Success }
+    val failedCount = attempts.count { it.status == DownloadStatus.Failed }
+    val last = attempts.last()
+
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        text = "Download Stats",
+        style = Carbon.typography.headingCompact01,
+        color = Carbon.theme.textPrimary,
+    )
+    Text(
+        text = "Attempts: $total · Success: $successCount · Failed: $failedCount",
+        style = Carbon.typography.label01,
+        color = Carbon.theme.textSecondary,
+    )
+
+    Spacer(modifier = Modifier.height(6.dp))
+    Text(
+        text = "Last attempt: ${last.mode.name.lowercase().replaceFirstChar { it.uppercase() }} - ${last.status.readable()}",
+        style = Carbon.typography.bodyCompact01,
+        color = Carbon.theme.textPrimary,
+    )
+    val lastDetail =
+        buildString {
+            append("Started: ${last.startedAt.formatShort()} ")
+            last.finishedAt?.let { append("• Finished: ${it.formatShort()} ") }
+            append("• Bytes: ${progressText(last.bytesDownloaded, last.totalBytes)}")
+            last.error?.let { append(" • Error: $it") }
+        }
+    Text(
+        text = lastDetail,
+        style = Carbon.typography.label01,
+        color = Carbon.theme.textSecondary,
+    )
+
+    Spacer(modifier = Modifier.height(6.dp))
+    attempts.takeLast(3).reversed().forEach { attempt ->
+        Text(
+            text =
+                "${attempt.startedAt.formatShort()} • ${attempt.mode.name} • ${attempt.status.readable()} • ${progressText(attempt.bytesDownloaded, attempt.totalBytes)}" +
+                    (attempt.error?.let { " • $it" } ?: ""),
+            style = Carbon.typography.label01,
+            color = Carbon.theme.textSecondary,
+        )
+    }
 }
 
 private fun progressText(
@@ -392,3 +464,16 @@ private fun formatMegabytes(bytes: Long): Double {
     val mb = bytes / BYTES_IN_MEGABYTE
     return (mb * DECIMAL_ROUNDING_FACTOR).roundToInt() / DECIMAL_ROUNDING_FACTOR
 }
+
+private fun Instant.formatShort(): String =
+    toString()
+        .replace('T', ' ')
+        .substringBeforeLast('.')
+
+private fun DownloadStatus.readable(): String =
+    when (this) {
+        DownloadStatus.InProgress -> "In Progress"
+        DownloadStatus.Success -> "Success"
+        DownloadStatus.Failed -> "Failed"
+        DownloadStatus.Cancelled -> "Cancelled"
+    }

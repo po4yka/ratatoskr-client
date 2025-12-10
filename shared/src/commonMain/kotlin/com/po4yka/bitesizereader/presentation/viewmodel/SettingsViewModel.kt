@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.Instant
 import org.koin.core.annotation.Factory
 
 data class SettingsState(
@@ -27,6 +29,24 @@ data class SettingsState(
     val downloadProgress: Long = 0,
     val downloadTotal: Long = 0,
     val downloadError: String? = null,
+    val downloadAttempts: List<DownloadAttemptSnapshot> = emptyList(),
+)
+
+enum class DownloadStatus {
+    InProgress,
+    Success,
+    Failed,
+    Cancelled,
+}
+
+data class DownloadAttemptSnapshot(
+    val mode: DownloadMode,
+    val startedAt: Instant,
+    val finishedAt: Instant? = null,
+    val status: DownloadStatus = DownloadStatus.InProgress,
+    val bytesDownloaded: Long = 0,
+    val totalBytes: Long = 0,
+    val error: String? = null,
 )
 
 private val logger = KotlinLogging.logger {}
@@ -38,6 +58,11 @@ class SettingsViewModel(
     private val linkTelegramUseCase: LinkTelegramUseCase,
     private val downloadDatabaseUseCase: DownloadDatabaseUseCase,
 ) : BaseViewModel() {
+    private companion object {
+        const val MAX_ATTEMPT_HISTORY = 10
+        const val BACKUP_FILE_NAME = "bite_size_reader_backup.sqlite"
+    }
+
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
 
@@ -113,8 +138,8 @@ class SettingsViewModel(
         }
 
         logger.info { "Starting database download. Mode: $mode" }
-
-        val fileName = "bite_size_reader_backup.sqlite"
+        val fileName = BACKUP_FILE_NAME
+        val startedAt = Clock.System.now()
 
         downloadJob?.cancel()
         downloadJob =
@@ -125,11 +150,22 @@ class SettingsViewModel(
                         downloadProgress = 0,
                         downloadTotal = 0,
                         downloadError = null,
+                        downloadAttempts = trackNewAttempt(mode, startedAt),
                     )
                 runCatching { downloadDatabaseUseCase(fileName, mode) }
                     .onSuccess { flow ->
                         flow
                             .catch { throwable ->
+                                _state.value =
+                                    _state.value.copy(
+                                        downloadAttempts =
+                                            finalizeAttempt(
+                                                status = DownloadStatus.Failed,
+                                                error = throwable.toAppError().userMessage(),
+                                            ),
+                                        isDownloading = false,
+                                        downloadError = throwable.toAppError().userMessage(),
+                                    )
                                 _state.value =
                                     _state.value.copy(
                                         isDownloading = false,
@@ -140,11 +176,24 @@ class SettingsViewModel(
                             .collect { progress ->
                                 _state.value =
                                     _state.value.copy(
+                                        downloadAttempts =
+                                            updateLastAttempt(
+                                                bytesDownloaded = progress.bytesDownloaded,
+                                                totalBytes = progress.totalBytes,
+                                            ),
+                                    )
+                                _state.value =
+                                    _state.value.copy(
                                         downloadProgress = progress.bytesDownloaded,
                                         downloadTotal = progress.totalBytes,
                                     )
                                 if (progress.isComplete) {
                                     _state.value = _state.value.copy(isDownloading = false)
+                                    _state.value =
+                                        _state.value.copy(
+                                            downloadAttempts =
+                                                finalizeAttempt(status = DownloadStatus.Success),
+                                        )
                                     // If import, maybe show specific success message?
                                     // For now generic success is implied by end of loading.
                                     // Consider adding a "toast" or "message" to state.
@@ -158,14 +207,75 @@ class SettingsViewModel(
                             _state.value.copy(
                                 isDownloading = false,
                                 downloadError = throwable.toAppError().userMessage(),
+                                downloadAttempts =
+                                    finalizeAttempt(
+                                        status = DownloadStatus.Failed,
+                                        error = throwable.toAppError().userMessage(),
+                                    ),
                             )
                     }
             }
     }
 
+    fun clearDownloadArtifacts() {
+        logger.info { "Clearing temp download artifacts" }
+        downloadDatabaseUseCase.cleanupTemp(BACKUP_FILE_NAME)
+        _state.value =
+            _state.value.copy(
+                downloadProgress = 0,
+                downloadTotal = 0,
+                downloadError = null,
+            )
+    }
+
     fun cancelDownload() {
         logger.info { "Cancelling download/import" }
         downloadJob?.cancel()
-        _state.value = _state.value.copy(isDownloading = false)
+        _state.value =
+            _state.value.copy(
+                isDownloading = false,
+                downloadAttempts = finalizeAttempt(status = DownloadStatus.Cancelled),
+            )
+    }
+
+    private fun trackNewAttempt(mode: DownloadMode, startedAt: Instant): List<DownloadAttemptSnapshot> {
+        val updated =
+            _state.value.downloadAttempts + DownloadAttemptSnapshot(
+                mode = mode,
+                startedAt = startedAt,
+                status = DownloadStatus.InProgress,
+            )
+        return updated.takeLast(MAX_ATTEMPT_HISTORY)
+    }
+
+    private fun updateLastAttempt(
+        bytesDownloaded: Long? = null,
+        totalBytes: Long? = null,
+    ): List<DownloadAttemptSnapshot> {
+        if (_state.value.downloadAttempts.isEmpty()) return _state.value.downloadAttempts
+        val updated = _state.value.downloadAttempts.toMutableList()
+        val last = updated.last()
+        updated[updated.lastIndex] =
+            last.copy(
+                bytesDownloaded = bytesDownloaded ?: last.bytesDownloaded,
+                totalBytes = totalBytes ?: last.totalBytes,
+            )
+        return updated
+    }
+
+    private fun finalizeAttempt(
+        status: DownloadStatus,
+        error: String? = null,
+    ): List<DownloadAttemptSnapshot> {
+        if (_state.value.downloadAttempts.isEmpty()) return _state.value.downloadAttempts
+        val updated = _state.value.downloadAttempts.toMutableList()
+        val last = updated.last()
+        updated[updated.lastIndex] =
+            last.copy(
+                status = status,
+                finishedAt = Clock.System.now(),
+                error = error,
+            )
+        return updated
     }
 }

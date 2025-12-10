@@ -30,11 +30,11 @@ class DownloadDatabaseUseCase(
         logger.debug { "Temporary storage path resolved: $tempPath" }
 
         return repository.downloadDatabase(tempPath).transform { progress ->
-
-            emit(progress)
-            if (progress.isComplete) {
+            if (!progress.isComplete) {
+                emit(progress)
+            } else {
                 logger.info { "Download progress complete. Processing mode: $mode" }
-                // Download finished, proceed based on mode
+                // Download finished, proceed based on mode before signaling completion
                 when (mode) {
                     DownloadMode.BACKUP -> {
                         logger.info { "Executing BACKUP flow. Saving to Downloads." }
@@ -52,7 +52,15 @@ class DownloadDatabaseUseCase(
                         logger.info { "Database import executed successfully." }
                     }
                 }
+                // Emit completion only after post-processing succeeds
+                emit(progress)
             }
         }
+    }
+
+    fun cleanupTemp(fileName: String) {
+        val tempPath = fileSaver.getInternalStoragePath(fileName)
+        logger.info { "Cleaning up temp file if exists: $tempPath" }
+        fileSaver.deleteIfExists(tempPath)
     }
 }
