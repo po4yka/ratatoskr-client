@@ -15,9 +15,11 @@ import com.po4yka.bitesizereader.domain.repository.CollectionRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
+@Single
 class CollectionRepositoryImpl(
     private val api: CollectionsApi,
 ) : CollectionRepository {

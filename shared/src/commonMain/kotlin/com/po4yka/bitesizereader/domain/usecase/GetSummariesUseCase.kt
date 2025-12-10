@@ -3,7 +3,9 @@ package com.po4yka.bitesizereader.domain.usecase
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.repository.SummaryRepository
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Factory
 
+@Factory
 class GetSummariesUseCase(private val repository: SummaryRepository) {
     operator fun invoke(
         page: Int,

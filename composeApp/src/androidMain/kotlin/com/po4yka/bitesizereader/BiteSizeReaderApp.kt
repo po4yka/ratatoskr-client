@@ -13,12 +13,13 @@ class BiteSizeReaderApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Initialize Koin
-        initKoin {
-            androidContext(this@BiteSizeReaderApp)
-            modules(imageLoaderModule)
-            // properties(...) if needed
-        }
+        // Initialize Koin with annotation-based modules and extra DSL modules
+        initKoin(
+            appDeclaration = {
+                androidContext(this@BiteSizeReaderApp)
+            },
+            extraModules = listOf(imageLoaderModule),
+        )
 
         // Schedule periodic background sync
         WorkManagerInitializer.schedulePeriodicSync(this)

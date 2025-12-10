@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Factory
 
+@Factory
 class SubmitURLViewModel(
     private val processingService: ProcessingService,
 ) : ViewModel() {

@@ -9,7 +9,9 @@ import com.po4yka.bitesizereader.presentation.state.SummaryDetailState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Factory
 
+@Factory
 class SummaryDetailViewModel(
     private val getSummaryByIdUseCase: GetSummaryByIdUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,

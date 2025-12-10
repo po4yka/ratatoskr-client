@@ -14,7 +14,9 @@ import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlin.time.Clock
+import org.koin.core.annotation.Single
 
+@Single
 class RequestRepositoryImpl(
     private val database: Database,
     private val api: RequestsApi,

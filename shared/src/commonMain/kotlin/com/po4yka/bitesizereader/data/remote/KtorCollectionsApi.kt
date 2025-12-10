@@ -30,7 +30,9 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import org.koin.core.annotation.Single
 
+@Single
 class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
     override suspend fun listCollections(): ApiResponseDto<CollectionListResponseEnvelope> {
         return client.get("v1/collections").body()

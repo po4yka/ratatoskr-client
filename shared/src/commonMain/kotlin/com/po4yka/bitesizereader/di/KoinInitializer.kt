@@ -5,6 +5,7 @@ import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
+import org.koin.ksp.generated.module
 
 /**
  * Platform configuration required for dependency injection.
@@ -12,7 +13,7 @@ import org.koin.dsl.KoinAppDeclaration
 expect class PlatformConfiguration()
 
 /**
- * Platform-specific modules required for DI.
+ * Platform-specific modules required for DI (KSP-generated).
  */
 expect fun platformModules(configuration: PlatformConfiguration): List<Module>
 
@@ -20,6 +21,18 @@ expect fun platformModules(configuration: PlatformConfiguration): List<Module>
  * Apply platform-specific configuration to the Koin application (e.g., Android context).
  */
 expect fun KoinApplication.platformExtras(configuration: PlatformConfiguration)
+
+/**
+ * Common modules using KSP-generated modules.
+ */
+fun commonModules(): List<Module> = listOf(
+    NetworkModule().module,
+    DatabaseModule().module,
+    RepositoryModule().module,
+    UseCaseModule().module,
+    ViewModelModule().module,
+    CoroutineScopeModule().module,
+)
 
 /**
  * Initialize Koin with shared modules and platform-specific bindings.
@@ -32,7 +45,7 @@ fun initKoin(
     startKoin {
         platformExtras(configuration)
         appDeclaration()
-        modules(platformModules(configuration) + appModules() + extraModules)
+        modules(platformModules(configuration) + commonModules() + extraModules)
         properties(
             mapOf(
                 "api.base.url" to AppConfig.Api.baseUrl,

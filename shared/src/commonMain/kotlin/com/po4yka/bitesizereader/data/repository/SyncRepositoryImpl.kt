@@ -14,7 +14,9 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.time.Clock
+import org.koin.core.annotation.Single
 
+@Single
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,

@@ -103,13 +103,111 @@ composeApp/src/commonMain/kotlin/
 |-----------|------------|
 | Networking | Ktor Client 3.x |
 | Database | SQLDelight 2.x |
-| DI | Koin 4.x |
+| DI | Koin 4.x with Annotations + KSP |
 | Navigation | Decompose 3.x |
 | Serialization | kotlinx.serialization |
 | Async | kotlinx.coroutines + Flow |
 | Image Loading | Coil 3.x |
 | Design System | Carbon Compose (IBM Carbon) |
 | Icons | Custom Carbon Icons (IBM Carbon Design) |
+
+## Dependency Injection (Koin)
+
+This project uses **Koin 4.x with Koin Annotations** and KSP for compile-time safety.
+
+### Usage Rules
+
+1. **Use annotations for new classes** - never use DSL modules for new code:
+   ```kotlin
+   import org.koin.core.annotation.Single
+   import org.koin.core.annotation.Factory
+
+   // Singleton (one instance for entire app lifecycle)
+   @Single
+   class MyRepository(private val api: MyApi) : MyRepositoryInterface
+
+   // Factory (new instance each time)
+   @Factory
+   class MyUseCase(private val repository: MyRepository)
+   ```
+
+2. **Annotation placement by layer**:
+   - **API implementations** (`data/remote/`): Use `@Single`
+   - **Repository implementations** (`data/repository/`): Use `@Single`
+   - **Use cases** (`domain/usecase/`): Use `@Factory`
+   - **ViewModels** (`presentation/viewmodel/`): Use `@Factory` (or `@Single` for shared state like AuthViewModel)
+
+3. **Module classes** use `@Module` and `@ComponentScan`:
+   ```kotlin
+   import org.koin.core.annotation.Module
+   import org.koin.core.annotation.ComponentScan
+
+   @Module
+   @ComponentScan("com.po4yka.bitesizereader.data.repository")
+   class RepositoryModule
+   ```
+
+4. **Provider functions** for complex initialization:
+   ```kotlin
+   @Module
+   class DatabaseModule {
+       @Single
+       fun provideDatabase(driverFactory: DatabaseDriverFactory): Database {
+           // Complex initialization logic
+           return Database(driverFactory.createDriver(), ...)
+       }
+   }
+   ```
+
+5. **Platform modules** are in platform-specific source sets:
+   - `shared/src/androidMain/.../di/AndroidModule.kt`
+   - `shared/src/iosMain/.../di/IosModule.kt`
+   - `shared/src/desktopMain/.../di/DesktopModule.kt`
+
+6. **Importing generated modules** - KSP generates `.module` extension:
+   ```kotlin
+   import org.koin.ksp.generated.module
+
+   fun commonModules(): List<Module> = listOf(
+       NetworkModule().module,
+       DatabaseModule().module,
+       RepositoryModule().module,
+   )
+   ```
+
+7. **Binding to interfaces** - use `binds` parameter:
+   ```kotlin
+   @Single(binds = [MyInterface::class])
+   class MyImplementation : MyInterface
+   ```
+
+### DI Module Structure
+
+```
+shared/src/commonMain/kotlin/.../di/
+  NetworkModule.kt      # HttpClient, API bindings
+  DatabaseModule.kt     # SQLDelight Database
+  RepositoryModule.kt   # @ComponentScan for repositories
+  UseCaseModule.kt      # @ComponentScan for use cases
+  AppModule.kt          # ViewModelModule, CoroutineScopeModule
+  KoinInitializer.kt    # initKoin() entry point
+
+shared/src/androidMain/kotlin/.../di/
+  AndroidModule.kt      # Platform-specific: Context, SecureStorage, HttpEngine
+
+shared/src/iosMain/kotlin/.../di/
+  IosModule.kt          # Platform-specific: Keychain, Darwin engine
+
+shared/src/desktopMain/kotlin/.../di/
+  DesktopModule.kt      # Platform-specific: Desktop implementations
+```
+
+### Common Mistakes to Avoid
+
+- Do NOT use `module { }` DSL for new code - use annotations
+- Do NOT forget to add `@Single` or `@Factory` to new injectable classes
+- Do NOT use `get()` in annotated classes - constructor injection is automatic
+- Do NOT create circular dependencies - KSP will fail at compile time
 
 ## Design System
 

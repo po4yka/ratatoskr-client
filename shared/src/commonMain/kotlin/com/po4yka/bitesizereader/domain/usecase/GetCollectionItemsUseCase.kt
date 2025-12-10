@@ -2,7 +2,9 @@ package com.po4yka.bitesizereader.domain.usecase
 
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.repository.CollectionRepository
+import org.koin.core.annotation.Factory
 
+@Factory
 class GetCollectionItemsUseCase(private val repository: CollectionRepository) {
     suspend operator fun invoke(
         collectionId: String,

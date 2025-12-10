@@ -13,7 +13,9 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import org.koin.core.annotation.Single
 
+@Single
 class KtorRequestsApi(private val client: HttpClient) : RequestsApi {
     override suspend fun submitUrl(request: SubmitURLRequestDto): ApiResponseDto<SubmitRequestResponseDto> {
         return client.post("v1/requests") {

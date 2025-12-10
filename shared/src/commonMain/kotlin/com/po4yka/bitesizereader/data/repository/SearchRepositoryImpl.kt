@@ -5,7 +5,9 @@ import com.po4yka.bitesizereader.data.remote.SearchApi
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.repository.SearchRepository
+import org.koin.core.annotation.Single
 
+@Single
 class SearchRepositoryImpl(
     private val database: Database,
     private val api: SearchApi,
