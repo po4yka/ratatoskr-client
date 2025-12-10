@@ -70,13 +70,25 @@ actual class FileSaver(private val context: Context) {
         // Ensure parent directory exists
         targetFile.parentFile?.mkdirs()
 
-        logger.info { "Importing database. Copying from $sourcePath to ${targetFile.absolutePath}" }
-        // Copy and overwrite
-        sourceFile.copyTo(targetFile, overwrite = true)
-        logger.info { "Database copy successful." }
+        if (sourceFile.renameTo(targetFile)) {
+            logger.info { "Database moved successfully from $sourcePath to ${targetFile.absolutePath}" }
+        } else {
+            logger.warn { "Move failed. Falling back to copy from $sourcePath to ${targetFile.absolutePath}" }
+            // Copy and overwrite
+            sourceFile.copyTo(targetFile, overwrite = true)
+            logger.info { "Database copy successful. Deleting source file." }
+            sourceFile.delete()
+        }
 
         // Also try to close/delete WAL files if they exist to prevent corruption/inconsistency
         File(targetFile.path + "-wal").delete()
         File(targetFile.path + "-shm").delete()
+    }
+
+    actual fun deleteIfExists(path: String) {
+        val file = File(path)
+        if (file.exists()) {
+            file.delete()
+        }
     }
 }

@@ -26,4 +26,9 @@ expect class FileSaver {
         sourcePath: String,
         targetDbName: String,
     )
+
+    /**
+     * Deletes a file at the given path if it exists.
+     */
+    fun deleteIfExists(path: String)
 }

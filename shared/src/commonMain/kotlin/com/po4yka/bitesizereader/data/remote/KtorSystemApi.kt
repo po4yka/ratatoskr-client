@@ -31,7 +31,10 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                             requestTimeoutMillis = 30_000
                             socketTimeoutMillis = 30_000
                         }
-                    }.headers[HttpHeaders.ContentLength]?.toLongOrNull()
+                    }.takeIf { it.status.value in 200..299 }
+                        ?.headers
+                        ?.get(HttpHeaders.ContentLength)
+                        ?.toLongOrNull()
                 }.getOrNull()
 
             while (true) {
@@ -47,70 +50,73 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                 }
                 val useRange = existingSize > 0 && (remoteSize == null || existingSize < remoteSize)
                 // Using prepareGet to handle the stream manually
-                client.prepareGet("v1/system/db-dump") {
-                    if (useRange) {
-                        header(HttpHeaders.Range, "bytes=$existingSize-")
-                    }
-                    timeout {
-                        requestTimeoutMillis = Long.MAX_VALUE
-                        socketTimeoutMillis = Long.MAX_VALUE
-                    }
-                }.execute { response ->
-                    if (response.status == HttpStatusCode.RequestedRangeNotSatisfiable) {
-                        // Local file likely complete/corrupt for the requested range; wipe and fail fast.
-                        if (fileSystem.exists(path)) fileSystem.delete(path)
-                        throw io.ktor.client.plugins.ClientRequestException(response, "416")
-                    }
-
-                    val contentLength = response.headers[HttpHeaders.ContentLength]?.toLongOrNull()
-                    val isPartial = response.status == HttpStatusCode.PartialContent
-                    val totalSize =
-                        if (isPartial) existingSize + (contentLength ?: 0) else (contentLength ?: 0)
-
-                    // If server didn't accept range (sent 200 OK), reset existingSize to 0 (overwrite)
-                    val startByte = if (isPartial) existingSize else 0L
-
-                    if (!isPartial && existingSize > 0) {
-                        // Server ignored range; ensure we overwrite from scratch
-                        fileSystem.delete(path)
-                    }
-
-                    val channel: ByteReadChannel = response.bodyAsChannel()
-                    val sink = fileSystem.sink(path, append = isPartial).buffered()
-
-                    try {
-                        var bytesCopied: Long = 0
-                        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-
-                        while (!channel.isClosedForRead) {
-                            val read = channel.readAvailable(buffer, 0, buffer.size)
-                            if (read == -1) break
-
-                            sink.write(buffer, 0, read)
-
-                            bytesCopied += read
-                            val currentTotal = startByte + bytesCopied
-                            emit(DownloadProgress(currentTotal, totalSize))
+                val retry =
+                    client.prepareGet("v1/system/db-dump") {
+                        if (useRange) {
+                            header(HttpHeaders.Range, "bytes=$existingSize-")
+                        }
+                        timeout {
+                            requestTimeoutMillis = Long.MAX_VALUE
+                            socketTimeoutMillis = Long.MAX_VALUE
+                        }
+                    }.execute { response ->
+                        if (response.status == HttpStatusCode.RequestedRangeNotSatisfiable) {
+                            // Local file likely complete/corrupt for the requested range; wipe and retry.
+                            if (fileSystem.exists(path)) fileSystem.delete(path)
+                            return@execute true
                         }
 
-                        sink.flush()
-                        sink.close()
+                        val contentLength = response.headers[HttpHeaders.ContentLength]?.toLongOrNull()
+                        val isPartial = response.status == HttpStatusCode.PartialContent
+                        val totalSize =
+                            if (isPartial) existingSize + (contentLength ?: 0) else (contentLength ?: 0)
 
-                        emit(
-                            DownloadProgress(
-                                startByte + bytesCopied,
-                                totalSize,
-                                isComplete = true,
-                            ),
-                        )
-                    } catch (e: Exception) {
-                        sink.close()
-                        throw e
+                        // If server didn't accept range (sent 200 OK), reset existingSize to 0 (overwrite)
+                        val startByte = if (isPartial) existingSize else 0L
+
+                        if (!isPartial && existingSize > 0) {
+                            // Server ignored range; ensure we overwrite from scratch
+                            fileSystem.delete(path)
+                        }
+
+                        val channel: ByteReadChannel = response.bodyAsChannel()
+                        val sink = fileSystem.sink(path, append = isPartial).buffered()
+
+                        try {
+                            var bytesCopied: Long = 0
+                            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+
+                            while (!channel.isClosedForRead) {
+                                val read = channel.readAvailable(buffer, 0, buffer.size)
+                                if (read == -1) break
+
+                                sink.write(buffer, 0, read)
+
+                                bytesCopied += read
+                                val currentTotal = startByte + bytesCopied
+                                emit(DownloadProgress(currentTotal, totalSize))
+                            }
+
+                            sink.flush()
+                            sink.close()
+
+                            emit(
+                                DownloadProgress(
+                                    startByte + bytesCopied,
+                                    totalSize,
+                                    isComplete = true,
+                                ),
+                            )
+                        } catch (e: Exception) {
+                            sink.close()
+                            throw e
+                        }
+                        false
                     }
-                }
 
-                // If execute returned normally, we are done
-                return@flow
+                if (!retry) {
+                    return@flow
+                }
             }
         }
 
