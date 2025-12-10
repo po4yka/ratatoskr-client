@@ -7,6 +7,8 @@ import com.google.crypto.tink.KeyTemplates
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.config.TinkConfig
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
+import java.io.IOException
+import java.security.GeneralSecurityException
 
 /**
  * Manages Tink AEAD encryption keys using Android Keystore.
@@ -22,6 +24,12 @@ object TinkKeyManager {
     @Volatile
     private var aeadInstance: Aead? = null
 
+    /**
+     * Returns a thread-safe singleton Aead instance for encryption/decryption.
+     *
+     * @throws TinkInitializationException if Tink configuration or key creation fails
+     */
+    @Throws(TinkInitializationException::class)
     fun getAead(context: Context): Aead {
         return aeadInstance ?: synchronized(this) {
             aeadInstance ?: createAead(context).also { aeadInstance = it }
@@ -29,17 +37,31 @@ object TinkKeyManager {
     }
 
     private fun createAead(context: Context): Aead {
-        TinkConfig.register()
-        AeadConfig.register()
+        try {
+            TinkConfig.register()
+            AeadConfig.register()
 
-        val keysetHandle =
-            AndroidKeysetManager.Builder()
-                .withSharedPref(context, KEYSET_NAME, PREF_FILE_NAME)
-                .withKeyTemplate(KeyTemplates.get("AES256_GCM"))
-                .withMasterKeyUri(MASTER_KEY_URI)
-                .build()
-                .keysetHandle
+            val keysetHandle =
+                AndroidKeysetManager.Builder()
+                    .withSharedPref(context, KEYSET_NAME, PREF_FILE_NAME)
+                    .withKeyTemplate(KeyTemplates.get("AES256_GCM"))
+                    .withMasterKeyUri(MASTER_KEY_URI)
+                    .build()
+                    .keysetHandle
 
-        return keysetHandle.getPrimitive(ConfigurationV0.get(), Aead::class.java)
+            return keysetHandle.getPrimitive(ConfigurationV0.get(), Aead::class.java)
+        } catch (e: GeneralSecurityException) {
+            throw TinkInitializationException("Failed to initialize Tink encryption", e)
+        } catch (e: IOException) {
+            throw TinkInitializationException("Failed to access keyset storage", e)
+        }
     }
 }
+
+/**
+ * Exception thrown when Tink encryption initialization fails.
+ */
+class TinkInitializationException(
+    message: String,
+    cause: Throwable,
+) : RuntimeException(message, cause)

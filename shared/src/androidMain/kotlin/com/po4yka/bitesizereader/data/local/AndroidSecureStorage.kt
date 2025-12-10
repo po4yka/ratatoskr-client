@@ -8,8 +8,12 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.crypto.tink.Aead
+import io.github.oshai.kotlinlogging.KotlinLogging
+import java.security.GeneralSecurityException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+
+private val logger = KotlinLogging.logger {}
 
 private val Context.secureDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "secure_prefs_v3",
@@ -51,10 +55,15 @@ class AndroidSecureStorage(private val context: Context) : SecureStorage {
         key: Preferences.Key<String>,
         value: String,
     ) {
-        val encrypted = aead.encrypt(value.toByteArray(Charsets.UTF_8), null)
-        val encoded = Base64.encodeToString(encrypted, Base64.NO_WRAP)
-        dataStore.edit { prefs ->
-            prefs[key] = encoded
+        try {
+            val encrypted = aead.encrypt(value.toByteArray(Charsets.UTF_8), null)
+            val encoded = Base64.encodeToString(encrypted, Base64.NO_WRAP)
+            dataStore.edit { prefs ->
+                prefs[key] = encoded
+            }
+        } catch (e: GeneralSecurityException) {
+            logger.error(e) { "Failed to encrypt value for key: ${key.name}" }
+            throw SecureStorageException("Encryption failed", e)
         }
     }
 
@@ -64,7 +73,12 @@ class AndroidSecureStorage(private val context: Context) : SecureStorage {
             val encrypted = Base64.decode(encoded, Base64.NO_WRAP)
             val decrypted = aead.decrypt(encrypted, null)
             String(decrypted, Charsets.UTF_8)
-        } catch (e: Exception) {
+        } catch (e: GeneralSecurityException) {
+            logger.error(e) { "Failed to decrypt value for key: ${key.name}" }
+            null
+        } catch (e: IllegalArgumentException) {
+            // Base64 decoding failed - corrupted data
+            logger.error(e) { "Failed to decode Base64 for key: ${key.name}" }
             null
         }
     }
@@ -75,3 +89,9 @@ class AndroidSecureStorage(private val context: Context) : SecureStorage {
         val KEY_SESSION_ID = stringPreferencesKey("session_id")
     }
 }
+
+/** Exception thrown when secure storage operations fail. */
+class SecureStorageException(
+    message: String,
+    cause: Throwable,
+) : RuntimeException(message, cause)
