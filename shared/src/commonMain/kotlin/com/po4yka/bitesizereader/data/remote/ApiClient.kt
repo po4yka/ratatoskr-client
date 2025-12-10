@@ -12,6 +12,7 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -71,6 +72,25 @@ class ApiClient(
                 header(HttpHeaders.Accept, ContentType.Application.Json)
             }
 
+            install(HttpCallValidator) {
+                handleResponseExceptionWithRequest { cause: Throwable, request: io.ktor.client.request.HttpRequest ->
+                    val response = (cause as? io.ktor.client.plugins.ResponseException)?.response
+                    val bodySnippet =
+                        response?.let {
+                            runCatching { response.bodyAsText().take(2_000) }
+                                .getOrElse { "<body unavailable: ${it.message}>" }
+                        } ?: "<no response body>"
+                    val statusPart = response?.status?.toString() ?: "<no status>"
+                    logger.error(cause) {
+                        """
+                        HTTP error while handling ${request.method.value} ${request.url}
+                        Status: $statusPart
+                        Body (truncated): $bodySnippet
+                        """.trimIndent()
+                    }
+                }
+            }
+
             install(Auth) {
                 bearer {
                     loadTokens {
@@ -87,11 +107,12 @@ class ApiClient(
                         if (refreshToken != null) {
                             try {
                                 val response =
-                                    client.post("auth/refresh") {
+                                    client.post("/v1/auth/refresh") {
                                         setBody(mapOf("refresh_token" to refreshToken))
                                     }
+                                val responseText = response.bodyAsText()
                                 val parsed: ApiResponseDto<TokenRefreshResponseDto> =
-                                    Json.decodeFromString(response.bodyAsText())
+                                    Json.decodeFromString(responseText)
 
                                 if (parsed.success && parsed.data != null) {
                                     val tokens =
@@ -103,6 +124,9 @@ class ApiClient(
                                     secureStorage.saveRefreshToken(tokens.refreshToken)
                                     BearerTokens(tokens.accessToken, tokens.refreshToken)
                                 } else {
+                                    logger.error {
+                                        "Failed to refresh tokens: success=${parsed.success}, error=${parsed.error}, body=$responseText"
+                                    }
                                     secureStorage.clearTokens()
                                     null
                                 }
