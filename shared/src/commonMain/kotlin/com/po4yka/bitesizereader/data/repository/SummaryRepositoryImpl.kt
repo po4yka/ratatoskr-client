@@ -36,6 +36,7 @@ class SummaryRepositoryImpl(
             limit = pageSize.toLong(),
             offset = ((page - 1) * pageSize).toLong(),
         ).asFlow().mapToList(Dispatchers.IO).map { entities ->
+            println("SummaryRepositoryImpl: Fetched ${entities.size} summaries from DB")
             entities.map { it.toDomain() }
         }
     }
