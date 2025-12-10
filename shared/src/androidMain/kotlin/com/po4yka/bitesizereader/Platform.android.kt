@@ -5,19 +5,22 @@ import android.content.Intent
 import android.os.Build
 import kotlin.system.exitProcess
 
-internal lateinit var platformContext: Context
-
-class AndroidPlatform : Platform {
+class AndroidPlatform(private val context: Context?) : Platform {
     override val name: String = "Android ${Build.VERSION.SDK_INT}"
 
     override fun restartApp() {
-        val launchIntent = platformContext.packageManager.getLaunchIntentForPackage(platformContext.packageName)
-        if (launchIntent != null) {
-            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            platformContext.startActivity(launchIntent)
+        if (context != null) {
+            val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            if (launchIntent != null) {
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                context.startActivity(launchIntent)
+            }
+            exitProcess(0)
+        } else {
+            // Fallback or log if context is missing (should not happen when injected)
+            exitProcess(0)
         }
-        exitProcess(0)
     }
 }
 
-actual fun getPlatform(): Platform = AndroidPlatform()
+actual fun getPlatform(): Platform = AndroidPlatform(null)
