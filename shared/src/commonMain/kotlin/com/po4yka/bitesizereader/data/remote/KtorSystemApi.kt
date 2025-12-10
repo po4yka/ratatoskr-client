@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import kotlinx.io.readByteArray
 import org.koin.core.annotation.Single
 
 @Suppress("unused")
@@ -40,7 +41,7 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
             while (true) {
                 var existingSize: Long = 0
                 if (fileSystem.exists(path)) {
-                        existingSize = fileSystem.metadataOrNull(path)?.size ?: 0
+                    existingSize = fileSystem.metadataOrNull(path)?.size ?: 0
                 }
 
                 // If we know the remote size and the local file is larger/equal, start fresh
@@ -48,70 +49,106 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                     fileSystem.delete(path)
                     existingSize = 0
                 }
+                val etagPath = Path("$outputFile.etag")
+                var savedEtag: String? = null
+                if (fileSystem.exists(etagPath)) {
+                    savedEtag = fileSystem.source(etagPath).buffered()
+                        .use { it.readByteArray().decodeToString() }
+                }
+
                 val useRange = existingSize > 0 && (remoteSize == null || existingSize < remoteSize)
-                // Using prepareGet to handle the stream manually
+
                 val retry =
-                    client.prepareGet("v1/system/db-dump") {
-                        if (useRange) {
-                            header(HttpHeaders.Range, "bytes=$existingSize-")
-                        }
-                        timeout {
-                            requestTimeoutMillis = Long.MAX_VALUE
-                            socketTimeoutMillis = Long.MAX_VALUE
-                        }
-                    }.execute { response ->
-                        if (response.status == HttpStatusCode.RequestedRangeNotSatisfiable) {
-                            // Local file likely complete/corrupt for the requested range; wipe and retry.
-                            if (fileSystem.exists(path)) fileSystem.delete(path)
-                            return@execute true
-                        }
+                    try {
+                        client.prepareGet("v1/system/db-dump") {
+                            if (useRange) {
+                                header(HttpHeaders.Range, "bytes=$existingSize-")
+                                if (savedEtag != null) {
+                                    header(HttpHeaders.IfRange, savedEtag)
+                                }
+                            }
+                            timeout {
+                                requestTimeoutMillis = Long.MAX_VALUE
+                                socketTimeoutMillis = Long.MAX_VALUE
+                            }
+                        }.execute { response ->
+                            val contentLength =
+                                response.headers[HttpHeaders.ContentLength]?.toLongOrNull()
+                            val isPartial = response.status == HttpStatusCode.PartialContent
+                            val currentEtag = response.headers[HttpHeaders.ETag]
 
-                        val contentLength = response.headers[HttpHeaders.ContentLength]?.toLongOrNull()
-                        val isPartial = response.status == HttpStatusCode.PartialContent
-                        val totalSize =
-                            if (isPartial) existingSize + (contentLength ?: 0) else (contentLength ?: 0)
-
-                        // If server didn't accept range (sent 200 OK), reset existingSize to 0 (overwrite)
-                        val startByte = if (isPartial) existingSize else 0L
-
-                        if (!isPartial && existingSize > 0) {
-                            // Server ignored range; ensure we overwrite from scratch
-                            fileSystem.delete(path)
-                        }
-
-                        val channel: ByteReadChannel = response.bodyAsChannel()
-                        val sink = fileSystem.sink(path, append = isPartial).buffered()
-
-                        try {
-                            var bytesCopied: Long = 0
-                            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-
-                            while (!channel.isClosedForRead) {
-                                val read = channel.readAvailable(buffer, 0, buffer.size)
-                                if (read == -1) break
-
-                                sink.write(buffer, 0, read)
-
-                                bytesCopied += read
-                                val currentTotal = startByte + bytesCopied
-                                emit(DownloadProgress(currentTotal, totalSize))
+                            // Save the new ETag if present
+                            if (currentEtag != null) {
+                                fileSystem.sink(etagPath).buffered()
+                                    .use { it.write(currentEtag.encodeToByteArray()) }
                             }
 
-                            sink.flush()
-                            sink.close()
+                            val totalSize =
+                                if (isPartial) existingSize + (contentLength
+                                    ?: 0) else (contentLength ?: 0)
 
-                            emit(
-                                DownloadProgress(
-                                    startByte + bytesCopied,
-                                    totalSize,
-                                    isComplete = true,
-                                ),
-                            )
-                        } catch (e: Exception) {
-                            sink.close()
+                            // If server didn't accept range (sent 200 OK), reset existingSize to 0 (overwrite)
+                            val startByte = if (isPartial) existingSize else 0L
+
+                            if (!isPartial && existingSize > 0) {
+                                // Server ignored range (e.g. ETag mismatch); ensure we overwrite from scratch
+                                fileSystem.delete(path)
+                            }
+
+                            val channel: ByteReadChannel = response.bodyAsChannel()
+                            val sink = fileSystem.sink(path, append = isPartial).buffered()
+
+                            try {
+                                var bytesCopied: Long = 0
+                                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+
+                                while (!channel.isClosedForRead) {
+                                    val read = channel.readAvailable(buffer, 0, buffer.size)
+                                    if (read == -1) break
+
+                                    sink.write(buffer, 0, read)
+
+                                    bytesCopied += read
+                                    val currentTotal = startByte + bytesCopied
+                                    emit(DownloadProgress(currentTotal, totalSize))
+                                }
+
+                                sink.flush()
+                                sink.close()
+
+                                // Download complete, clean up ETag file
+                                if (fileSystem.exists(etagPath)) {
+                                    fileSystem.delete(etagPath)
+                                }
+
+                                emit(
+                                    DownloadProgress(
+                                        startByte + bytesCopied,
+                                        totalSize,
+                                        isComplete = true,
+                                    ),
+                                )
+                            } catch (e: Exception) {
+                                sink.close()
+                                // If disk is full, delete the partial file to free up space and prevent resume loops
+                                val msg = e.message ?: ""
+                                if (msg.contains("ENOSPC") || msg.contains("No space left")) {
+                                    if (fileSystem.exists(path)) fileSystem.delete(path)
+                                    if (fileSystem.exists(etagPath)) fileSystem.delete(etagPath)
+                                }
+                                throw e
+                            }
+                            false
+                        }
+                    } catch (e: io.ktor.client.plugins.ClientRequestException) {
+                        if (e.response.status == HttpStatusCode.RequestedRangeNotSatisfiable) {
+                            // Local file likely complete/corrupt for the requested range; wipe and retry.
+                            if (fileSystem.exists(path)) fileSystem.delete(path)
+                            if (fileSystem.exists(etagPath)) fileSystem.delete(etagPath)
+                            true
+                        } else {
                             throw e
                         }
-                        false
                     }
 
                 if (!retry) {

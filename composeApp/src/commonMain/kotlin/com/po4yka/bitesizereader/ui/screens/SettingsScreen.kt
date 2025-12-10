@@ -138,6 +138,7 @@ private fun SettingsContent(
             onBackup = onBackup,
             onImport = onImport,
             onCancelDownload = onCancelDownload,
+            onCleanup = onCleanup,
         )
     }
 }
@@ -286,6 +287,7 @@ private fun BackupCard(
     onBackup: () -> Unit,
     onImport: () -> Unit,
     onCancelDownload: () -> Unit,
+    onCleanup: () -> Unit,
 ) {
     Column(
         modifier =
