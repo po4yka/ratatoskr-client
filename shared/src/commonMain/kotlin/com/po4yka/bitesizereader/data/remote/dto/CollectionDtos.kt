@@ -108,7 +108,9 @@ data class CollectionListResponse(
     @SerialName("collections") val collections: List<CollectionDto>,
 )
 
-// CollectionResponseEnvelope removed. Use CollectionDto directly.
+// Backward-compatibility: some older callers referenced an Envelope type.
+// Map it directly to the current response shape to tolerate stale binaries.
+typealias CollectionListResponseEnvelope = CollectionListResponse
 
 @Serializable
 data class CollectionItemsResponse(
