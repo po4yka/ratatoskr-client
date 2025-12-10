@@ -9,6 +9,7 @@ import com.po4yka.bitesizereader.domain.usecase.LinkTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.UnlinkTelegramUseCase
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,8 @@ data class SettingsState(
     val downloadTotal: Long = 0,
     val downloadError: String? = null,
 )
+
+private val logger = KotlinLogging.logger {}
 
 @Factory
 class SettingsViewModel(
@@ -104,7 +107,12 @@ class SettingsViewModel(
     }
 
     fun downloadDatabase(mode: DownloadMode) {
-        if (_state.value.isDownloading) return
+        if (_state.value.isDownloading) {
+            logger.warn { "downloadDatabase called but download is already in progress" }
+            return
+        }
+
+        logger.info { "Starting database download. Mode: $mode" }
 
         val fileName = "bite_size_reader_backup.sqlite"
 
@@ -127,6 +135,7 @@ class SettingsViewModel(
                                         isDownloading = false,
                                         downloadError = throwable.toAppError().userMessage(),
                                     )
+                                logger.error(throwable) { "Error during download flow collection" }
                             }
                             .collect { progress ->
                                 _state.value =
@@ -139,10 +148,12 @@ class SettingsViewModel(
                                     // If import, maybe show specific success message?
                                     // For now generic success is implied by end of loading.
                                     // Consider adding a "toast" or "message" to state.
+                                    logger.info { "Download/Import completed successfully." }
                                 }
                             }
                     }
                     .onFailure { throwable ->
+                        logger.error(throwable) { "Failed to start download/import process" }
                         _state.value =
                             _state.value.copy(
                                 isDownloading = false,
@@ -153,6 +164,7 @@ class SettingsViewModel(
     }
 
     fun cancelDownload() {
+        logger.info { "Cancelling download/import" }
         downloadJob?.cancel()
         _state.value = _state.value.copy(isDownloading = false)
     }

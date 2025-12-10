@@ -1,23 +1,22 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
-import com.po4yka.bitesizereader.data.remote.dto.CollectionAclResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionAclResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionCreateRequest
+import com.po4yka.bitesizereader.data.remote.dto.CollectionDto
 import com.po4yka.bitesizereader.data.remote.dto.CollectionInviteRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionInviteResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionInviteResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionItemCreateRequest
 import com.po4yka.bitesizereader.data.remote.dto.CollectionItemMoveRequest
 import com.po4yka.bitesizereader.data.remote.dto.CollectionItemReorderRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionItemsMoveResponseEnvelope
-import com.po4yka.bitesizereader.data.remote.dto.CollectionItemsResponseEnvelope
-import com.po4yka.bitesizereader.data.remote.dto.CollectionListResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionItemsMoveResponse
+import com.po4yka.bitesizereader.data.remote.dto.CollectionItemsResponse
+import com.po4yka.bitesizereader.data.remote.dto.CollectionListResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionMoveRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionMoveResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionMoveResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionReorderRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionReorderResponseEnvelope
-import com.po4yka.bitesizereader.data.remote.dto.CollectionResponseEnvelope
 import com.po4yka.bitesizereader.data.remote.dto.CollectionShareRequest
-import com.po4yka.bitesizereader.data.remote.dto.CollectionTreeResponseEnvelope
+import com.po4yka.bitesizereader.data.remote.dto.CollectionTreeResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionUpdateRequest
 import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
 import io.ktor.client.HttpClient
@@ -34,27 +33,27 @@ import org.koin.core.annotation.Single
 
 @Single
 class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
-    override suspend fun listCollections(): ApiResponseDto<CollectionListResponseEnvelope> {
+    override suspend fun listCollections(): ApiResponseDto<CollectionListResponse> {
         return client.get("v1/collections").body()
     }
 
     override suspend fun createCollection(
         request: CollectionCreateRequest,
-    ): ApiResponseDto<CollectionResponseEnvelope> {
+    ): ApiResponseDto<CollectionDto> {
         return client.post("v1/collections") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    override suspend fun getCollection(id: Int): ApiResponseDto<CollectionResponseEnvelope> {
+    override suspend fun getCollection(id: Int): ApiResponseDto<CollectionDto> {
         return client.get("v1/collections/$id").body()
     }
 
     override suspend fun updateCollection(
         id: Int,
         request: CollectionUpdateRequest,
-    ): ApiResponseDto<CollectionResponseEnvelope> {
+    ): ApiResponseDto<CollectionDto> {
         return client.patch("v1/collections/$id") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -79,7 +78,7 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         id: Int,
         limit: Int,
         offset: Int,
-    ): ApiResponseDto<CollectionItemsResponseEnvelope> {
+    ): ApiResponseDto<CollectionItemsResponse> {
         return client.get("v1/collections/$id/items") {
             parameter("limit", limit)
             parameter("offset", offset)
@@ -93,13 +92,13 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         return client.delete("v1/collections/$id/items/$summaryId").body()
     }
 
-    override suspend fun getTree(maxDepth: Int): ApiResponseDto<CollectionTreeResponseEnvelope> {
+    override suspend fun getTree(maxDepth: Int): ApiResponseDto<CollectionTreeResponse> {
         return client.get("v1/collections/tree") {
             parameter("max_depth", maxDepth)
         }.body()
     }
 
-    override suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponseEnvelope> {
+    override suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponse> {
         return client.get("v1/collections/$id/acl").body()
     }
 
@@ -123,7 +122,7 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
     override suspend fun createInvite(
         id: Int,
         request: CollectionInviteRequest,
-    ): ApiResponseDto<CollectionInviteResponseEnvelope> {
+    ): ApiResponseDto<CollectionInviteResponse> {
         return client.post("v1/collections/$id/invite") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -137,7 +136,7 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
     override suspend fun reorderCollections(
         id: Int,
         request: CollectionReorderRequest,
-    ): ApiResponseDto<CollectionReorderResponseEnvelope> {
+    ): ApiResponseDto<SuccessResponse> {
         return client.post("v1/collections/$id/reorder") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -147,7 +146,7 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
     override suspend fun reorderItems(
         id: Int,
         request: CollectionItemReorderRequest,
-    ): ApiResponseDto<CollectionReorderResponseEnvelope> {
+    ): ApiResponseDto<SuccessResponse> {
         return client.post("v1/collections/$id/items/reorder") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -157,7 +156,7 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
     override suspend fun moveCollection(
         id: Int,
         request: CollectionMoveRequest,
-    ): ApiResponseDto<CollectionMoveResponseEnvelope> {
+    ): ApiResponseDto<CollectionMoveResponse> {
         return client.post("v1/collections/$id/move") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -167,7 +166,7 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
     override suspend fun moveItems(
         id: Int,
         request: CollectionItemMoveRequest,
-    ): ApiResponseDto<CollectionItemsMoveResponseEnvelope> {
+    ): ApiResponseDto<CollectionItemsMoveResponse> {
         return client.post("v1/collections/$id/items/move") {
             contentType(ContentType.Application.Json)
             setBody(request)

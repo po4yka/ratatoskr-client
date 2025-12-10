@@ -28,7 +28,7 @@ class CollectionRepositoryImpl(
             try {
                 val response = api.listCollections()
                 if (response.success && response.data != null) {
-                    val collections = response.data.data.map { it.toDomain() }
+                    val collections = response.data.collections.map { it.toDomain() }
                     emit(collections)
                 } else {
                     logger.error { "Failed to fetch collections: ${response.error}" }
@@ -45,7 +45,7 @@ class CollectionRepositoryImpl(
             val intId = id.toIntOrNull() ?: return null
             val response = api.getCollection(intId)
             if (response.success && response.data != null) {
-                response.data.data.toDomain()
+                response.data.toDomain()
             } else {
                 logger.error { "Failed to get collection $id: ${response.error}" }
                 null
@@ -65,7 +65,7 @@ class CollectionRepositoryImpl(
             val intId = collectionId.toIntOrNull() ?: return emptyList()
             val response = api.listItems(intId, limit, offset)
             if (response.success && response.data != null) {
-                response.data.data.mapNotNull { it.toSummary() }
+                response.data.items.mapNotNull { it.toSummary() }
             } else {
                 logger.error { "Failed to get collection items for $collectionId: ${response.error}" }
                 emptyList()
@@ -91,7 +91,7 @@ class CollectionRepositoryImpl(
             )
         val response = api.updateCollection(intId, request)
         if (response.success && response.data != null) {
-            return response.data.data.toDomain()
+            return response.data.toDomain()
         } else {
             throw Exception("Failed to update collection: ${response.error}")
         }
@@ -110,7 +110,7 @@ class CollectionRepositoryImpl(
             val intId = id.toIntOrNull() ?: return emptyList()
             val response = api.getAcl(intId)
             if (response.success && response.data != null) {
-                response.data.data.acl.map { it.toDomain() }
+                response.data.acl.map { it.toDomain() }
             } else {
                 logger.error { "Failed to get ACL for collection $id: ${response.error}" }
                 emptyList()
@@ -162,7 +162,7 @@ class CollectionRepositoryImpl(
             )
         val response = api.createInvite(intId, request)
         if (response.success && response.data != null) {
-            return response.data.data.toDomain()
+            return response.data.toDomain()
         } else {
             throw Exception("Failed to create invite link: ${response.error}")
         }

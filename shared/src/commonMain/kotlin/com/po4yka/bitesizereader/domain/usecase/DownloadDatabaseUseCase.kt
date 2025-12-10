@@ -4,6 +4,7 @@ import com.po4yka.bitesizereader.data.remote.DownloadProgress
 import com.po4yka.bitesizereader.domain.repository.SystemRepository
 import com.po4yka.bitesizereader.util.FileSaver
 import com.po4yka.bitesizereader.util.config.AppConfig
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transform
 import org.koin.core.annotation.Factory
@@ -12,6 +13,8 @@ enum class DownloadMode {
     BACKUP,
     IMPORT,
 }
+
+private val logger = KotlinLogging.logger {}
 
 @Factory
 class DownloadDatabaseUseCase(
@@ -22,21 +25,31 @@ class DownloadDatabaseUseCase(
         fileName: String,
         mode: DownloadMode,
     ): Flow<DownloadProgress> {
+        logger.info { "DownloadDatabaseUseCase invoked. Validating inputs. FileName: $fileName, Mode: $mode" }
         val tempPath = fileSaver.getInternalStoragePath(fileName)
+        logger.debug { "Temporary storage path resolved: $tempPath" }
 
         return repository.downloadDatabase(tempPath).transform { progress ->
+
             emit(progress)
             if (progress.isComplete) {
+                logger.info { "Download progress complete. Processing mode: $mode" }
                 // Download finished, proceed based on mode
                 when (mode) {
                     DownloadMode.BACKUP -> {
+                        logger.info { "Executing BACKUP flow. Saving to Downloads." }
                         val finalPath = fileSaver.saveToDownloads(tempPath, fileName)
                         if (finalPath == null) {
-                            throw Exception("Failed to save file to Downloads directory")
+                            val msg = "Failed to save file to Downloads directory"
+                            logger.error { msg }
+                            throw Exception(msg)
                         }
+                        logger.info { "Backup saved successfully to: $finalPath" }
                     }
                     DownloadMode.IMPORT -> {
+                        logger.info { "Executing IMPORT flow. Importing database from temp path." }
                         fileSaver.importDatabase(tempPath, AppConfig.Database.NAME)
+                        logger.info { "Database import executed successfully." }
                     }
                 }
             }

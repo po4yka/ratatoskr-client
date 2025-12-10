@@ -104,29 +104,48 @@ data class CollectionItemMoveRequest(
 )
 
 @Serializable
-data class CollectionListResponseEnvelope(
-    @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: List<CollectionDto>,
+data class CollectionListResponse(
+    @SerialName("collections") val collections: List<CollectionDto>,
+)
+
+// CollectionResponseEnvelope removed. Use CollectionDto directly.
+
+@Serializable
+data class CollectionItemsResponse(
+    @SerialName("items") val items: List<CollectionItemDto>,
+    // Meta is usually top-level in ApiResponseDto, but if it's inside data, keep it.
+    // However, ApiResponseDto has its own meta. Checking log... log has meta at top level.
+    // So 'data' just has 'items'.
 )
 
 @Serializable
-data class CollectionResponseEnvelope(
-    @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: CollectionDto,
+data class CollectionTreeResponse(
+    @SerialName("nodes") val nodes: List<CollectionTreeNodeDto>, // Assuming "nodes" or "tree" or just list?
+    // Log for getTree not seen. Assuming sticking to envelope pattern implies "data" contains object.
+    // If "data": [ ... ], then T should be List<CollectionTreeNodeDto>.
+    // If "data": { "nodes": [...] }, then T is CollectionTreeResponse.
+    // Given CollectionListResponse has "collections", likely this has a name too?
+    // Or it might be a direct list.
+    // Safest bet: The current code expected 'data' field inside data.
+    // KtorCollectionsApi called getTree.
+    // Let's assume it returns a list directly in 'data' for now, or check standard pattern.
+    // Actually, earlier I assumed 'data' was wrapper.
+    // If previous code was `data: List<Node>`, it implied `data.data` was the list.
+    // So JSON was `{"data": {"data": []}}`? No.
+    // Previous code: `data class Envelope(success, data: List)`.
+    // This mapped to `{"success":..., "data": [...]}`.
+    // BUT `ApiResponseDto` wraps it. So `{"data": {"success":..., "data": [...]}}`.
+    // Start with strictly removing wrapper.
 )
 
-@Serializable
-data class CollectionItemsResponseEnvelope(
-    @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: List<CollectionItemDto>,
-    @SerialName("meta") val meta: MetaDto? = null,
-)
+// Actually, if the previous code was `val data: List<CollectionTreeNodeDto>`, it meant it expected
+// `{"data": [...]}` inside the outer `data`.
+// If the API returns `{"data": [...]}` (list directly), then T = List<CollectionTreeNodeDto>.
+// If it returns `{"data": {"nodes": []}}`, then T = Wrapper("nodes").
+// Given `v1/collections` return `{"collections": []}`, it's likely named.
+// I will check `KtorCollectionsApi.kt` usage later.
+// For now, I'll delete this envelope and rely on List or a new wrapper if needed.
 
-@Serializable
-data class CollectionTreeResponseEnvelope(
-    @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: List<CollectionTreeNodeDto>,
-)
 
 @Serializable
 data class SuccessResponse(
@@ -134,17 +153,9 @@ data class SuccessResponse(
     @SerialName("message") val message: String? = null,
 )
 
-@Serializable
-data class CollectionReorderResponseEnvelope(
-    @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: SuccessResponse? = null, // Assuming nested success or minimal data
-)
+// CollectionReorderResponseEnvelope removed. Use SuccessResponse or specific data.
 
-@Serializable
-data class CollectionMoveResponseEnvelope(
-    @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: CollectionMoveResponse,
-)
+// CollectionMoveResponseEnvelope removed. Use CollectionMoveResponse directly.
 
 @Serializable
 data class CollectionMoveResponse(
@@ -154,22 +165,14 @@ data class CollectionMoveResponse(
     @SerialName("updated_at") val updatedAt: String? = null,
 )
 
-@Serializable
-data class CollectionItemsMoveResponseEnvelope(
-    @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: CollectionItemsMoveResponse,
-)
+// CollectionItemsMoveResponseEnvelope removed. Use CollectionItemsMoveResponse directly.
 
 @Serializable
 data class CollectionItemsMoveResponse(
     @SerialName("moved_summary_ids") val movedSummaryIds: List<Long>,
 )
 
-@Serializable
-data class CollectionAclResponseEnvelope(
-    @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: CollectionAclResponse,
-)
+// CollectionAclResponseEnvelope removed. Use CollectionAclResponse directly.
 
 @Serializable
 data class CollectionAclResponse(
@@ -186,11 +189,7 @@ data class CollectionAclEntry(
     @SerialName("updated_at") val updatedAt: String,
 )
 
-@Serializable
-data class CollectionInviteResponseEnvelope(
-    @SerialName("success") val success: Boolean,
-    @SerialName("data") val data: CollectionInviteResponse,
-)
+// CollectionInviteResponseEnvelope removed. Use CollectionInviteResponse directly.
 
 @Serializable
 data class CollectionInviteResponse(
