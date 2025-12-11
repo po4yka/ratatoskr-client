@@ -158,7 +158,7 @@ class KtorSystemApi(private val client: HttpClient) : SystemApi {
                                     ),
                                 )
                             } catch (e: Exception) {
-                                sink.close()
+                                runCatching { sink.close() }
                                 // If disk is full, delete the partial file to free up space and prevent resume loops
                                 val msg = e.message ?: ""
                                 if (msg.contains("ENOSPC") || msg.contains("No space left")) {
