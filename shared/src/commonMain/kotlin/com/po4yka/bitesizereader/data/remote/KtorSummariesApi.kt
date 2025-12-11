@@ -1,6 +1,8 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
+import com.po4yka.bitesizereader.data.remote.dto.SummaryContentResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryDetailDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryListDataDto
 import com.po4yka.bitesizereader.data.remote.dto.UpdateSummaryRequestDto
@@ -14,7 +16,6 @@ import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
-import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
 import io.ktor.http.contentType
 import org.koin.core.annotation.Single
 
@@ -24,7 +25,10 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
         page: Int,
         pageSize: Int,
         isRead: Boolean?,
+        isFavorited: Boolean?,
         lang: String?,
+        startDate: String?,
+        endDate: String?,
         sort: String?,
     ): ApiResponseDto<SummaryListDataDto> {
         // Backend uses limit/offset; translate page to offset.
@@ -32,9 +36,12 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
         return client.get("v1/summaries") {
             parameter("limit", pageSize)
             parameter("offset", offset)
-            if (isRead != null) parameter("is_read", isRead)
-            if (lang != null) parameter("lang", lang)
-            if (sort != null) parameter("sort", sort)
+            isRead?.let { parameter("is_read", it) }
+            isFavorited?.let { parameter("is_favorited", it) }
+            lang?.let { parameter("lang", it) }
+            startDate?.let { parameter("start_date", it) }
+            endDate?.let { parameter("end_date", it) }
+            sort?.let { parameter("sort", it) }
         }.body()
     }
 
@@ -58,5 +65,14 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
 
     override suspend fun deleteSummary(id: Long) {
         client.delete("v1/summaries/$id")
+    }
+
+    override suspend fun getContent(
+        id: Long,
+        format: String?,
+    ): ApiResponseDto<SummaryContentResponseDto> {
+        return client.get("v1/summaries/$id/content") {
+            format?.let { parameter("format", it) }
+        }.body()
     }
 }

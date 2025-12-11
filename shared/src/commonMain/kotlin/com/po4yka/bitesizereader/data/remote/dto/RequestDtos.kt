@@ -24,11 +24,16 @@ data class SubmitRequestResponseDto(
     @SerialName("duplicate_summary") val duplicateSummary: SummaryCompactDto? = null,
 )
 
+/**
+ * Request status response matching OpenAPI RequestStatusData schema.
+ */
 @Serializable
 data class RequestStatusResponseDto(
     @SerialName("request_id") val requestId: Long,
     @SerialName("status") val status: String,
     @SerialName("stage") val stage: String? = null,
+    /** Processing progress details */
+    @SerialName("progress") val progress: ProgressDto? = null,
     @SerialName("estimated_seconds_remaining") val estimatedSecondsRemaining: Int? = null,
     @SerialName("error_stage") val errorStage: String? = null,
     @SerialName("error_type") val errorType: String? = null,
@@ -36,6 +41,16 @@ data class RequestStatusResponseDto(
     @SerialName("can_retry") val canRetry: Boolean? = null,
     @SerialName("correlation_id") val correlationId: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
+)
+
+/**
+ * Processing progress information.
+ */
+@Serializable
+data class ProgressDto(
+    @SerialName("current_step") val currentStep: Int,
+    @SerialName("total_steps") val totalSteps: Int,
+    @SerialName("percentage") val percentage: Int,
 )
 
 @Serializable

@@ -67,4 +67,34 @@ sealed class AppError : Throwable() {
         override val messageKey: String = "error.storage.nospace",
         override val fallbackMessage: String = "Not enough space on device. Please free up some space and try again.",
     ) : AppError()
+
+    @Serializable
+    @SerialName("rate_limit")
+    data class RateLimitError(
+        val retryAfterSeconds: Int? = null,
+        override val messageKey: String = "error.rate_limit",
+        override val fallbackMessage: String = "Too many requests. Please try again later.",
+    ) : AppError()
+
+    @Serializable
+    @SerialName("sync")
+    data class SyncError(
+        val errorCode: String? = null,
+        override val messageKey: String = "error.sync",
+        override val fallbackMessage: String = "Sync failed. Please try again.",
+    ) : AppError()
+
+    @Serializable
+    @SerialName("not_found")
+    data class NotFoundError(
+        override val messageKey: String = "error.not_found",
+        override val fallbackMessage: String = "The requested resource was not found.",
+    ) : AppError()
+
+    @Serializable
+    @SerialName("conflict")
+    data class ConflictError(
+        override val messageKey: String = "error.conflict",
+        override val fallbackMessage: String = "A conflict occurred. Please refresh and try again.",
+    ) : AppError()
 }

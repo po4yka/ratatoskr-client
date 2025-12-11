@@ -3,18 +3,40 @@ package com.po4yka.bitesizereader.data.remote.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * Collection data matching OpenAPI Collection schema.
+ */
 @Serializable
 data class CollectionDto(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
     @SerialName("description") val description: String? = null,
+    /** Whether collection is shared with others (spec: is_shared) */
+    @SerialName("is_shared") val isShared: Boolean = false,
+    /** Backwards-compatible with older API responses using is_public */
     @SerialName("is_public") val isPublic: Boolean = false,
     @SerialName("owner_id") val ownerId: Long,
     @SerialName("parent_id") val parentId: Int? = null,
+    /** Position within parent collection for ordering */
+    @SerialName("position") val position: Int? = null,
     @SerialName("created_at") val createdAt: String,
     @SerialName("updated_at") val updatedAt: String,
-    @SerialName("items_count") val itemsCount: Int = 0,
+    /** Server version for conflict detection */
+    @SerialName("server_version") val serverVersion: Int = 0,
+    @SerialName("item_count") val itemCount: Int? = null,
+    /** ACL summary showing collaborator counts by role */
+    @SerialName("acl_summary") val aclSummary: AclSummaryDto? = null,
     @SerialName("children") val children: List<CollectionDto> = emptyList(),
+)
+
+/**
+ * ACL summary showing collaborator counts by role.
+ */
+@Serializable
+data class AclSummaryDto(
+    @SerialName("total_collaborators") val totalCollaborators: Int,
+    /** Role counts, e.g., {"viewer": 2, "editor": 1} */
+    @SerialName("roles") val roles: Map<String, Int> = emptyMap(),
 )
 
 @Serializable
