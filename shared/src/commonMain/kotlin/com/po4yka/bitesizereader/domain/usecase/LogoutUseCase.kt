@@ -5,7 +5,15 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class LogoutUseCase(private val repository: AuthRepository) {
-    suspend operator fun invoke() {
-        repository.logout()
+    /**
+     * Logout the user.
+     * @param revokeToken If true, also revoke the refresh token on the server.
+     */
+    suspend operator fun invoke(revokeToken: Boolean = false) {
+        if (revokeToken) {
+            repository.logoutWithRevoke()
+        } else {
+            repository.logout()
+        }
     }
 }

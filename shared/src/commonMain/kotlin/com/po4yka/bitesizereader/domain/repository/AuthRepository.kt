@@ -1,21 +1,52 @@
 package com.po4yka.bitesizereader.domain.repository
 
 import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
+import com.po4yka.bitesizereader.domain.model.Session
 import com.po4yka.bitesizereader.domain.model.User
+import com.po4yka.bitesizereader.domain.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
+    /** Login with Telegram auth data */
     suspend fun login(authData: AuthRequestDto)
 
+    /** Login with developer secret key */
     suspend fun loginWithSecret(
         userId: Int,
         clientId: String,
         secret: String,
     )
 
+    /** Login with Apple Sign In */
+    suspend fun loginWithApple(
+        idToken: String,
+        clientId: String,
+        authorizationCode: String? = null,
+        givenName: String? = null,
+        familyName: String? = null,
+    ): UserPreferences?
+
+    /** Login with Google Sign In */
+    suspend fun loginWithGoogle(
+        idToken: String,
+        clientId: String,
+    ): UserPreferences?
+
+    /** Logout locally (clear tokens) */
     suspend fun logout()
 
+    /** Logout and revoke refresh token on server */
+    suspend fun logoutWithRevoke()
+
+    /** Get current authenticated user */
     suspend fun getCurrentUser(): User?
 
+    /** List all active sessions for the user */
+    suspend fun listSessions(): List<Session>
+
+    /** Delete user account permanently */
+    suspend fun deleteAccount()
+
+    /** Authentication state flow */
     val isAuthenticated: Flow<Boolean>
 }
