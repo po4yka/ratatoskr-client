@@ -13,13 +13,6 @@ import org.koin.core.annotation.Single
 
 @Single
 class KtorSearchApi(private val client: HttpClient) : SearchApi {
-    override suspend fun checkDuplicateUrl(url: String): ApiResponseDto<DuplicateUrlCheckResponseEnvelope> {
-        return client.get("v1/urls/check-duplicate") {
-            parameter("url", url)
-            parameter("include_summary", true)
-        }.body()
-    }
-
     override suspend fun search(
         query: String,
         page: Int,
@@ -37,12 +30,18 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
         query: String,
         page: Int,
         pageSize: Int,
+        language: String?,
+        tags: List<String>?,
+        userScope: String?,
     ): ApiResponseDto<SearchResponseDataDto> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
         return client.get("v1/search/semantic") {
             parameter("q", query)
             parameter("limit", pageSize)
             parameter("offset", offset)
+            language?.let { parameter("language", it) }
+            tags?.forEach { parameter("tags", it) }
+            userScope?.let { parameter("user_scope", it) }
         }.body()
     }
 
@@ -66,6 +65,16 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
             parameter("tag", tag)
             parameter("limit", pageSize)
             parameter("offset", offset)
+        }.body()
+    }
+
+    override suspend fun checkDuplicateUrl(
+        url: String,
+        includeSummary: Boolean,
+    ): ApiResponseDto<DuplicateUrlCheckResponseEnvelope> {
+        return client.get("v1/urls/check-duplicate") {
+            parameter("url", url)
+            parameter("include_summary", includeSummary)
         }.body()
     }
 }

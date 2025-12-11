@@ -67,3 +67,13 @@ data class UpdateSummaryResponseDto(
     @SerialName("is_read") val isRead: Boolean? = null,
     @SerialName("updated_at") val updatedAt: String,
 )
+
+/**
+ * Summary content for offline reading.
+ */
+@Serializable
+data class SummaryContentResponseDto(
+    @SerialName("id") val id: Long,
+    @SerialName("content") val content: String,
+    @SerialName("format") val format: String, // "markdown" or "text"
+)

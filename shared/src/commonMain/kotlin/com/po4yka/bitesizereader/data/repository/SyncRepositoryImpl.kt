@@ -8,13 +8,15 @@ import com.po4yka.bitesizereader.data.remote.SyncApi
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.SyncState
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
-import com.po4yka.bitesizereader.util.error.AppError
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.time.Clock
 import org.koin.core.annotation.Single
+
+private val logger = KotlinLogging.logger {}
 
 @Single
 class SyncRepositoryImpl(
@@ -25,12 +27,13 @@ class SyncRepositoryImpl(
     override suspend fun sync(forceFull: Boolean) {
         val sessionId = secureStorage.getSessionId()
         if (sessionId == null) {
-            // If using secret login (debug), session ID might be missing.
-            // Skip sync instead of throwing error to avoid infinite re-auth loop.
-            println("SyncRepositoryImpl: Skipping sync: No session ID found")
-            return
+            logger.warn { "Cannot sync: No session ID found (secret login does not support sync)" }
+            throw IllegalStateException(
+                "Sync requires a session ID. " +
+                    "Developer secret login does not support sync - please use Telegram login.",
+            )
         }
-        println("SyncRepositoryImpl: Starting sync with sessionId $sessionId, forceFull=$forceFull")
+        logger.info { "Starting sync with sessionId=$sessionId, forceFull=$forceFull" }
 
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val sinceEpochSeconds = if (forceFull) 0L else (metadata?.lastSyncTime?.epochSeconds ?: 0L)
@@ -38,19 +41,17 @@ class SyncRepositoryImpl(
         val response = api.sync(sessionId, sinceEpochSeconds)
 
         if (!response.success || response.data == null) {
-            println("SyncRepositoryImpl: Sync failed or empty response: ${response.error}")
+            logger.error { "Sync failed or empty response: ${response.error}" }
             return
         }
 
         val changes = response.data.changes
         val syncTimestamp = response.data.syncTimestamp
 
-        println(
-            "SyncRepositoryImpl: Sync success. " +
-                "Created: ${changes.created.size}, " +
-                "Updated: ${changes.updated.size}, " +
-                "Deleted: ${changes.deleted.size}",
-        )
+        logger.info {
+            "Sync success. Created: ${changes.created.size}, " +
+                "Updated: ${changes.updated.size}, Deleted: ${changes.deleted.size}"
+        }
 
         database.transaction {
             changes.created.forEach { created ->

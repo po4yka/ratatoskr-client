@@ -24,7 +24,7 @@ fun CollectionDto.toDomain(): Collection {
     return Collection(
         id = id.toString(),
         name = name,
-        count = itemsCount,
+        count = itemCount ?: 0,
         iconName = null, // API doesn't provide icon, use default
         type = CollectionType.User,
         description = description,

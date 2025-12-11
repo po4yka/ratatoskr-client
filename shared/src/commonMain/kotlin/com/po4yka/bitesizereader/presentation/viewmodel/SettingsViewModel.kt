@@ -12,10 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
-import kotlin.time.Instant
 import org.koin.core.annotation.Factory
 
 data class SettingsState(
@@ -35,7 +32,6 @@ class SettingsViewModel(
     private val unlinkTelegramUseCase: UnlinkTelegramUseCase,
     private val linkTelegramUseCase: LinkTelegramUseCase,
     private val syncRepository: com.po4yka.bitesizereader.domain.repository.SyncRepository,
-    private val platform: com.po4yka.bitesizereader.Platform,
 ) : BaseViewModel() {
     private companion object {
         // Removed legacy constants
@@ -133,8 +129,7 @@ class SettingsViewModel(
                         _state.value.copy(
                             isDownloading = false,
                         )
-                    // Restart app to refresh UI with new data
-                    platform.restartApp()
+                    // Note: UI refreshes automatically via StateFlow - no restart needed
                 }.onFailure { throwable ->
                     logger.error(throwable) { "Failed to sync/import" }
                     _state.value =

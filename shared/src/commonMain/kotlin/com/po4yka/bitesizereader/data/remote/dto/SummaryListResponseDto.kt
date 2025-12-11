@@ -22,14 +22,6 @@ data class SummaryCompactDto(
 )
 
 @Serializable
-data class PaginationDto(
-    @SerialName("total") val total: Int,
-    @SerialName("limit") val limit: Int,
-    @SerialName("offset") val offset: Int,
-    @SerialName("has_more") val hasMore: Boolean,
-)
-
-@Serializable
 data class SummaryStatsDto(
     @SerialName("total_summaries") val totalSummaries: Int,
     @SerialName("unread_count") val unreadCount: Int,
