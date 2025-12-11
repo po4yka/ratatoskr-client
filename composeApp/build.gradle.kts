@@ -127,6 +127,9 @@ kotlin {
         }
 
         iosMain.dependencies {
+            // Must be api() for CocoaPods framework export to work properly
+            api(projects.shared)
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

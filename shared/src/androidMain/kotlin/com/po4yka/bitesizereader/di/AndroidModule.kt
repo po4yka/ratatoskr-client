@@ -15,23 +15,19 @@ import org.koin.core.annotation.Single
 @Module
 class AndroidPlatformModule {
     @Single
-    fun provideDatabaseDriverFactory(context: Context): DatabaseDriverFactory =
-        DatabaseDriverFactory(context)
+    fun provideDatabaseDriverFactory(context: Context): DatabaseDriverFactory = DatabaseDriverFactory(context)
 
     @Single
-    fun provideSecureStorage(context: Context): SecureStorage =
-        AndroidSecureStorage(context)
+    fun provideSecureStorage(context: Context): SecureStorage = AndroidSecureStorage(context)
 
     @Single
     fun provideHttpClientEngine(): HttpClientEngine = OkHttp.create()
 
     @Single
-    fun provideShareManager(context: Context): ShareManager =
-        AndroidShareManager(context)
+    fun provideShareManager(context: Context): ShareManager = AndroidShareManager(context)
 
     @Single
-    fun provideFileSaver(context: Context): FileSaver =
-        FileSaver(context)
+    fun provideFileSaver(context: Context): FileSaver = FileSaver(context)
 
     @Single
     fun providePlatform(context: Context): com.po4yka.bitesizereader.Platform =

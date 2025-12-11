@@ -14,6 +14,5 @@ class ViewModelModule
 @Module
 class CoroutineScopeModule {
     @Single
-    fun provideCoroutineScope(): CoroutineScope =
-        CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    fun provideCoroutineScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 }

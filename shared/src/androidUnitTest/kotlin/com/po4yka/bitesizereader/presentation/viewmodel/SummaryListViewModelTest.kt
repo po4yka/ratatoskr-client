@@ -2,7 +2,9 @@ package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
+import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
+import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +25,8 @@ import kotlin.test.assertFalse
 class SummaryListViewModelTest {
     private val getSummariesUseCase: GetSummariesUseCase = mockk()
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase = mockk()
+    private val syncDataUseCase: SyncDataUseCase = mockk()
+    private val logoutUseCase: LogoutUseCase = mockk()
     private lateinit var viewModel: SummaryListViewModel
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -47,7 +51,13 @@ class SummaryListViewModelTest {
                 ),
             )
 
-        viewModel = SummaryListViewModel(getSummariesUseCase, markSummaryAsReadUseCase)
+        viewModel =
+            SummaryListViewModel(
+                getSummariesUseCase,
+                markSummaryAsReadUseCase,
+                syncDataUseCase,
+                logoutUseCase,
+            )
     }
 
     @After

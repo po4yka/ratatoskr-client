@@ -125,7 +125,8 @@ class ApiClient(
                                     BearerTokens(tokens.accessToken, tokens.refreshToken)
                                 } else {
                                     logger.error {
-                                        "Failed to refresh tokens: success=${parsed.success}, error=${parsed.error}, body=$responseText"
+                                        "Failed to refresh tokens: " +
+                                            "success=${parsed.success}, error=${parsed.error}"
                                     }
                                     secureStorage.clearTokens()
                                     null

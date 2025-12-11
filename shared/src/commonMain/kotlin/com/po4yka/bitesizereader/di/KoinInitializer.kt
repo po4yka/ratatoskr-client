@@ -25,14 +25,15 @@ expect fun KoinApplication.platformExtras(configuration: PlatformConfiguration)
 /**
  * Common modules using KSP-generated modules.
  */
-fun commonModules(): List<Module> = listOf(
-    NetworkModule().module,
-    DatabaseModule().module,
-    RepositoryModule().module,
-    UseCaseModule().module,
-    ViewModelModule().module,
-    CoroutineScopeModule().module,
-)
+fun commonModules(): List<Module> =
+    listOf(
+        NetworkModule().module,
+        DatabaseModule().module,
+        RepositoryModule().module,
+        UseCaseModule().module,
+        ViewModelModule().module,
+        CoroutineScopeModule().module,
+    )
 
 /**
  * Initialize Koin with shared modules and platform-specific bindings.

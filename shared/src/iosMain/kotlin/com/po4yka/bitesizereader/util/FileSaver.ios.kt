@@ -5,11 +5,11 @@ package com.po4yka.bitesizereader.util
 import platform.Foundation.NSCachesDirectory
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSFileSize
 import platform.Foundation.NSLibraryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import io.github.oshai.kotlinlogging.KotlinLogging
-import platform.Foundation.URLByAppendingPathComponent
 
 private val logger = KotlinLogging.logger {}
 
@@ -101,5 +101,18 @@ actual class FileSaver {
             throw Exception("Failed to copy database file")
         }
         logger.info { "Database import successful." }
+    }
+
+    actual fun deleteIfExists(path: String) {
+        val fileManager = NSFileManager.defaultManager
+        if (fileManager.fileExistsAtPath(path)) {
+            fileManager.removeItemAtPath(path, null)
+        }
+    }
+
+    actual fun getFileSize(path: String): Long {
+        val fileManager = NSFileManager.defaultManager
+        val attributes = fileManager.attributesOfItemAtPath(path, null)
+        return (attributes?.get(NSFileSize) as? Number)?.toLong() ?: 0L
     }
 }
