@@ -39,14 +39,6 @@ class AndroidSecureStorage(private val context: Context) : SecureStorage {
         return getDecrypted(KEY_REFRESH_TOKEN)
     }
 
-    override suspend fun saveSessionId(sessionId: Long) {
-        saveEncrypted(KEY_SESSION_ID, sessionId.toString())
-    }
-
-    override suspend fun getSessionId(): Long? {
-        return getDecrypted(KEY_SESSION_ID)?.toLongOrNull()
-    }
-
     override suspend fun clearTokens() {
         dataStore.edit { it.clear() }
     }
@@ -86,7 +78,6 @@ class AndroidSecureStorage(private val context: Context) : SecureStorage {
     private companion object {
         val KEY_ACCESS_TOKEN = stringPreferencesKey("access_token")
         val KEY_REFRESH_TOKEN = stringPreferencesKey("refresh_token")
-        val KEY_SESSION_ID = stringPreferencesKey("session_id")
     }
 }
 

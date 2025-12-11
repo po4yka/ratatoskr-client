@@ -73,7 +73,6 @@ class AuthRepositoryImpl(
             if (authTokens.refreshToken.isNotEmpty()) {
                 secureStorage.saveRefreshToken(authTokens.refreshToken)
             }
-            response.data.sessionId?.let { secureStorage.saveSessionId(it) }
             // Fetch current user on-demand
             _currentUser.value = null
             _isAuthenticated.value = true
@@ -100,7 +99,6 @@ class AuthRepositoryImpl(
             if (authTokens.refreshToken.isNotEmpty()) {
                 secureStorage.saveRefreshToken(authTokens.refreshToken)
             }
-            response.data.sessionId?.let { secureStorage.saveSessionId(it) }
             // Fetch current user on-demand
             _currentUser.value = null
             _isAuthenticated.value = true

@@ -19,20 +19,6 @@ import org.koin.core.annotation.Single
 @Single
 class KtorSyncApi(private val client: HttpClient) : SyncApi {
     // ========================================================================
-    // Legacy Sync (for backward compatibility)
-    // ========================================================================
-
-    override suspend fun sync(
-        sessionId: Long,
-        sinceTimestamp: Long,
-    ): ApiResponseDto<SyncDeltaResponseDto> {
-        return client.get("v1/sync/delta") {
-            parameter("session_id", sessionId)
-            parameter("since", sinceTimestamp)
-        }.body()
-    }
-
-    // ========================================================================
     // Session-Based Sync (new OpenAPI spec)
     // ========================================================================
 

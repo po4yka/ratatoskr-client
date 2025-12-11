@@ -22,14 +22,6 @@ class IosSecureStorage : SecureStorage {
         return settings.getStringOrNull(KEY_REFRESH_TOKEN)
     }
 
-    override suspend fun saveSessionId(sessionId: Long) {
-        settings.putLong(KEY_SESSION_ID, sessionId)
-    }
-
-    override suspend fun getSessionId(): Long? {
-        return settings.getLongOrNull(KEY_SESSION_ID)
-    }
-
     override suspend fun clearTokens() {
         settings.clear()
     }
@@ -38,6 +30,5 @@ class IosSecureStorage : SecureStorage {
         const val SERVICE_NAME = "com.po4yka.bitesizereader.auth"
         const val KEY_ACCESS_TOKEN = "access_token"
         const val KEY_REFRESH_TOKEN = "refresh_token"
-        const val KEY_SESSION_ID = "session_id"
     }
 }
