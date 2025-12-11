@@ -30,6 +30,8 @@ allprojects {
 
     tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask>().configureEach {
         exclude("**/build/**", "**/generated/**")
+        // Ensure ktlint waits for KSP to generate code before checking
+        dependsOn(tasks.matching { it.name == "kspCommonMainKotlinMetadata" })
     }
 
     // Detekt configuration

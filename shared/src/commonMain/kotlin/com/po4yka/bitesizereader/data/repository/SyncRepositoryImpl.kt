@@ -22,18 +22,18 @@ class SyncRepositoryImpl(
     private val api: SyncApi,
     private val secureStorage: SecureStorage,
 ) : SyncRepository {
-    override suspend fun sync() {
+    override suspend fun sync(forceFull: Boolean) {
         val sessionId = secureStorage.getSessionId()
         if (sessionId == null) {
             // If using secret login (debug), session ID might be missing.
             // Skip sync instead of throwing error to avoid infinite re-auth loop.
-             println("SyncRepositoryImpl: Skipping sync: No session ID found")
+            println("SyncRepositoryImpl: Skipping sync: No session ID found")
             return
         }
-        println("SyncRepositoryImpl: Starting sync with sessionId $sessionId")
+        println("SyncRepositoryImpl: Starting sync with sessionId $sessionId, forceFull=$forceFull")
 
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
-        val sinceEpochSeconds = metadata?.lastSyncTime?.epochSeconds ?: 0L
+        val sinceEpochSeconds = if (forceFull) 0L else (metadata?.lastSyncTime?.epochSeconds ?: 0L)
 
         val response = api.sync(sessionId, sinceEpochSeconds)
 
@@ -45,7 +45,12 @@ class SyncRepositoryImpl(
         val changes = response.data.changes
         val syncTimestamp = response.data.syncTimestamp
 
-        println("SyncRepositoryImpl: Sync success. Created: ${changes.created.size}, Updated: ${changes.updated.size}, Deleted: ${changes.deleted.size}")
+        println(
+            "SyncRepositoryImpl: Sync success. " +
+                "Created: ${changes.created.size}, " +
+                "Updated: ${changes.updated.size}, " +
+                "Deleted: ${changes.deleted.size}",
+        )
 
         database.transaction {
             changes.created.forEach { created ->

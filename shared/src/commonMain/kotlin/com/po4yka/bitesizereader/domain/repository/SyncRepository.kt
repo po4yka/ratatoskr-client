@@ -4,7 +4,7 @@ import com.po4yka.bitesizereader.domain.model.SyncState
 import kotlinx.coroutines.flow.Flow
 
 interface SyncRepository {
-    suspend fun sync()
+    suspend fun sync(forceFull: Boolean = false)
 
     fun getSyncState(): Flow<SyncState>
 }

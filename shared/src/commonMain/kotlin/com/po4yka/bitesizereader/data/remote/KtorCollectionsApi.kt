@@ -37,9 +37,7 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         return client.get("v1/collections").body()
     }
 
-    override suspend fun createCollection(
-        request: CollectionCreateRequest,
-    ): ApiResponseDto<CollectionDto> {
+    override suspend fun createCollection(request: CollectionCreateRequest): ApiResponseDto<CollectionDto> {
         return client.post("v1/collections") {
             contentType(ContentType.Application.Json)
             setBody(request)

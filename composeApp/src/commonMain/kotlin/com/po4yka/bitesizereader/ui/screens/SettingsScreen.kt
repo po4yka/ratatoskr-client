@@ -25,19 +25,9 @@ import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.SmallLoading
-import com.gabrieldrn.carbon.progressbar.ProgressBar
-import com.gabrieldrn.carbon.progressbar.ProgressBarState
-import com.po4yka.bitesizereader.domain.usecase.DownloadMode
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
-import com.po4yka.bitesizereader.presentation.viewmodel.DownloadAttemptSnapshot
-import com.po4yka.bitesizereader.presentation.viewmodel.DownloadStatus
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
-import kotlin.math.roundToInt
-import kotlin.time.Instant
-
-private const val BYTES_IN_MEGABYTE = 1_048_576.0
-private const val DECIMAL_ROUNDING_FACTOR = 10.0
 
 /**
  * Settings screen using Carbon Design System
@@ -61,10 +51,7 @@ fun SettingsScreen(component: SettingsComponent) {
             onRetryLinkStatus = viewModel::loadLinkStatus,
             onBeginLink = viewModel::beginTelegramLink,
             onUnlink = viewModel::unlinkTelegram,
-            onBackup = { viewModel.downloadDatabase(DownloadMode.BACKUP) },
-            onImport = { viewModel.downloadDatabase(DownloadMode.IMPORT) },
-            onCancelDownload = viewModel::cancelDownload,
-            onCleanup = viewModel::clearDownloadArtifacts,
+            onImport = viewModel::importFromBackend,
         )
     }
 }
@@ -96,10 +83,7 @@ private fun SettingsContent(
     onRetryLinkStatus: () -> Unit,
     onBeginLink: () -> Unit,
     onUnlink: () -> Unit,
-    onBackup: () -> Unit,
     onImport: () -> Unit,
-    onCancelDownload: () -> Unit,
-    onCleanup: () -> Unit,
 ) {
     Column(
         modifier =
@@ -133,17 +117,14 @@ private fun SettingsContent(
             color = Carbon.theme.textPrimary,
         )
 
-        BackupCard(
+        SyncCard(
             state = state,
-            onBackup = onBackup,
             onImport = onImport,
-            onCancelDownload = onCancelDownload,
-            onCleanup = onCleanup,
         )
     }
 }
 
-@Suppress("FunctionNaming", "LongMethod")
+@Suppress("FunctionNaming")
 @Composable
 private fun AccountBindingCard(
     state: SettingsState,
@@ -161,91 +142,62 @@ private fun AccountBindingCard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Telegram",
+            text = "Telegram Account",
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
 
         when {
-            state.isLoading -> SmallLoading()
-            state.linkStatus != null ->
-                LinkedStatusContent(
-                    state = state,
-                    onBeginLink = onBeginLink,
-                    onUnlink = onUnlink,
+            state.isLoading -> {
+                SmallLoading()
+                Text(
+                    text = "Loading...",
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.textSecondary,
                 )
-            state.error != null ->
-                ErrorContent(
-                    error = state.error,
-                    onRetry = onRetryLinkStatus,
+            }
+            state.error != null -> {
+                Text(
+                    text = "Error: ${state.error}",
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.supportError,
                 )
+                Button(
+                    label = "Retry",
+                    onClick = onRetryLinkStatus,
+                    buttonType = ButtonType.Secondary,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            state.linkStatus?.linked == true -> {
+                val linkStatus = state.linkStatus
+                Text(
+                    text = "Linked to: ${linkStatus?.username ?: "Unknown"}",
+                    style = Carbon.typography.bodyCompact01,
+                    color = Carbon.theme.textSecondary,
+                )
+                Button(
+                    label = "Unlink Telegram",
+                    onClick = onUnlink,
+                    buttonType = ButtonType.TertiaryDanger,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            else -> {
+                Text(
+                    text = "Link your Telegram account to sync your data.",
+                    style = Carbon.typography.bodyCompact01,
+                    color = Carbon.theme.textSecondary,
+                )
+                Button(
+                    label = "Begin Linking",
+                    onClick = onBeginLink,
+                    buttonType = ButtonType.Primary,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
-}
-
-@Suppress("FunctionNaming")
-@Composable
-private fun LinkedStatusContent(
-    state: SettingsState,
-    onBeginLink: () -> Unit,
-    onUnlink: () -> Unit,
-) {
-    val status = state.linkStatus
-    if (status?.linked == true) {
-        Text(
-            text = "Status: Linked",
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textPrimary,
-        )
-        status.username?.let {
-            Text(
-                text = "Username: @$it",
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
-            )
-        }
-        status.telegramId?.let {
-            Text(
-                text = "ID: $it",
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
-            )
-        }
-        Button(
-            label = "Unlink",
-            onClick = onUnlink,
-            buttonType = ButtonType.PrimaryDanger,
-        )
-    } else {
-        Text(
-            text = "Status: Not Linked",
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textPrimary,
-        )
-        Button(
-            label = "Link Telegram Account",
-            onClick = onBeginLink,
-            buttonType = ButtonType.Primary,
-        )
-    }
-}
-
-@Suppress("FunctionNaming")
-@Composable
-private fun ErrorContent(
-    error: String?,
-    onRetry: () -> Unit,
-) {
-    Text(
-        text = "Error: $error",
-        style = Carbon.typography.bodyCompact01,
-        color = Carbon.theme.supportError,
-    )
-    Button(
-        label = "Retry",
-        onClick = onRetry,
-        buttonType = ButtonType.Secondary,
-    )
 }
 
 @Suppress("FunctionNaming")
@@ -261,33 +213,31 @@ private fun LinkNonceCard(nonce: String) {
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = "Linking Started",
+            text = "Linking Code",
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
         Text(
-            text = "Nonce generated. Use the Telegram Login Widget with this bot to complete linking.",
+            text = "Send this code to the Telegram bot to complete the linking process:",
             style = Carbon.typography.bodyCompact01,
             color = Carbon.theme.textSecondary,
         )
         SelectionContainer {
             Text(
                 text = nonce,
-                style = Carbon.typography.label01,
+                style = Carbon.typography.heading03,
                 color = Carbon.theme.textPrimary,
+                modifier = Modifier.padding(vertical = 8.dp),
             )
         }
     }
 }
 
-@Suppress("FunctionNaming", "LongMethod")
+@Suppress("FunctionNaming")
 @Composable
-private fun BackupCard(
+private fun SyncCard(
     state: SettingsState,
-    onBackup: () -> Unit,
     onImport: () -> Unit,
-    onCancelDownload: () -> Unit,
-    onCleanup: () -> Unit,
 ) {
     Column(
         modifier =
@@ -299,183 +249,39 @@ private fun BackupCard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Backup",
+            text = "Synchronization",
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
         Text(
-            text = "Download a full copy of your articles and summaries.",
+            text = "Import the latest data from the backend to synchronize your local database.",
             style = Carbon.typography.bodyCompact01,
             color = Carbon.theme.textSecondary,
         )
 
         if (state.isDownloading) {
-            DownloadingContent(state = state, onCancelDownload = onCancelDownload)
+            SmallLoading()
+            Text(
+                text = "Synchronizing...",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
         } else {
-            BackupActions(state = state, onBackup = onBackup, onImport = onImport, onCleanup = onCleanup)
+            Button(
+                label = "Import from Backend",
+                onClick = onImport,
+                isEnabled = !state.isLoading,
+                buttonType = ButtonType.Primary,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
-
-        DownloadAnalytics(state = state)
 
         state.downloadError?.let { error ->
             Text(
-                text = "Download Failed: $error",
+                text = "Sync Failed: $error",
                 style = Carbon.typography.label01,
                 color = Carbon.theme.supportError,
             )
         }
     }
 }
-
-@Suppress("FunctionNaming")
-@Composable
-private fun DownloadingContent(
-    state: SettingsState,
-    onCancelDownload: () -> Unit,
-) {
-    val progress =
-        if (state.downloadTotal > 0) {
-            state.downloadProgress.toFloat() / state.downloadTotal.toFloat()
-        } else {
-            0f
-        }
-
-    ProgressBar(
-        value = progress,
-        modifier = Modifier.fillMaxWidth(),
-        state = ProgressBarState.Active,
-    )
-
-    val progressText = progressText(state.downloadProgress, state.downloadTotal)
-    Text(
-        text = "Processing: $progressText",
-        style = Carbon.typography.label01,
-        color = Carbon.theme.textSecondary,
-    )
-
-    Button(
-        label = "Cancel Operation",
-        onClick = onCancelDownload,
-        buttonType = ButtonType.PrimaryDanger,
-    )
-}
-
-@Suppress("FunctionNaming")
-@Composable
-private fun BackupActions(
-    state: SettingsState,
-    onBackup: () -> Unit,
-    onImport: () -> Unit,
-    onCleanup: () -> Unit,
-) {
-    Text(
-        text = "Backup your data to a file or import the latest data from the cloud.",
-        style = Carbon.typography.label01,
-        color = Carbon.theme.textSecondary,
-    )
-
-    Button(
-        label = "Backup to File",
-        onClick = onBackup,
-        isEnabled = !state.isLoading,
-        buttonType = ButtonType.Primary,
-        modifier = Modifier.fillMaxWidth(),
-    )
-
-    Button(
-        label = "Import from Cloud",
-        onClick = onImport,
-        isEnabled = !state.isLoading,
-        buttonType = ButtonType.Secondary,
-        modifier = Modifier.fillMaxWidth(),
-    )
-
-    Button(
-        label = "Remove previous download files",
-        onClick = onCleanup,
-        isEnabled = !state.isDownloading,
-        buttonType = ButtonType.Tertiary,
-        modifier = Modifier.fillMaxWidth(),
-    )
-}
-
-@Suppress("FunctionNaming")
-@Composable
-private fun DownloadAnalytics(state: SettingsState) {
-    val attempts = state.downloadAttempts
-    if (attempts.isEmpty()) return
-
-    val total = attempts.size
-    val successCount = attempts.count { it.status == DownloadStatus.Success }
-    val failedCount = attempts.count { it.status == DownloadStatus.Failed }
-    val last = attempts.last()
-
-    Spacer(modifier = Modifier.height(8.dp))
-    Text(
-        text = "Download Stats",
-        style = Carbon.typography.headingCompact01,
-        color = Carbon.theme.textPrimary,
-    )
-    Text(
-        text = "Attempts: $total · Success: $successCount · Failed: $failedCount",
-        style = Carbon.typography.label01,
-        color = Carbon.theme.textSecondary,
-    )
-
-    Spacer(modifier = Modifier.height(6.dp))
-    Text(
-        text = "Last attempt: ${last.mode.name.lowercase().replaceFirstChar { it.uppercase() }} - ${last.status.readable()}",
-        style = Carbon.typography.bodyCompact01,
-        color = Carbon.theme.textPrimary,
-    )
-    val lastDetail =
-        buildString {
-            append("Started: ${last.startedAt.formatShort()} ")
-            last.finishedAt?.let { append("• Finished: ${it.formatShort()} ") }
-            append("• Bytes: ${progressText(last.bytesDownloaded, last.totalBytes)}")
-            last.error?.let { append(" • Error: $it") }
-        }
-    Text(
-        text = lastDetail,
-        style = Carbon.typography.label01,
-        color = Carbon.theme.textSecondary,
-    )
-
-    Spacer(modifier = Modifier.height(6.dp))
-    attempts.takeLast(3).reversed().forEach { attempt ->
-        Text(
-            text =
-                "${attempt.startedAt.formatShort()} • ${attempt.mode.name} • ${attempt.status.readable()} • ${progressText(attempt.bytesDownloaded, attempt.totalBytes)}" +
-                    (attempt.error?.let { " • $it" } ?: ""),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
-        )
-    }
-}
-
-private fun progressText(
-    progressBytes: Long,
-    totalBytes: Long,
-): String {
-    val downloaded = formatMegabytes(progressBytes)
-    val total = if (totalBytes > 0) formatMegabytes(totalBytes) else 0.0
-    return "$downloaded MB / $total MB"
-}
-
-private fun formatMegabytes(bytes: Long): Double {
-    val mb = bytes / BYTES_IN_MEGABYTE
-    return (mb * DECIMAL_ROUNDING_FACTOR).roundToInt() / DECIMAL_ROUNDING_FACTOR
-}
-
-private fun Instant.formatShort(): String =
-    toString()
-        .replace('T', ' ')
-        .substringBeforeLast('.')
-
-private fun DownloadStatus.readable(): String =
-    when (this) {
-        DownloadStatus.InProgress -> "In Progress"
-        DownloadStatus.Success -> "Success"
-        DownloadStatus.Failed -> "Failed"
-        DownloadStatus.Cancelled -> "Cancelled"
-    }

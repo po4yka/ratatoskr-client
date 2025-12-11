@@ -148,7 +148,6 @@ data class CollectionTreeResponse(
 // I will check `KtorCollectionsApi.kt` usage later.
 // For now, I'll delete this envelope and rely on List or a new wrapper if needed.
 
-
 @Serializable
 data class SuccessResponse(
     @SerialName("success") val success: Boolean,

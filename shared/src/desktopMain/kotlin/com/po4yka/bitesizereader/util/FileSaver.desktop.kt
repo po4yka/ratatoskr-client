@@ -62,4 +62,16 @@ actual class FileSaver {
         File(targetFile.path + "-wal").delete()
         File(targetFile.path + "-shm").delete()
     }
+
+    actual fun deleteIfExists(path: String) {
+        val file = File(path)
+        if (file.exists()) {
+            file.delete()
+        }
+    }
+
+    actual fun getFileSize(path: String): Long {
+        val file = File(path)
+        return if (file.exists()) file.length() else 0L
+    }
 }

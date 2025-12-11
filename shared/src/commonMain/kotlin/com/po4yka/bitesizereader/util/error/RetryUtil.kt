@@ -91,7 +91,7 @@ suspend fun <T> retryWithStrategy(
                     val delayMs = strategy.getDelayForAttempt(attempt)
                     logger.debug {
                         "Exponential backoff attempt ${attempt + 1}/${strategy.maxAttempts} failed, " +
-                                "waiting ${delayMs}ms before retry..."
+                            "waiting ${delayMs}ms before retry..."
                     }
                     delay(delayMs)
                 }
@@ -110,7 +110,7 @@ suspend fun <T> retryWithStrategy(
 
                     logger.debug {
                         "Fixed delay attempt ${attempt + 1}/${strategy.maxAttempts} failed, " +
-                                "waiting ${strategy.delayMs}ms before retry..."
+                            "waiting ${strategy.delayMs}ms before retry..."
                     }
                     delay(strategy.delayMs)
                 }
