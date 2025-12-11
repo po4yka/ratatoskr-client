@@ -74,15 +74,19 @@ object MockDataFactory {
     fun createUser(
         id: String = "123456789",
         username: String? = "testuser",
-        firstName: String? = "Test",
-        lastName: String? = "User",
+        displayName: String? = "Test User",
         photoUrl: String? = "https://example.com/photo.jpg",
+        clientId: String? = null,
+        isOwner: Boolean = false,
+        createdAt: String? = null,
     ) = User(
         id = id,
         username = username,
-        firstName = firstName,
-        lastName = lastName,
+        displayName = displayName,
         photoUrl = photoUrl,
+        clientId = clientId,
+        isOwner = isOwner,
+        createdAt = createdAt,
     )
 
     /** Create a mock AuthTokens with customizable properties */

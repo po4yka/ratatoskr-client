@@ -1,12 +1,20 @@
 package com.po4yka.bitesizereader.data.mappers
 
 import com.po4yka.bitesizereader.data.remote.dto.AuthResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.LoginDataDto
+import com.po4yka.bitesizereader.data.remote.dto.SessionInfoDto
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.TokensDto
 import com.po4yka.bitesizereader.data.remote.dto.UserDto
+import com.po4yka.bitesizereader.data.remote.dto.UserPreferencesDto
+import com.po4yka.bitesizereader.data.remote.dto.UserStatsDto
 import com.po4yka.bitesizereader.domain.model.AuthTokens
+import com.po4yka.bitesizereader.domain.model.Session
 import com.po4yka.bitesizereader.domain.model.User
+import com.po4yka.bitesizereader.domain.model.UserPreferences
+import com.po4yka.bitesizereader.domain.model.UserStats
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -17,9 +25,60 @@ fun UserDto.toDomain(): User {
     return User(
         id = userId.toString(),
         username = username,
-        firstName = null,
-        lastName = null,
-        photoUrl = null,
+        displayName = displayName,
+        photoUrl = photoUrl,
+        clientId = clientId,
+        isOwner = isOwner,
+        createdAt = createdAt,
+    )
+}
+
+fun TokensDto.toAuthTokens(currentTime: Instant = Clock.System.now()): AuthTokens {
+    return AuthTokens(
+        accessToken = accessToken,
+        refreshToken = refreshToken ?: "",
+        tokenType = tokenType,
+        expiresIn = expiresIn,
+        expiresAt = currentTime + expiresIn.seconds,
+    )
+}
+
+fun LoginDataDto.toAuthTokens(currentTime: Instant = Clock.System.now()): AuthTokens {
+    return tokens.toAuthTokens(currentTime)
+}
+
+fun SessionInfoDto.toDomain(): Session {
+    return Session(
+        id = id,
+        clientId = clientId,
+        deviceInfo = deviceInfo,
+        ipAddress = ipAddress,
+        lastUsedAt = lastUsedAt,
+        createdAt = createdAt,
+        isCurrent = isCurrent,
+    )
+}
+
+fun UserPreferencesDto.toDomain(): UserPreferences {
+    return UserPreferences(
+        langPreference = langPreference,
+        notificationSettings = null, // JsonObject conversion would require more complex mapping
+        appSettings = null,
+    )
+}
+
+fun UserStatsDto.toDomain(): UserStats {
+    return UserStats(
+        totalSummaries = totalSummaries,
+        unreadCount = unreadCount,
+        readCount = readCount,
+        totalReadingTimeMin = totalReadingTimeMin,
+        averageReadingTimeMin = averageReadingTimeMin,
+        favoriteTopics = favoriteTopics,
+        favoriteDomains = favoriteDomains,
+        languageDistribution = languageDistribution,
+        joinedAt = joinedAt,
+        lastSummaryAt = lastSummaryAt,
     )
 }
 
