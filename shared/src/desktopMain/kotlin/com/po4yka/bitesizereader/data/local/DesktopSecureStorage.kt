@@ -22,14 +22,6 @@ class DesktopSecureStorage : SecureStorage {
         return settings.getStringOrNull(KEY_REFRESH_TOKEN)
     }
 
-    override suspend fun saveSessionId(sessionId: Long) {
-        settings.putLong(KEY_SESSION_ID, sessionId)
-    }
-
-    override suspend fun getSessionId(): Long? {
-        return settings.getLongOrNull(KEY_SESSION_ID)
-    }
-
     override suspend fun clearTokens() {
         settings.clear()
     }
@@ -37,6 +29,5 @@ class DesktopSecureStorage : SecureStorage {
     private companion object {
         const val KEY_ACCESS_TOKEN = "access_token"
         const val KEY_REFRESH_TOKEN = "refresh_token"
-        const val KEY_SESSION_ID = "session_id"
     }
 }

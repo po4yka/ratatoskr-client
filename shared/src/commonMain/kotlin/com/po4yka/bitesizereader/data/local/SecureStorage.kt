@@ -9,9 +9,5 @@ interface SecureStorage {
 
     suspend fun getRefreshToken(): String?
 
-    suspend fun saveSessionId(sessionId: Long)
-
-    suspend fun getSessionId(): Long?
-
     suspend fun clearTokens()
 }

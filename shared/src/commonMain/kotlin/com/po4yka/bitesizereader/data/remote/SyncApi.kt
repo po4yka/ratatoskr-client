@@ -14,16 +14,6 @@ import com.po4yka.bitesizereader.data.remote.dto.SyncSessionResponseDto
  */
 interface SyncApi {
     // ========================================================================
-    // Legacy Sync (for backward compatibility)
-    // ========================================================================
-
-    /** Legacy delta sync using session_id as user identifier */
-    suspend fun sync(
-        sessionId: Long,
-        sinceTimestamp: Long,
-    ): ApiResponseDto<SyncDeltaResponseDto>
-
-    // ========================================================================
     // Session-Based Sync (new OpenAPI spec)
     // ========================================================================
 
