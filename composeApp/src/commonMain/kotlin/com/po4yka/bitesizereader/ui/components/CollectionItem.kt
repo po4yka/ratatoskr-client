@@ -39,7 +39,7 @@ fun CollectionItem(
         // Icon
         Icon(
             imageVector = getIconForName(collection.iconName),
-            contentDescription = null,
+            contentDescription = collection.name,
             tint = Carbon.theme.iconPrimary,
             modifier = Modifier.size(24.dp),
         )

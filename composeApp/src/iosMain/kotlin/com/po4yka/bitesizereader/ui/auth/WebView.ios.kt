@@ -1,7 +1,9 @@
 package com.po4yka.bitesizereader.ui.auth
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -20,6 +22,11 @@ actual fun WebView(
     modifier: Modifier,
     onDeepLink: (String) -> Unit,
 ) {
+    // Use rememberUpdatedState to always capture the latest callback
+    val currentOnDeepLink = rememberUpdatedState(onDeepLink)
+
+    val webView = remember { WKWebView() }
+
     val navigationDelegate =
         remember {
             object : NSObject(), WKNavigationDelegateProtocol {
@@ -30,7 +37,7 @@ actual fun WebView(
                 ) {
                     val requestUrl = decidePolicyForNavigationAction.request.URL?.absoluteString
                     if (requestUrl != null && requestUrl.startsWith("bitesizereader://")) {
-                        onDeepLink(requestUrl)
+                        currentOnDeepLink.value(requestUrl)
                         decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyCancel)
                     } else {
                         decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyAllow)
@@ -39,10 +46,18 @@ actual fun WebView(
             }
         }
 
+    // Cleanup when leaving composition
+    DisposableEffect(webView) {
+        onDispose {
+            webView.navigationDelegate = null
+            webView.stopLoading()
+        }
+    }
+
     UIKitView(
         modifier = modifier,
         factory = {
-            WKWebView().apply {
+            webView.apply {
                 this.navigationDelegate = navigationDelegate
                 val nsUrl = NSURL.URLWithString(url)
                 if (nsUrl != null) {

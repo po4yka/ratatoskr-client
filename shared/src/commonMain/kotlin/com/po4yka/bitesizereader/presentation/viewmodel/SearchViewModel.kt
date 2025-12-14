@@ -1,7 +1,5 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.presentation.state.SearchState
@@ -16,7 +14,7 @@ import org.koin.core.annotation.Factory
 class SearchViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
     private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase,
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SearchState())
     val state = _state.asStateFlow()
 

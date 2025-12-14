@@ -32,8 +32,9 @@ abstract class BaseViewModel {
      *
      * Automatically cancelled when onCleared() is called.
      * Uses SupervisorJob so that failure of one coroutine doesn't cancel others.
+     * Uses Dispatchers.Default for KMP compatibility (Main is not available on all platforms).
      */
-    protected val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    protected val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     /**
      * Called when the ViewModel is about to be destroyed

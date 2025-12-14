@@ -34,6 +34,7 @@ kotlinx-coroutines = "1.10.2"
 kotlin-logging = "7.0.13"
 slf4j = "2.0.17"
 logback-android = "3.0.0"
+logback-classic = "1.5.18"
 
 # Android Specific
 coil = "3.3.0"
@@ -128,6 +129,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 logback-android = { module = "com.github.tony19:logback-android", version.ref = "logback-android" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 
 # Android Specific
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }

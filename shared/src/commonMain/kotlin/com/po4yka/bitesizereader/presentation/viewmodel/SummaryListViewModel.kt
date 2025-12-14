@@ -1,7 +1,5 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
@@ -25,7 +23,7 @@ class SummaryListViewModel(
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val syncDataUseCase: SyncDataUseCase,
     private val logoutUseCase: LogoutUseCase,
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryListState())
     val state = _state.asStateFlow()
 
@@ -45,7 +43,6 @@ class SummaryListViewModel(
                 logger.info { "Sync completed successfully" }
             } catch (e: AppError.SessionExpiredError) {
                 logger.warn { "Session expired, triggering re-authentication" }
-                logoutUseCase()
                 logoutUseCase()
                 // return@launch -- Removed to allow loading local data despite auth error
             } catch (e: Exception) {

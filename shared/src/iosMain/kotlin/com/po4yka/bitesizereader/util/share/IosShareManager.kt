@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.util.share
 
 import com.po4yka.bitesizereader.domain.model.Summary
+import kotlin.concurrent.AtomicReference
 import platform.Foundation.NSURL
 
 /**
@@ -65,19 +66,19 @@ class IosShareManager : ShareManager {
 /**
  * Helper object for iOS sharing
  * This is accessed from Swift code
+ *
+ * Thread-safe implementation using AtomicReference for concurrent access.
  */
 object ShareHelper {
-    private var pendingItems: List<Any>? = null
+    private val pendingItems = AtomicReference<List<Any>?>(null)
 
     fun share(items: List<Any>) {
-        pendingItems = items
+        pendingItems.value = items
         // Notify Swift code that there are items to share
         // Swift will check for pending items and present the share sheet
     }
 
     fun getPendingItems(): List<Any>? {
-        val items = pendingItems
-        pendingItems = null
-        return items
+        return pendingItems.getAndSet(null)
     }
 }

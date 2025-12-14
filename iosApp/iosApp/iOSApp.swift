@@ -1,6 +1,10 @@
 import SwiftUI
 import Shared
 import BackgroundTasks
+import os.log
+
+/// Logger for iOS app events
+private let logger = Logger(subsystem: "com.po4yka.bitesizereader", category: "app")
 
 @main
 struct iOSApp: App {
@@ -28,7 +32,7 @@ struct iOSApp: App {
         if let sharedDefaults = UserDefaults(suiteName: "group.com.po4yka.bitesizereader"),
            let sharedURL = sharedDefaults.string(forKey: "sharedURL") {
 
-            print("[MainApp] Found shared URL: \(sharedURL)")
+            logger.debug("Found shared URL: \(sharedURL)")
 
             // Navigate to Submit URL screen with prefilled URL
             appDelegate.rootComponent.navigateToSubmitUrl(prefilledUrl: sharedURL)
@@ -42,21 +46,21 @@ struct iOSApp: App {
 
     /// Handle deep links from widget
     private func handleDeepLink(_ url: URL) {
-        print("[MainApp] Received deep link: \(url)")
+        logger.debug("Received deep link: \(url)")
 
         // Parse widget deep link: bitesizereader://summary/{id}
         guard url.scheme == "bitesizereader" else {
-            print("[MainApp] Unknown URL scheme: \(url.scheme ?? "nil")")
+            logger.warning("Unknown URL scheme: \(url.scheme ?? "nil")")
             return
         }
 
         if url.host == "summary",
            let summaryIdString = url.pathComponents.last,
            let summaryId = Int32(summaryIdString) {
-            print("[MainApp] Opening summary with ID: \(summaryId)")
+            logger.debug("Opening summary with ID: \(summaryId)")
             appDelegate.rootComponent.navigateToSummaryDetail(id: summaryId)
         } else {
-            print("[MainApp] Could not parse summary ID from URL: \(url)")
+            logger.warning("Could not parse summary ID from URL: \(url)")
         }
     }
 }
@@ -101,22 +105,22 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         ) { task in
             self.handleBackgroundSync(task: task as! BGProcessingTask)
         }
-        print("[BackgroundTasks] Registered background sync task")
+        logger.debug("Registered background sync task")
         #else
-        print("[BackgroundTasks] Skipping registration (simulator)")
+        logger.debug("Skipping registration (simulator)")
         #endif
     }
 
     /// Handle background sync task execution
     private func handleBackgroundSync(task: BGProcessingTask) {
-        print("[BackgroundTasks] Background sync task started")
+        logger.debug("Background sync task started")
 
         // Schedule next sync
         scheduleBackgroundSync()
 
         // Set expiration handler
         task.expirationHandler = {
-            print("[BackgroundTasks] Task expired before completion")
+            logger.warning("Task expired before completion")
             task.setTaskCompleted(success: false)
         }
 
@@ -125,7 +129,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             do {
                 // Get SyncDataUseCase from Koin
                 guard let syncUseCase = koinHelper.koin.get(objCClass: SyncDataUseCase.self, qualifier: nil, parameters: nil) as? SyncDataUseCase else {
-                    print("[BackgroundTasks] ERROR: Could not get SyncDataUseCase from Koin")
+                    logger.error("Could not get SyncDataUseCase from Koin")
                     task.setTaskCompleted(success: false)
                     return
                 }
@@ -134,14 +138,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 let result = try await syncUseCase.invoke(forceFullSync: false)
 
                 if result.isSuccess {
-                    print("[BackgroundTasks] Background sync completed successfully")
+                    logger.debug("Background sync completed successfully")
                     task.setTaskCompleted(success: true)
                 } else {
-                    print("[BackgroundTasks] Background sync failed")
+                    logger.warning("Background sync failed")
                     task.setTaskCompleted(success: false)
                 }
             } catch {
-                print("[BackgroundTasks] Background sync error: \(error)")
+                logger.error("Background sync error: \(error)")
                 task.setTaskCompleted(success: false)
             }
         }
@@ -159,12 +163,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         do {
             try BGTaskScheduler.shared.submit(request)
-            print("[BackgroundTasks] Scheduled next background sync for 6 hours from now")
+            logger.debug("Scheduled next background sync for 6 hours from now")
         } catch {
-            print("[BackgroundTasks] Could not schedule background sync: \(error)")
+            logger.error("Could not schedule background sync: \(error)")
         }
         #else
-        print("[BackgroundTasks] Skipping schedule (simulator)")
+        logger.debug("Skipping schedule (simulator)")
         #endif
     }
 }

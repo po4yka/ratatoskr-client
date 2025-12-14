@@ -6,6 +6,10 @@ import com.po4yka.bitesizereader.data.local.DatabaseDriverFactory
 import com.po4yka.bitesizereader.data.local.DesktopSecureStorage
 import com.po4yka.bitesizereader.data.local.SecureStorage
 import com.po4yka.bitesizereader.util.FileSaver
+import com.po4yka.bitesizereader.util.network.DesktopNetworkMonitor
+import com.po4yka.bitesizereader.util.network.NetworkMonitor
+import com.po4yka.bitesizereader.util.share.DesktopShareManager
+import com.po4yka.bitesizereader.util.share.ShareManager
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.dsl.module
@@ -25,4 +29,6 @@ val desktopPlatformModule =
         single<HttpClientEngine> { OkHttp.create() }
         single<FileSaver> { FileSaver() }
         single<Platform> { DesktopPlatform() }
+        single<NetworkMonitor> { DesktopNetworkMonitor() }
+        single<ShareManager> { DesktopShareManager() }
     }

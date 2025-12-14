@@ -42,7 +42,7 @@ fun EmptyStateView(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = title,
             tint = Carbon.theme.textSecondary,
             modifier = Modifier.size(64.dp),
         )
