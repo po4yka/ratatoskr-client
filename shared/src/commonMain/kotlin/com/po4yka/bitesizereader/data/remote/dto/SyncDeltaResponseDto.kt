@@ -101,15 +101,19 @@ data class DeltaSyncResponseDto(
 
 /**
  * Individual sync item.
+ * Note: The server sends entity-specific data under keys matching the entity type
+ * (e.g., "summary" for summary entities). The `summary` field contains the actual data.
  */
 @Serializable
 data class SyncItemDto(
     @SerialName("id") val id: Long,
-    @SerialName("entity_type") val entityType: String, // "summary", "collection", etc.
-    @SerialName("server_version") val serverVersion: Long,
-    @SerialName("payload") val payload: JsonObject? = null,
-    @SerialName("created_at") val createdAt: String? = null,
-    @SerialName("updated_at") val updatedAt: String? = null,
+    @SerialName("entityType") val entityType: String, // "summary", "collection", etc.
+    @SerialName("serverVersion") val serverVersion: Long,
+    /** Summary data - populated when entityType is "summary" */
+    @SerialName("summary") val summary: JsonObject? = null,
+    @SerialName("createdAt") val createdAt: String? = null,
+    @SerialName("updatedAt") val updatedAt: String? = null,
+    @SerialName("deletedAt") val deletedAt: String? = null,
 )
 
 // ============================================================================
