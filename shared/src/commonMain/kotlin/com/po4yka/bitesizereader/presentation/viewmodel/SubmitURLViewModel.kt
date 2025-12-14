@@ -1,7 +1,5 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.po4yka.bitesizereader.domain.ProcessingService
 import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import com.po4yka.bitesizereader.domain.model.RequestStatus
@@ -20,7 +18,7 @@ import org.koin.core.annotation.Factory
 @Factory
 class SubmitURLViewModel(
     private val processingService: ProcessingService,
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SubmitURLState())
     val state = _state.asStateFlow()
 

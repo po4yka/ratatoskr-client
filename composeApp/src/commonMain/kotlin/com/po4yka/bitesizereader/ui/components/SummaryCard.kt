@@ -48,7 +48,7 @@ fun SummaryCard(
         if (!summary.imageUrl.isNullOrBlank()) {
             AsyncImage(
                 model = summary.imageUrl,
-                contentDescription = null,
+                contentDescription = "Thumbnail for ${summary.title}",
                 modifier =
                     Modifier
                         .size(80.dp)

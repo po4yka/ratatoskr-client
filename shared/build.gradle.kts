@@ -128,8 +128,8 @@ kotlin {
                 // SQLDelight SQLite JDBC Driver for Desktop
                 implementation(libs.sqldelight.sqlite.driver)
 
-                // Logging - SLF4J backend for Desktop
-                implementation(libs.logback.android)
+                // Logging - SLF4J backend for Desktop (logback-classic, not Android variant)
+                implementation(libs.logback.classic)
 
                 // MapSettings for in-memory storage (dev only, no persistence needed)
                 implementation(libs.multiplatform.settings.test)

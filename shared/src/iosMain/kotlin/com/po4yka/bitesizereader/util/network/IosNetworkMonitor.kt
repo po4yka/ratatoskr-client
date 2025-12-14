@@ -10,6 +10,9 @@ import platform.darwin.dispatch_get_main_queue
 
 /**
  * iOS implementation of NetworkMonitor using Network framework
+ *
+ * Important: Call cancel() when no longer needed to release the native nw_path_monitor resource.
+ * This is handled automatically by Koin's onClose callback in the DI module.
  */
 class IosNetworkMonitor : NetworkMonitor {
     private val _networkStatus = MutableStateFlow(NetworkStatus.UNKNOWN)

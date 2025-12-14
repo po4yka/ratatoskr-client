@@ -1,7 +1,5 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.po4yka.bitesizereader.domain.model.CollaboratorRole
 import com.po4yka.bitesizereader.domain.model.CollectionType
 import com.po4yka.bitesizereader.domain.usecase.CreateInviteLinkUseCase
@@ -32,7 +30,7 @@ class CollectionViewViewModel(
     private val getCollectionAclUseCase: GetCollectionAclUseCase,
     private val manageCollaboratorUseCase: ManageCollaboratorUseCase,
     private val createInviteLinkUseCase: CreateInviteLinkUseCase,
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(CollectionViewState())
     val state = _state.asStateFlow()
 

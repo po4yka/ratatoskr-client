@@ -65,7 +65,7 @@ fun MainScreen(component: MainComponent) {
                     is MainComponent.Child.SummaryDetail ->
                         SummaryDetailScreen(
                             viewModel = instance.component.viewModel,
-                            summaryId = "",
+                            summaryId = instance.component.summaryId,
                             onBackClick = instance.component::onBackClicked,
                             onShareClick = { },
                         )

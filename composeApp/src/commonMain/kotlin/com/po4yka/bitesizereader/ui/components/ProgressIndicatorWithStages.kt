@@ -107,7 +107,7 @@ private fun StageIndicator(
             isFailed -> {
                 Icon(
                     imageVector = CarbonIcons.Close,
-                    contentDescription = null,
+                    contentDescription = "$title failed",
                     tint = Carbon.theme.supportError,
                     modifier = Modifier.size(24.dp),
                 )
@@ -115,7 +115,7 @@ private fun StageIndicator(
             isCompleted -> {
                 Icon(
                     imageVector = CarbonIcons.Checkmark,
-                    contentDescription = null,
+                    contentDescription = "$title completed",
                     tint = Carbon.theme.supportSuccess,
                     modifier = Modifier.size(24.dp),
                 )
