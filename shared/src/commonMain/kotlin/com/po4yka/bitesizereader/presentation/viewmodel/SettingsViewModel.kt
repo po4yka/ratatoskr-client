@@ -4,6 +4,7 @@ import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
 import com.po4yka.bitesizereader.domain.usecase.GetTelegramLinkStatusUseCase
 import com.po4yka.bitesizereader.domain.usecase.LinkTelegramUseCase
+import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.domain.usecase.UnlinkTelegramUseCase
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
@@ -31,7 +32,7 @@ class SettingsViewModel(
     private val getTelegramLinkStatusUseCase: GetTelegramLinkStatusUseCase,
     private val unlinkTelegramUseCase: UnlinkTelegramUseCase,
     private val linkTelegramUseCase: LinkTelegramUseCase,
-    private val syncRepository: com.po4yka.bitesizereader.domain.repository.SyncRepository,
+    private val syncDataUseCase: SyncDataUseCase,
 ) : BaseViewModel() {
     private companion object {
         // Removed legacy constants
@@ -122,7 +123,7 @@ class SettingsViewModel(
                     )
 
                 runCatching {
-                    syncRepository.sync(forceFull = true)
+                    syncDataUseCase(forceFull = true)
                 }.onSuccess {
                     logger.info { "Sync (Import) completed successfully." }
                     _state.value =

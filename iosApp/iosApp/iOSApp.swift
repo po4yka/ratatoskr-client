@@ -134,16 +134,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                     return
                 }
 
-                // Execute sync
-                let result = try await syncUseCase.invoke(forceFullSync: false)
+                // Execute sync (delta sync for background, not full sync)
+                // invoke() returns Unit and throws on error via SKIE interop
+                try await syncUseCase.invoke(forceFull: false)
 
-                if result.isSuccess {
-                    logger.debug("Background sync completed successfully")
-                    task.setTaskCompleted(success: true)
-                } else {
-                    logger.warning("Background sync failed")
-                    task.setTaskCompleted(success: false)
-                }
+                logger.debug("Background sync completed successfully")
+                task.setTaskCompleted(success: true)
             } catch {
                 logger.error("Background sync error: \(error)")
                 task.setTaskCompleted(success: false)

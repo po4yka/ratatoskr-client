@@ -27,6 +27,7 @@ interface SyncRepository {
     suspend fun fullSync(
         sessionId: String,
         limit: Int? = null,
+        cursor: Long? = null,
     ): SyncResult
 
     /** Perform a delta sync using the session ID and since timestamp */

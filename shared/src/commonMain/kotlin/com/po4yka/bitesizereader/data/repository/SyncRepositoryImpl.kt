@@ -20,9 +20,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.longOrNull
 import kotlin.time.Clock
+import kotlin.time.Instant
 import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
@@ -59,17 +67,24 @@ class SyncRepositoryImpl(
             // Full sync - fetch all items
             var hasMore = true
             var totalCreated = 0
+            var cursor: Long? = null
 
             while (hasMore) {
-                val result = fullSync(syncSessionId, limit = 100)
+                val result = fullSync(syncSessionId, limit = 100, cursor = cursor)
                 totalCreated += result.createdCount
                 hasMore = result.hasMore
+                cursor = result.nextCursor
 
-                if (hasMore && result.nextCursor != null) {
-                    // For pagination, we'd need to pass cursor - simplified here
-                    logger.info { "Full sync batch complete, hasMore=$hasMore" }
+                if (hasMore) {
+                    logger.info { "Full sync batch complete, hasMore=$hasMore, nextCursor=$cursor" }
                 }
             }
+
+            // Update sync metadata after full sync completes
+            database.databaseQueries.updateSyncMetadata(
+                lastSyncTime = Clock.System.now(),
+                syncToken = cursor?.toString() ?: "",
+            )
 
             logger.info { "Full sync complete. Total items: $totalCreated" }
         } else {
@@ -126,9 +141,10 @@ class SyncRepositoryImpl(
     override suspend fun fullSync(
         sessionId: String,
         limit: Int?,
+        cursor: Long?,
     ): SyncResult {
-        logger.info { "Starting full sync with sessionId=$sessionId, limit=$limit" }
-        val response = api.fullSync(sessionId, limit)
+        logger.info { "Starting full sync with sessionId=$sessionId, limit=$limit, cursor=$cursor" }
+        val response = api.fullSync(sessionId, limit, cursor)
 
         if (!response.success || response.data == null) {
             logger.error { "Full sync failed: ${response.error}" }
@@ -142,7 +158,7 @@ class SyncRepositoryImpl(
         database.transaction {
             data.items.forEach { item ->
                 when (item.entityType) {
-                    "summary" -> processSyncSummaryItem(item.id, item.payload)
+                    "summary" -> processSyncSummaryItem(item.id, item.summary)
                     else -> logger.warn { "Unknown entity type: ${item.entityType}" }
                 }
             }
@@ -181,13 +197,13 @@ class SyncRepositoryImpl(
         database.transaction {
             data.created.forEach { item ->
                 when (item.entityType) {
-                    "summary" -> processSyncSummaryItem(item.id, item.payload)
+                    "summary" -> processSyncSummaryItem(item.id, item.summary)
                     else -> logger.warn { "Unknown entity type: ${item.entityType}" }
                 }
             }
             data.updated.forEach { item ->
                 when (item.entityType) {
-                    "summary" -> processSyncSummaryItem(item.id, item.payload)
+                    "summary" -> processSyncSummaryItem(item.id, item.summary)
                     else -> logger.warn { "Unknown entity type: ${item.entityType}" }
                 }
             }
@@ -257,17 +273,97 @@ class SyncRepositoryImpl(
     // Private Helpers
     // ========================================================================
 
+    /**
+     * Process a sync summary item and persist to database.
+     *
+     * Server sends summary data in this structure:
+     * {
+     *   "id": 42,
+     *   "request_id": 10,
+     *   "lang": "en",
+     *   "is_read": false,
+     *   "json_payload": {
+     *     "summary_1000": "Full summary text...",
+     *     "topic_tags": ["#tag1", "#tag2"],
+     *     "metadata": {
+     *       "title": "Article Title",
+     *       "canonical_url": "https://...",
+     *       "domain": "example.com"
+     *     }
+     *   },
+     *   "created_at": "2024-12-14T10:20:00Z"
+     * }
+     */
     private fun processSyncSummaryItem(
         id: Long,
-        payload: JsonObject?,
+        summaryData: JsonObject?,
     ) {
-        if (payload == null) {
-            logger.warn { "Sync item $id has no payload, skipping" }
+        if (summaryData == null) {
+            logger.warn { "Sync item $id has no summary data, skipping" }
             return
         }
-        // Extract fields from JSON payload and upsert to database
-        // This is a simplified implementation - full implementation would parse all fields
-        logger.debug { "Processing sync summary item: $id" }
+
+        try {
+            // Extract top-level fields
+            val isRead = summaryData["is_read"]?.jsonPrimitive?.booleanOrNull ?: false
+            val createdAtStr = summaryData["created_at"]?.jsonPrimitive?.contentOrNull
+            val jsonPayload = summaryData["json_payload"]?.jsonObject
+
+            // Parse created_at timestamp
+            val createdAt =
+                createdAtStr?.let {
+                    try {
+                        Instant.parse(it)
+                    } catch (e: Exception) {
+                        logger.warn { "Failed to parse created_at for item $id: $it" }
+                        Clock.System.now()
+                    }
+                } ?: Clock.System.now()
+
+            // Extract from json_payload
+            val metadata = jsonPayload?.get("metadata")?.jsonObject
+            val title =
+                metadata?.get("title")?.jsonPrimitive?.contentOrNull
+                    ?: "Untitled Summary"
+            val sourceUrl =
+                metadata?.get("canonical_url")?.jsonPrimitive?.contentOrNull
+                    ?: ""
+            val content =
+                jsonPayload?.get("summary_1000")?.jsonPrimitive?.contentOrNull
+                    ?: jsonPayload?.get("summary_250")?.jsonPrimitive?.contentOrNull
+                    ?: ""
+
+            // Extract tags from topic_tags (they come as ["#tag1", "#tag2"])
+            val topicTags = jsonPayload?.get("topic_tags")?.jsonArray
+            val tags =
+                topicTags?.mapNotNull { tag ->
+                    tag.jsonPrimitive.contentOrNull?.removePrefix("#")
+                } ?: emptyList()
+
+            // Note: imageUrl is not provided by the server in the current schema
+            val imageUrl: String? = null
+
+            logger.debug {
+                "Inserting summary $id: title='$title', sourceUrl='$sourceUrl', " +
+                    "contentLength=${content.length}, tags=$tags, isRead=$isRead"
+            }
+
+            // Insert or replace in database
+            database.databaseQueries.insertSummary(
+                com.po4yka.bitesizereader.database.SummaryEntity(
+                    id = id.toString(),
+                    title = title,
+                    content = content,
+                    sourceUrl = sourceUrl,
+                    imageUrl = imageUrl,
+                    createdAt = createdAt,
+                    isRead = isRead,
+                    tags = tags,
+                ),
+            )
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to process sync summary item $id" }
+        }
     }
 
     private fun LocalChange.toDto(): SyncApplyItemDto {
