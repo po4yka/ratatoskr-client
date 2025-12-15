@@ -1,4 +1,5 @@
 @file:JvmName("KoinInitializerAndroid")
+@file:Suppress("MatchingDeclarationName") // File contains multiple platform-specific declarations
 
 package com.po4yka.bitesizereader.di
 

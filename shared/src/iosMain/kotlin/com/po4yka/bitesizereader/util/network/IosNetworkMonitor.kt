@@ -1,11 +1,19 @@
-@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+@file:OptIn(ExperimentalForeignApi::class)
+@file:Suppress("WildcardImport") // Platform APIs are grouped together
 
 package com.po4yka.bitesizereader.util.network
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import platform.Network.*
+import platform.Network.nw_path_get_status
+import platform.Network.nw_path_monitor_cancel
+import platform.Network.nw_path_monitor_create
+import platform.Network.nw_path_monitor_set_queue
+import platform.Network.nw_path_monitor_set_update_handler
+import platform.Network.nw_path_monitor_start
+import platform.Network.nw_path_status_satisfied
+import platform.Network.nw_path_t
 import platform.darwin.dispatch_get_main_queue
 
 /**
@@ -44,6 +52,7 @@ class IosNetworkMonitor : NetworkMonitor {
         return _networkStatus.value == NetworkStatus.CONNECTED
     }
 
+    @Suppress("unused") // Called from Koin DI cleanup
     fun cancel() {
         nw_path_monitor_cancel(monitor)
     }

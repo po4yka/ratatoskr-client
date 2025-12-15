@@ -5,7 +5,6 @@ import com.po4yka.bitesizereader.data.remote.dto.DeltaSyncResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.FullSyncResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyResponseDto
-import com.po4yka.bitesizereader.data.remote.dto.SyncDeltaResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionResponseDto
 
