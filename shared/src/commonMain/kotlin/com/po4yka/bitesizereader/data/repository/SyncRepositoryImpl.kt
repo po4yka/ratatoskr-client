@@ -2,8 +2,6 @@ package com.po4yka.bitesizereader.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.po4yka.bitesizereader.data.local.SecureStorage
-import com.po4yka.bitesizereader.data.mappers.toEntity
 import com.po4yka.bitesizereader.data.remote.SyncApi
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyItemDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
@@ -20,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
@@ -28,7 +25,6 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.longOrNull
 import kotlin.time.Clock
 import kotlin.time.Instant
 import org.koin.core.annotation.Single
@@ -39,7 +35,6 @@ private val logger = KotlinLogging.logger {}
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,
-    private val secureStorage: SecureStorage,
 ) : SyncRepository {
     // ========================================================================
     // Main Sync Entry Point
@@ -314,7 +309,7 @@ class SyncRepositoryImpl(
                 createdAtStr?.let {
                     try {
                         Instant.parse(it)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         logger.warn { "Failed to parse created_at for item $id: $it" }
                         Clock.System.now()
                     }
@@ -361,7 +356,7 @@ class SyncRepositoryImpl(
                     tags = tags,
                 ),
             )
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.error(e) { "Failed to process sync summary item $id" }
         }
     }

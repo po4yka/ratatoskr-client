@@ -32,6 +32,7 @@ data class SyncChangesDto(
     @SerialName("deleted") val deleted: List<Long> = emptyList(),
 )
 
+@Suppress("unused") // Legacy DTO kept for backwards compatibility
 @Serializable
 data class SyncDeltaResponseDto(
     @SerialName("changes") val changes: SyncChangesDto,

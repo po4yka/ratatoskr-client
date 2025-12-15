@@ -16,10 +16,11 @@ import platform.WebKit.WKWebView
 import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class)
+@Suppress("FunctionNaming") // Composable naming convention
 @Composable
 actual fun WebView(
     url: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     onDeepLink: (String) -> Unit,
 ) {
     // Use rememberUpdatedState to always capture the latest callback
