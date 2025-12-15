@@ -48,7 +48,7 @@ wire = "5.4.0"
 # Testing
 turbine = "1.2.1"
 mockk = "1.14.7"
-kover = "0.9.3"
+kover = "0.9.4"
 
 # Code Quality
 ktlint = "14.0.1"
