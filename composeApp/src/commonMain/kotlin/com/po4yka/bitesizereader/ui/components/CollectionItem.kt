@@ -21,7 +21,7 @@ import com.po4yka.bitesizereader.domain.model.Collection
 /**
  * Collection item component using Carbon Design System
  */
-@Suppress("FunctionNaming")
+@Suppress("FunctionNaming", "UnstableCollections") // Collection is a domain model, not kotlin.collections
 @Composable
 fun CollectionItem(
     collection: Collection,

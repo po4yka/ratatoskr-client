@@ -15,7 +15,7 @@ import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
 @Module
-class AndroidPlatformModule {
+class AndroidModule {
     @Single
     fun provideDatabaseDriverFactory(context: Context): DatabaseDriverFactory = DatabaseDriverFactory(context)
 

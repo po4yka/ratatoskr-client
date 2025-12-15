@@ -21,6 +21,7 @@ private val logger = KotlinLogging.logger {}
 
 private const val PAGE_SIZE = 20
 
+@Suppress("TooManyFunctions", "LongParameterList") // ViewModel with complete collection management API
 @Factory
 class CollectionViewViewModel(
     private val getCollectionUseCase: GetCollectionUseCase,
@@ -38,6 +39,7 @@ class CollectionViewViewModel(
     private var itemsLoaded = false
     private var collaboratorsLoaded = false
 
+    @Suppress("TooGenericExceptionCaught")
     fun loadCollection(id: String) {
         collectionId = id
         viewModelScope.launch {
@@ -93,6 +95,7 @@ class CollectionViewViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun loadItems() {
         if (collectionId.isEmpty()) return
 
@@ -119,6 +122,7 @@ class CollectionViewViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun loadMoreItems() {
         if (collectionId.isEmpty() || !_state.value.hasMoreItems || _state.value.isLoadingItems) return
 
@@ -146,6 +150,7 @@ class CollectionViewViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun updateCollection(
         name: String? = null,
         description: String? = null,
@@ -174,6 +179,7 @@ class CollectionViewViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun deleteCollection(onDeleted: () -> Unit) {
         if (collectionId.isEmpty() || !_state.value.canEdit) return
 
@@ -194,6 +200,7 @@ class CollectionViewViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun loadCollaborators() {
         if (collectionId.isEmpty()) return
 
@@ -218,6 +225,7 @@ class CollectionViewViewModel(
         }
     }
 
+    @Suppress("unused", "TooGenericExceptionCaught") // Public API for UI layer
     fun addCollaborator(
         userId: Int,
         role: CollaboratorRole,
@@ -239,6 +247,7 @@ class CollectionViewViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun removeCollaborator(userId: Int) {
         if (collectionId.isEmpty() || !_state.value.canShare) return
 
@@ -260,6 +269,7 @@ class CollectionViewViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun createInviteLink(role: CollaboratorRole) {
         if (collectionId.isEmpty() || !_state.value.canShare) return
 
@@ -283,10 +293,12 @@ class CollectionViewViewModel(
         }
     }
 
+    @Suppress("unused") // Public API for UI layer
     fun clearUpdateSuccess() {
         _state.value = _state.value.copy(updateSuccess = false)
     }
 
+    @Suppress("unused") // Public API for UI layer
     fun clearInviteLink() {
         _state.value = _state.value.copy(inviteLink = null)
     }

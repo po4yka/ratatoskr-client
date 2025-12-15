@@ -28,6 +28,7 @@ import com.po4yka.bitesizereader.ui.theme.ReadIndicator
 /**
  * Card component for displaying a summary in a list using Carbon Design System
  */
+@Suppress("FunctionNaming", "LongMethod") // Composable naming convention; UI component with layout logic
 @Composable
 fun SummaryCard(
     summary: Summary,

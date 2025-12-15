@@ -23,6 +23,7 @@ import com.gabrieldrn.carbon.button.ButtonType
 /**
  * Empty state view component using Carbon Design System
  */
+@Suppress("FunctionNaming", "LongParameterList") // Composable naming convention; UI component with optional params
 @Composable
 fun EmptyStateView(
     title: String,

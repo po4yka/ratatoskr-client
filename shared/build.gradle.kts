@@ -120,20 +120,18 @@ kotlin {
             implementation(libs.sqldelight.native.driver)
         }
 
-        val desktopMain by getting {
-            dependencies {
-                // Ktor OkHttp Engine (same as Android)
-                implementation(libs.ktor.client.okhttp)
+        named("desktopMain").dependencies {
+            // Ktor OkHttp Engine (same as Android)
+            implementation(libs.ktor.client.okhttp)
 
-                // SQLDelight SQLite JDBC Driver for Desktop
-                implementation(libs.sqldelight.sqlite.driver)
+            // SQLDelight SQLite JDBC Driver for Desktop
+            implementation(libs.sqldelight.sqlite.driver)
 
-                // Logging - SLF4J backend for Desktop (logback-classic, not Android variant)
-                implementation(libs.logback.classic)
+            // Logging - SLF4J backend for Desktop (logback-classic, not Android variant)
+            implementation(libs.logback.classic)
 
-                // MapSettings for in-memory storage (dev only, no persistence needed)
-                implementation(libs.multiplatform.settings.test)
-            }
+            // MapSettings for in-memory storage (dev only, no persistence needed)
+            implementation(libs.multiplatform.settings.test)
         }
 
         commonTest.dependencies {

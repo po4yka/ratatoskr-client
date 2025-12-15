@@ -34,7 +34,10 @@ import com.po4yka.bitesizereader.presentation.navigation.MainComponent
  */
 @Suppress("FunctionNaming")
 @Composable
-fun MainScreen(component: MainComponent) {
+fun MainScreen(
+    component: MainComponent,
+    modifier: Modifier = Modifier,
+) {
     val childStack by component.childStack.subscribeAsState()
     val activeChild = childStack.active.instance
 
@@ -45,7 +48,7 @@ fun MainScreen(component: MainComponent) {
 
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(Carbon.theme.background),
     ) {

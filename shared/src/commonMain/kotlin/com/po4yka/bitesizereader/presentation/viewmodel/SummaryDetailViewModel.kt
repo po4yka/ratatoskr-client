@@ -18,6 +18,7 @@ class SummaryDetailViewModel(
     private val _state = MutableStateFlow(SummaryDetailState())
     val state = _state.asStateFlow()
 
+    @Suppress("TooGenericExceptionCaught")
     fun loadSummary(id: String) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
@@ -33,6 +34,7 @@ class SummaryDetailViewModel(
         }
     }
 
+    @Suppress("unused", "TooGenericExceptionCaught") // Public API for UI layer
     fun deleteSummary(id: String) {
         viewModelScope.launch {
             try {

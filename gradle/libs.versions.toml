@@ -17,8 +17,8 @@ androidx-work = "2.11.0"
 androidx-glance = "1.1.1"
 
 # Android Secure Storage
-tink = "1.19.0"
-datastore = "1.1.1"
+tink = "1.20.0"
+datastore = "1.2.0"
 
 # KMP Core Libraries
 ktor = "3.3.3"
@@ -27,14 +27,14 @@ decompose = "3.4.0"
 store = "5.0.0"
 koin = "4.1.1"
 koin-android = "4.1.1"
-koin-annotations = "2.0.0"
-ksp = "2.2.21-2.0.4"
+koin-annotations = "2.3.1"
+ksp = "2.3.3"
 kotlinx-serialization = "1.9.0"
 kotlinx-coroutines = "1.10.2"
 kotlin-logging = "7.0.13"
 slf4j = "2.0.17"
 logback-android = "3.0.0"
-logback-classic = "1.5.18"
+logback-classic = "1.5.22"
 
 # Android Specific
 coil = "3.3.0"
