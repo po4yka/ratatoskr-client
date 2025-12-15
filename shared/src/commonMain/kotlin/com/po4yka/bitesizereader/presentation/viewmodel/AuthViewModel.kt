@@ -41,6 +41,7 @@ class AuthViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun login(authData: AuthRequestDto) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
@@ -61,6 +62,7 @@ class AuthViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun loginWithSecret(
         userId: Int,
         clientId: String,
@@ -85,6 +87,7 @@ class AuthViewModel(
         }
     }
 
+    @Suppress("unused") // Public API for UI layer
     fun logout() {
         viewModelScope.launch {
             logoutUseCase()

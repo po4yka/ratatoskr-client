@@ -44,6 +44,7 @@ abstract class BaseViewModel {
      * - Android: Navigation component's onStop or Activity/Fragment onDestroy
      * - iOS: SwiftUI wrapper's deinit
      */
+    @Suppress("unused") // Lifecycle method called by platform layer
     open fun onCleared() {
         viewModelScope.cancel()
     }

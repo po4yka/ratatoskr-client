@@ -19,7 +19,7 @@ import platform.darwin.NSObject
 @Composable
 actual fun WebView(
     url: String,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onDeepLink: (String) -> Unit,
 ) {
     // Use rememberUpdatedState to always capture the latest callback
@@ -54,6 +54,7 @@ actual fun WebView(
         }
     }
 
+    @Suppress("DEPRECATION")
     UIKitView(
         modifier = modifier,
         factory = {

@@ -17,6 +17,8 @@ import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
+private const val DEFAULT_PAGE_SIZE = 20
+
 @Factory
 class SummaryListViewModel(
     private val getSummariesUseCase: GetSummariesUseCase,
@@ -35,16 +37,17 @@ class SummaryListViewModel(
      * Syncs data from server and then loads summaries from local database.
      * Called on init and when user triggers refresh.
      */
+    @Suppress("TooGenericExceptionCaught")
     fun syncAndLoad() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
                 syncDataUseCase()
                 logger.info { "Sync completed successfully" }
-            } catch (e: AppError.SessionExpiredError) {
+            } catch (_: AppError.SessionExpiredError) {
                 logger.warn { "Session expired, triggering re-authentication" }
                 logoutUseCase()
-                // return@launch -- Removed to allow loading local data despite auth error
+                // Continue to load local data despite auth error
             } catch (e: Exception) {
                 logger.warn(e) { "Sync failed, loading from local cache" }
             }
@@ -63,7 +66,7 @@ class SummaryListViewModel(
     }
 
     private suspend fun loadSummariesFromDatabase() {
-        getSummariesUseCase(_state.value.page, 20, listOfNotNull(_state.value.selectedTag))
+        getSummariesUseCase(_state.value.page, DEFAULT_PAGE_SIZE, listOfNotNull(_state.value.selectedTag))
             .catch { e ->
                 logger.error(e) { "Failed to load summaries" }
                 _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
@@ -78,11 +81,13 @@ class SummaryListViewModel(
             }
     }
 
+    @Suppress("unused") // Public API for UI layer
     fun onTagSelected(tag: String?) {
         _state.value = _state.value.copy(selectedTag = tag, page = 1, summaries = emptyList())
         loadSummaries()
     }
 
+    @Suppress("unused") // Public API for UI layer
     fun markAsRead(id: String) {
         viewModelScope.launch {
             markSummaryAsReadUseCase(id)

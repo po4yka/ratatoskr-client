@@ -22,10 +22,12 @@ class SubmitURLViewModel(
     private val _state = MutableStateFlow(SubmitURLState())
     val state = _state.asStateFlow()
 
+    @Suppress("unused") // Public API for UI layer
     fun onUrlChanged(url: String) {
         _state.value = _state.value.copy(url = url, error = null)
     }
 
+    @Suppress("unused") // Public API for UI layer
     fun submitUrl() {
         viewModelScope.launch {
             val url = _state.value.url

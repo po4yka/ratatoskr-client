@@ -78,6 +78,7 @@ object ShareHelper {
         // Swift will check for pending items and present the share sheet
     }
 
+    @Suppress("unused") // Called from Swift code
     fun getPendingItems(): List<Any>? {
         return pendingItems.getAndSet(null)
     }

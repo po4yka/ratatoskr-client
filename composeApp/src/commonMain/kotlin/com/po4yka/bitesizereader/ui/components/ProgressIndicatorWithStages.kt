@@ -21,12 +21,11 @@ import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
 import com.gabrieldrn.carbon.progressbar.ProgressBar
 import com.gabrieldrn.carbon.progressbar.ProgressBarState
 import com.po4yka.bitesizereader.domain.model.RequestStatus
-import com.po4yka.bitesizereader.ui.theme.FailedIndicator
-import com.po4yka.bitesizereader.ui.theme.ProcessingIndicator
 
 /**
  * Progress indicator showing request processing stages using Carbon Design System
  */
+@Suppress("FunctionNaming", "unused") // Composable naming convention; Public API
 @Composable
 fun ProgressIndicatorWithStages(
     status: RequestStatus,
@@ -91,6 +90,7 @@ fun ProgressIndicatorWithStages(
     }
 }
 
+@Suppress("FunctionNaming") // Composable naming convention
 @Composable
 private fun StageIndicator(
     title: String,
