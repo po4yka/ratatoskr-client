@@ -1,0 +1,20 @@
+package com.po4yka.bitesizereader.domain.usecase
+
+import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.domain.repository.SummaryRepository
+import com.po4yka.bitesizereader.presentation.state.ReadFilter
+import com.po4yka.bitesizereader.presentation.state.SortOrder
+import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Factory
+
+@Factory
+class GetFilteredSummariesUseCase(private val repository: SummaryRepository) {
+    operator fun invoke(
+        page: Int,
+        pageSize: Int,
+        readFilter: ReadFilter,
+        sortOrder: SortOrder,
+    ): Flow<List<Summary>> {
+        return repository.getSummariesFiltered(page, pageSize, readFilter, sortOrder)
+    }
+}

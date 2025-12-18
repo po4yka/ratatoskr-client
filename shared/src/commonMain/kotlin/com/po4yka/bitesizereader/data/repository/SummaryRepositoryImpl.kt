@@ -1,19 +1,20 @@
 package com.po4yka.bitesizereader.data.repository
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.repository.SummaryRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
+import com.po4yka.bitesizereader.presentation.state.ReadFilter
+import com.po4yka.bitesizereader.presentation.state.SortOrder
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
-
-import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
@@ -41,6 +42,26 @@ class SummaryRepositoryImpl(
         }
     }
 
+    override fun getSummariesFiltered(
+        page: Int,
+        pageSize: Int,
+        readFilter: ReadFilter,
+        sortOrder: SortOrder,
+    ): Flow<List<Summary>> {
+        return database.databaseQueries.selectSummariesFiltered(
+            readFilterAll = if (readFilter == ReadFilter.ALL) 1L else 0L,
+            isRead = readFilter == ReadFilter.READ,
+            sortNewest = if (sortOrder == SortOrder.NEWEST) 1L else 0L,
+            sortOldest = if (sortOrder == SortOrder.OLDEST) 1L else 0L,
+            sortAlphabetical = if (sortOrder == SortOrder.ALPHABETICAL) 1L else 0L,
+            limit = pageSize.toLong(),
+            offset = ((page - 1) * pageSize).toLong(),
+        ).asFlow().mapToList(Dispatchers.IO).map { entities ->
+            logger.debug { "Fetched ${entities.size} filtered summaries from DB" }
+            entities.map { it.toDomain() }
+        }
+    }
+
     override suspend fun getSummaryById(id: String): Summary? {
         return database.databaseQueries.getSummaryById(id)
             .executeAsOneOrNull()?.toDomain()
@@ -61,5 +82,13 @@ class SummaryRepositoryImpl(
                 // Handle offline delete or queue it
             }
         }
+    }
+
+    override suspend fun getAllTags(): List<String> {
+        return database.databaseQueries.getAllTags()
+            .executeAsList()
+            .flatMap { it }
+            .distinct()
+            .sorted()
     }
 }

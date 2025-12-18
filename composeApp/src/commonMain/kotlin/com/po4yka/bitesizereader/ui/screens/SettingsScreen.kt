@@ -11,8 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,9 +29,12 @@ import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.SmallLoading
+import com.po4yka.bitesizereader.domain.model.SyncPhase
+import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 
 /**
  * Settings screen using Carbon Design System
@@ -52,6 +59,7 @@ fun SettingsScreen(component: SettingsComponent) {
             onBeginLink = viewModel::beginTelegramLink,
             onUnlink = viewModel::unlinkTelegram,
             onImport = viewModel::importFromBackend,
+            onCancelSync = viewModel::cancelSync,
         )
     }
 }
@@ -84,6 +92,7 @@ private fun SettingsContent(
     onBeginLink: () -> Unit,
     onUnlink: () -> Unit,
     onImport: () -> Unit,
+    onCancelSync: () -> Unit,
 ) {
     Column(
         modifier =
@@ -120,6 +129,7 @@ private fun SettingsContent(
         SyncCard(
             state = state,
             onImport = onImport,
+            onCancelSync = onCancelSync,
         )
     }
 }
@@ -238,6 +248,7 @@ private fun LinkNonceCard(nonce: String) {
 private fun SyncCard(
     state: SettingsState,
     onImport: () -> Unit,
+    onCancelSync: () -> Unit,
 ) {
     Column(
         modifier =
@@ -260,11 +271,9 @@ private fun SyncCard(
         )
 
         if (state.isDownloading) {
-            SmallLoading()
-            Text(
-                text = "Synchronizing...",
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+            SyncProgressSection(
+                progress = state.syncProgress,
+                onCancelSync = onCancelSync,
             )
         } else {
             Button(
@@ -285,3 +294,121 @@ private fun SyncCard(
         }
     }
 }
+
+@Suppress("FunctionNaming")
+@Composable
+private fun SyncProgressSection(
+    progress: SyncProgress?,
+    onCancelSync: () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        // Progress header with cancel button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SmallLoading()
+                Text(
+                    text = getSyncPhaseText(progress?.phase),
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.textSecondary,
+                )
+            }
+            IconButton(
+                onClick = onCancelSync,
+                modifier = Modifier.size(32.dp),
+            ) {
+                Icon(
+                    imageVector = CarbonIcons.Close,
+                    contentDescription = "Cancel sync",
+                    tint = Carbon.theme.iconSecondary,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        }
+
+        // Progress bar
+        progress?.progressFraction?.let { fraction ->
+            LinearProgressIndicator(
+                progress = { fraction },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp)),
+                color = Carbon.theme.linkPrimary,
+                trackColor = Carbon.theme.borderSubtle00,
+            )
+        } ?: LinearProgressIndicator(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(2.dp)),
+            color = Carbon.theme.linkPrimary,
+            trackColor = Carbon.theme.borderSubtle00,
+        )
+
+        // Progress details
+        progress?.let { p ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                val itemsText =
+                    if (p.totalItems != null) {
+                        "${p.processedItems} / ${p.totalItems} items"
+                    } else {
+                        "${p.processedItems} items"
+                    }
+                Text(
+                    text = itemsText,
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.textSecondary,
+                )
+                if (p.currentBatch > 0) {
+                    val batchText =
+                        if (p.totalBatches != null) {
+                            "Batch ${p.currentBatch}/${p.totalBatches}"
+                        } else {
+                            "Batch ${p.currentBatch}"
+                        }
+                    Text(
+                        text = batchText,
+                        style = Carbon.typography.label01,
+                        color = Carbon.theme.textSecondary,
+                    )
+                }
+            }
+
+            // Error count warning
+            if (p.errorCount > 0) {
+                Text(
+                    text = "${p.errorCount} items failed to sync",
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.supportWarning,
+                )
+            }
+        }
+    }
+}
+
+private fun getSyncPhaseText(phase: SyncPhase?): String =
+    when (phase) {
+        SyncPhase.CREATING_SESSION -> "Creating session..."
+        SyncPhase.FETCHING_FULL -> "Downloading data..."
+        SyncPhase.FETCHING_DELTA -> "Fetching updates..."
+        SyncPhase.PROCESSING -> "Processing..."
+        SyncPhase.VALIDATING -> "Validating..."
+        SyncPhase.COMPLETED -> "Completed"
+        SyncPhase.FAILED -> "Failed"
+        SyncPhase.CANCELLED -> "Cancelled"
+        null -> "Synchronizing..."
+    }

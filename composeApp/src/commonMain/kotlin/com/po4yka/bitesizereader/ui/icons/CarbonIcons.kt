@@ -1041,4 +1041,293 @@ object CarbonIcons {
             }
         }.build()
     }
+
+    val Search: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Search",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(29f, 27.5859f)
+                lineTo(22.4131f, 21f)
+                arcToRelative(11f, 11f, 0f, true, false, -1.4141f, 1.4141f)
+                lineTo(27.5859f, 29f)
+                close()
+                moveTo(4f, 13f)
+                arcToRelative(9f, 9f, 0f, true, true, 9f, 9f)
+                arcTo(9.01f, 9.01f, 0f, false, true, 4f, 13f)
+                close()
+            }
+        }.build()
+    }
+
+    val Filter: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Filter",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(18f, 28f)
+                horizontalLineTo(14f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, -2f, -2f)
+                verticalLineTo(18.41f)
+                lineTo(4.59f, 11f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 4f, 9.59f)
+                verticalLineTo(6f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 6f, 4f)
+                horizontalLineTo(26f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 2f, 2f)
+                verticalLineTo(9.59f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 27.41f, 11f)
+                lineTo(20f, 18.41f)
+                verticalLineTo(26f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 18f, 28f)
+                close()
+                moveTo(6f, 6f)
+                verticalLineTo(9.59f)
+                lineToRelative(8f, 8f)
+                verticalLineTo(26f)
+                horizontalLineToRelative(4f)
+                verticalLineTo(17.59f)
+                lineToRelative(8f, -8f)
+                verticalLineTo(6f)
+                close()
+            }
+        }.build()
+    }
+
+    val Grid: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Grid",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(12f, 4f)
+                horizontalLineTo(6f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 4f, 6f)
+                verticalLineToRelative(6f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 2f)
+                horizontalLineToRelative(6f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -2f)
+                verticalLineTo(6f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 12f, 4f)
+                close()
+                moveTo(6f, 12f)
+                verticalLineTo(6f)
+                horizontalLineToRelative(6f)
+                verticalLineToRelative(6f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(26f, 4f)
+                horizontalLineTo(20f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -2f, 2f)
+                verticalLineToRelative(6f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 2f)
+                horizontalLineToRelative(6f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -2f)
+                verticalLineTo(6f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 26f, 4f)
+                close()
+                moveTo(20f, 12f)
+                verticalLineTo(6f)
+                horizontalLineToRelative(6f)
+                verticalLineToRelative(6f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(12f, 18f)
+                horizontalLineTo(6f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -2f, 2f)
+                verticalLineToRelative(6f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 2f)
+                horizontalLineToRelative(6f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -2f)
+                verticalLineTo(20f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 12f, 18f)
+                close()
+                moveTo(6f, 26f)
+                verticalLineTo(20f)
+                horizontalLineToRelative(6f)
+                verticalLineToRelative(6f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(26f, 18f)
+                horizontalLineTo(20f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -2f, 2f)
+                verticalLineToRelative(6f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 2f)
+                horizontalLineToRelative(6f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -2f)
+                verticalLineTo(20f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 26f, 18f)
+                close()
+                moveTo(20f, 26f)
+                verticalLineTo(20f)
+                horizontalLineToRelative(6f)
+                verticalLineToRelative(6f)
+                close()
+            }
+        }.build()
+    }
+
+    val List: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "List",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(10f, 6f)
+                horizontalLineTo(28f)
+                verticalLineTo(8f)
+                horizontalLineTo(10f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(10f, 15f)
+                horizontalLineTo(28f)
+                verticalLineTo(17f)
+                horizontalLineTo(10f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(10f, 24f)
+                horizontalLineTo(28f)
+                verticalLineTo(26f)
+                horizontalLineTo(10f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(4f, 5f)
+                horizontalLineTo(8f)
+                verticalLineTo(9f)
+                horizontalLineTo(4f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(4f, 14f)
+                horizontalLineTo(8f)
+                verticalLineTo(18f)
+                horizontalLineTo(4f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(4f, 23f)
+                horizontalLineTo(8f)
+                verticalLineTo(27f)
+                horizontalLineTo(4f)
+                close()
+            }
+        }.build()
+    }
+
+    val SortAscending: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "SortAscending",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(27.6f, 20.6f)
+                lineTo(24f, 24.2f)
+                verticalLineTo(4f)
+                horizontalLineTo(22f)
+                verticalLineTo(24.2f)
+                lineToRelative(-3.6f, -3.6f)
+                lineTo(17f, 22f)
+                lineToRelative(6f, 6f)
+                lineToRelative(6f, -6f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(9f, 4f)
+                horizontalLineTo(3f)
+                verticalLineTo(6f)
+                horizontalLineTo(9f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(11f, 10f)
+                horizontalLineTo(3f)
+                verticalLineTo(12f)
+                horizontalLineTo(11f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(13f, 16f)
+                horizontalLineTo(3f)
+                verticalLineTo(18f)
+                horizontalLineTo(13f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(15f, 22f)
+                horizontalLineTo(3f)
+                verticalLineTo(24f)
+                horizontalLineTo(15f)
+                close()
+            }
+        }.build()
+    }
+
+    val BookmarkAdd: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "BookmarkAdd",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(24f, 16f)
+                verticalLineTo(26.75f)
+                lineToRelative(-7.1f, -3.59f)
+                lineToRelative(-0.9f, -0.45f)
+                lineToRelative(-0.9f, 0.45f)
+                lineTo(8f, 26.75f)
+                verticalLineTo(4f)
+                horizontalLineTo(18f)
+                verticalLineTo(2f)
+                horizontalLineTo(8f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 6f, 4f)
+                verticalLineTo(30f)
+                lineTo(16f, 25f)
+                lineTo(26f, 30f)
+                verticalLineTo(16f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(26f, 6f)
+                horizontalLineTo(24f)
+                verticalLineTo(2f)
+                horizontalLineTo(22f)
+                verticalLineTo(6f)
+                horizontalLineTo(18f)
+                verticalLineTo(8f)
+                horizontalLineTo(22f)
+                verticalLineTo(12f)
+                horizontalLineTo(24f)
+                verticalLineTo(8f)
+                horizontalLineTo(28f)
+                verticalLineTo(6f)
+                horizontalLineTo(26f)
+                close()
+            }
+        }.build()
+    }
 }

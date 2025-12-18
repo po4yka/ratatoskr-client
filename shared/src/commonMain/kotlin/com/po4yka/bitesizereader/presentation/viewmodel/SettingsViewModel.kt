@@ -1,6 +1,8 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
+import com.po4yka.bitesizereader.domain.model.SyncPhase
+import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
 import com.po4yka.bitesizereader.domain.usecase.GetTelegramLinkStatusUseCase
 import com.po4yka.bitesizereader.domain.usecase.LinkTelegramUseCase
@@ -13,6 +15,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
@@ -23,6 +27,7 @@ data class SettingsState(
     val linkNonce: String? = null, // Nonce for the linking process
     val isDownloading: Boolean = false, // Reused for Import/Sync
     val downloadError: String? = null,
+    val syncProgress: SyncProgress? = null, // Progress of current sync operation
 )
 
 private val logger = KotlinLogging.logger {}
@@ -34,10 +39,6 @@ class SettingsViewModel(
     private val linkTelegramUseCase: LinkTelegramUseCase,
     private val syncDataUseCase: SyncDataUseCase,
 ) : BaseViewModel() {
-    private companion object {
-        // Removed legacy constants
-    }
-
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
 
@@ -45,6 +46,19 @@ class SettingsViewModel(
 
     init {
         loadLinkStatus()
+        observeSyncProgress()
+    }
+
+    private fun observeSyncProgress() {
+        syncDataUseCase.syncProgress
+            .onEach { progress ->
+                _state.value =
+                    _state.value.copy(
+                        syncProgress = progress,
+                        isDownloading = progress?.isInProgress == true,
+                    )
+            }
+            .launchIn(viewModelScope)
     }
 
     fun loadLinkStatus() {
@@ -116,29 +130,31 @@ class SettingsViewModel(
         downloadJob?.cancel()
         downloadJob =
             viewModelScope.launch {
-                _state.value =
-                    _state.value.copy(
-                        isDownloading = true,
-                        downloadError = null,
-                    )
+                _state.value = _state.value.copy(downloadError = null)
 
                 runCatching {
                     syncDataUseCase(forceFull = true)
                 }.onSuccess {
                     logger.info { "Sync (Import) completed successfully." }
-                    _state.value =
-                        _state.value.copy(
-                            isDownloading = false,
-                        )
-                    // Note: UI refreshes automatically via StateFlow - no restart needed
+                    // Note: isDownloading is updated by observeSyncProgress
                 }.onFailure { throwable ->
                     logger.error(throwable) { "Failed to sync/import" }
                     _state.value =
                         _state.value.copy(
-                            isDownloading = false,
                             downloadError = throwable.toAppError().userMessage(),
                         )
                 }
             }
+    }
+
+    /**
+     * Cancel the current sync operation if one is in progress.
+     */
+    fun cancelSync() {
+        if (_state.value.isDownloading) {
+            logger.info { "Cancelling sync operation" }
+            downloadJob?.cancel()
+            syncDataUseCase.cancelSync()
+        }
     }
 }
