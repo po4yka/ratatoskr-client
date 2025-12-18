@@ -19,6 +19,8 @@ import com.po4yka.bitesizereader.data.remote.dto.CollectionShareRequest
 import com.po4yka.bitesizereader.data.remote.dto.CollectionTreeResponse
 import com.po4yka.bitesizereader.data.remote.dto.CollectionUpdateRequest
 import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
+import com.po4yka.bitesizereader.util.retry.RetryPolicy
+import com.po4yka.bitesizereader.util.retry.retryWithBackoff
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -33,9 +35,10 @@ import org.koin.core.annotation.Single
 
 @Single
 class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
-    override suspend fun listCollections(): ApiResponseDto<CollectionListResponse> {
-        return client.get("v1/collections").body()
-    }
+    override suspend fun listCollections(): ApiResponseDto<CollectionListResponse> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            client.get("v1/collections").body()
+        }
 
     override suspend fun createCollection(request: CollectionCreateRequest): ApiResponseDto<CollectionDto> {
         return client.post("v1/collections") {
@@ -44,9 +47,10 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         }.body()
     }
 
-    override suspend fun getCollection(id: Int): ApiResponseDto<CollectionDto> {
-        return client.get("v1/collections/$id").body()
-    }
+    override suspend fun getCollection(id: Int): ApiResponseDto<CollectionDto> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            client.get("v1/collections/$id").body()
+        }
 
     override suspend fun updateCollection(
         id: Int,
@@ -76,12 +80,13 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         id: Int,
         limit: Int,
         offset: Int,
-    ): ApiResponseDto<CollectionItemsResponse> {
-        return client.get("v1/collections/$id/items") {
-            parameter("limit", limit)
-            parameter("offset", offset)
-        }.body()
-    }
+    ): ApiResponseDto<CollectionItemsResponse> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            client.get("v1/collections/$id/items") {
+                parameter("limit", limit)
+                parameter("offset", offset)
+            }.body()
+        }
 
     override suspend fun removeItem(
         id: Int,
@@ -90,15 +95,17 @@ class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
         return client.delete("v1/collections/$id/items/$summaryId").body()
     }
 
-    override suspend fun getTree(maxDepth: Int): ApiResponseDto<CollectionTreeResponse> {
-        return client.get("v1/collections/tree") {
-            parameter("max_depth", maxDepth)
-        }.body()
-    }
+    override suspend fun getTree(maxDepth: Int): ApiResponseDto<CollectionTreeResponse> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            client.get("v1/collections/tree") {
+                parameter("max_depth", maxDepth)
+            }.body()
+        }
 
-    override suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponse> {
-        return client.get("v1/collections/$id/acl").body()
-    }
+    override suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponse> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            client.get("v1/collections/$id/acl").body()
+        }
 
     override suspend fun addCollaborator(
         id: Int,

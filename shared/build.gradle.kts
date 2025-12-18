@@ -70,6 +70,7 @@ kotlin {
 
             // Decompose Navigation
             api(libs.decompose.core)
+            implementation(libs.essenty.lifecycle.coroutines)
 
             // Store (Repository Pattern)
             implementation(libs.store)

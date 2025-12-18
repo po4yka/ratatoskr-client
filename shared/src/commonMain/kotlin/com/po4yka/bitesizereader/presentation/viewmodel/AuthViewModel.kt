@@ -12,11 +12,11 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Single
+import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
-@Single
+@Factory
 class AuthViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
     private val loginWithSecretUseCase: LoginWithSecretUseCase,

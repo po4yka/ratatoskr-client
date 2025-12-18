@@ -17,13 +17,35 @@ import androidx.compose.ui.unit.dp
  * All icons are 32x32dp by default (Carbon's standard size).
  */
 object CarbonIcons {
+    // Icon dimension constants
+    private val ICON_SIZE = 32.dp
+    private const val VIEWPORT_SIZE = 32f
+
+    // Common arc/circle radii used across multiple icons
+    private object Radius {
+        const val TINY = 1f       // Small dots, buttons
+        const val SMALL = 2f     // Standard corners, small circles
+        const val MEDIUM = 3f    // Medium circles
+        const val LARGE = 4f     // Larger corners
+        const val XL = 5f        // Extra large corners
+        const val XXL = 6f       // Large arcs
+        const val CIRCLE_SM = 8f // Small full circles
+        const val CIRCLE_MD = 12f // Medium full circles
+        const val CIRCLE_LG = 14f // Large full circles (main icon circles)
+    }
+
+    // Arc drawing parameter defaults
+    private object Arc {
+        const val NO_ROTATION = 0f
+    }
+
     val Bookmark: ImageVector by lazy {
         ImageVector.Builder(
             name = "Bookmark",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 // Inner filled part
@@ -38,12 +60,12 @@ object CarbonIcons {
                 // Outer outline
                 moveTo(24f, 2f)
                 horizontalLineTo(8f)
-                arcTo(2f, 2f, 0f, false, false, 6f, 4f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 6f, 4f)
                 verticalLineTo(30f)
                 lineTo(16f, 25f)
                 lineTo(26f, 30f)
                 verticalLineTo(4f)
-                arcTo(2f, 2f, 0f, false, false, 24f, 2f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 24f, 2f)
                 close()
             }
         }.build()
@@ -52,10 +74,10 @@ object CarbonIcons {
     val Folder: ImageVector by lazy {
         ImageVector.Builder(
             name = "Folder",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(11.17f, 6f)
@@ -68,16 +90,16 @@ object CarbonIcons {
                 horizontalLineToRelative(7.17f)
                 moveTo(11.17f, 4f)
                 horizontalLineTo(4f)
-                arcTo(2f, 2f, 0f, false, false, 2f, 6f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 6f)
                 verticalLineTo(26f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, 2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 2f)
                 horizontalLineTo(28f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, -2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -2f)
                 verticalLineTo(10f)
-                arcToRelative(2f, 2f, 0f, false, false, -2f, -2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -2f, -2f)
                 horizontalLineTo(16f)
                 lineTo(12.59f, 4.59f)
-                arcTo(2f, 2f, 0f, false, false, 11.17f, 4f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 11.17f, 4f)
                 close()
             }
         }.build()
@@ -86,10 +108,10 @@ object CarbonIcons {
     val Settings: ImageVector by lazy {
         ImageVector.Builder(
             name = "Settings",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             // Gear outline
             path(fill = SolidColor(Color.Black)) {
@@ -97,44 +119,44 @@ object CarbonIcons {
                 curveToRelative(0f, -0.25f, 0f, -0.5f, 0f, -0.76f)
                 reflectiveCurveToRelative(0f, -0.51f, 0f, -0.77f)
                 lineToRelative(1.92f, -1.68f)
-                arcTo(2f, 2f, 0f, false, false, 29.3f, 11f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 29.3f, 11f)
                 lineTo(26.94f, 7f)
-                arcToRelative(2f, 2f, 0f, false, false, -1.73f, -1f)
-                arcToRelative(2f, 2f, 0f, false, false, -0.64f, 0.1f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -1.73f, -1f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -0.64f, 0.1f)
                 lineToRelative(-2.43f, 0.82f)
                 arcToRelative(11.35f, 11.35f, 0f, false, false, -1.31f, -0.75f)
                 lineToRelative(-0.51f, -2.52f)
-                arcToRelative(2f, 2f, 0f, false, false, -2f, -1.61f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -2f, -1.61f)
                 horizontalLineTo(13.64f)
-                arcToRelative(2f, 2f, 0f, false, false, -2f, 1.61f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -2f, 1.61f)
                 lineToRelative(-0.51f, 2.52f)
                 arcToRelative(11.48f, 11.48f, 0f, false, false, -1.32f, 0.75f)
                 lineTo(7.43f, 6.06f)
-                arcTo(2f, 2f, 0f, false, false, 6.79f, 6f)
-                arcTo(2f, 2f, 0f, false, false, 5.06f, 7f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 6.79f, 6f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 5.06f, 7f)
                 lineTo(2.7f, 11f)
-                arcToRelative(2f, 2f, 0f, false, false, 0.41f, 2.51f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 0.41f, 2.51f)
                 lineTo(5f, 15.24f)
                 curveToRelative(0f, 0.25f, 0f, 0.5f, 0f, 0.76f)
                 reflectiveCurveToRelative(0f, 0.51f, 0f, 0.77f)
                 lineTo(3.11f, 18.45f)
-                arcTo(2f, 2f, 0f, false, false, 2.7f, 21f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2.7f, 21f)
                 lineTo(5.06f, 25f)
-                arcToRelative(2f, 2f, 0f, false, false, 1.73f, 1f)
-                arcToRelative(2f, 2f, 0f, false, false, 0.64f, -0.1f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 1.73f, 1f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 0.64f, -0.1f)
                 lineToRelative(2.43f, -0.82f)
                 arcToRelative(11.35f, 11.35f, 0f, false, false, 1.31f, 0.75f)
                 lineToRelative(0.51f, 2.52f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, 1.61f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 1.61f)
                 horizontalLineToRelative(4.72f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, -1.61f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -1.61f)
                 lineToRelative(0.51f, -2.52f)
                 arcToRelative(11.48f, 11.48f, 0f, false, false, 1.32f, -0.75f)
                 lineToRelative(2.42f, 0.82f)
-                arcToRelative(2f, 2f, 0f, false, false, 0.64f, 0.1f)
-                arcToRelative(2f, 2f, 0f, false, false, 1.73f, -1f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 0.64f, 0.1f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 1.73f, -1f)
                 lineTo(29.3f, 21f)
-                arcToRelative(2f, 2f, 0f, false, false, -0.41f, -2.51f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -0.41f, -2.51f)
                 close()
                 moveTo(25.21f, 24f)
                 lineToRelative(-3.43f, -1.16f)
@@ -165,7 +187,7 @@ object CarbonIcons {
             // Center circle
             path(fill = SolidColor(Color.Black)) {
                 moveTo(16f, 22f)
-                arcToRelative(6f, 6f, 0f, true, true, 6f, -6f)
+                arcToRelative(Radius.XXL, Radius.XXL, Arc.NO_ROTATION, true, true, 6f, -6f)
                 arcTo(5.94f, 5.94f, 0f, false, true, 16f, 22f)
                 close()
                 moveTo(16f, 12f)
@@ -181,10 +203,10 @@ object CarbonIcons {
     val ArrowLeft: ImageVector by lazy {
         ImageVector.Builder(
             name = "ArrowLeft",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(14f, 26f)
@@ -204,15 +226,15 @@ object CarbonIcons {
     val CheckmarkFilled: ImageVector by lazy {
         ImageVector.Builder(
             name = "CheckmarkFilled",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(16f, 2f)
-                arcTo(14f, 14f, 0f, true, false, 30f, 16f)
-                arcTo(14f, 14f, 0f, false, false, 16f, 2f)
+                arcTo(Radius.CIRCLE_LG, Radius.CIRCLE_LG, Arc.NO_ROTATION, true, false, 30f, 16f)
+                arcTo(Radius.CIRCLE_LG, Radius.CIRCLE_LG, Arc.NO_ROTATION, false, false, 16f, 2f)
                 close()
                 moveTo(14f, 21.5908f)
                 lineToRelative(-5f, -5f)
@@ -228,10 +250,10 @@ object CarbonIcons {
     val CircleOutline: ImageVector by lazy {
         ImageVector.Builder(
             name = "CircleOutline",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(16f, 2f)
@@ -253,36 +275,36 @@ object CarbonIcons {
     val Share: ImageVector by lazy {
         ImageVector.Builder(
             name = "Share",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(23f, 20f)
-                arcToRelative(5f, 5f, 0f, false, false, -3.89f, 1.89f)
+                arcToRelative(Radius.XL, Radius.XL, Arc.NO_ROTATION, false, false, -3.89f, 1.89f)
                 lineTo(11.8f, 17.32f)
                 arcToRelative(4.46f, 4.46f, 0f, false, false, 0f, -2.64f)
                 lineToRelative(7.31f, -4.57f)
                 arcTo(5f, 5f, 0f, true, false, 18f, 7f)
                 arcToRelative(4.79f, 4.79f, 0f, false, false, 0.2f, 1.32f)
                 lineToRelative(-7.31f, 4.57f)
-                arcToRelative(5f, 5f, 0f, true, false, 0f, 6.22f)
+                arcToRelative(Radius.XL, Radius.XL, Arc.NO_ROTATION, true, false, 0f, 6.22f)
                 lineToRelative(7.31f, 4.57f)
                 arcTo(4.79f, 4.79f, 0f, false, false, 18f, 25f)
-                arcToRelative(5f, 5f, 0f, true, false, 5f, -5f)
+                arcToRelative(Radius.XL, Radius.XL, Arc.NO_ROTATION, true, false, 5f, -5f)
                 close()
                 moveTo(23f, 4f)
-                arcToRelative(3f, 3f, 0f, true, true, -3f, 3f)
-                arcTo(3f, 3f, 0f, false, true, 23f, 4f)
+                arcToRelative(Radius.MEDIUM, Radius.MEDIUM, Arc.NO_ROTATION, true, true, -3f, 3f)
+                arcTo(Radius.MEDIUM, Radius.MEDIUM, Arc.NO_ROTATION, false, true, 23f, 4f)
                 close()
                 moveTo(7f, 19f)
-                arcToRelative(3f, 3f, 0f, true, true, 3f, -3f)
-                arcTo(3f, 3f, 0f, false, true, 7f, 19f)
+                arcToRelative(Radius.MEDIUM, Radius.MEDIUM, Arc.NO_ROTATION, true, true, 3f, -3f)
+                arcTo(Radius.MEDIUM, Radius.MEDIUM, Arc.NO_ROTATION, false, true, 7f, 19f)
                 close()
                 moveTo(23f, 28f)
-                arcToRelative(3f, 3f, 0f, true, true, 3f, -3f)
-                arcTo(3f, 3f, 0f, false, true, 23f, 28f)
+                arcToRelative(Radius.MEDIUM, Radius.MEDIUM, Arc.NO_ROTATION, true, true, 3f, -3f)
+                arcTo(Radius.MEDIUM, Radius.MEDIUM, Arc.NO_ROTATION, false, true, 23f, 28f)
                 close()
             }
         }.build()
@@ -291,10 +313,10 @@ object CarbonIcons {
     val Close: ImageVector by lazy {
         ImageVector.Builder(
             name = "Close",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(17.4141f, 16f)
@@ -317,10 +339,10 @@ object CarbonIcons {
     val Checkmark: ImageVector by lazy {
         ImageVector.Builder(
             name = "Checkmark",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(13f, 24f)
@@ -337,10 +359,10 @@ object CarbonIcons {
     val Renew: ImageVector by lazy {
         ImageVector.Builder(
             name = "Renew",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             // Top arrow
             path(fill = SolidColor(Color.Black)) {
@@ -374,10 +396,10 @@ object CarbonIcons {
     val Home: ImageVector by lazy {
         ImageVector.Builder(
             name = "Home",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(16.6123f, 2.2138f)
@@ -417,10 +439,10 @@ object CarbonIcons {
     val TrashCan: ImageVector by lazy {
         ImageVector.Builder(
             name = "TrashCan",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(12f, 12f)
@@ -441,9 +463,9 @@ object CarbonIcons {
                 verticalLineTo(8f)
                 horizontalLineTo(6f)
                 verticalLineTo(28f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, 2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 2f)
                 horizontalLineTo(24f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, -2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -2f)
                 verticalLineTo(8f)
                 horizontalLineToRelative(2f)
                 verticalLineTo(6f)
@@ -467,10 +489,10 @@ object CarbonIcons {
     val Document: ImageVector by lazy {
         ImageVector.Builder(
             name = "Document",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(25.7f, 9.3f)
@@ -520,10 +542,10 @@ object CarbonIcons {
     val WarningAlt: ImageVector by lazy {
         ImageVector.Builder(
             name = "WarningAlt",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             // Exclamation dot
             path(fill = SolidColor(Color.Black)) {
@@ -544,11 +566,11 @@ object CarbonIcons {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(29f, 30f)
                 horizontalLineTo(3f)
-                arcToRelative(1f, 1f, 0f, false, true, -0.8872f, -1.4614f)
+                arcToRelative(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, false, true, -0.8872f, -1.4614f)
                 lineToRelative(13f, -25f)
-                arcToRelative(1f, 1f, 0f, false, true, 1.7744f, 0f)
+                arcToRelative(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, false, true, 1.7744f, 0f)
                 lineToRelative(13f, 25f)
-                arcTo(1f, 1f, 0f, false, true, 29f, 30f)
+                arcTo(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, false, true, 29f, 30f)
                 close()
                 moveTo(4.6507f, 28f)
                 horizontalLineTo(27.3493f)
@@ -564,27 +586,27 @@ object CarbonIcons {
     val ColorPalette: ImageVector by lazy {
         ImageVector.Builder(
             name = "ColorPalette",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(16.54f, 2f)
-                arcTo(14f, 14f, 0f, false, false, 2f, 16f)
+                arcTo(Radius.CIRCLE_LG, Radius.CIRCLE_LG, Arc.NO_ROTATION, false, false, 2f, 16f)
                 arcToRelative(4.82f, 4.82f, 0f, false, false, 6.09f, 4.65f)
                 lineToRelative(1.12f, -0.31f)
-                arcTo(3f, 3f, 0f, false, true, 13f, 23.24f)
+                arcTo(Radius.MEDIUM, Radius.MEDIUM, Arc.NO_ROTATION, false, true, 13f, 23.24f)
                 verticalLineTo(27f)
-                arcToRelative(3f, 3f, 0f, false, false, 3f, 3f)
-                arcTo(14f, 14f, 0f, false, false, 30f, 15.46f)
+                arcToRelative(Radius.MEDIUM, Radius.MEDIUM, Arc.NO_ROTATION, false, false, 3f, 3f)
+                arcTo(Radius.CIRCLE_LG, Radius.CIRCLE_LG, Arc.NO_ROTATION, false, false, 30f, 15.46f)
                 arcTo(14.05f, 14.05f, 0f, false, false, 16.54f, 2f)
                 close()
                 moveTo(24.65f, 24.32f)
                 arcTo(11.93f, 11.93f, 0f, false, true, 16f, 28f)
-                arcToRelative(1f, 1f, 0f, false, true, -1f, -1f)
+                arcToRelative(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, false, true, -1f, -1f)
                 verticalLineTo(23.24f)
-                arcToRelative(5f, 5f, 0f, false, false, -5f, -5f)
+                arcToRelative(Radius.XL, Radius.XL, Arc.NO_ROTATION, false, false, -5f, -5f)
                 arcToRelative(5.07f, 5.07f, 0f, false, false, -1.33f, 0.18f)
                 lineToRelative(-1.12f, 0.31f)
                 arcTo(2.82f, 2.82f, 0f, false, true, 4f, 16f)
@@ -596,26 +618,26 @@ object CarbonIcons {
             // Color dots
             path(fill = SolidColor(Color.Black)) {
                 moveTo(10f, 9f)
-                arcToRelative(2f, 2f, 0f, true, true, -2f, 2f)
-                arcTo(2f, 2f, 0f, false, true, 10f, 9f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, true, true, -2f, 2f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 10f, 9f)
                 close()
             }
             path(fill = SolidColor(Color.Black)) {
                 moveTo(16f, 7f)
-                arcToRelative(2f, 2f, 0f, true, true, -2f, 2f)
-                arcTo(2f, 2f, 0f, false, true, 16f, 7f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, true, true, -2f, 2f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 16f, 7f)
                 close()
             }
             path(fill = SolidColor(Color.Black)) {
                 moveTo(22f, 9f)
-                arcToRelative(2f, 2f, 0f, true, true, -2f, 2f)
-                arcTo(2f, 2f, 0f, false, true, 22f, 9f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, true, true, -2f, 2f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 22f, 9f)
                 close()
             }
             path(fill = SolidColor(Color.Black)) {
                 moveTo(25f, 15f)
-                arcToRelative(2f, 2f, 0f, true, true, -2f, 2f)
-                arcTo(2f, 2f, 0f, false, true, 25f, 15f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, true, true, -2f, 2f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 25f, 15f)
                 close()
             }
         }.build()
@@ -624,10 +646,10 @@ object CarbonIcons {
     val Idea: ImageVector by lazy {
         ImageVector.Builder(
             name = "Idea",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(16f, 2f)
@@ -667,10 +689,10 @@ object CarbonIcons {
     val Restaurant: ImageVector by lazy {
         ImageVector.Builder(
             name = "Restaurant",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             // Fork
             path(fill = SolidColor(Color.Black)) {
@@ -679,7 +701,7 @@ object CarbonIcons {
                 verticalLineTo(2f)
                 horizontalLineTo(4f)
                 verticalLineToRelative(9f)
-                arcToRelative(6f, 6f, 0f, false, false, 5f, 5.91f)
+                arcToRelative(Radius.XXL, Radius.XXL, Arc.NO_ROTATION, false, false, 5f, 5.91f)
                 verticalLineTo(30f)
                 horizontalLineToRelative(2f)
                 verticalLineTo(16.91f)
@@ -703,7 +725,7 @@ object CarbonIcons {
                 horizontalLineToRelative(2f)
                 verticalLineTo(20f)
                 horizontalLineToRelative(3f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, -2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -2f)
                 verticalLineTo(8f)
                 arcTo(5.78f, 5.78f, 0f, false, false, 22f, 2f)
                 close()
@@ -719,10 +741,10 @@ object CarbonIcons {
     val GameWireless: ImageVector by lazy {
         ImageVector.Builder(
             name = "GameWireless",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             // Main controller outline
             path(fill = SolidColor(Color.Black)) {
@@ -769,42 +791,42 @@ object CarbonIcons {
             // Left button
             path(fill = SolidColor(Color.Black)) {
                 moveTo(10f, 20f)
-                arcToRelative(2f, 2f, 0f, true, true, 2f, -2f)
-                arcTo(2f, 2f, 0f, false, true, 10f, 20f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, true, true, 2f, -2f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 10f, 20f)
                 close()
             }
             // Right buttons
             path(fill = SolidColor(Color.Black)) {
                 moveTo(22f, 17f)
-                arcToRelative(1f, 1f, 0f, true, true, 1f, -1f)
-                arcTo(1f, 1f, 0f, false, true, 22f, 17f)
+                arcToRelative(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, true, true, 1f, -1f)
+                arcTo(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, false, true, 22f, 17f)
                 close()
             }
             path(fill = SolidColor(Color.Black)) {
                 moveTo(22f, 21f)
-                arcToRelative(1f, 1f, 0f, true, true, 1f, -1f)
-                arcTo(1f, 1f, 0f, false, true, 22f, 21f)
+                arcToRelative(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, true, true, 1f, -1f)
+                arcTo(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, false, true, 22f, 21f)
                 close()
             }
             path(fill = SolidColor(Color.Black)) {
                 moveTo(20f, 19f)
-                arcToRelative(1f, 1f, 0f, true, true, 1f, -1f)
-                arcTo(1f, 1f, 0f, false, true, 20f, 19f)
+                arcToRelative(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, true, true, 1f, -1f)
+                arcTo(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, false, true, 20f, 19f)
                 close()
             }
             path(fill = SolidColor(Color.Black)) {
                 moveTo(24f, 19f)
-                arcToRelative(1f, 1f, 0f, true, true, 1f, -1f)
-                arcTo(1f, 1f, 0f, false, true, 24f, 19f)
+                arcToRelative(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, true, true, 1f, -1f)
+                arcTo(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, false, true, 24f, 19f)
                 close()
             }
             // Wireless signals
             path(fill = SolidColor(Color.Black)) {
                 moveTo(13.75f, 9f)
                 lineToRelative(-1.5f, -1.33f)
-                arcToRelative(5f, 5f, 0f, false, true, 7.5f, 0f)
+                arcToRelative(Radius.XL, Radius.XL, Arc.NO_ROTATION, false, true, 7.5f, 0f)
                 lineTo(18.25f, 9f)
-                arcToRelative(3f, 3f, 0f, false, false, -4.5f, 0f)
+                arcToRelative(Radius.MEDIUM, Radius.MEDIUM, Arc.NO_ROTATION, false, false, -4.5f, 0f)
                 close()
             }
             path(fill = SolidColor(Color.Black)) {
@@ -820,10 +842,10 @@ object CarbonIcons {
     val RainDrop: ImageVector by lazy {
         ImageVector.Builder(
             name = "RainDrop",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(16f, 24f)
@@ -856,10 +878,10 @@ object CarbonIcons {
     val Gem: ImageVector by lazy {
         ImageVector.Builder(
             name = "Gem",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(23.5f, 4f)
@@ -898,24 +920,56 @@ object CarbonIcons {
         }.build()
     }
 
+    val OverflowMenuVertical: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "OverflowMenuVertical",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            // Top dot
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(16f, 10f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, true, true, 16f, 6f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 16f, 10f)
+                close()
+            }
+            // Middle dot
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(16f, 18f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, true, true, 16f, 14f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 16f, 18f)
+                close()
+            }
+            // Bottom dot
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(16f, 26f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, true, true, 16f, 22f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 16f, 26f)
+                close()
+            }
+        }.build()
+    }
+
     val Email: ImageVector by lazy {
         ImageVector.Builder(
             name = "Email",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             path(fill = SolidColor(Color.Black)) {
                 moveTo(28f, 6f)
                 horizontalLineTo(4f)
-                arcTo(2f, 2f, 0f, false, false, 2f, 8f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 8f)
                 verticalLineTo(24f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, 2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 2f)
                 horizontalLineTo(28f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, -2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -2f)
                 verticalLineTo(8f)
-                arcTo(2f, 2f, 0f, false, false, 28f, 6f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 28f, 6f)
                 close()
                 moveTo(25.8f, 8f)
                 lineTo(16f, 14.78f)
@@ -924,7 +978,7 @@ object CarbonIcons {
                 moveTo(4f, 24f)
                 verticalLineTo(8.91f)
                 lineToRelative(11.43f, 7.91f)
-                arcToRelative(1f, 1f, 0f, false, false, 1.14f, 0f)
+                arcToRelative(Radius.TINY, Radius.TINY, Arc.NO_ROTATION, false, false, 1.14f, 0f)
                 lineTo(28f, 8.91f)
                 verticalLineTo(24f)
                 close()
@@ -935,10 +989,10 @@ object CarbonIcons {
     val Map: ImageVector by lazy {
         ImageVector.Builder(
             name = "Map",
-            defaultWidth = 32.dp,
-            defaultHeight = 32.dp,
-            viewportWidth = 32f,
-            viewportHeight = 32f,
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
         ).apply {
             // Location pin
             path(fill = SolidColor(Color.Black)) {
@@ -960,8 +1014,8 @@ object CarbonIcons {
             // Pin dot
             path(fill = SolidColor(Color.Black)) {
                 moveTo(16f, 11f)
-                arcToRelative(2f, 2f, 0f, true, true, 2f, -2f)
-                arcTo(2f, 2f, 0f, false, true, 16f, 11f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, true, true, 2f, -2f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 16f, 11f)
                 close()
             }
             // Map frame
@@ -976,13 +1030,13 @@ object CarbonIcons {
                 horizontalLineTo(6f)
                 verticalLineTo(12f)
                 horizontalLineTo(4f)
-                arcToRelative(2f, 2f, 0f, false, false, -2f, 2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, -2f, 2f)
                 verticalLineTo(28f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, 2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, 2f)
                 horizontalLineTo(28f)
-                arcToRelative(2f, 2f, 0f, false, false, 2f, -2f)
+                arcToRelative(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 2f, -2f)
                 verticalLineTo(14f)
-                arcTo(2f, 2f, 0f, false, false, 28f, 12f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, false, 28f, 12f)
                 close()
             }
         }.build()

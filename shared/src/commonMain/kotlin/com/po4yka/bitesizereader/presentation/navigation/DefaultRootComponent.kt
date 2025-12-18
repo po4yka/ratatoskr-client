@@ -6,12 +6,12 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -21,7 +21,9 @@ class DefaultRootComponent(
 ) : RootComponent, ComponentContext by componentContext, KoinComponent {
     private val navigation = StackNavigation<Config>()
     private val authRepository: AuthRepository by inject()
-    private val scope: CoroutineScope by inject()
+
+    // Use lifecycle-bound coroutine scope from Decompose/Essenty
+    private val scope = coroutineScope(SupervisorJob())
 
     override val childStack: Value<ChildStack<*, RootComponent.Child>> =
         childStack(
@@ -33,19 +35,24 @@ class DefaultRootComponent(
         )
 
     init {
+        initializeAuthState()
         observeAuthState()
+    }
+
+    private fun initializeAuthState() {
+        scope.launch {
+            authRepository.checkAuthStatus()
+        }
     }
 
     private fun observeAuthState() {
         authRepository.isAuthenticated
             .onEach { isAuthenticated ->
-                withContext(Dispatchers.Main) {
-                    val currentConfig = childStack.value.active.configuration
-                    if (isAuthenticated && currentConfig is Config.Auth) {
-                        navigation.replaceCurrent(Config.Main)
-                    } else if (!isAuthenticated && currentConfig is Config.Main) {
-                        navigation.replaceCurrent(Config.Auth)
-                    }
+                val currentConfig = childStack.value.active.configuration
+                if (isAuthenticated && currentConfig is Config.Auth) {
+                    navigation.replaceCurrent(Config.Main)
+                } else if (!isAuthenticated && currentConfig is Config.Main) {
+                    navigation.replaceCurrent(Config.Auth)
                 }
             }
             .launchIn(scope)

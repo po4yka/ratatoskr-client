@@ -18,11 +18,9 @@ import com.po4yka.bitesizereader.domain.repository.AuthRepository
 import com.po4yka.bitesizereader.util.config.AppConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.time.Clock
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
@@ -31,7 +29,6 @@ private val logger = KotlinLogging.logger {}
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val secureStorage: SecureStorage,
-    private val externalScope: CoroutineScope,
 ) : AuthRepository {
     private val _isAuthenticated = MutableStateFlow(false)
     override val isAuthenticated: Flow<Boolean> = _isAuthenticated.asStateFlow()
@@ -39,19 +36,14 @@ class AuthRepositoryImpl(
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: Flow<User?> = _currentUser.asStateFlow()
 
-    init {
-        // Initialize authentication status on startup in a coroutine
-        externalScope.launch {
-            checkAuthStatus()
-        }
-    }
-
-    private suspend fun checkAuthStatus() {
-        if (secureStorage.getAccessToken() != null) {
-            _isAuthenticated.value = true
-            // Attempt to get user info if tokens exist
-            // This might need a separate call to `getCurrentUser()` or rely on it
-        }
+    /**
+     * Check authentication status based on stored tokens.
+     * Should be called explicitly by ViewModels during initialization.
+     */
+    override suspend fun checkAuthStatus() {
+        val hasToken = secureStorage.getAccessToken() != null
+        _isAuthenticated.value = hasToken
+        logger.debug { "Auth status checked: authenticated=$hasToken" }
     }
 
     override suspend fun login(authData: AuthRequestDto) {

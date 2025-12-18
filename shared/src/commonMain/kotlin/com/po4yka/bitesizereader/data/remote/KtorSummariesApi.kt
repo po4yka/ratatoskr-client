@@ -7,6 +7,8 @@ import com.po4yka.bitesizereader.data.remote.dto.SummaryDetailDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryListDataDto
 import com.po4yka.bitesizereader.data.remote.dto.UpdateSummaryRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.UpdateSummaryResponseDto
+import com.po4yka.bitesizereader.util.retry.RetryPolicy
+import com.po4yka.bitesizereader.util.retry.retryWithBackoff
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -30,24 +32,26 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
         startDate: String?,
         endDate: String?,
         sort: String?,
-    ): ApiResponseDto<SummaryListDataDto> {
-        // Backend uses limit/offset; translate page to offset.
-        val offset = (page.coerceAtLeast(1) - 1) * pageSize
-        return client.get("v1/summaries") {
-            parameter("limit", pageSize)
-            parameter("offset", offset)
-            isRead?.let { parameter("is_read", it) }
-            isFavorited?.let { parameter("is_favorited", it) }
-            lang?.let { parameter("lang", it) }
-            startDate?.let { parameter("start_date", it) }
-            endDate?.let { parameter("end_date", it) }
-            sort?.let { parameter("sort", it) }
-        }.body()
-    }
+    ): ApiResponseDto<SummaryListDataDto> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            // Backend uses limit/offset; translate page to offset.
+            val offset = (page.coerceAtLeast(1) - 1) * pageSize
+            client.get("v1/summaries") {
+                parameter("limit", pageSize)
+                parameter("offset", offset)
+                isRead?.let { parameter("is_read", it) }
+                isFavorited?.let { parameter("is_favorited", it) }
+                lang?.let { parameter("lang", it) }
+                startDate?.let { parameter("start_date", it) }
+                endDate?.let { parameter("end_date", it) }
+                sort?.let { parameter("sort", it) }
+            }.body()
+        }
 
-    override suspend fun getSummaryById(id: Long): ApiResponseDto<SummaryDetailDataDto> {
-        return client.get("v1/summaries/$id").body()
-    }
+    override suspend fun getSummaryById(id: Long): ApiResponseDto<SummaryDetailDataDto> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            client.get("v1/summaries/$id").body()
+        }
 
     override suspend fun toggleFavorite(id: Long): ApiResponseDto<SuccessResponse> {
         return client.post("v1/summaries/$id/favorite").body()
@@ -70,9 +74,10 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
     override suspend fun getContent(
         id: Long,
         format: String?,
-    ): ApiResponseDto<SummaryContentResponseDto> {
-        return client.get("v1/summaries/$id/content") {
-            format?.let { parameter("format", it) }
-        }.body()
-    }
+    ): ApiResponseDto<SummaryContentResponseDto> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            client.get("v1/summaries/$id/content") {
+                format?.let { parameter("format", it) }
+            }.body()
+        }
 }

@@ -100,10 +100,11 @@ fun SummaryCard(
 
         // More Options Icon
         Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = "...",
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textSecondary,
+        Icon(
+            imageVector = CarbonIcons.OverflowMenuVertical,
+            contentDescription = "More options",
+            tint = Carbon.theme.iconSecondary,
+            modifier = Modifier.size(20.dp),
         )
     }
 }

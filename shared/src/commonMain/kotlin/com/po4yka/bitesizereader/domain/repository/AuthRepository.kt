@@ -49,4 +49,10 @@ interface AuthRepository {
 
     /** Authentication state flow */
     val isAuthenticated: Flow<Boolean>
+
+    /**
+     * Check and update authentication status based on stored tokens.
+     * Should be called during app initialization or when auth state needs refresh.
+     */
+    suspend fun checkAuthStatus()
 }

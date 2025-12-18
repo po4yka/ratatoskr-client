@@ -21,8 +21,12 @@ object AppConfig {
          */
         var baseUrl: String = "https://bitsizereaderapi.po4yka.com"
 
-        /** Enable API request/response logging Default: true for debug builds */
-        var loggingEnabled: Boolean = true
+        /**
+         * Enable API request/response logging.
+         * SECURITY: Disabled by default. Only enable for debugging in development.
+         * When enabled, request/response bodies may be logged which could expose sensitive data.
+         */
+        var loggingEnabled: Boolean = false
 
         /** API request timeout in milliseconds */
         const val REQUEST_TIMEOUT_MS: Long = 30_000
