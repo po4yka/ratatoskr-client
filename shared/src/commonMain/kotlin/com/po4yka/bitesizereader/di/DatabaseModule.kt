@@ -4,6 +4,7 @@ import app.cash.sqldelight.ColumnAdapter
 import com.po4yka.bitesizereader.data.local.DatabaseDriverFactory
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.database.RequestEntity
+import com.po4yka.bitesizereader.database.SearchHistoryEntity
 import com.po4yka.bitesizereader.database.SummaryEntity
 import com.po4yka.bitesizereader.database.SyncMetadataEntity
 import kotlin.time.Instant
@@ -60,6 +61,18 @@ class DatabaseModule {
             syncMetadataEntityAdapter =
                 SyncMetadataEntity.Adapter(
                     lastSyncTimeAdapter =
+                        object : ColumnAdapter<Instant, Long> {
+                            override fun decode(databaseValue: Long): Instant =
+                                Instant.fromEpochMilliseconds(
+                                    databaseValue,
+                                )
+
+                            override fun encode(value: Instant): Long = value.toEpochMilliseconds()
+                        },
+                ),
+            searchHistoryEntityAdapter =
+                SearchHistoryEntity.Adapter(
+                    searchedAtAdapter =
                         object : ColumnAdapter<Instant, Long> {
                             override fun decode(databaseValue: Long): Instant =
                                 Instant.fromEpochMilliseconds(

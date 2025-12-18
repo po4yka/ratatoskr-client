@@ -1,11 +1,19 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
+import com.po4yka.bitesizereader.domain.model.Request
+import com.po4yka.bitesizereader.domain.model.Session
 import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
+import com.po4yka.bitesizereader.domain.model.UserStats
+import com.po4yka.bitesizereader.domain.usecase.DeleteAccountUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetRequestsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetTelegramLinkStatusUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetUserStatsUseCase
 import com.po4yka.bitesizereader.domain.usecase.LinkTelegramUseCase
+import com.po4yka.bitesizereader.domain.usecase.ListSessionsUseCase
+import com.po4yka.bitesizereader.domain.usecase.RetryRequestUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.domain.usecase.UnlinkTelegramUseCase
 import com.po4yka.bitesizereader.util.error.toAppError
@@ -15,6 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -28,6 +37,21 @@ data class SettingsState(
     val isDownloading: Boolean = false, // Reused for Import/Sync
     val downloadError: String? = null,
     val syncProgress: SyncProgress? = null, // Progress of current sync operation
+    // User stats
+    val userStats: UserStats? = null,
+    val isLoadingStats: Boolean = false,
+    // Account deletion
+    val showDeleteConfirmation: Boolean = false,
+    val isDeleting: Boolean = false,
+    val deleteError: String? = null,
+    // Sessions
+    val sessions: List<Session> = emptyList(),
+    val isLoadingSessions: Boolean = false,
+    val sessionsExpanded: Boolean = false,
+    // Request history
+    val requests: List<Request> = emptyList(),
+    val isLoadingRequests: Boolean = false,
+    val requestsExpanded: Boolean = false,
 )
 
 private val logger = KotlinLogging.logger {}
@@ -38,6 +62,11 @@ class SettingsViewModel(
     private val unlinkTelegramUseCase: UnlinkTelegramUseCase,
     private val linkTelegramUseCase: LinkTelegramUseCase,
     private val syncDataUseCase: SyncDataUseCase,
+    private val getUserStatsUseCase: GetUserStatsUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val listSessionsUseCase: ListSessionsUseCase,
+    private val getRequestsUseCase: GetRequestsUseCase,
+    private val retryRequestUseCase: RetryRequestUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
@@ -47,6 +76,7 @@ class SettingsViewModel(
     init {
         loadLinkStatus()
         observeSyncProgress()
+        loadUserStats()
     }
 
     private fun observeSyncProgress() {
@@ -61,12 +91,32 @@ class SettingsViewModel(
             .launchIn(viewModelScope)
     }
 
+    fun loadUserStats() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoadingStats = true)
+            runCatching { getUserStatsUseCase() }
+                .onSuccess { stats ->
+                    _state.value = _state.value.copy(isLoadingStats = false, userStats = stats)
+                }
+                .onFailure { throwable ->
+                    logger.warn(throwable) { "Failed to load user stats" }
+                    _state.value = _state.value.copy(isLoadingStats = false)
+                }
+        }
+    }
+
     fun loadLinkStatus() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             runCatching { getTelegramLinkStatusUseCase() }
                 .onSuccess { status ->
-                    _state.value = _state.value.copy(isLoading = false, linkStatus = status)
+                    _state.value =
+                        _state.value.copy(
+                            isLoading = false,
+                            linkStatus = status,
+                            // Clear nonce if linking was successful
+                            linkNonce = if (status.linked) null else _state.value.linkNonce,
+                        )
                 }
                 .onFailure { throwable ->
                     _state.value = _state.value.copy(isLoading = false, error = throwable.message)
@@ -98,6 +148,13 @@ class SettingsViewModel(
                     _state.value = _state.value.copy(isLoading = false, error = throwable.message)
                 }
         }
+    }
+
+    /**
+     * Cancel the Telegram linking process and clear the nonce.
+     */
+    fun cancelTelegramLink() {
+        _state.value = _state.value.copy(linkNonce = null)
     }
 
     @Suppress("unused")
@@ -155,6 +212,108 @@ class SettingsViewModel(
             logger.info { "Cancelling sync operation" }
             downloadJob?.cancel()
             syncDataUseCase.cancelSync()
+        }
+    }
+
+    // Account deletion
+
+    fun showDeleteConfirmation() {
+        _state.value = _state.value.copy(showDeleteConfirmation = true, deleteError = null)
+    }
+
+    fun hideDeleteConfirmation() {
+        _state.value = _state.value.copy(showDeleteConfirmation = false, deleteError = null)
+    }
+
+    fun deleteAccount() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isDeleting = true, deleteError = null)
+            runCatching { deleteAccountUseCase() }
+                .onSuccess {
+                    logger.info { "Account deleted successfully" }
+                    _state.value =
+                        _state.value.copy(
+                            isDeleting = false,
+                            showDeleteConfirmation = false,
+                        )
+                    // Note: Auth state change will navigate to login screen
+                }
+                .onFailure { throwable ->
+                    logger.error(throwable) { "Failed to delete account" }
+                    _state.value =
+                        _state.value.copy(
+                            isDeleting = false,
+                            deleteError = throwable.toAppError().userMessage(),
+                        )
+                }
+        }
+    }
+
+    // Session management
+
+    fun toggleSessionsExpanded() {
+        val currentlyExpanded = _state.value.sessionsExpanded
+        _state.value = _state.value.copy(sessionsExpanded = !currentlyExpanded)
+        if (!currentlyExpanded && _state.value.sessions.isEmpty()) {
+            loadSessions()
+        }
+    }
+
+    fun loadSessions() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoadingSessions = true)
+            runCatching { listSessionsUseCase() }
+                .onSuccess { sessions ->
+                    _state.value =
+                        _state.value.copy(
+                            isLoadingSessions = false,
+                            sessions = sessions,
+                        )
+                }
+                .onFailure { throwable ->
+                    logger.warn(throwable) { "Failed to load sessions" }
+                    _state.value = _state.value.copy(isLoadingSessions = false)
+                }
+        }
+    }
+
+    // Request history management
+
+    fun toggleRequestsExpanded() {
+        val currentlyExpanded = _state.value.requestsExpanded
+        _state.value = _state.value.copy(requestsExpanded = !currentlyExpanded)
+        if (!currentlyExpanded && _state.value.requests.isEmpty()) {
+            loadRequests()
+        }
+    }
+
+    private fun loadRequests() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoadingRequests = true)
+            getRequestsUseCase()
+                .catch { throwable ->
+                    logger.warn(throwable) { "Failed to load requests" }
+                    _state.value = _state.value.copy(isLoadingRequests = false)
+                }
+                .collect { requests ->
+                    _state.value =
+                        _state.value.copy(
+                            isLoadingRequests = false,
+                            requests = requests,
+                        )
+                }
+        }
+    }
+
+    fun retryRequest(request: Request) {
+        viewModelScope.launch {
+            runCatching { retryRequestUseCase(request) }
+                .onSuccess {
+                    logger.info { "Retried request for URL: ${request.url}" }
+                }
+                .onFailure { throwable ->
+                    logger.error(throwable) { "Failed to retry request: ${request.url}" }
+                }
         }
     }
 }

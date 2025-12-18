@@ -26,4 +26,8 @@ data class SummaryListState(
     // Layout preferences
     val layoutMode: LayoutMode = LayoutMode.LIST,
     val viewDensity: ViewDensity = ViewDensity.COMFORTABLE,
+    // Trending topics (shown when search active but query empty)
+    val trendingTopics: List<String> = emptyList(),
+    // Recent searches (shown when search active but query empty)
+    val recentSearches: List<String> = emptyList(),
 )

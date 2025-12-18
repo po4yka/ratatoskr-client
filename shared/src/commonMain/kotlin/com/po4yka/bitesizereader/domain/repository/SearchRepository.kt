@@ -10,4 +10,13 @@ interface SearchRepository {
     ): List<Summary>
 
     suspend fun getTrendingTopics(): List<String>
+
+    // Search history operations
+    suspend fun getRecentSearches(limit: Int = 10): List<String>
+
+    suspend fun saveSearchQuery(query: String)
+
+    suspend fun deleteSearchQuery(query: String)
+
+    suspend fun clearSearchHistory()
 }
