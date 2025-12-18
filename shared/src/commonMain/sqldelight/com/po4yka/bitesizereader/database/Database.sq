@@ -125,3 +125,29 @@ WHERE id = 0;
 updateSyncMetadata:
 INSERT OR REPLACE INTO syncMetadataEntity(id, lastSyncTime, syncToken)
 VALUES (0, :lastSyncTime, :syncToken);
+
+-- Search History Table
+CREATE TABLE searchHistoryEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL UNIQUE,
+    searchedAt INTEGER AS Instant NOT NULL
+);
+
+CREATE INDEX searchHistory_searchedAt ON searchHistoryEntity(searchedAt);
+
+-- Search History Queries
+insertSearchQuery:
+INSERT OR REPLACE INTO searchHistoryEntity(query, searchedAt)
+VALUES (:query, :searchedAt);
+
+selectRecentSearches:
+SELECT query FROM searchHistoryEntity
+ORDER BY searchedAt DESC
+LIMIT :limit;
+
+deleteSearchQuery:
+DELETE FROM searchHistoryEntity
+WHERE query = :query;
+
+clearSearchHistory:
+DELETE FROM searchHistoryEntity;

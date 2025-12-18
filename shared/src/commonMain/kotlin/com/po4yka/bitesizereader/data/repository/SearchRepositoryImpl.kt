@@ -5,6 +5,7 @@ import com.po4yka.bitesizereader.data.remote.SearchApi
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.repository.SearchRepository
+import kotlin.time.Clock
 import org.koin.core.annotation.Single
 
 @Single
@@ -38,5 +39,26 @@ class SearchRepositoryImpl(
     override suspend fun getTrendingTopics(): List<String> {
         // Mock implementation
         return listOf("Tech", "Science", "Health", "AI", "Space")
+    }
+
+    override suspend fun getRecentSearches(limit: Int): List<String> {
+        return database.databaseQueries.selectRecentSearches(limit.toLong())
+            .executeAsList()
+    }
+
+    override suspend fun saveSearchQuery(query: String) {
+        if (query.isBlank()) return
+        database.databaseQueries.insertSearchQuery(
+            query = query.trim(),
+            searchedAt = Clock.System.now(),
+        )
+    }
+
+    override suspend fun deleteSearchQuery(query: String) {
+        database.databaseQueries.deleteSearchQuery(query)
+    }
+
+    override suspend fun clearSearchHistory() {
+        database.databaseQueries.clearSearchHistory()
     }
 }

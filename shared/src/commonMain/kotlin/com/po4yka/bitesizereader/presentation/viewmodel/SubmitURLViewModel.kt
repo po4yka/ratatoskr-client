@@ -2,25 +2,66 @@ package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.ProcessingService
 import com.po4yka.bitesizereader.domain.model.ProcessingStage
+import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
+import com.po4yka.bitesizereader.domain.usecase.GetRequestsUseCase
+import com.po4yka.bitesizereader.domain.usecase.RetryRequestUseCase
 import com.po4yka.bitesizereader.grpc.processing.ProcessingStatus
 import com.po4yka.bitesizereader.grpc.processing.ProcessingStage as GrpcProcessingStage
 import com.po4yka.bitesizereader.presentation.state.SubmitURLState
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
+private val logger = KotlinLogging.logger {}
+
 @Factory
 class SubmitURLViewModel(
     private val processingService: ProcessingService,
+    private val getRequestsUseCase: GetRequestsUseCase,
+    private val retryRequestUseCase: RetryRequestUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SubmitURLState())
     val state = _state.asStateFlow()
+
+    init {
+        observeRequestHistory()
+    }
+
+    private fun observeRequestHistory() {
+        getRequestsUseCase()
+            .onEach { requests ->
+                _state.value =
+                    _state.value.copy(
+                        recentRequests = requests,
+                        isLoadingHistory = false,
+                    )
+            }
+            .catch { e ->
+                logger.warn(e) { "Failed to load request history" }
+                _state.value = _state.value.copy(isLoadingHistory = false)
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun toggleHistoryVisibility() {
+        _state.value = _state.value.copy(showHistory = !_state.value.showHistory)
+    }
+
+    fun retryRequest(request: Request) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(url = request.url)
+            submitUrl()
+        }
+    }
 
     @Suppress("unused") // Public API for UI layer
     fun onUrlChanged(url: String) {

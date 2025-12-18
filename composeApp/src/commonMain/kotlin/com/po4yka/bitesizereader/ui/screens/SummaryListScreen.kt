@@ -49,6 +49,8 @@ import com.po4yka.bitesizereader.ui.components.PullToRefreshContainer
 import com.po4yka.bitesizereader.ui.components.SortOptionsMenu
 import com.po4yka.bitesizereader.ui.components.SummarySearchBar
 import com.po4yka.bitesizereader.ui.components.SummaryCardSkeleton
+import com.po4yka.bitesizereader.ui.components.TrendingTopicsSection
+import com.po4yka.bitesizereader.ui.components.RecentSearchesSection
 import com.po4yka.bitesizereader.ui.components.SummaryGridCard
 import com.po4yka.bitesizereader.ui.components.SwipeableSummaryCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
@@ -98,6 +100,34 @@ fun SummaryListScreen(
                 query = state.searchQuery,
                 onQueryChange = { query -> viewModel.onSearchQueryChanged(query) },
                 onClose = { viewModel.toggleSearch() },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        // Trending topics (shown when search is active but query is empty)
+        AnimatedVisibility(
+            visible = state.isSearchActive && state.searchQuery.isBlank() && state.trendingTopics.isNotEmpty(),
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            TrendingTopicsSection(
+                topics = state.trendingTopics,
+                onTopicClick = { topic -> viewModel.selectTrendingTopic(topic) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        // Recent searches (shown when search is active but query is empty)
+        AnimatedVisibility(
+            visible = state.isSearchActive && state.searchQuery.isBlank() && state.recentSearches.isNotEmpty(),
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            RecentSearchesSection(
+                searches = state.recentSearches,
+                onSearchClick = { query -> viewModel.selectRecentSearch(query) },
+                onDeleteSearch = { query -> viewModel.deleteRecentSearch(query) },
+                onClearAll = { viewModel.clearSearchHistory() },
                 modifier = Modifier.fillMaxWidth(),
             )
         }

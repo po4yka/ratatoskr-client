@@ -34,6 +34,11 @@ import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
+import com.po4yka.bitesizereader.domain.model.Request
+import com.po4yka.bitesizereader.ui.components.DeleteAccountDialog
+import com.po4yka.bitesizereader.ui.components.RequestHistorySection
+import com.po4yka.bitesizereader.ui.components.SessionsSection
+import com.po4yka.bitesizereader.ui.components.UserStatsCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 
 /**
@@ -58,9 +63,25 @@ fun SettingsScreen(component: SettingsComponent) {
             onRetryLinkStatus = viewModel::loadLinkStatus,
             onBeginLink = viewModel::beginTelegramLink,
             onUnlink = viewModel::unlinkTelegram,
+            onCheckLinkStatus = viewModel::loadLinkStatus,
+            onCancelLink = viewModel::cancelTelegramLink,
             onImport = viewModel::importFromBackend,
             onCancelSync = viewModel::cancelSync,
+            onShowDeleteConfirmation = viewModel::showDeleteConfirmation,
+            onToggleSessions = viewModel::toggleSessionsExpanded,
+            onToggleRequests = viewModel::toggleRequestsExpanded,
+            onRetryRequest = viewModel::retryRequest,
         )
+
+        // Delete Account Confirmation Dialog
+        if (state.showDeleteConfirmation) {
+            DeleteAccountDialog(
+                isDeleting = state.isDeleting,
+                error = state.deleteError,
+                onConfirm = viewModel::deleteAccount,
+                onDismiss = viewModel::hideDeleteConfirmation,
+            )
+        }
     }
 }
 
@@ -91,8 +112,14 @@ private fun SettingsContent(
     onRetryLinkStatus: () -> Unit,
     onBeginLink: () -> Unit,
     onUnlink: () -> Unit,
+    onCheckLinkStatus: () -> Unit,
+    onCancelLink: () -> Unit,
     onImport: () -> Unit,
     onCancelSync: () -> Unit,
+    onShowDeleteConfirmation: () -> Unit,
+    onToggleSessions: () -> Unit,
+    onToggleRequests: () -> Unit,
+    onRetryRequest: (Request) -> Unit,
 ) {
     Column(
         modifier =
@@ -101,6 +128,12 @@ private fun SettingsContent(
                 .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        // User Stats Card
+        UserStatsCard(
+            stats = state.userStats,
+            isLoading = state.isLoadingStats,
+        )
+
         Text(
             text = "Account Binding",
             style = Carbon.typography.heading03,
@@ -115,7 +148,12 @@ private fun SettingsContent(
         )
 
         state.linkNonce?.let { nonce ->
-            LinkNonceCard(nonce = nonce)
+            LinkNonceCard(
+                nonce = nonce,
+                isLoading = state.isLoading,
+                onCheckStatus = onCheckLinkStatus,
+                onCancel = onCancelLink,
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -131,6 +169,76 @@ private fun SettingsContent(
             onImport = onImport,
             onCancelSync = onCancelSync,
         )
+
+        RequestHistorySection(
+            requests = state.requests,
+            isLoading = state.isLoadingRequests,
+            isExpanded = state.requestsExpanded,
+            onToggleExpanded = onToggleRequests,
+            onRetryRequest = onRetryRequest,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Security",
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
+        )
+
+        SessionsSection(
+            sessions = state.sessions,
+            isLoading = state.isLoadingSessions,
+            isExpanded = state.sessionsExpanded,
+            onToggleExpanded = onToggleSessions,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        DangerZoneSection(
+            onDeleteAccount = onShowDeleteConfirmation,
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun DangerZoneSection(onDeleteAccount: () -> Unit) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = "Danger Zone",
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.supportError,
+        )
+
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Carbon.theme.layer01)
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = "Delete Account",
+                style = Carbon.typography.headingCompact01,
+                color = Carbon.theme.textPrimary,
+            )
+            Text(
+                text = "Permanently delete your account and all associated data. This action cannot be undone.",
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textSecondary,
+            )
+            Button(
+                label = "Delete Account",
+                onClick = onDeleteAccount,
+                buttonType = ButtonType.PrimaryDanger,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
@@ -212,7 +320,12 @@ private fun AccountBindingCard(
 
 @Suppress("FunctionNaming")
 @Composable
-private fun LinkNonceCard(nonce: String) {
+private fun LinkNonceCard(
+    nonce: String,
+    isLoading: Boolean,
+    onCheckStatus: () -> Unit,
+    onCancel: () -> Unit,
+) {
     Column(
         modifier =
             Modifier
@@ -238,6 +351,30 @@ private fun LinkNonceCard(nonce: String) {
                 style = Carbon.typography.heading03,
                 color = Carbon.theme.textPrimary,
                 modifier = Modifier.padding(vertical = 8.dp),
+            )
+        }
+        Text(
+            text = "After sending the code to the bot, tap \"Check Status\" to verify the link.",
+            style = Carbon.typography.label01,
+            color = Carbon.theme.textSecondary,
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Button(
+                label = "Check Status",
+                onClick = onCheckStatus,
+                isEnabled = !isLoading,
+                buttonType = ButtonType.Primary,
+                modifier = Modifier.weight(1f),
+            )
+            Button(
+                label = "Cancel",
+                onClick = onCancel,
+                isEnabled = !isLoading,
+                buttonType = ButtonType.Secondary,
+                modifier = Modifier.weight(1f),
             )
         }
     }

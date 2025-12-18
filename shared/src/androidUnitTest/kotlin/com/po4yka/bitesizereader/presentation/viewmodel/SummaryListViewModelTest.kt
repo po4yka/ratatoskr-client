@@ -1,11 +1,16 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.domain.usecase.ClearSearchHistoryUseCase
+import com.po4yka.bitesizereader.domain.usecase.DeleteSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetAvailableTagsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetFilteredSummariesUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetRecentSearchesUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
 import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
+import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.presentation.state.ReadFilter
@@ -19,7 +24,8 @@ import kotlin.time.Clock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -34,11 +40,16 @@ class SummaryListViewModelTest {
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase = mockk()
     private val deleteSummaryUseCase: DeleteSummaryUseCase = mockk()
     private val getAvailableTagsUseCase: GetAvailableTagsUseCase = mockk()
+    private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase = mockk()
+    private val getRecentSearchesUseCase: GetRecentSearchesUseCase = mockk()
+    private val saveSearchQueryUseCase: SaveSearchQueryUseCase = mockk()
+    private val deleteSearchQueryUseCase: DeleteSearchQueryUseCase = mockk()
+    private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase = mockk()
     private val syncDataUseCase: SyncDataUseCase = mockk()
     private val logoutUseCase: LogoutUseCase = mockk()
     private lateinit var viewModel: SummaryListViewModel
 
-    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testDispatcher = StandardTestDispatcher()
 
     private val testSummary =
         Summary(
@@ -58,6 +69,11 @@ class SummaryListViewModelTest {
 
         coEvery { syncDataUseCase() } returns Unit
         coEvery { getAvailableTagsUseCase() } returns listOf("tech", "news")
+        coEvery { getTrendingTopicsUseCase() } returns listOf("Tech", "Science")
+        coEvery { getRecentSearchesUseCase() } returns emptyList()
+        coEvery { saveSearchQueryUseCase(any()) } returns Unit
+        coEvery { deleteSearchQueryUseCase(any()) } returns Unit
+        coEvery { clearSearchHistoryUseCase() } returns Unit
         every {
             getFilteredSummariesUseCase(
                 page = any(),
@@ -74,6 +90,11 @@ class SummaryListViewModelTest {
                 markSummaryAsReadUseCase = markSummaryAsReadUseCase,
                 deleteSummaryUseCase = deleteSummaryUseCase,
                 getAvailableTagsUseCase = getAvailableTagsUseCase,
+                getTrendingTopicsUseCase = getTrendingTopicsUseCase,
+                getRecentSearchesUseCase = getRecentSearchesUseCase,
+                saveSearchQueryUseCase = saveSearchQueryUseCase,
+                deleteSearchQueryUseCase = deleteSearchQueryUseCase,
+                clearSearchHistoryUseCase = clearSearchHistoryUseCase,
                 syncDataUseCase = syncDataUseCase,
                 logoutUseCase = logoutUseCase,
             )
@@ -87,6 +108,7 @@ class SummaryListViewModelTest {
     @Test
     fun `initial state loads summaries`() =
         runTest {
+            advanceUntilIdle()
             val state = viewModel.state.value
             assertFalse(state.isLoading)
             assertEquals(1, state.summaries.size)
@@ -96,6 +118,7 @@ class SummaryListViewModelTest {
     @Test
     fun `initial state loads available tags`() =
         runTest {
+            advanceUntilIdle()
             val state = viewModel.state.value
             assertEquals(listOf("tech", "news"), state.availableTags)
         }
@@ -103,7 +126,9 @@ class SummaryListViewModelTest {
     @Test
     fun `setReadFilter updates state and reloads`() =
         runTest {
+            advanceUntilIdle()
             viewModel.setReadFilter(ReadFilter.UNREAD)
+            advanceUntilIdle()
             val state = viewModel.state.value
             assertEquals(ReadFilter.UNREAD, state.readFilter)
         }
@@ -111,7 +136,9 @@ class SummaryListViewModelTest {
     @Test
     fun `setSortOrder updates state and reloads`() =
         runTest {
+            advanceUntilIdle()
             viewModel.setSortOrder(SortOrder.OLDEST)
+            advanceUntilIdle()
             val state = viewModel.state.value
             assertEquals(SortOrder.OLDEST, state.sortOrder)
         }

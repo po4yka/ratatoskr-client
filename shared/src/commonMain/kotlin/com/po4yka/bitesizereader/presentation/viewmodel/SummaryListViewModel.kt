@@ -1,10 +1,15 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
+import com.po4yka.bitesizereader.domain.usecase.ClearSearchHistoryUseCase
+import com.po4yka.bitesizereader.domain.usecase.DeleteSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetAvailableTagsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetFilteredSummariesUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetRecentSearchesUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
 import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
+import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.presentation.state.LayoutMode
@@ -37,6 +42,11 @@ class SummaryListViewModel(
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val deleteSummaryUseCase: DeleteSummaryUseCase,
     private val getAvailableTagsUseCase: GetAvailableTagsUseCase,
+    private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase,
+    private val getRecentSearchesUseCase: GetRecentSearchesUseCase,
+    private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
+    private val deleteSearchQueryUseCase: DeleteSearchQueryUseCase,
+    private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase,
     private val syncDataUseCase: SyncDataUseCase,
     private val logoutUseCase: LogoutUseCase,
 ) : BaseViewModel() {
@@ -49,6 +59,8 @@ class SummaryListViewModel(
     init {
         syncAndLoad()
         loadAvailableTags()
+        loadTrendingTopics()
+        loadRecentSearches()
     }
 
     /**
@@ -149,6 +161,87 @@ class SummaryListViewModel(
                 _state.value = _state.value.copy(availableTags = tags)
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load available tags" }
+            }
+        }
+    }
+
+    private fun loadTrendingTopics() {
+        viewModelScope.launch {
+            try {
+                val topics = getTrendingTopicsUseCase()
+                _state.value = _state.value.copy(trendingTopics = topics)
+            } catch (e: Exception) {
+                // Non-critical, silently ignore
+                logger.warn(e) { "Failed to load trending topics" }
+            }
+        }
+    }
+
+    /**
+     * Called when user taps on a trending topic to search for it.
+     */
+    fun selectTrendingTopic(topic: String) {
+        _state.value = _state.value.copy(searchQuery = topic)
+        searchJob?.cancel()
+        searchJob =
+            viewModelScope.launch {
+                saveSearchQueryUseCase(topic)
+                performSearch(topic)
+                loadRecentSearches()
+            }
+    }
+
+    // Recent searches
+
+    private fun loadRecentSearches() {
+        viewModelScope.launch {
+            try {
+                val searches = getRecentSearchesUseCase()
+                _state.value = _state.value.copy(recentSearches = searches)
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to load recent searches" }
+            }
+        }
+    }
+
+    /**
+     * Called when user selects a recent search to perform that search.
+     */
+    fun selectRecentSearch(query: String) {
+        _state.value = _state.value.copy(searchQuery = query)
+        searchJob?.cancel()
+        searchJob =
+            viewModelScope.launch {
+                saveSearchQueryUseCase(query)
+                performSearch(query)
+                loadRecentSearches()
+            }
+    }
+
+    /**
+     * Deletes a single search query from history.
+     */
+    fun deleteRecentSearch(query: String) {
+        viewModelScope.launch {
+            try {
+                deleteSearchQueryUseCase(query)
+                loadRecentSearches()
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to delete recent search" }
+            }
+        }
+    }
+
+    /**
+     * Clears all search history.
+     */
+    fun clearSearchHistory() {
+        viewModelScope.launch {
+            try {
+                clearSearchHistoryUseCase()
+                _state.value = _state.value.copy(recentSearches = emptyList())
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to clear search history" }
             }
         }
     }
