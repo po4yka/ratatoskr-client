@@ -97,6 +97,56 @@ composeApp/src/commonMain/kotlin/
 - **Offline-First**: Always read from local DB first, sync with server in background
 - **Decompose Navigation**: Cross-platform navigation with lifecycle awareness
 
+### Sync Architecture
+
+The app uses a **session-based sync** system with progress tracking and cancellation support.
+
+**Sync Phases** (`SyncPhase` enum):
+| Phase | Description |
+|-------|-------------|
+| `CREATING_SESSION` | Creating sync session with server |
+| `FETCHING_FULL` | Full sync - downloading all items |
+| `FETCHING_DELTA` | Delta sync - changes since last sync |
+| `PROCESSING` | Processing received items |
+| `VALIDATING` | Validating sync integrity |
+| `COMPLETED` | Sync completed successfully |
+| `FAILED` | Sync failed with error |
+| `CANCELLED` | Sync cancelled by user |
+
+**Key Classes**:
+- `SyncProgress`: Tracks phase, batch info, progress fraction, error count
+- `SyncResult`: Contains created/updated/deleted counts, pagination cursor
+- `SyncRepository`: Interface with `sync()`, `fullSync()`, `deltaSync()`, `cancelSync()`
+
+**Workflow**:
+1. Create session via `createSyncSession()`
+2. Execute `fullSync()` or `deltaSync()` with cursor-based pagination
+3. Process batches (25-500 items adaptive sizing)
+4. Save checkpoints after each batch
+5. Validate integrity on completion
+
+### Authentication Flow
+
+Token management uses Ktor's built-in `Auth` plugin with bearer tokens.
+
+**Token Refresh**:
+- Endpoint: `POST /v1/auth/refresh`
+- Request: `{ "refresh_token": "<token>" }`
+- On success: Update stored tokens
+- On failure: Clear tokens, redirect to login
+
+**Implementation** (`ApiClient.kt`):
+```kotlin
+refreshTokens {
+    val response = client.post("/v1/auth/refresh") { ... }
+    if (parsed.success && parsed.data != null) {
+        // Save new tokens
+    } else {
+        secureStorage.clearTokens()  // Force re-login
+    }
+}
+```
+
 ### Technology Stack
 
 | Component | Technology |
@@ -320,6 +370,31 @@ For Android emulator, use `http://10.0.2.2:8000` instead of `localhost`.
 - Max line length: 120 characters
 - Generated code in `build/` and `generated/` is excluded from checks
 - Detekt enabled with relaxed rules for Compose/KMP patterns
+
+## Common Development Tasks
+
+### Add a New Screen
+
+1. Create state class in `shared/.../presentation/state/MyState.kt`
+2. Create ViewModel in `shared/.../presentation/viewmodel/MyViewModel.kt` with `@Factory`
+3. Add navigation component in `shared/.../presentation/navigation/MyComponent.kt`
+4. Create screen composable in `composeApp/.../ui/screens/MyScreen.kt`
+5. Register in `RootComponent.kt` navigation graph
+
+### Add a New Use Case
+
+1. Create use case in `shared/.../domain/usecase/MyUseCase.kt`
+2. Add `@Factory` annotation
+3. Inject repository via constructor
+4. Return `Result<T>` or `Flow<T>`
+
+### Add a New Repository
+
+1. Define interface in `shared/.../domain/repository/MyRepository.kt`
+2. Create implementation in `shared/.../data/repository/MyRepositoryImpl.kt`
+3. Add `@Single(binds = [MyRepository::class])` annotation
+4. Create DTOs in `data/remote/dto/` if needed
+5. Create mappers in `data/mappers/` if needed
 
 ## Platform-Specific Notes
 

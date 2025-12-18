@@ -1,6 +1,6 @@
 # API Documentation
 
-**Last Updated**: 2025-11-17
+**Last Updated**: 2025-12-18
 **Base URL**: Configured in `local.properties`
 **Authentication**: Bearer Token (Telegram OAuth)
 
@@ -51,6 +51,154 @@ The Bite-Size Reader backend API provides endpoints for authentication, content 
 **Headers**:
 ```
 Authorization: Bearer {token}
+```
+
+### Refresh Token
+
+**POST** `/v1/auth/refresh`
+
+**Request**:
+```json
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiIs..."
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "expires_in": 3600
+  }
+}
+```
+
+**Error Response** (invalid/expired token):
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_TOKEN",
+    "message": "Refresh token is invalid or expired"
+  }
+}
+```
+
+---
+
+## Sync Endpoints
+
+### Create Sync Session
+
+**POST** `/v1/sync/session`
+
+**Query Parameters**:
+- `limit` (int, optional): Batch size hint (default: 100, max: 500)
+
+**Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "session_id": "sync-abc123-def456",
+    "expires_at": "2025-01-16T12:00:00Z"
+  }
+}
+```
+
+### Full Sync
+
+**GET** `/v1/sync/full`
+
+**Query Parameters**:
+- `session_id` (string): Session ID from create session
+- `cursor` (long, optional): Pagination cursor from previous response
+- `limit` (int, optional): Batch size (default: 100)
+
+**Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "summaries": [
+      { /* full summary object */ }
+    ],
+    "created_count": 10,
+    "updated_count": 5,
+    "deleted_count": 2,
+    "has_more": true,
+    "next_cursor": 1234567890,
+    "server_version": 42
+  }
+}
+```
+
+### Delta Sync
+
+**GET** `/v1/sync/delta`
+
+**Query Parameters**:
+- `session_id` (string): Session ID from create session
+- `since` (long): Unix timestamp of last sync
+- `limit` (int, optional): Batch size (default: 100)
+
+**Response**: Same format as Full Sync
+
+### Apply Local Changes
+
+**POST** `/v1/sync/changes`
+
+**Request**:
+```json
+{
+  "session_id": "sync-abc123-def456",
+  "changes": [
+    {
+      "entity_type": "summary",
+      "id": 123,
+      "action": "update",
+      "last_seen_version": 5,
+      "payload": {
+        "is_read": true
+      },
+      "client_timestamp": "2025-01-16T10:00:00Z"
+    }
+  ]
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "applied_count": 1,
+    "conflicts": [],
+    "server_version": 43
+  }
+}
+```
+
+**Conflict Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "applied_count": 0,
+    "conflicts": [
+      {
+        "id": 123,
+        "entity_type": "summary",
+        "client_version": 5,
+        "server_version": 7,
+        "reason": "VERSION_MISMATCH"
+      }
+    ],
+    "server_version": 43
+  }
+}
 ```
 
 ---

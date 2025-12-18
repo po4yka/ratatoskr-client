@@ -6,12 +6,13 @@ Comprehensive guide for implementing offline-first synchronization with the Bite
 
 1. [Overview](#overview)
 2. [Sync Architecture](#sync-architecture)
-3. [Full Sync](#full-sync)
-4. [Delta Sync](#delta-sync)
-5. [Conflict Resolution](#conflict-resolution)
-6. [Background Sync](#background-sync)
-7. [Performance Optimization](#performance-optimization)
-8. [Implementation Guide](#implementation-guide)
+3. [Session-Based Sync](#session-based-sync) (Current Implementation)
+4. [Full Sync](#full-sync)
+5. [Delta Sync](#delta-sync)
+6. [Conflict Resolution](#conflict-resolution)
+7. [Background Sync](#background-sync)
+8. [Performance Optimization](#performance-optimization)
+9. [Implementation Guide](#implementation-guide)
 
 ---
 
@@ -130,6 +131,115 @@ enum class SyncType {
     DELTA,
     UPLOAD
 }
+```
+
+---
+
+## Session-Based Sync
+
+The current implementation uses a session-based sync architecture with progress tracking and cancellation support.
+
+### Sync Phases
+
+The `SyncPhase` enum tracks the current state of sync operations:
+
+| Phase | Description |
+|-------|-------------|
+| `CREATING_SESSION` | Creating sync session with server |
+| `FETCHING_FULL` | Full sync - downloading all items |
+| `FETCHING_DELTA` | Delta sync - changes since last sync |
+| `PROCESSING` | Processing received items |
+| `VALIDATING` | Validating sync integrity |
+| `COMPLETED` | Sync completed successfully |
+| `FAILED` | Sync failed with error |
+| `CANCELLED` | Sync cancelled by user |
+
+### Progress Tracking
+
+```kotlin
+data class SyncProgress(
+    val phase: SyncPhase,
+    val totalItems: Int? = null,
+    val processedItems: Int = 0,
+    val currentBatch: Int = 0,
+    val totalBatches: Int? = null,
+    val errorCount: Int = 0,
+    val startTime: Instant,
+    val errorMessage: String? = null,
+) {
+    val progressFraction: Float?  // 0.0 to 1.0
+    val isInProgress: Boolean
+}
+```
+
+**Usage**: Observe `SyncRepository.syncProgress: StateFlow<SyncProgress?>` for real-time updates.
+
+### Session Workflow
+
+```
+1. Create Session
+   POST /v1/sync/session -> sessionId
+
+2. Execute Sync (with cursor-based pagination)
+   GET /v1/sync/full?session_id=X&cursor=Y&limit=Z
+   OR
+   GET /v1/sync/delta?session_id=X&since=T&limit=Z
+
+3. Process Batches
+   - Adaptive batch size: 25-500 items
+   - Save checkpoint after each batch
+   - Track errors per item
+
+4. Apply Local Changes (if any)
+   POST /v1/sync/changes { changes: [...] }
+
+5. Validate & Complete
+   - Verify integrity
+   - Update lastSyncTime and hash
+```
+
+### Cancellation Support
+
+```kotlin
+// Cancel ongoing sync
+syncRepository.cancelSync()
+
+// Check if cancelled
+if (syncProgress?.phase == SyncPhase.CANCELLED) {
+    // Handle cancellation
+}
+```
+
+### Key Domain Models
+
+```kotlin
+// Sync result with pagination
+data class SyncResult(
+    val createdCount: Int,
+    val updatedCount: Int,
+    val deletedCount: Int,
+    val hasMore: Boolean,
+    val nextCursor: Long?,
+    val serverVersion: Long?,
+)
+
+// Conflict during apply
+data class SyncConflict(
+    val id: Long,
+    val entityType: String,
+    val clientVersion: Long,
+    val serverVersion: Long,
+    val reason: String,
+)
+
+// Local change to push
+data class LocalChange(
+    val entityType: String,
+    val id: Long,
+    val action: String,  // "create", "update", "delete"
+    val lastSeenVersion: Long,
+    val payload: Map<String, Any?>?,
+)
 ```
 
 ---
@@ -894,4 +1004,4 @@ BackgroundSyncManager.shared.registerBackgroundTasks()
 
 ---
 
-**Last Updated**: 2025-11-16
+**Last Updated**: 2025-12-18

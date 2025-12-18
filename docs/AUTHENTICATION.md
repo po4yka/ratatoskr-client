@@ -206,6 +206,84 @@ Tokens are stored using:
 
 Both provide hardware-backed encryption when available.
 
+## Token Refresh Mechanism
+
+The app uses Ktor's built-in Auth plugin for automatic token refresh.
+
+### How It Works
+
+```
+1. API request returns 401 Unauthorized
+   ↓
+2. Ktor Auth plugin triggers refreshTokens block
+   ↓
+3. POST /v1/auth/refresh with refresh_token
+   ↓
+4. Check response: success && data != null
+   ↓
+5a. Success: Save new tokens, retry original request
+5b. Failure: Clear all tokens, redirect to login
+```
+
+### Implementation Details
+
+```kotlin
+// ApiClient.kt - Token refresh setup
+install(Auth) {
+    bearer {
+        loadTokens {
+            val accessToken = secureStorage.getAccessToken()
+            val refreshToken = secureStorage.getRefreshToken()
+            if (accessToken != null && refreshToken != null) {
+                BearerTokens(accessToken, refreshToken)
+            } else {
+                null
+            }
+        }
+        refreshTokens {
+            val refreshToken = secureStorage.getRefreshToken()
+            if (refreshToken != null) {
+                val response = client.post("/v1/auth/refresh") {
+                    setBody(mapOf("refresh_token" to refreshToken))
+                }
+                val parsed: ApiResponseDto<TokenRefreshResponseDto> =
+                    Json.decodeFromString(response.bodyAsText())
+
+                if (parsed.success && parsed.data != null) {
+                    // Save new tokens
+                    secureStorage.saveAccessToken(tokens.accessToken)
+                    secureStorage.saveRefreshToken(tokens.refreshToken)
+                    BearerTokens(tokens.accessToken, tokens.refreshToken)
+                } else {
+                    // Explicit failure - clear tokens and force re-login
+                    secureStorage.clearTokens()
+                    null
+                }
+            } else {
+                null
+            }
+        }
+    }
+}
+```
+
+### Key Behaviors
+
+| Scenario | Action |
+|----------|--------|
+| Refresh succeeds | Store new tokens, retry request |
+| Refresh fails (success=false) | Clear tokens, redirect to login |
+| Refresh throws exception | Log error, return null (no retry) |
+| No refresh token available | Return null immediately |
+
+### Error Handling
+
+The refresh mechanism includes explicit status checking:
+- Checks `parsed.success == true` before using tokens
+- Checks `parsed.data != null` to ensure valid response
+- On failure, tokens are cleared to force re-authentication
+- HTTP errors are logged with truncated body for debugging
+
 ## Troubleshooting
 
 ### Android: Custom Tab doesn't open

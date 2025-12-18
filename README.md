@@ -1319,6 +1319,25 @@ Or at runtime:
 Logger.setMinSeverity(Severity.Debug)
 ```
 
+## Documentation
+
+See [docs/INDEX.md](docs/INDEX.md) for the complete documentation index.
+
+### Quick Links
+
+| Topic | Document |
+|-------|----------|
+| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| Sync Strategy | [docs/SYNC_STRATEGY.md](docs/SYNC_STRATEGY.md) |
+| API Reference | [docs/API.md](docs/API.md) |
+| Authentication | [docs/AUTHENTICATION.md](docs/AUTHENTICATION.md) |
+| ViewModel Guide | [docs/VIEWMODEL_GUIDE.md](docs/VIEWMODEL_GUIDE.md) |
+| Use Case Guide | [docs/USE_CASE_GUIDE.md](docs/USE_CASE_GUIDE.md) |
+| Component Library | [docs/COMPONENT_LIBRARY.md](docs/COMPONENT_LIBRARY.md) |
+| CI/CD | [docs/CICD.md](docs/CICD.md) |
+
+For AI-assisted development guidance, see [CLAUDE.md](CLAUDE.md).
+
 ## License
 
 BSD 3-Clause License - see [LICENSE](./LICENSE) file.
