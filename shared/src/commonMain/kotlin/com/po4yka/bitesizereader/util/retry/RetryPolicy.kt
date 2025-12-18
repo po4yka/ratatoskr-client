@@ -1,9 +1,31 @@
 package com.po4yka.bitesizereader.util.retry
 
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.ServerResponseException
+import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+
+/**
+ * Determines if an exception is retryable for network operations.
+ * Retries on server errors (5xx) and network failures.
+ * Does NOT retry on client errors (4xx) like auth failures.
+ */
+fun isRetryableException(e: Throwable): Boolean =
+    when {
+        e is CancellationException -> false // Never retry cancellation
+        e is ServerResponseException -> true // 5xx errors are retryable
+        e is ClientRequestException -> {
+            // Only retry on specific 4xx errors that might be transient
+            val status = e.response.status
+            status == HttpStatusCode.TooManyRequests || status == HttpStatusCode.RequestTimeout
+        }
+        e.cause != null -> isRetryableException(e.cause!!) // Check cause for wrapped exceptions
+        else -> true // Network errors, timeouts, etc. are retryable
+    }
 
 /**
  * Retry policy configuration
@@ -13,11 +35,12 @@ data class RetryPolicy(
     val initialDelay: Duration = 1.seconds,
     val maxDelay: Duration = 10.seconds,
     val factor: Double = 2.0,
-    val shouldRetry: (Throwable) -> Boolean = { true },
+    val shouldRetry: (Throwable) -> Boolean = ::isRetryableException,
 ) {
     companion object {
         /**
-         * Default retry policy for network operations
+         * Default retry policy for network operations.
+         * Retries on server errors and network failures, not on auth errors.
          */
         val DEFAULT = RetryPolicy()
 

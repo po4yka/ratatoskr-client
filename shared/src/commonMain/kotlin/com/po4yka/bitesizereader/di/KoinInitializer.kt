@@ -32,7 +32,6 @@ fun commonModules(): List<Module> =
         RepositoryModule().module,
         UseCaseModule().module,
         ViewModelModule().module,
-        CoroutineScopeModule().module,
     )
 
 /**

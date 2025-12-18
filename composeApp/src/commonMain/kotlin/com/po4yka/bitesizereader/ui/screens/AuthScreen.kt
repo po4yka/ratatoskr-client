@@ -44,12 +44,6 @@ fun AuthScreen(
     val viewModel: AuthViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
 
-    androidx.compose.runtime.LaunchedEffect(state.isAuthenticated) {
-        if (state.isAuthenticated) {
-            // Dialog will be closed by recomposition if we navigate away
-        }
-    }
-
     Box(
         modifier =
             modifier

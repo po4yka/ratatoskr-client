@@ -35,7 +35,6 @@ import com.gabrieldrn.carbon.loading.Loading
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.DefaultMarkdownColors
-import com.mikepenz.markdown.model.MarkdownColors
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.ErrorView
@@ -205,7 +204,14 @@ private fun SummaryDetailContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Markdown content with Carbon-themed colors
-        val markdownColors = carbonMarkdownColors()
+        val markdownColors =
+            DefaultMarkdownColors(
+                text = Carbon.theme.textPrimary,
+                codeBackground = Carbon.theme.layer01,
+                inlineCodeBackground = Carbon.theme.layer01,
+                dividerColor = Carbon.theme.borderSubtle00,
+                tableBackground = Carbon.theme.layer01,
+            )
         val markdownTypography =
             markdownTypography(
                 h1 = Carbon.typography.heading04,
@@ -275,16 +281,4 @@ private fun formatDate(instant: Instant): String {
 private fun extractDomain(url: String): String? {
     val noProtocol = url.substringAfter("://", url)
     return noProtocol.substringBefore("/").ifBlank { null }
-}
-
-/** Creates markdown colors that match the Carbon Design System theme. */
-@Composable
-private fun carbonMarkdownColors(): MarkdownColors {
-    return DefaultMarkdownColors(
-        text = Carbon.theme.textPrimary,
-        codeBackground = Carbon.theme.layer01,
-        inlineCodeBackground = Carbon.theme.layer01,
-        dividerColor = Carbon.theme.borderSubtle00,
-        tableBackground = Carbon.theme.layer01,
-    )
 }
