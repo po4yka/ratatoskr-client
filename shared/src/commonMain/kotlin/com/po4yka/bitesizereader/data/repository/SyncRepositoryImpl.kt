@@ -8,15 +8,23 @@ import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.SyncConflict
+import com.po4yka.bitesizereader.domain.model.SyncPhase
+import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.domain.model.SyncResult
 import com.po4yka.bitesizereader.domain.model.SyncState
 import com.po4yka.bitesizereader.domain.repository.ApplyResult
 import com.po4yka.bitesizereader.domain.repository.LocalChange
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -25,11 +33,21 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
 import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
+
+/** Default batch size for sync operations */
+private const val DEFAULT_BATCH_SIZE = 100
+
+/** Minimum batch size for adaptive sizing */
+private const val MIN_BATCH_SIZE = 25
+
+/** Maximum batch size for adaptive sizing */
+private const val MAX_BATCH_SIZE = 500
 
 @Single
 class SyncRepositoryImpl(
@@ -37,12 +55,65 @@ class SyncRepositoryImpl(
     private val api: SyncApi,
 ) : SyncRepository {
     // ========================================================================
+    // Progress Tracking
+    // ========================================================================
+
+    private val _syncProgress = MutableStateFlow<SyncProgress?>(null)
+    override val syncProgress: StateFlow<SyncProgress?> = _syncProgress.asStateFlow()
+
+    private var currentSyncJob: Job? = null
+    private var currentBatchSize = DEFAULT_BATCH_SIZE
+
+    override fun cancelSync() {
+        currentSyncJob?.cancel()
+        _syncProgress.value?.let { progress ->
+            _syncProgress.value = progress.copy(phase = SyncPhase.CANCELLED)
+        }
+        logger.info { "Sync cancelled by user" }
+    }
+
+    private fun updateProgress(
+        phase: SyncPhase,
+        totalItems: Int? = _syncProgress.value?.totalItems,
+        processedItems: Int = _syncProgress.value?.processedItems ?: 0,
+        currentBatch: Int = _syncProgress.value?.currentBatch ?: 0,
+        totalBatches: Int? = _syncProgress.value?.totalBatches,
+        errorCount: Int = _syncProgress.value?.errorCount ?: 0,
+        errorMessage: String? = null,
+    ) {
+        val startTime = _syncProgress.value?.startTime ?: Clock.System.now()
+        _syncProgress.value =
+            SyncProgress(
+                phase = phase,
+                totalItems = totalItems,
+                processedItems = processedItems,
+                currentBatch = currentBatch,
+                totalBatches = totalBatches,
+                errorCount = errorCount,
+                startTime = startTime,
+                errorMessage = errorMessage,
+            )
+    }
+
+    // ========================================================================
     // Main Sync Entry Point
     // ========================================================================
 
     override suspend fun sync(forceFull: Boolean) {
-        // Always use new session-based sync
-        syncWithSessionBasedEndpoint(forceFull)
+        // Track the current coroutine job for cancellation
+        currentSyncJob = coroutineContext[Job]
+
+        try {
+            syncWithSessionBasedEndpoint(forceFull)
+        } catch (e: CancellationException) {
+            updateProgress(phase = SyncPhase.CANCELLED)
+            throw e
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            updateProgress(phase = SyncPhase.FAILED, errorMessage = e.message)
+            throw e
+        } finally {
+            currentSyncJob = null
+        }
     }
 
     // ========================================================================
@@ -52,59 +123,164 @@ class SyncRepositoryImpl(
     private suspend fun syncWithSessionBasedEndpoint(forceFull: Boolean) {
         logger.info { "Starting session-based sync, forceFull=$forceFull" }
 
+        // Initialize progress
+        _syncProgress.value =
+            SyncProgress(
+                phase = SyncPhase.CREATING_SESSION,
+                startTime = Clock.System.now(),
+            )
+
         // Create a sync session
+        coroutineContext.ensureActive()
         val syncSessionId = createSyncSession()
 
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val lastSyncCursor = metadata?.syncToken?.toLongOrNull() ?: 0L
 
         if (forceFull || lastSyncCursor == 0L) {
-            // Full sync - fetch all items
-            var hasMore = true
-            var totalCreated = 0
-            var cursor: Long? = null
+            performFullSync(syncSessionId)
+        } else {
+            performDeltaSync(syncSessionId, lastSyncCursor)
+        }
 
-            while (hasMore) {
-                val result = fullSync(syncSessionId, limit = 100, cursor = cursor)
-                totalCreated += result.createdCount
-                hasMore = result.hasMore
-                cursor = result.nextCursor
+        // Mark sync as completed
+        updateProgress(phase = SyncPhase.COMPLETED)
+        logger.info { "Sync completed successfully" }
+    }
 
-                if (hasMore) {
-                    logger.info { "Full sync batch complete, hasMore=$hasMore, nextCursor=$cursor" }
-                }
-            }
+    private suspend fun performFullSync(sessionId: String) {
+        updateProgress(phase = SyncPhase.FETCHING_FULL)
 
-            // Update sync metadata after full sync completes
-            database.databaseQueries.updateSyncMetadata(
-                lastSyncTime = Clock.System.now(),
-                syncToken = cursor?.toString() ?: "",
+        var hasMore = true
+        var totalCreated = 0
+        var totalErrors = 0
+        var cursor: Long? = null
+        var batchNumber = 0
+
+        // First batch to get total count for progress
+        coroutineContext.ensureActive()
+        val firstResult = fullSync(sessionId, limit = currentBatchSize, cursor = cursor)
+        val totalItems = firstResult.serverVersion?.toInt() // Server returns total count in serverVersion
+        val totalBatches = totalItems?.let { (it + currentBatchSize - 1) / currentBatchSize }
+
+        totalCreated += firstResult.createdCount
+        hasMore = firstResult.hasMore
+        cursor = firstResult.nextCursor
+        batchNumber++
+
+        updateProgress(
+            phase = SyncPhase.FETCHING_FULL,
+            totalItems = totalItems,
+            processedItems = totalCreated,
+            currentBatch = batchNumber,
+            totalBatches = totalBatches,
+        )
+
+        // Checkpoint: save progress after first batch
+        saveCheckpoint(cursor)
+
+        while (hasMore) {
+            coroutineContext.ensureActive()
+
+            val result = fullSync(sessionId, limit = currentBatchSize, cursor = cursor)
+            totalCreated += result.createdCount
+            hasMore = result.hasMore
+            cursor = result.nextCursor
+            batchNumber++
+
+            updateProgress(
+                phase = SyncPhase.FETCHING_FULL,
+                processedItems = totalCreated,
+                currentBatch = batchNumber,
+                errorCount = totalErrors,
             )
 
-            logger.info { "Full sync complete. Total items: $totalCreated" }
+            // Checkpoint: save progress after each batch
+            saveCheckpoint(cursor)
+
+            if (hasMore) {
+                logger.info { "Full sync batch $batchNumber complete, hasMore=$hasMore, nextCursor=$cursor" }
+            }
+        }
+
+        // Final metadata update
+        database.databaseQueries.updateSyncMetadata(
+            lastSyncTime = Clock.System.now(),
+            syncToken = cursor?.toString() ?: "",
+        )
+
+        // Validate integrity
+        validateSyncIntegrity(totalItems, totalCreated)
+
+        logger.info { "Full sync complete. Total items: $totalCreated, errors: $totalErrors" }
+    }
+
+    private suspend fun performDeltaSync(
+        sessionId: String,
+        lastSyncCursor: Long,
+    ) {
+        updateProgress(phase = SyncPhase.FETCHING_DELTA)
+
+        var hasMore = true
+        var cursor = lastSyncCursor
+        var totalCreated = 0
+        var totalUpdated = 0
+        var totalDeleted = 0
+        var batchNumber = 0
+
+        while (hasMore) {
+            coroutineContext.ensureActive()
+
+            val result = deltaSync(sessionId, since = cursor, limit = currentBatchSize)
+            totalCreated += result.createdCount
+            totalUpdated += result.updatedCount
+            totalDeleted += result.deletedCount
+            hasMore = result.hasMore
+            batchNumber++
+
+            val processedItems = totalCreated + totalUpdated + totalDeleted
+            updateProgress(
+                phase = SyncPhase.FETCHING_DELTA,
+                processedItems = processedItems,
+                currentBatch = batchNumber,
+            )
+
+            if (result.nextCursor != null) {
+                cursor = result.nextCursor
+            }
+
+            // Note: Delta sync saves checkpoint in deltaSync() method itself
+        }
+
+        logger.info {
+            "Delta sync complete. Created: $totalCreated, Updated: $totalUpdated, Deleted: $totalDeleted"
+        }
+    }
+
+    private fun saveCheckpoint(cursor: Long?) {
+        database.databaseQueries.updateSyncMetadata(
+            lastSyncTime = Clock.System.now(),
+            syncToken = cursor?.toString() ?: "",
+        )
+        logger.debug { "Checkpoint saved, cursor=$cursor" }
+    }
+
+    private fun validateSyncIntegrity(
+        expectedCount: Int?,
+        actualCount: Int,
+    ) {
+        if (expectedCount != null && expectedCount != actualCount) {
+            logger.warn {
+                "Sync integrity mismatch: expected $expectedCount items, got $actualCount"
+            }
+            // Update progress with warning but don't fail
+            updateProgress(
+                phase = SyncPhase.VALIDATING,
+                errorMessage = "Integrity warning: expected $expectedCount items, synced $actualCount",
+            )
         } else {
-            // Delta sync - fetch changes since last sync
-            var hasMore = true
-            var cursor = lastSyncCursor
-            var totalCreated = 0
-            var totalUpdated = 0
-            var totalDeleted = 0
-
-            while (hasMore) {
-                val result = deltaSync(syncSessionId, since = cursor, limit = 100)
-                totalCreated += result.createdCount
-                totalUpdated += result.updatedCount
-                totalDeleted += result.deletedCount
-                hasMore = result.hasMore
-
-                if (result.nextCursor != null) {
-                    cursor = result.nextCursor
-                }
-            }
-
-            logger.info {
-                "Delta sync complete. Created: $totalCreated, Updated: $totalUpdated, Deleted: $totalDeleted"
-            }
+            updateProgress(phase = SyncPhase.VALIDATING)
+            logger.info { "Sync integrity validated: $actualCount items" }
         }
     }
 
@@ -149,18 +325,38 @@ class SyncRepositoryImpl(
         val data = response.data
         logger.info { "Full sync received ${data.items.size} items, hasMore=${data.hasMore}" }
 
+        // Track processing results
+        var successCount = 0
+        var errorCount = 0
+
         // Process items and store in database
         database.transaction {
             data.items.forEach { item ->
                 when (item.entityType) {
-                    "summary" -> processSyncSummaryItem(item.id, item.summary)
-                    else -> logger.warn { "Unknown entity type: ${item.entityType}" }
+                    "summary" -> {
+                        val success = processSyncSummaryItem(item.id, item.summary)
+                        if (success) successCount++ else errorCount++
+                    }
+                    else -> {
+                        logger.warn { "Unknown entity type: ${item.entityType}" }
+                        errorCount++
+                    }
                 }
             }
         }
 
+        // Update progress with error count
+        if (errorCount > 0) {
+            val currentProgress = _syncProgress.value
+            _syncProgress.value =
+                currentProgress?.copy(
+                    errorCount = currentProgress.errorCount + errorCount,
+                )
+            logger.warn { "Full sync batch: $successCount success, $errorCount errors" }
+        }
+
         return SyncResult(
-            createdCount = data.items.size,
+            createdCount = successCount,
             updatedCount = 0,
             deletedCount = 0,
             hasMore = data.hasMore,
@@ -188,34 +384,61 @@ class SyncRepositoryImpl(
                 "updated=${data.updated.size}, deleted=${data.deleted.size}, hasMore=${data.hasMore}"
         }
 
+        // Track processing results
+        var createdCount = 0
+        var updatedCount = 0
+        var errorCount = 0
+
         // Process changes and store in database
         database.transaction {
             data.created.forEach { item ->
                 when (item.entityType) {
-                    "summary" -> processSyncSummaryItem(item.id, item.summary)
-                    else -> logger.warn { "Unknown entity type: ${item.entityType}" }
+                    "summary" -> {
+                        val success = processSyncSummaryItem(item.id, item.summary)
+                        if (success) createdCount++ else errorCount++
+                    }
+                    else -> {
+                        logger.warn { "Unknown entity type: ${item.entityType}" }
+                        errorCount++
+                    }
                 }
             }
             data.updated.forEach { item ->
                 when (item.entityType) {
-                    "summary" -> processSyncSummaryItem(item.id, item.summary)
-                    else -> logger.warn { "Unknown entity type: ${item.entityType}" }
+                    "summary" -> {
+                        val success = processSyncSummaryItem(item.id, item.summary)
+                        if (success) updatedCount++ else errorCount++
+                    }
+                    else -> {
+                        logger.warn { "Unknown entity type: ${item.entityType}" }
+                        errorCount++
+                    }
                 }
             }
             data.deleted.forEach { id ->
                 database.databaseQueries.deleteSummary(id.toString())
             }
 
-            // Update sync metadata
+            // Update sync metadata (checkpoint)
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
                 syncToken = data.newCursor?.toString() ?: "",
             )
         }
 
+        // Update progress with error count
+        if (errorCount > 0) {
+            val currentProgress = _syncProgress.value
+            _syncProgress.value =
+                currentProgress?.copy(
+                    errorCount = currentProgress.errorCount + errorCount,
+                )
+            logger.warn { "Delta sync batch: created=$createdCount, updated=$updatedCount, errors=$errorCount" }
+        }
+
         return SyncResult(
-            createdCount = data.created.size,
-            updatedCount = data.updated.size,
+            createdCount = createdCount,
+            updatedCount = updatedCount,
             deletedCount = data.deleted.size,
             hasMore = data.hasMore,
             nextCursor = data.newCursor,
@@ -288,17 +511,19 @@ class SyncRepositoryImpl(
      *   },
      *   "created_at": "2024-12-14T10:20:00Z"
      * }
+     *
+     * @return true if item was processed successfully, false if there was an error
      */
     private fun processSyncSummaryItem(
         id: Long,
         summaryData: JsonObject?,
-    ) {
+    ): Boolean {
         if (summaryData == null) {
             logger.warn { "Sync item $id has no summary data, skipping" }
-            return
+            return false
         }
 
-        try {
+        return try {
             // Extract top-level fields
             val isRead = summaryData["is_read"]?.jsonPrimitive?.booleanOrNull ?: false
             val createdAtStr = summaryData["created_at"]?.jsonPrimitive?.contentOrNull
@@ -356,8 +581,10 @@ class SyncRepositoryImpl(
                     tags = tags,
                 ),
             )
+            true
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.error(e) { "Failed to process sync summary item $id" }
+            false
         }
     }
 

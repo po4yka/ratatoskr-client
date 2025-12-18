@@ -11,6 +11,7 @@ import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.logging.DEFAULT
@@ -49,6 +50,12 @@ class ApiClient(
                         ignoreUnknownKeys = true
                     },
                 )
+            }
+
+            // Enable response compression for faster sync operations
+            install(ContentEncoding) {
+                gzip()
+                deflate()
             }
 
             install(io.ktor.client.plugins.HttpTimeout) {

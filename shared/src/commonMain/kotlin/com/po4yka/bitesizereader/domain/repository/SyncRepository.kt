@@ -1,16 +1,28 @@
 package com.po4yka.bitesizereader.domain.repository
 
 import com.po4yka.bitesizereader.domain.model.SyncConflict
+import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.domain.model.SyncResult
 import com.po4yka.bitesizereader.domain.model.SyncState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface SyncRepository {
     // ========================================================================
-    // Legacy Sync (backward compatibility)
+    // Sync Progress Tracking
     // ========================================================================
 
-    /** Legacy sync using session-id-based delta sync */
+    /** Observable progress of current sync operation (null if no sync in progress) */
+    val syncProgress: StateFlow<SyncProgress?>
+
+    /** Cancel the current sync operation if one is in progress */
+    fun cancelSync()
+
+    // ========================================================================
+    // Main Sync Operations
+    // ========================================================================
+
+    /** Perform sync with progress tracking and cancellation support */
     suspend fun sync(forceFull: Boolean = false)
 
     /** Get current sync state */

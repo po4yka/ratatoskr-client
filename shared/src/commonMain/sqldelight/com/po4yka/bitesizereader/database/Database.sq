@@ -84,6 +84,25 @@ WHERE summaryFTS MATCH :query
 -- Rank is not supported natively in FTS4 without custom functions, simplified to basic match
 LIMIT :limit OFFSET :offset;
 
+-- Get all tags (tags column contains serialized list, parsing done in Kotlin)
+getAllTags:
+SELECT tags FROM summaryEntity;
+
+-- Filtered summaries with read filter and sort order
+selectSummariesFiltered:
+SELECT * FROM summaryEntity
+WHERE (:readFilterAll = 1 OR isRead = :isRead)
+ORDER BY
+    CASE WHEN :sortNewest = 1 THEN createdAt END DESC,
+    CASE WHEN :sortOldest = 1 THEN createdAt END ASC,
+    CASE WHEN :sortAlphabetical = 1 THEN title END ASC
+LIMIT :limit OFFSET :offset;
+
+-- Count summaries with read filter
+countSummariesFiltered:
+SELECT COUNT(*) FROM summaryEntity
+WHERE (:readFilterAll = 1 OR isRead = :isRead);
+
 -- Request Queries
 selectAllRequests:
 SELECT * FROM requestEntity
