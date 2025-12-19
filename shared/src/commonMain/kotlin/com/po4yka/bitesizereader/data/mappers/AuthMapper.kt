@@ -1,17 +1,21 @@
 package com.po4yka.bitesizereader.data.mappers
 
 import com.po4yka.bitesizereader.data.remote.dto.AuthResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.DomainStatDto
 import com.po4yka.bitesizereader.data.remote.dto.LoginDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SessionInfoDto
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.TokensDto
+import com.po4yka.bitesizereader.data.remote.dto.TopicStatDto
 import com.po4yka.bitesizereader.data.remote.dto.UserDto
 import com.po4yka.bitesizereader.data.remote.dto.UserPreferencesDto
 import com.po4yka.bitesizereader.data.remote.dto.UserStatsDto
 import com.po4yka.bitesizereader.domain.model.AuthTokens
+import com.po4yka.bitesizereader.domain.model.DomainStat
 import com.po4yka.bitesizereader.domain.model.Session
+import com.po4yka.bitesizereader.domain.model.TopicStat
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.model.UserPreferences
 import com.po4yka.bitesizereader.domain.model.UserStats
@@ -67,6 +71,20 @@ fun UserPreferencesDto.toDomain(): UserPreferences {
     )
 }
 
+fun TopicStatDto.toDomain(): TopicStat {
+    return TopicStat(
+        topic = topic,
+        count = count,
+    )
+}
+
+fun DomainStatDto.toDomain(): DomainStat {
+    return DomainStat(
+        domain = domain,
+        count = count,
+    )
+}
+
 fun UserStatsDto.toDomain(): UserStats {
     return UserStats(
         totalSummaries = totalSummaries,
@@ -74,8 +92,8 @@ fun UserStatsDto.toDomain(): UserStats {
         readCount = readCount,
         totalReadingTimeMin = totalReadingTimeMin,
         averageReadingTimeMin = averageReadingTimeMin,
-        favoriteTopics = favoriteTopics,
-        favoriteDomains = favoriteDomains,
+        favoriteTopics = favoriteTopics?.map { it.toDomain() },
+        favoriteDomains = favoriteDomains?.map { it.toDomain() },
         languageDistribution = languageDistribution,
         joinedAt = joinedAt,
         lastSummaryAt = lastSummaryAt,

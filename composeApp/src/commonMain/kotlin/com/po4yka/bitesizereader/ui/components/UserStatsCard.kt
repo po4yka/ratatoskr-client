@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.SmallLoading
+import com.po4yka.bitesizereader.domain.model.TopicStat
 import com.po4yka.bitesizereader.domain.model.UserStats
 
 /**
@@ -121,8 +122,8 @@ fun UserStatsCard(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             verticalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-                            topics.take(5).forEach { topic ->
-                                TopicChip(topic = topic)
+                            topics.take(5).forEach { topicStat ->
+                                TopicChip(topicStat = topicStat)
                             }
                         }
                     }
@@ -185,11 +186,11 @@ private fun StatItem(
 @Suppress("FunctionNaming")
 @Composable
 private fun TopicChip(
-    topic: String,
+    topicStat: TopicStat,
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = topic,
+        text = "${topicStat.topic} (${topicStat.count})",
         style = Carbon.typography.label01,
         color = Carbon.theme.textOnColor,
         modifier =
