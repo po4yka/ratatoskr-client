@@ -1,0 +1,109 @@
+package com.po4yka.bitesizereader.ui.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import com.gabrieldrn.carbon.Carbon
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
+
+/**
+ * Standardized screen header component for consistent header styling across the app.
+ *
+ * @param title The title text to display in the header
+ * @param modifier Modifier for the header row
+ * @param isDetailScreen If true, uses smaller height (56dp) for detail screens with back button.
+ *                       If false, uses larger height (64dp) for main navigation screens.
+ * @param onBackClick Optional callback for back navigation. If provided, shows a back arrow button.
+ * @param actions Optional composable lambda for action buttons on the right side of the header.
+ */
+@Suppress("FunctionNaming")
+@Composable
+fun ScreenHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+    isDetailScreen: Boolean = false,
+    onBackClick: (() -> Unit)? = null,
+    actions: (@Composable RowScope.() -> Unit)? = null,
+) {
+    val headerHeight =
+        if (isDetailScreen) {
+            Dimensions.detailHeaderHeight
+        } else {
+            Dimensions.headerHeight
+        }
+
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(headerHeight)
+                .background(Carbon.theme.background)
+                .padding(horizontal = Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        // Back button (optional)
+        if (onBackClick != null) {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = CarbonIcons.ArrowLeft,
+                    contentDescription = "Back",
+                    tint = Carbon.theme.iconPrimary,
+                    modifier = Modifier.size(IconSizes.md),
+                )
+            }
+        }
+
+        // Title
+        Text(
+            text = title,
+            style = Carbon.typography.heading04,
+            color = Carbon.theme.textPrimary,
+            modifier = Modifier.weight(1f),
+        )
+
+        // Action buttons (optional)
+        actions?.invoke(this)
+    }
+}
+
+/**
+ * Standardized header icon button for consistent icon styling in headers.
+ *
+ * @param icon The icon to display
+ * @param contentDescription Accessibility description for the icon
+ * @param onClick Callback when the button is clicked
+ * @param modifier Modifier for the IconButton
+ */
+@Suppress("FunctionNaming")
+@Composable
+fun HeaderIconButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = Carbon.theme.iconPrimary,
+            modifier = Modifier.size(IconSizes.md),
+        )
+    }
+}

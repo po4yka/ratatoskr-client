@@ -38,9 +38,13 @@ import com.mikepenz.markdown.model.DefaultMarkdownColors
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.ErrorView
+import com.po4yka.bitesizereader.ui.components.HeaderIconButton
+import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.TagChip
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.ReadIndicator
+import com.po4yka.bitesizereader.ui.theme.Spacing
 import kotlin.time.Instant
 
 /** Summary detail screen using Carbon Design System */
@@ -110,47 +114,27 @@ private fun SummaryDetailHeader(
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
 ) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .background(Carbon.theme.layer01)
-                .padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconButton(onClick = onBackClick) {
-            Icon(
-                imageVector = CarbonIcons.ArrowLeft,
-                contentDescription = "Back",
-                tint = Carbon.theme.iconPrimary,
-            )
-        }
-
-        Text(
-            text = "Summary",
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
-            modifier = Modifier.weight(1f),
-        )
-
-        summary?.let { s ->
-            Icon(
-                imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
-                contentDescription = if (s.isRead) "Read" else "Unread",
-                tint = if (s.isRead) ReadIndicator else Carbon.theme.iconSecondary,
-                modifier = Modifier.size(20.dp),
-            )
-
-            IconButton(onClick = onShareClick) {
+    ScreenHeader(
+        title = "Summary",
+        isDetailScreen = true,
+        onBackClick = onBackClick,
+        actions = {
+            summary?.let { s ->
                 Icon(
-                    imageVector = CarbonIcons.Share,
+                    imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
+                    contentDescription = if (s.isRead) "Read" else "Unread",
+                    tint = if (s.isRead) ReadIndicator else Carbon.theme.iconSecondary,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+
+                HeaderIconButton(
+                    icon = CarbonIcons.Share,
                     contentDescription = "Share",
-                    tint = Carbon.theme.iconPrimary,
+                    onClick = onShareClick,
                 )
             }
-        }
-    }
+        },
+    )
 }
 
 @Suppress("FunctionNaming")
@@ -165,7 +149,7 @@ private fun SummaryDetailContent(
             modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+                .padding(Spacing.md),
     ) {
         Text(
             text = summary.title,
@@ -173,7 +157,7 @@ private fun SummaryDetailContent(
             color = Carbon.theme.textPrimary,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
 
         Text(
             text = extractDomain(summary.sourceUrl) ?: "Unknown source",
@@ -187,21 +171,21 @@ private fun SummaryDetailContent(
             color = Carbon.theme.textSecondary,
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         if (summary.tags.isNotEmpty()) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
                 summary.tags.forEach { tag -> TagChip(tag = tag) }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(Spacing.md))
         }
 
         HorizontalDivider(color = Carbon.theme.borderSubtle00)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         // Markdown content with Carbon-themed colors
         val markdownColors =

@@ -25,6 +25,7 @@ import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.gabrieldrn.carbon.textinput.TextInput
 import com.gabrieldrn.carbon.textinput.TextInputState
+import com.po4yka.bitesizereader.ui.theme.Dimensions
 
 private const val CONFIRMATION_TEXT = "DELETE"
 
@@ -48,7 +49,7 @@ fun DeleteAccountDialog(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(Dimensions.dialogCornerRadius))
                     .background(Carbon.theme.layer01)
                     .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),

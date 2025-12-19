@@ -25,6 +25,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.Spacing
 
 @Suppress("FunctionNaming")
 @Composable
@@ -47,9 +49,9 @@ fun SummaryCardSkeleton(modifier: Modifier = Modifier) {
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                 .background(Carbon.theme.layer01)
-                .padding(16.dp),
+                .padding(Spacing.md),
     ) {
         // Thumbnail placeholder
         SkeletonBox(
@@ -57,11 +59,11 @@ fun SummaryCardSkeleton(modifier: Modifier = Modifier) {
             color = shimmerColor,
         )
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(Spacing.md))
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             // Title placeholder (2 lines)
             SkeletonBox(
@@ -79,7 +81,7 @@ fun SummaryCardSkeleton(modifier: Modifier = Modifier) {
                 color = shimmerColor,
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(Spacing.xxs))
 
             // Source placeholder
             SkeletonBox(
@@ -102,7 +104,7 @@ private fun SkeletonBox(
     Box(
         modifier =
             modifier
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                 .background(color),
     )
 }

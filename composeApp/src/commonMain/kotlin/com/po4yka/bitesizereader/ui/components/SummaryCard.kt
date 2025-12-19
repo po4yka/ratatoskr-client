@@ -23,6 +23,7 @@ import coil3.compose.AsyncImage
 import androidx.compose.material3.Text
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.ReadIndicator
 
 /**
@@ -92,7 +93,7 @@ fun SummaryCard(
                         imageVector = CarbonIcons.CheckmarkFilled,
                         contentDescription = "Read",
                         tint = ReadIndicator,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(IconSizes.xs),
                     )
                 }
             }

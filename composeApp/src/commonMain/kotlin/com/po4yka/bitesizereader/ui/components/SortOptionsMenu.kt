@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.presentation.state.SortOrder
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.IconSizes
 
 /**
  * Sort options menu with trigger button and dropdown.
@@ -45,7 +46,7 @@ fun SortOptionsMenu(
                 imageVector = CarbonIcons.SortAscending,
                 contentDescription = "Sort by ${currentSortOrder.displayName()}",
                 tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(IconSizes.md),
             )
         }
 

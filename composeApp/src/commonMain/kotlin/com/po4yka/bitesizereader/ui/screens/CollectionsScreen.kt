@@ -24,7 +24,9 @@ import com.po4yka.bitesizereader.domain.model.CollectionType
 import com.po4yka.bitesizereader.domain.repository.CollectionRepository
 import com.po4yka.bitesizereader.ui.components.CollectionItem
 import com.po4yka.bitesizereader.ui.components.EmptyStateView
+import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Spacing
 import org.koin.compose.koinInject
 
 private const val USER_COLLECTIONS_SPLIT_INDEX = 5
@@ -120,21 +122,7 @@ fun CollectionsScreen(
 @Suppress("FunctionNaming")
 @Composable
 private fun CollectionsHeader() {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .background(Carbon.theme.background)
-                .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "Collections",
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
-        )
-    }
+    ScreenHeader(title = "Collections")
 }
 
 @Suppress("FunctionNaming")
@@ -148,6 +136,6 @@ private fun SectionHeader(title: String) {
             Modifier
                 .fillMaxWidth()
                 .background(Carbon.theme.background)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = Spacing.md, vertical = Spacing.xs),
     )
 }

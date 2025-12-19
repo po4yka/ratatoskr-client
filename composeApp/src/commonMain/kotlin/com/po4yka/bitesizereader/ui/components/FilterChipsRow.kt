@@ -22,6 +22,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.presentation.state.ReadFilter
+import com.po4yka.bitesizereader.ui.theme.Spacing
 
 @Suppress("FunctionNaming", "LongParameterList")
 @Composable
@@ -34,9 +35,9 @@ fun FilterChipsRow(
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
-        modifier = modifier.padding(vertical = 12.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.padding(vertical = Spacing.sm),
+        contentPadding = PaddingValues(horizontal = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Read filter chips
@@ -71,7 +72,7 @@ private fun FilterChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(Spacing.md)
     val backgroundColor =
         if (isSelected) {
             Carbon.theme.backgroundInverse
@@ -98,7 +99,7 @@ private fun FilterChip(
                 .background(backgroundColor)
                 .border(1.dp, borderColor, shape)
                 .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = Spacing.md, vertical = Spacing.xs)
                 .semantics {
                     role = Role.Tab
                     selected = isSelected
