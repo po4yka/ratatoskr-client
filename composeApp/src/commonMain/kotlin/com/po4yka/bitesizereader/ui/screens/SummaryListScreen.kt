@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -54,6 +53,10 @@ import com.po4yka.bitesizereader.ui.components.RecentSearchesSection
 import com.po4yka.bitesizereader.ui.components.SummaryGridCard
 import com.po4yka.bitesizereader.ui.components.SwipeableSummaryCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
+import com.gabrieldrn.carbon.loading.SmallLoading
 
 /**
  * Summary list screen with search, filtering, sorting, swipe actions,
@@ -179,9 +182,9 @@ private fun SummaryListHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(64.dp)
+                .height(Dimensions.headerHeight)
                 .background(Carbon.theme.background)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -197,7 +200,7 @@ private fun SummaryListHeader(
                 imageVector = if (isSearchActive) CarbonIcons.Close else CarbonIcons.Search,
                 contentDescription = if (isSearchActive) "Close search" else "Search",
                 tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(IconSizes.md),
             )
         }
 
@@ -217,7 +220,7 @@ private fun SummaryListHeader(
                         "Switch to list view"
                     },
                 tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(IconSizes.md),
             )
         }
 
@@ -233,7 +236,7 @@ private fun SummaryListHeader(
                 imageVector = CarbonIcons.Renew,
                 contentDescription = "Refresh",
                 tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(IconSizes.md),
             )
         }
     }
@@ -374,14 +377,10 @@ private fun SummaryListView(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(Spacing.md),
                     contentAlignment = Alignment.Center,
                 ) {
-                    CircularProgressIndicator(
-                        color = Carbon.theme.linkPrimary,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier.size(24.dp),
-                    )
+                    SmallLoading()
                 }
             }
         }
@@ -434,14 +433,10 @@ private fun SummaryGridView(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(Spacing.md),
                     contentAlignment = Alignment.Center,
                 ) {
-                    CircularProgressIndicator(
-                        color = Carbon.theme.linkPrimary,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier.size(24.dp),
-                    )
+                    SmallLoading()
                 }
             }
         }

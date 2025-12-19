@@ -52,6 +52,8 @@ import com.po4yka.bitesizereader.ui.components.EmptyStateView
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.SummaryCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.Spacing
 
 @Suppress("FunctionNaming")
 @Composable
@@ -125,8 +127,8 @@ private fun CollectionViewHeader(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
-                    .padding(horizontal = 8.dp),
+                    .height(Dimensions.detailHeaderHeight)
+                    .padding(horizontal = Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBackClick) {
@@ -138,7 +140,7 @@ private fun CollectionViewHeader(
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(Spacing.xs))
 
             Text(
                 text = collection?.name ?: "Collection",
@@ -166,8 +168,8 @@ private fun CollectionInfoSection(collection: Collection) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp),
+                .padding(horizontal = Spacing.md)
+                .padding(bottom = Spacing.md),
     ) {
         val description = collection.description
         if (!description.isNullOrBlank()) {
@@ -178,12 +180,12 @@ private fun CollectionInfoSection(collection: Collection) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing.xs))
         }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             Text(
                 text = "${collection.count} items",
@@ -282,12 +284,12 @@ private fun TabItem(
         modifier =
             Modifier
                 .clickable(enabled = enabled, onClick = onClick)
-                .padding(horizontal = 24.dp, vertical = 12.dp),
+                .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xxs + 2.dp),
         ) {
             Icon(
                 imageVector = icon,
@@ -302,7 +304,7 @@ private fun TabItem(
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
 
         // Bottom indicator
         Box(
@@ -360,8 +362,8 @@ private fun ItemsTabContent(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(Spacing.md),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
                 items(items = state.items, key = { it.id }) { summary ->
                     SummaryCard(
@@ -376,7 +378,7 @@ private fun ItemsTabContent(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp),
+                                    .padding(Spacing.md),
                             contentAlignment = Alignment.Center,
                         ) {
                             Loading(modifier = Modifier.size(44.dp))
@@ -428,8 +430,8 @@ private fun SettingsTabContent(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         item {
             Text(
@@ -440,7 +442,7 @@ private fun SettingsTabContent(
         }
 
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                 Text(
                     text = "Name",
                     style = Carbon.typography.label01,
@@ -457,7 +459,7 @@ private fun SettingsTabContent(
         }
 
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                 Text(
                     text = "Description",
                     style = Carbon.typography.label01,
@@ -502,7 +504,7 @@ private fun SettingsTabContent(
         item {
             HorizontalDivider(
                 color = Carbon.theme.borderSubtle00,
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(vertical = Spacing.xs),
             )
         }
 
@@ -605,8 +607,8 @@ private fun SharingTabContent(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         item {
             Text(
@@ -641,9 +643,9 @@ private fun SharingTabContent(
                             .fillMaxWidth()
                             .background(
                                 Carbon.theme.layer01,
-                                RoundedCornerShape(4.dp),
+                                RoundedCornerShape(Dimensions.cardCornerRadius),
                             )
-                            .padding(12.dp),
+                            .padding(Spacing.sm),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
@@ -686,7 +688,7 @@ private fun SharingTabContent(
         item {
             HorizontalDivider(
                 color = Carbon.theme.borderSubtle00,
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(vertical = Spacing.xs),
             )
         }
 
@@ -716,10 +718,10 @@ private fun SharingTabContent(
                             .fillMaxWidth()
                             .background(
                                 Carbon.theme.layer01,
-                                RoundedCornerShape(4.dp),
+                                RoundedCornerShape(Dimensions.cardCornerRadius),
                             )
-                            .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                            .padding(Spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
                 ) {
                     Text(
                         text = "Invite Token:",

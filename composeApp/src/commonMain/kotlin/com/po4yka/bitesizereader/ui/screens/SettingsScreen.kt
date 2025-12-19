@@ -37,9 +37,11 @@ import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.ui.components.DeleteAccountDialog
 import com.po4yka.bitesizereader.ui.components.RequestHistorySection
+import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.SessionsSection
 import com.po4yka.bitesizereader.ui.components.UserStatsCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Spacing
 
 /**
  * Settings screen using Carbon Design System
@@ -88,21 +90,7 @@ fun SettingsScreen(component: SettingsComponent) {
 @Suppress("FunctionNaming")
 @Composable
 private fun SettingsHeader() {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .background(Carbon.theme.layer01)
-                .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "Settings",
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
-        )
-    }
+    ScreenHeader(title = "Settings")
 }
 
 @Suppress("FunctionNaming", "LongParameterList")
@@ -125,8 +113,8 @@ private fun SettingsContent(
         modifier =
             Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         // User Stats Card
         UserStatsCard(

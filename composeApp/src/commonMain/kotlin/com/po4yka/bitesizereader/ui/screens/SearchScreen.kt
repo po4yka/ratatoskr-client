@@ -46,10 +46,14 @@ import com.po4yka.bitesizereader.presentation.navigation.SearchComponent
 import com.po4yka.bitesizereader.presentation.state.SearchMode
 import com.po4yka.bitesizereader.presentation.state.SearchState
 import com.po4yka.bitesizereader.presentation.viewmodel.SearchViewModel
+import com.po4yka.bitesizereader.ui.components.ContextualEmptyState
+import com.po4yka.bitesizereader.ui.components.EmptyStateType
 import com.po4yka.bitesizereader.ui.components.RecentSearchesSection
 import com.po4yka.bitesizereader.ui.components.SummaryCard
 import com.po4yka.bitesizereader.ui.components.TrendingTopicsSection
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.Spacing
 
 /**
  * Full-screen search destination with search bar, filters, trending topics,
@@ -130,8 +134,8 @@ private fun SearchScreenHeader(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 16.dp),
+                    .height(Dimensions.detailHeaderHeight)
+                    .padding(horizontal = Spacing.md),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -157,8 +161,8 @@ private fun SearchScreenHeader(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 12.dp),
+                    .padding(horizontal = Spacing.md)
+                    .padding(bottom = Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Search input
@@ -167,7 +171,7 @@ private fun SearchScreenHeader(
                     Modifier
                         .weight(1f)
                         .background(Carbon.theme.layer02)
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                        .padding(horizontal = Spacing.sm, vertical = Spacing.xs + 2.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
@@ -183,7 +187,7 @@ private fun SearchScreenHeader(
                     modifier =
                         Modifier
                             .weight(1f)
-                            .padding(horizontal = 12.dp),
+                            .padding(horizontal = Spacing.sm),
                     singleLine = true,
                     textStyle =
                         Carbon.typography.bodyCompact01.copy(
@@ -221,7 +225,7 @@ private fun SearchScreenHeader(
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(Spacing.xs))
 
             // Search mode toggle
             SearchModeChip(
@@ -253,7 +257,7 @@ private fun SearchModeChip(
             modifier
                 .background(Carbon.theme.linkPrimary)
                 .clickable(onClick = onClick)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
     )
 }
 
@@ -269,19 +273,19 @@ private fun SearchFiltersPanel(
             modifier
                 .fillMaxWidth()
                 .background(Carbon.theme.layer01)
-                .padding(16.dp),
+                .padding(Spacing.md),
     ) {
         Text(
             text = "Filters",
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
-            modifier = Modifier.padding(bottom = 12.dp),
+            modifier = Modifier.padding(bottom = Spacing.sm),
         )
 
         // Read filter row
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             ReadFilterChip(
                 label = "All",
@@ -358,7 +362,7 @@ private fun ReadFilterChip(
             modifier
                 .background(backgroundColor)
                 .clickable(onClick = onClick)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
     )
 }
 
@@ -380,7 +384,7 @@ private fun SearchScreenContent(
         state.query.isEmpty() -> {
             LazyColumn(
                 modifier = modifier.fillMaxSize(),
-                contentPadding = PaddingValues(vertical = 8.dp),
+                contentPadding = PaddingValues(vertical = Spacing.xs),
             ) {
                 // Trending topics
                 if (state.trendingTopics.isNotEmpty()) {
@@ -409,7 +413,8 @@ private fun SearchScreenContent(
                 // Empty state if no discovery content
                 if (state.trendingTopics.isEmpty() && state.recentSearches.isEmpty()) {
                     item {
-                        SearchEmptyPrompt(
+                        ContextualEmptyState(
+                            type = EmptyStateType.SEARCH_PROMPT,
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
@@ -433,18 +438,18 @@ private fun SearchScreenContent(
 
         // Error state with no results
         state.error != null && state.results.isEmpty() -> {
-            val errorMessage = state.error ?: "Unknown error"
-            SearchErrorState(
-                error = errorMessage,
-                onRetry = onRetry,
+            ContextualEmptyState(
+                type = EmptyStateType.ERROR,
+                onAction = onRetry,
                 modifier = modifier.fillMaxSize(),
             )
         }
 
         // No results found
         state.results.isEmpty() -> {
-            SearchNoResults(
-                query = state.query,
+            ContextualEmptyState(
+                type = EmptyStateType.NO_SEARCH_RESULTS,
+                searchQuery = state.query,
                 modifier = modifier.fillMaxSize(),
             )
         }
@@ -460,125 +465,6 @@ private fun SearchScreenContent(
                 modifier = modifier,
             )
         }
-    }
-}
-
-@Suppress("FunctionNaming")
-@Composable
-private fun SearchEmptyPrompt(modifier: Modifier = Modifier) {
-    Column(
-        modifier =
-            modifier
-                .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            imageVector = CarbonIcons.Search,
-            contentDescription = null,
-            tint = Carbon.theme.iconSecondary,
-            modifier = Modifier.size(64.dp),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Search your summaries",
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Find articles by keywords or use AI-powered semantic search",
-            style = Carbon.typography.body01,
-            color = Carbon.theme.textSecondary,
-        )
-    }
-}
-
-@Suppress("FunctionNaming")
-@Composable
-private fun SearchNoResults(
-    query: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier =
-            modifier
-                .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(
-            imageVector = CarbonIcons.Search,
-            contentDescription = null,
-            tint = Carbon.theme.iconSecondary,
-            modifier = Modifier.size(64.dp),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "No results found",
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "No summaries match \"$query\"",
-            style = Carbon.typography.body01,
-            color = Carbon.theme.textSecondary,
-        )
-    }
-}
-
-@Suppress("FunctionNaming")
-@Composable
-private fun SearchErrorState(
-    error: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier =
-            modifier
-                .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(
-            imageVector = CarbonIcons.WarningAlt,
-            contentDescription = null,
-            tint = Carbon.theme.supportError,
-            modifier = Modifier.size(64.dp),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Search failed",
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = error,
-            style = Carbon.typography.body01,
-            color = Carbon.theme.textSecondary,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            label = "Retry",
-            onClick = onRetry,
-            buttonType = ButtonType.Primary,
-        )
     }
 }
 
@@ -611,8 +497,8 @@ private fun SearchResultsList(
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         items(
             items = results,
@@ -631,7 +517,7 @@ private fun SearchResultsList(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(Spacing.md),
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(

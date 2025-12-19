@@ -25,6 +25,7 @@ import coil3.compose.AsyncImage
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.IconSizes
 
 @Suppress("FunctionNaming")
 @Composable
@@ -90,7 +91,7 @@ fun SummaryGridCard(
                         imageVector = CarbonIcons.Checkmark,
                         contentDescription = "Read",
                         tint = Carbon.theme.textOnColor,
-                        modifier = Modifier.size(12.dp),
+                        modifier = Modifier.size(IconSizes.xs),
                     )
                 }
             }

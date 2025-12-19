@@ -19,6 +19,8 @@ import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.TopicStat
 import com.po4yka.bitesizereader.domain.model.UserStats
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.Spacing
 
 /**
  * Card displaying user statistics on the settings screen.
@@ -35,10 +37,10 @@ fun UserStatsCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                 .background(Carbon.theme.layer01)
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = "Your Statistics",
@@ -49,7 +51,7 @@ fun UserStatsCard(
         when {
             isLoading -> {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     SmallLoading()
@@ -111,7 +113,7 @@ fun UserStatsCard(
                 // Favorite topics (if available)
                 stats.favoriteTopics?.takeIf { it.isNotEmpty() }?.let { topics ->
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
                     ) {
                         Text(
                             text = "Favorite Topics",
@@ -119,8 +121,8 @@ fun UserStatsCard(
                             color = Carbon.theme.textSecondary,
                         )
                         FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp),
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xxs + 2.dp),
+                            verticalArrangement = Arrangement.spacedBy(Spacing.xxs + 2.dp),
                         ) {
                             topics.take(5).forEach { topicStat ->
                                 TopicChip(topicStat = topicStat)
@@ -195,9 +197,9 @@ private fun TopicChip(
         color = Carbon.theme.textOnColor,
         modifier =
             modifier
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(Spacing.sm))
                 .background(Carbon.theme.linkPrimary)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = Spacing.xs, vertical = Spacing.xxs),
     )
 }
 

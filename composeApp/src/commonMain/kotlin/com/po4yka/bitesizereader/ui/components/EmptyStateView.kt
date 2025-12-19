@@ -19,6 +19,8 @@ import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
 
 /**
  * Pre-defined empty state types for common scenarios.
@@ -29,6 +31,8 @@ enum class EmptyStateType {
     NO_UNREAD_ARTICLES,
     NO_READ_ARTICLES,
     ERROR,
+    SEARCH_PROMPT,
+    COLLECTION_EMPTY,
 }
 
 /**
@@ -84,6 +88,20 @@ fun ContextualEmptyState(
                     icon = CarbonIcons.WarningAlt,
                     actionText = "Retry",
                 )
+            EmptyStateType.SEARCH_PROMPT ->
+                EmptyStateConfig(
+                    title = "Search articles",
+                    message = "Enter a search term to find articles",
+                    icon = CarbonIcons.Search,
+                    actionText = null,
+                )
+            EmptyStateType.COLLECTION_EMPTY ->
+                EmptyStateConfig(
+                    title = "Collection is empty",
+                    message = "Add articles to this collection",
+                    icon = CarbonIcons.Folder,
+                    actionText = null,
+                )
         }
 
     EmptyStateView(
@@ -120,7 +138,7 @@ fun EmptyStateView(
         modifier =
             modifier
                 .fillMaxSize()
-                .padding(horizontal = 48.dp, vertical = 32.dp),
+                .padding(horizontal = Spacing.xxl, vertical = Spacing.xl),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -128,10 +146,10 @@ fun EmptyStateView(
             imageVector = icon,
             contentDescription = null,
             tint = Carbon.theme.iconSecondary,
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(IconSizes.xl),
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         Text(
             text = title,
@@ -140,7 +158,7 @@ fun EmptyStateView(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(Spacing.sm))
 
         Text(
             text = message,
@@ -150,7 +168,7 @@ fun EmptyStateView(
         )
 
         if (actionText != null && onAction != null) {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(Spacing.xl))
 
             Button(
                 label = actionText,
