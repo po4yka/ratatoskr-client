@@ -98,11 +98,11 @@ fun TokenRefreshResponseDto.toAuthTokens(
     refreshToken: String,
 ): AuthTokens {
     return AuthTokens(
-        accessToken = accessToken,
-        refreshToken = refreshToken,
-        tokenType = tokenType,
-        expiresIn = expiresIn,
-        expiresAt = currentTime + expiresIn.seconds,
+        accessToken = tokens.accessToken,
+        refreshToken = tokens.refreshToken ?: refreshToken,
+        tokenType = tokens.tokenType,
+        expiresIn = tokens.expiresIn,
+        expiresAt = currentTime + tokens.expiresIn.seconds,
     )
 }
 
