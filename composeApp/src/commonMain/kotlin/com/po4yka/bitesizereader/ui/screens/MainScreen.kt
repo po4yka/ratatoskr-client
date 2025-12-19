@@ -71,6 +71,7 @@ fun MainScreen(
                             onBackClick = instance.component::onBackClicked,
                             onShareClick = { },
                         )
+                    is MainComponent.Child.Search -> SearchScreen(component = instance.component)
                     is MainComponent.Child.Collections ->
                         CollectionsScreen(
                             onCollectionClick = instance.component::onCollectionClicked,
@@ -112,6 +113,13 @@ private fun BottomNavigation(
             label = "Read Later",
             isSelected = activeChild is MainComponent.Child.SummaryList,
             onClick = { onTabSelected(MainComponent.Tab.SUMMARY_LIST) },
+        )
+
+        NavItem(
+            icon = CarbonIcons.Search,
+            label = "Search",
+            isSelected = activeChild is MainComponent.Child.Search,
+            onClick = { onTabSelected(MainComponent.Tab.SEARCH) },
         )
 
         NavItem(

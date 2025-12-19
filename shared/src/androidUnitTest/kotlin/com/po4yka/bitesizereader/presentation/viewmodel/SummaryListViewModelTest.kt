@@ -97,6 +97,7 @@ class SummaryListViewModelTest {
                 clearSearchHistoryUseCase = clearSearchHistoryUseCase,
                 syncDataUseCase = syncDataUseCase,
                 logoutUseCase = logoutUseCase,
+                dispatcher = testDispatcher,
             )
     }
 
