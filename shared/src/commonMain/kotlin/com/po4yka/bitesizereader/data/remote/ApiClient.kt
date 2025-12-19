@@ -81,6 +81,14 @@ class ApiClient(
 
             install(HttpCallValidator) {
                 handleResponseExceptionWithRequest { cause: Throwable, request: io.ktor.client.request.HttpRequest ->
+                    // Don't log cancellation exceptions as errors - they're expected during navigation
+                    if (cause is kotlin.coroutines.cancellation.CancellationException) {
+                        logger.debug {
+                            "Request cancelled: ${request.method.value} ${request.url}"
+                        }
+                        return@handleResponseExceptionWithRequest
+                    }
+
                     val response = (cause as? io.ktor.client.plugins.ResponseException)?.response
                     val bodySnippet =
                         response?.let {
@@ -88,12 +96,21 @@ class ApiClient(
                                 .getOrElse { "<body unavailable: ${it.message}>" }
                         } ?: "<no response body>"
                     val statusPart = response?.status?.toString() ?: "<no status>"
-                    logger.error(cause) {
+                    val statusCode = response?.status?.value ?: 0
+
+                    val message =
                         """
                         HTTP error while handling ${request.method.value} ${request.url}
                         Status: $statusPart
                         Body (truncated): $bodySnippet
                         """.trimIndent()
+
+                    // Log 4xx client errors as WARN (often expected: 401, 404, etc.)
+                    // Log 5xx server errors as ERROR (unexpected server failures)
+                    if (statusCode in 400..499) {
+                        logger.warn(cause) { message }
+                    } else {
+                        logger.error(cause) { message }
                     }
                 }
             }

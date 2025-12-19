@@ -118,6 +118,10 @@ class AuthRepositoryImpl(
                 } else {
                     null
                 }
+            } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+                // Rethrow cancellation - this is not a token error, just a coroutine being cancelled
+                logger.debug { "getCurrentUser request was cancelled" }
+                throw e
             } catch (e: Exception) {
                 logger.error(e) { "Failed to get current user" }
                 // Token might be expired or invalid, clear and force re-login
