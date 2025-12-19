@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,12 +13,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
@@ -30,6 +34,7 @@ import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.gabrieldrn.carbon.textinput.TextInput
 import com.gabrieldrn.carbon.textinput.TextInputState
+import com.po4yka.bitesizereader.data.local.DeveloperCredentials
 
 /**
  * Developer login dialog using Carbon Design System
@@ -38,13 +43,15 @@ import com.gabrieldrn.carbon.textinput.TextInputState
 fun DeveloperLoginDialog(
     isLoading: Boolean,
     error: String? = null,
+    savedCredentials: DeveloperCredentials? = null,
     onDismiss: () -> Unit,
-    onLogin: (Int, String, String) -> Unit,
+    onLogin: (userId: Int, clientId: String, secret: String, rememberCredentials: Boolean) -> Unit,
 ) {
-    var userId by remember { mutableStateOf("") }
-    var clientId by remember { mutableStateOf("") }
-    var secret by remember { mutableStateOf("") }
+    var userId by remember { mutableStateOf(savedCredentials?.userId?.toString() ?: "") }
+    var clientId by remember { mutableStateOf(savedCredentials?.clientId ?: "") }
+    var secret by remember { mutableStateOf(savedCredentials?.secret ?: "") }
     var isUserIdError by remember { mutableStateOf(false) }
+    var rememberCredentials by remember { mutableStateOf(true) }
 
     Dialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
@@ -108,12 +115,45 @@ fun DeveloperLoginDialog(
                         onDone = {
                             val uid = userId.toIntOrNull()
                             if (uid != null && clientId.isNotBlank() && secret.isNotBlank()) {
-                                onLogin(uid, clientId, secret)
+                                onLogin(uid, clientId, secret, rememberCredentials)
                             }
                         },
                     ),
                 modifier = Modifier.fillMaxWidth(),
             )
+
+            // Remember credentials checkbox
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable(enabled = !isLoading) {
+                            rememberCredentials = !rememberCredentials
+                        },
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = rememberCredentials,
+                    onCheckedChange = { rememberCredentials = it },
+                    enabled = !isLoading,
+                    colors =
+                        CheckboxDefaults.colors(
+                            checkedColor = Carbon.theme.linkPrimary,
+                            uncheckedColor = Carbon.theme.iconSecondary,
+                            checkmarkColor = Carbon.theme.textOnColor,
+                        ),
+                )
+                Text(
+                    text = "Remember credentials",
+                    style = Carbon.typography.body01,
+                    color =
+                        if (isLoading) {
+                            Carbon.theme.textDisabled
+                        } else {
+                            Carbon.theme.textSecondary
+                        },
+                )
+            }
 
             if (error != null) {
                 Text(
@@ -146,7 +186,7 @@ fun DeveloperLoginDialog(
                         onClick = {
                             val uid = userId.toIntOrNull()
                             if (uid != null && clientId.isNotBlank() && secret.isNotBlank()) {
-                                onLogin(uid, clientId, secret)
+                                onLogin(uid, clientId, secret, rememberCredentials)
                             }
                         },
                         isEnabled =
