@@ -4,8 +4,11 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+
+private val logger = KotlinLogging.logger {}
 
 class SyncWorker(
     context: Context,
@@ -18,7 +21,7 @@ class SyncWorker(
             syncDataUseCase()
             Result.success()
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error(e) { "Sync worker failed, will retry" }
             Result.retry()
         }
     }
