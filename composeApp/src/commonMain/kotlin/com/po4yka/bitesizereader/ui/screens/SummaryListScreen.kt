@@ -179,19 +179,16 @@ private fun SummaryListHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(56.dp)
-                .background(Carbon.theme.layer01)
-                .padding(horizontal = 8.dp),
+                .height(64.dp)
+                .background(Carbon.theme.background)
+                .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = title,
-            style = Carbon.typography.heading03,
+            style = Carbon.typography.heading04,
             color = Carbon.theme.textPrimary,
-            modifier =
-                Modifier
-                    .weight(1f)
-                    .padding(start = 8.dp),
+            modifier = Modifier.weight(1f),
         )
 
         // Search toggle
@@ -200,7 +197,7 @@ private fun SummaryListHeader(
                 imageVector = if (isSearchActive) CarbonIcons.Close else CarbonIcons.Search,
                 contentDescription = if (isSearchActive) "Close search" else "Search",
                 tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(24.dp),
             )
         }
 
@@ -220,7 +217,7 @@ private fun SummaryListHeader(
                         "Switch to list view"
                     },
                 tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(24.dp),
             )
         }
 
@@ -236,7 +233,7 @@ private fun SummaryListHeader(
                 imageVector = CarbonIcons.Renew,
                 contentDescription = "Refresh",
                 tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(24.dp),
             )
         }
     }

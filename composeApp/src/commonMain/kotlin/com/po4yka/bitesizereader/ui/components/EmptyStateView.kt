@@ -120,37 +120,37 @@ fun EmptyStateView(
         modifier =
             modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(horizontal = 48.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = title,
-            tint = Carbon.theme.textSecondary,
-            modifier = Modifier.size(64.dp),
+            contentDescription = null,
+            tint = Carbon.theme.iconSecondary,
+            modifier = Modifier.size(80.dp),
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
             text = title,
-            style = Carbon.typography.heading03,
+            style = Carbon.typography.heading04,
             color = Carbon.theme.textPrimary,
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Text(
             text = message,
-            style = Carbon.typography.bodyCompact01,
+            style = Carbon.typography.body01,
             color = Carbon.theme.textSecondary,
             textAlign = TextAlign.Center,
         )
 
         if (actionText != null && onAction != null) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 label = actionText,

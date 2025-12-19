@@ -45,7 +45,7 @@ fun SortOptionsMenu(
                 imageVector = CarbonIcons.SortAscending,
                 contentDescription = "Sort by ${currentSortOrder.displayName()}",
                 tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(24.dp),
             )
         }
 
