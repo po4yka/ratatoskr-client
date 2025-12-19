@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -23,7 +24,8 @@ class DefaultRootComponent(
     private val authRepository: AuthRepository by inject()
 
     // Use lifecycle-bound coroutine scope from Decompose/Essenty
-    private val scope = coroutineScope(SupervisorJob())
+    // Must use Main dispatcher for navigation operations
+    private val scope = coroutineScope(Dispatchers.Main.immediate + SupervisorJob())
 
     override val childStack: Value<ChildStack<*, RootComponent.Child>> =
         childStack(
