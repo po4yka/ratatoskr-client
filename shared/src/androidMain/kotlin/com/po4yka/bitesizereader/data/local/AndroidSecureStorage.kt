@@ -40,7 +40,35 @@ class AndroidSecureStorage(private val context: Context) : SecureStorage {
     }
 
     override suspend fun clearTokens() {
-        dataStore.edit { it.clear() }
+        dataStore.edit { prefs ->
+            prefs.remove(KEY_ACCESS_TOKEN)
+            prefs.remove(KEY_REFRESH_TOKEN)
+        }
+    }
+
+    override suspend fun saveDeveloperCredentials(
+        userId: Int,
+        clientId: String,
+        secret: String,
+    ) {
+        saveEncrypted(KEY_DEV_USER_ID, userId.toString())
+        saveEncrypted(KEY_DEV_CLIENT_ID, clientId)
+        saveEncrypted(KEY_DEV_SECRET, secret)
+    }
+
+    override suspend fun getDeveloperCredentials(): DeveloperCredentials? {
+        val userId = getDecrypted(KEY_DEV_USER_ID)?.toIntOrNull() ?: return null
+        val clientId = getDecrypted(KEY_DEV_CLIENT_ID) ?: return null
+        val secret = getDecrypted(KEY_DEV_SECRET) ?: return null
+        return DeveloperCredentials(userId, clientId, secret)
+    }
+
+    override suspend fun clearDeveloperCredentials() {
+        dataStore.edit { prefs ->
+            prefs.remove(KEY_DEV_USER_ID)
+            prefs.remove(KEY_DEV_CLIENT_ID)
+            prefs.remove(KEY_DEV_SECRET)
+        }
     }
 
     private suspend fun saveEncrypted(
@@ -78,6 +106,9 @@ class AndroidSecureStorage(private val context: Context) : SecureStorage {
     private companion object {
         val KEY_ACCESS_TOKEN = stringPreferencesKey("access_token")
         val KEY_REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+        val KEY_DEV_USER_ID = stringPreferencesKey("developer_user_id")
+        val KEY_DEV_CLIENT_ID = stringPreferencesKey("developer_client_id")
+        val KEY_DEV_SECRET = stringPreferencesKey("developer_secret")
     }
 }
 

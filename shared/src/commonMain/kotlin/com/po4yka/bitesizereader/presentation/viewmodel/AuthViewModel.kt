@@ -1,10 +1,13 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
+import com.po4yka.bitesizereader.domain.usecase.ClearDeveloperCredentialsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetCurrentUserUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetDeveloperCredentialsUseCase
 import com.po4yka.bitesizereader.domain.usecase.LoginWithSecretUseCase
 import com.po4yka.bitesizereader.domain.usecase.LoginWithTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
+import com.po4yka.bitesizereader.domain.usecase.SaveDeveloperCredentialsUseCase
 import com.po4yka.bitesizereader.presentation.state.AuthState
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
@@ -22,12 +25,16 @@ class AuthViewModel(
     private val loginWithSecretUseCase: LoginWithSecretUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getDeveloperCredentialsUseCase: GetDeveloperCredentialsUseCase,
+    private val saveDeveloperCredentialsUseCase: SaveDeveloperCredentialsUseCase,
+    private val clearDeveloperCredentialsUseCase: ClearDeveloperCredentialsUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(AuthState())
     val state = _state.asStateFlow()
 
     init {
         checkAuthStatus()
+        loadSavedDeveloperCredentials()
     }
 
     private fun checkAuthStatus() {
@@ -38,6 +45,13 @@ class AuthViewModel(
                     user = user,
                     isAuthenticated = user != null,
                 )
+        }
+    }
+
+    private fun loadSavedDeveloperCredentials() {
+        viewModelScope.launch {
+            val credentials = getDeveloperCredentialsUseCase()
+            _state.value = _state.value.copy(savedDeveloperCredentials = credentials)
         }
     }
 
@@ -67,18 +81,35 @@ class AuthViewModel(
         userId: Int,
         clientId: String,
         secret: String,
+        rememberCredentials: Boolean = true,
     ) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
                 loginWithSecretUseCase(userId, clientId, secret)
                 val user = getCurrentUserUseCase()
+
+                // Save credentials if requested
+                if (rememberCredentials) {
+                    saveDeveloperCredentialsUseCase(userId, clientId, secret)
+                }
+
                 _state.value =
                     _state.value.copy(
                         isLoading = false,
                         isAuthenticated = true,
                         user = user,
                         error = null,
+                        savedDeveloperCredentials =
+                            if (rememberCredentials) {
+                                com.po4yka.bitesizereader.data.local.DeveloperCredentials(
+                                    userId,
+                                    clientId,
+                                    secret,
+                                )
+                            } else {
+                                _state.value.savedDeveloperCredentials
+                            },
                     )
             } catch (e: Exception) {
                 logger.error(e) { "Login with Secret failed" }
@@ -88,10 +119,19 @@ class AuthViewModel(
     }
 
     @Suppress("unused") // Public API for UI layer
-    fun logout() {
+    fun logout(clearSavedCredentials: Boolean = false) {
         viewModelScope.launch {
             logoutUseCase()
-            _state.value = _state.value.copy(isAuthenticated = false, user = null)
+            if (clearSavedCredentials) {
+                clearDeveloperCredentialsUseCase()
+            }
+            _state.value =
+                _state.value.copy(
+                    isAuthenticated = false,
+                    user = null,
+                    savedDeveloperCredentials =
+                        if (clearSavedCredentials) null else _state.value.savedDeveloperCredentials,
+                )
         }
     }
 }

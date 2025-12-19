@@ -142,9 +142,10 @@ fun AuthScreen(
                 DeveloperLoginDialog(
                     isLoading = state.isLoading,
                     error = state.error,
+                    savedCredentials = state.savedDeveloperCredentials,
                     onDismiss = { showDevLogin = false },
-                    onLogin = { userId, clientId, secret ->
-                        viewModel.loginWithSecret(userId, clientId, secret)
+                    onLogin = { userId, clientId, secret, rememberCredentials ->
+                        viewModel.loginWithSecret(userId, clientId, secret, rememberCredentials)
                     },
                 )
             }
