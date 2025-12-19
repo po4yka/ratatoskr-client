@@ -1,8 +1,10 @@
 package com.po4yka.bitesizereader.presentation.navigation
 
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryListViewModel
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import org.koin.core.component.get
 
 interface SummaryListComponent {
     val viewModel: SummaryListViewModel
@@ -11,9 +13,10 @@ interface SummaryListComponent {
 }
 
 class DefaultSummaryListComponent(
+    componentContext: ComponentContext,
     private val onSummarySelected: (String) -> Unit,
-) : SummaryListComponent, KoinComponent {
-    override val viewModel: SummaryListViewModel by inject()
+) : SummaryListComponent, ComponentContext by componentContext, KoinComponent {
+    override val viewModel: SummaryListViewModel = retainedInstance { get() }
 
     override fun onSummaryClicked(id: String) {
         onSummarySelected(id)

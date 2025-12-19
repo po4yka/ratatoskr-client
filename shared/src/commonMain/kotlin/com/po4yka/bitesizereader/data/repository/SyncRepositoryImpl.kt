@@ -20,12 +20,14 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
@@ -48,6 +50,9 @@ private const val MIN_BATCH_SIZE = 25
 
 /** Maximum batch size for adaptive sizing */
 private const val MAX_BATCH_SIZE = 500
+
+/** Timeout for the entire sync operation (5 minutes) */
+private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 
 @Single
 class SyncRepositoryImpl(
@@ -104,7 +109,13 @@ class SyncRepositoryImpl(
         currentSyncJob = coroutineContext[Job]
 
         try {
-            syncWithSessionBasedEndpoint(forceFull)
+            withTimeout(SYNC_TIMEOUT_MS) {
+                syncWithSessionBasedEndpoint(forceFull)
+            }
+        } catch (e: TimeoutCancellationException) {
+            logger.error { "Sync operation timed out after ${SYNC_TIMEOUT_MS / 1000}s" }
+            updateProgress(phase = SyncPhase.FAILED, errorMessage = "Sync timed out")
+            throw e
         } catch (e: CancellationException) {
             updateProgress(phase = SyncPhase.CANCELLED)
             throw e

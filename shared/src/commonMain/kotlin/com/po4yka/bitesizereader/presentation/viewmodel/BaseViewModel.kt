@@ -1,51 +1,48 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
+import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
 /**
- * Base ViewModel with lifecycle management and proper cleanup
+ * Base ViewModel with lifecycle management integrated with Decompose's InstanceKeeper.
  *
- * Provides a scoped CoroutineScope that is automatically cancelled when the ViewModel
- * is cleared, preventing memory leaks and resource waste.
+ * Implements [InstanceKeeper.Instance] to properly integrate with Decompose navigation,
+ * allowing ViewModels to survive configuration changes on Android and be properly
+ * cleaned up when components are destroyed.
  *
- * Usage:
+ * ViewModels should be created using `retainedInstance { }` in components:
  * ```kotlin
- * class MyViewModel(...) : BaseViewModel() {
- *     init {
- *         viewModelScope.launch {
- *             // Your code here
- *         }
+ * class DefaultMyComponent(
+ *     componentContext: ComponentContext,
+ * ) : MyComponent, ComponentContext by componentContext, KoinComponent {
+ *     override val viewModel = retainedInstance {
+ *         getKoin().get<MyViewModel>()
  *     }
  * }
  * ```
  *
- * Don't forget to call onCleared() when the ViewModel is no longer needed:
- * - Android: In onStop/onDestroy or when navigation leaves the screen
- * - iOS: In the wrapper's deinit
+ * The ViewModel's coroutines are automatically cancelled when the component is destroyed.
  */
-abstract class BaseViewModel {
+abstract class BaseViewModel : InstanceKeeper.Instance {
     /**
-     * CoroutineScope tied to this ViewModel's lifecycle
+     * CoroutineScope tied to this ViewModel's lifecycle.
      *
-     * Automatically cancelled when onCleared() is called.
+     * Automatically cancelled when onDestroy() is called by InstanceKeeper.
      * Uses SupervisorJob so that failure of one coroutine doesn't cancel others.
      * Uses Dispatchers.Default for KMP compatibility (Main is not available on all platforms).
      */
     protected val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     /**
-     * Called when the ViewModel is about to be destroyed
+     * Called by InstanceKeeper when the component is destroyed.
      *
      * Cancels all running coroutines and cleans up resources.
-     * This method should be called from:
-     * - Android: Navigation component's onStop or Activity/Fragment onDestroy
-     * - iOS: SwiftUI wrapper's deinit
+     * This is called automatically by Decompose when the component lifecycle ends.
      */
-    @Suppress("unused") // Lifecycle method called by platform layer
-    open fun onCleared() {
+    override fun onDestroy() {
         viewModelScope.cancel()
     }
 }

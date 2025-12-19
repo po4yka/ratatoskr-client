@@ -17,6 +17,14 @@ private val logger = KotlinLogging.logger {}
 interface MainComponent {
     val childStack: Value<ChildStack<*, Child>>
 
+    fun navigateToTab(tab: Tab)
+
+    enum class Tab {
+        SUMMARY_LIST,
+        COLLECTIONS,
+        SETTINGS,
+    }
+
     sealed class Child {
         data class SummaryList(val component: SummaryListComponent) : Child()
 
@@ -51,26 +59,30 @@ class DefaultMainComponent(
         when (config) {
             is Config.SummaryList ->
                 MainComponent.Child.SummaryList(
-                    DefaultSummaryListComponent { id ->
-                        navigateToSummaryDetail(id)
-                    },
+                    DefaultSummaryListComponent(
+                        componentContext = componentContext,
+                        onSummarySelected = { id -> navigateToSummaryDetail(id) },
+                    ),
                 )
             is Config.SummaryDetail ->
                 MainComponent.Child.SummaryDetail(
                     DefaultSummaryDetailComponent(
+                        componentContext = componentContext,
                         summaryId = config.summaryId,
                         onBack = { navigation.pop() },
                     ),
                 )
             is Config.Collections ->
                 MainComponent.Child.Collections(
-                    DefaultCollectionsComponent { collectionId ->
-                        navigateToCollectionView(collectionId)
-                    },
+                    DefaultCollectionsComponent(
+                        componentContext = componentContext,
+                        onCollectionSelected = { collectionId -> navigateToCollectionView(collectionId) },
+                    ),
                 )
             is Config.CollectionView ->
                 MainComponent.Child.CollectionView(
                     DefaultCollectionViewComponent(
+                        componentContext = componentContext,
                         collectionId = config.collectionId,
                         onBack = { navigation.pop() },
                         onNavigateToSummary = { summaryId -> navigation.push(Config.SummaryDetail(summaryId)) },
@@ -92,7 +104,13 @@ class DefaultMainComponent(
         navigation.push(Config.CollectionView(collectionId = collectionId))
     }
 
-    fun onTabSelected(config: Config) {
+    override fun navigateToTab(tab: MainComponent.Tab) {
+        val config =
+            when (tab) {
+                MainComponent.Tab.SUMMARY_LIST -> Config.SummaryList()
+                MainComponent.Tab.COLLECTIONS -> Config.Collections
+                MainComponent.Tab.SETTINGS -> Config.Settings
+            }
         navigation.bringToFront(config)
     }
 

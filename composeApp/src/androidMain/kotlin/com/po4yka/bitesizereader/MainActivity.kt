@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.arkivanov.decompose.defaultComponentContext
+import com.arkivanov.decompose.retainedComponent
 import com.po4yka.bitesizereader.presentation.navigation.DefaultRootComponent
 import com.po4yka.bitesizereader.ui.theme.BiteSizeReaderTheme
 
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val root = DefaultRootComponent(defaultComponentContext())
+        val root = retainedComponent { DefaultRootComponent(it) }
 
         setContent {
             BiteSizeReaderTheme {

@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.gabrieldrn.carbon.Carbon
-import com.po4yka.bitesizereader.presentation.navigation.DefaultMainComponent
 import com.po4yka.bitesizereader.presentation.navigation.MainComponent
 
 /**
@@ -87,11 +86,7 @@ fun MainScreen(
         if (showBottomNav) {
             BottomNavigation(
                 activeChild = activeChild,
-                onTabSelected = { config ->
-                    if (component is DefaultMainComponent) {
-                        component.onTabSelected(config)
-                    }
-                },
+                onTabSelected = { tab -> component.navigateToTab(tab) },
             )
         }
     }
@@ -101,7 +96,7 @@ fun MainScreen(
 @Composable
 private fun BottomNavigation(
     activeChild: MainComponent.Child,
-    onTabSelected: (DefaultMainComponent.Config) -> Unit,
+    onTabSelected: (MainComponent.Tab) -> Unit,
 ) {
     Row(
         modifier =
@@ -116,21 +111,21 @@ private fun BottomNavigation(
             icon = CarbonIcons.Bookmark,
             label = "Read Later",
             isSelected = activeChild is MainComponent.Child.SummaryList,
-            onClick = { onTabSelected(DefaultMainComponent.Config.SummaryList()) },
+            onClick = { onTabSelected(MainComponent.Tab.SUMMARY_LIST) },
         )
 
         NavItem(
             icon = CarbonIcons.Folder,
             label = "Collections",
             isSelected = activeChild is MainComponent.Child.Collections,
-            onClick = { onTabSelected(DefaultMainComponent.Config.Collections) },
+            onClick = { onTabSelected(MainComponent.Tab.COLLECTIONS) },
         )
 
         NavItem(
             icon = CarbonIcons.Settings,
             label = "Settings",
             isSelected = activeChild is MainComponent.Child.Settings,
-            onClick = { onTabSelected(DefaultMainComponent.Config.Settings) },
+            onClick = { onTabSelected(MainComponent.Tab.SETTINGS) },
         )
     }
 }

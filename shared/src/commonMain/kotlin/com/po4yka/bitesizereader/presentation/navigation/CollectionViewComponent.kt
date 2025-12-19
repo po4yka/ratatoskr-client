@@ -1,8 +1,10 @@
 package com.po4yka.bitesizereader.presentation.navigation
 
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.bitesizereader.presentation.viewmodel.CollectionViewViewModel
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import org.koin.core.component.get
 
 interface CollectionViewComponent {
     val viewModel: CollectionViewViewModel
@@ -16,16 +18,16 @@ interface CollectionViewComponent {
 }
 
 class DefaultCollectionViewComponent(
+    componentContext: ComponentContext,
     override val collectionId: String,
     private val onBack: () -> Unit,
     private val onNavigateToSummary: (String) -> Unit,
     private val onCollectionDeleted: () -> Unit,
-) : CollectionViewComponent, KoinComponent {
-    override val viewModel: CollectionViewViewModel by inject()
-
-    init {
-        viewModel.loadCollection(collectionId)
-    }
+) : CollectionViewComponent, ComponentContext by componentContext, KoinComponent {
+    override val viewModel: CollectionViewViewModel =
+        retainedInstance {
+            get<CollectionViewViewModel>().also { it.loadCollection(collectionId) }
+        }
 
     override fun onBackClicked() {
         onBack()

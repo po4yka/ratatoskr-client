@@ -23,6 +23,7 @@ import com.po4yka.bitesizereader.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -121,6 +122,9 @@ class SummaryListViewModel(
     }
 
     private suspend fun loadSummariesFromDatabase() {
+        // Early cancellation check before starting work
+        kotlin.coroutines.coroutineContext.ensureActive()
+
         val currentState = _state.value
 
         if (currentState.searchQuery.isNotBlank()) {
