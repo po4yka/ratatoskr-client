@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.arkivanov.essenty.instancekeeper.InstanceKeeper
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,16 +26,21 @@ import kotlinx.coroutines.cancel
  * ```
  *
  * The ViewModel's coroutines are automatically cancelled when the component is destroyed.
+ *
+ * @param dispatcher The dispatcher to use for viewModelScope. Defaults to [Dispatchers.Default]
+ *                   for KMP compatibility. In tests, pass a [TestDispatcher] for deterministic behavior.
  */
-abstract class BaseViewModel : InstanceKeeper.Instance {
+abstract class BaseViewModel(
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
+) : InstanceKeeper.Instance {
     /**
      * CoroutineScope tied to this ViewModel's lifecycle.
      *
      * Automatically cancelled when onDestroy() is called by InstanceKeeper.
      * Uses SupervisorJob so that failure of one coroutine doesn't cancel others.
-     * Uses Dispatchers.Default for KMP compatibility (Main is not available on all platforms).
+     * Uses the provided dispatcher (defaults to Dispatchers.Default for KMP compatibility).
      */
-    protected val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    protected val viewModelScope = CoroutineScope(SupervisorJob() + dispatcher)
 
     /**
      * Called by InstanceKeeper when the component is destroyed.

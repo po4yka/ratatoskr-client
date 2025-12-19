@@ -21,6 +21,8 @@ import com.po4yka.bitesizereader.util.error.AppError
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
@@ -50,7 +52,8 @@ class SummaryListViewModel(
     private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase,
     private val syncDataUseCase: SyncDataUseCase,
     private val logoutUseCase: LogoutUseCase,
-) : BaseViewModel() {
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
+) : BaseViewModel(dispatcher) {
     private val _state = MutableStateFlow(SummaryListState())
     val state = _state.asStateFlow()
 

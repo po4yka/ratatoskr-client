@@ -21,6 +21,7 @@ interface MainComponent {
 
     enum class Tab {
         SUMMARY_LIST,
+        SEARCH,
         COLLECTIONS,
         SETTINGS,
     }
@@ -29,6 +30,8 @@ interface MainComponent {
         data class SummaryList(val component: SummaryListComponent) : Child()
 
         data class SummaryDetail(val component: SummaryDetailComponent) : Child()
+
+        data class Search(val component: SearchComponent) : Child()
 
         data class Collections(val component: CollectionsComponent) : Child()
 
@@ -93,6 +96,13 @@ class DefaultMainComponent(
                 MainComponent.Child.Settings(
                     DefaultSettingsComponent(componentContext),
                 )
+            is Config.Search ->
+                MainComponent.Child.Search(
+                    DefaultSearchComponent(
+                        componentContext = componentContext,
+                        onSummarySelected = { id -> navigateToSummaryDetail(id) },
+                    ),
+                )
         }
 
     private fun navigateToSummaryDetail(summaryId: String) {
@@ -108,6 +118,7 @@ class DefaultMainComponent(
         val config =
             when (tab) {
                 MainComponent.Tab.SUMMARY_LIST -> Config.SummaryList()
+                MainComponent.Tab.SEARCH -> Config.Search
                 MainComponent.Tab.COLLECTIONS -> Config.Collections
                 MainComponent.Tab.SETTINGS -> Config.Settings
             }
@@ -130,5 +141,8 @@ class DefaultMainComponent(
 
         @kotlinx.serialization.Serializable
         data object Settings : Config
+
+        @kotlinx.serialization.Serializable
+        data object Search : Config
     }
 }
