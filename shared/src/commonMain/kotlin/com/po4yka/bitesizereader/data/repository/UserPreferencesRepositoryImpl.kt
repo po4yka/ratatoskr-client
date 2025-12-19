@@ -11,7 +11,7 @@ import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
-@Single
+@Single(binds = [UserPreferencesRepository::class])
 class UserPreferencesRepositoryImpl(
     private val userPreferencesApi: UserPreferencesApi,
 ) : UserPreferencesRepository {

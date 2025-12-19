@@ -25,7 +25,7 @@ import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
-@Single
+@Single(binds = [AuthRepository::class])
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val secureStorage: SecureStorage,

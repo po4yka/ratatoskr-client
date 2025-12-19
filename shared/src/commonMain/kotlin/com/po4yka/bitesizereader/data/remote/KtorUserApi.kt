@@ -12,7 +12,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [UserApi::class])
 class KtorUserApi(
     private val client: HttpClient,
 ) : UserApi {

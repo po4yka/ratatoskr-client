@@ -11,7 +11,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [NotificationsApi::class])
 class KtorNotificationsApi(private val client: HttpClient) : NotificationsApi {
     override suspend fun registerDevice(payload: DeviceRegistrationPayload): ApiResponseDto<BaseResponse> {
         return client.post("v1/notifications/device") {

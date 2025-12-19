@@ -13,7 +13,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [UserPreferencesApi::class])
 class KtorUserPreferencesApi(private val client: HttpClient) : UserPreferencesApi {
     override suspend fun getPreferences(): ApiResponseDto<UserPreferencesDto> {
         return client.get("v1/user/preferences").body()
