@@ -21,7 +21,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [SummariesApi::class])
 class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
     override suspend fun getSummaries(
         page: Int,

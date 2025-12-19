@@ -11,7 +11,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [SearchApi::class])
 class KtorSearchApi(private val client: HttpClient) : SearchApi {
     override suspend fun search(
         query: String,

@@ -18,7 +18,7 @@ import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
-@Single
+@Single(binds = [SummaryRepository::class])
 class SummaryRepositoryImpl(
     private val database: Database,
     private val api: SummariesApi,

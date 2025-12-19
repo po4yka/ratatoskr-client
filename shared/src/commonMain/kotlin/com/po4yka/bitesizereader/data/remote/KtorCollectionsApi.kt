@@ -33,7 +33,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [CollectionsApi::class])
 class KtorCollectionsApi(private val client: HttpClient) : CollectionsApi {
     override suspend fun listCollections(): ApiResponseDto<CollectionListResponse> =
         retryWithBackoff(RetryPolicy.DEFAULT) {

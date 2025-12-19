@@ -17,7 +17,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [SyncApi::class])
 class KtorSyncApi(private val client: HttpClient) : SyncApi {
     // ========================================================================
     // Session-Based Sync (new OpenAPI spec)

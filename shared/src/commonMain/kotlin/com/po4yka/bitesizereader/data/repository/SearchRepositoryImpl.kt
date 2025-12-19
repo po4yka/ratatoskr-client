@@ -8,7 +8,7 @@ import com.po4yka.bitesizereader.domain.repository.SearchRepository
 import kotlin.time.Clock
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [SearchRepository::class])
 class SearchRepositoryImpl(
     private val database: Database,
     private val api: SearchApi,

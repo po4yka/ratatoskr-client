@@ -16,7 +16,7 @@ import kotlinx.coroutines.IO
 import kotlin.time.Clock
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [RequestRepository::class])
 class RequestRepositoryImpl(
     private val database: Database,
     private val api: RequestsApi,

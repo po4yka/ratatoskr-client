@@ -10,7 +10,7 @@ import org.koin.core.annotation.Single
 
 import io.ktor.client.plugins.ClientRequestException
 
-@Single
+@Single(binds = [UserRepository::class])
 class UserRepositoryImpl(
     private val userApi: UserApi,
 ) : UserRepository {

@@ -17,7 +17,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [RequestsApi::class])
 class KtorRequestsApi(private val client: HttpClient) : RequestsApi {
     // No retry for submit - avoid duplicate URL submissions
     override suspend fun submitUrl(request: SubmitURLRequestDto): ApiResponseDto<SubmitRequestResponseDto> {

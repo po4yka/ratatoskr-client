@@ -19,7 +19,7 @@ import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
-@Single
+@Single(binds = [CollectionRepository::class])
 class CollectionRepositoryImpl(
     private val api: CollectionsApi,
 ) : CollectionRepository {

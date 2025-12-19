@@ -54,7 +54,7 @@ private const val MAX_BATCH_SIZE = 500
 /** Timeout for the entire sync operation (5 minutes) */
 private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 
-@Single
+@Single(binds = [SyncRepository::class])
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,

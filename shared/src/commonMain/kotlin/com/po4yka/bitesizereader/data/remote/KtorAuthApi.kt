@@ -21,7 +21,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import org.koin.core.annotation.Single
 
-@Single
+@Single(binds = [AuthApi::class])
 class KtorAuthApi(private val client: HttpClient) : AuthApi {
     // ========================================================================
     // Login Methods
