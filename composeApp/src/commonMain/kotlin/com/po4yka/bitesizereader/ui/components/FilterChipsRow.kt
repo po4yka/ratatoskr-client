@@ -34,9 +34,10 @@ fun FilterChipsRow(
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
-        modifier = modifier,
+        modifier = modifier.padding(vertical = 12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         // Read filter chips
         items(ReadFilter.entries.toTypedArray()) { filter ->
@@ -97,7 +98,7 @@ private fun FilterChip(
                 .background(backgroundColor)
                 .border(1.dp, borderColor, shape)
                 .clickable(onClick = onClick)
-                .padding(horizontal = 12.dp, vertical = 6.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .semantics {
                     role = Role.Tab
                     selected = isSelected
@@ -106,7 +107,7 @@ private fun FilterChip(
     ) {
         Text(
             text = label,
-            style = Carbon.typography.label01,
+            style = Carbon.typography.bodyCompact01,
             color = textColor,
         )
     }

@@ -3,6 +3,7 @@ package com.po4yka.bitesizereader.ui.screens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,8 @@ import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.CollectionType
 import com.po4yka.bitesizereader.domain.repository.CollectionRepository
 import com.po4yka.bitesizereader.ui.components.CollectionItem
+import com.po4yka.bitesizereader.ui.components.EmptyStateView
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import org.koin.compose.koinInject
 
 private const val USER_COLLECTIONS_SPLIT_INDEX = 5
@@ -39,62 +42,76 @@ fun CollectionsScreen(
     val repository: CollectionRepository = koinInject()
     val collections by repository.getCollections().collectAsState(initial = emptyList())
 
-    LazyColumn(
+    Column(
         modifier =
             modifier
                 .fillMaxSize()
                 .background(Carbon.theme.background),
     ) {
         // Header
-        item {
-            CollectionsHeader()
-        }
+        CollectionsHeader()
 
-        val systemCollections = collections.filter { it.type == CollectionType.System && it.id != "trash" }
-        val userCollections = collections.filter { it.type == CollectionType.User }
-        val trashCollection = collections.find { it.id == "trash" }
-
-        // System Section (Unsorted, Read Later)
-        items(systemCollections) { collection ->
-            CollectionItem(
-                collection = collection,
-                onClick = { onCollectionClick(collection.id) },
+        if (collections.isEmpty()) {
+            // Empty state
+            EmptyStateView(
+                title = "No collections yet",
+                message = "Create collections to organize your articles",
+                icon = CarbonIcons.Folder,
+                modifier = Modifier.fillMaxSize(),
             )
-        }
+        } else {
+            // Collections list
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                val systemCollections =
+                    collections.filter { it.type == CollectionType.System && it.id != "trash" }
+                val userCollections = collections.filter { it.type == CollectionType.User }
+                val trashCollection = collections.find { it.id == "trash" }
 
-        // User collections sections
-        if (userCollections.isNotEmpty()) {
-            stickyHeader {
-                SectionHeader("Work")
-            }
-            items(userCollections.take(USER_COLLECTIONS_SPLIT_INDEX)) { collection ->
-                CollectionItem(
-                    collection = collection,
-                    onClick = { onCollectionClick(collection.id) },
-                )
-            }
-
-            if (userCollections.size > USER_COLLECTIONS_SPLIT_INDEX) {
-                stickyHeader {
-                    SectionHeader("Other")
-                }
-                items(userCollections.drop(USER_COLLECTIONS_SPLIT_INDEX)) { collection ->
+                // System Section (Unsorted, Read Later)
+                items(systemCollections) { collection ->
                     CollectionItem(
                         collection = collection,
                         onClick = { onCollectionClick(collection.id) },
                     )
                 }
-            }
-        }
 
-        // Trash at bottom
-        trashCollection?.let {
-            item {
-                HorizontalDivider(color = Carbon.theme.borderSubtle00)
-                CollectionItem(
-                    collection = it,
-                    onClick = { onCollectionClick(it.id) },
-                )
+                // User collections sections
+                if (userCollections.isNotEmpty()) {
+                    stickyHeader {
+                        SectionHeader("Work")
+                    }
+                    items(userCollections.take(USER_COLLECTIONS_SPLIT_INDEX)) { collection ->
+                        CollectionItem(
+                            collection = collection,
+                            onClick = { onCollectionClick(collection.id) },
+                        )
+                    }
+
+                    if (userCollections.size > USER_COLLECTIONS_SPLIT_INDEX) {
+                        stickyHeader {
+                            SectionHeader("Other")
+                        }
+                        items(userCollections.drop(USER_COLLECTIONS_SPLIT_INDEX)) { collection ->
+                            CollectionItem(
+                                collection = collection,
+                                onClick = { onCollectionClick(collection.id) },
+                            )
+                        }
+                    }
+                }
+
+                // Trash at bottom
+                trashCollection?.let {
+                    item {
+                        HorizontalDivider(color = Carbon.theme.borderSubtle00)
+                        CollectionItem(
+                            collection = it,
+                            onClick = { onCollectionClick(it.id) },
+                        )
+                    }
+                }
             }
         }
     }
@@ -107,15 +124,14 @@ private fun CollectionsHeader() {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(48.dp)
-                .background(Carbon.theme.layer01)
+                .height(64.dp)
+                .background(Carbon.theme.background)
                 .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
             text = "Collections",
-            style = Carbon.typography.heading03,
+            style = Carbon.typography.heading04,
             color = Carbon.theme.textPrimary,
         )
     }
