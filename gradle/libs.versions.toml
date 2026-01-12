@@ -41,7 +41,7 @@ logback-classic = "1.5.22"
 coil = "3.3.0"
 
 # iOS Specific
-skie = "0.10.8"
+skie = "0.10.9"
 
 # gRPC / Wire
 wire = "5.4.0"
