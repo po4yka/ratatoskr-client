@@ -11,4 +11,5 @@ data class Summary(
     val createdAt: Instant,
     val isRead: Boolean,
     val tags: List<String>,
+    val readingTimeMin: Int? = null,
 )

@@ -14,7 +14,8 @@ class GetFilteredSummariesUseCase(private val repository: SummaryRepository) {
         pageSize: Int,
         readFilter: ReadFilter,
         sortOrder: SortOrder,
+        selectedTag: String? = null,
     ): Flow<List<Summary>> {
-        return repository.getSummariesFiltered(page, pageSize, readFilter, sortOrder)
+        return repository.getSummariesFiltered(page, pageSize, readFilter, sortOrder, selectedTag)
     }
 }

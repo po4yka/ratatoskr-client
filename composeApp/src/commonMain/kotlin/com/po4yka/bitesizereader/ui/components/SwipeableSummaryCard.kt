@@ -182,6 +182,8 @@ fun SwipeableSummaryCard(
             SummaryCard(
                 summary = summary,
                 onClick = onClick,
+                onDeleteClick = onDelete,
+                onMarkReadClick = onMarkRead,
             )
         }
     }

@@ -320,6 +320,8 @@ private fun SummaryListContent(
                     SummaryGridView(
                         state = state,
                         onSummaryClick = onSummaryClick,
+                        onDelete = onDelete,
+                        onMarkRead = onMarkRead,
                         onLoadMore = onLoadMore,
                         modifier = modifier,
                     )
@@ -387,11 +389,13 @@ private fun SummaryListView(
     }
 }
 
-@Suppress("FunctionNaming")
+@Suppress("FunctionNaming", "LongParameterList")
 @Composable
 private fun SummaryGridView(
     state: SummaryListState,
     onSummaryClick: (String) -> Unit,
+    onDelete: (String) -> Unit,
+    onMarkRead: (String) -> Unit,
     onLoadMore: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -423,6 +427,8 @@ private fun SummaryGridView(
             SummaryGridCard(
                 summary = summary,
                 onClick = { onSummaryClick(summary.id) },
+                onDeleteClick = { onDelete(summary.id) },
+                onMarkReadClick = { onMarkRead(summary.id) },
             )
         }
 

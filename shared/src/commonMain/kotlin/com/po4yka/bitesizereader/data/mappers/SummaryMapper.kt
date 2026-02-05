@@ -15,6 +15,7 @@ fun SummaryCompactDto.toDomain(): Summary {
         createdAt = Instant.parse(createdAt),
         isRead = isRead,
         tags = topicTags,
+        readingTimeMin = readingTimeMin,
     )
 }
 
@@ -28,6 +29,7 @@ fun SummaryEntity.toDomain(): Summary {
         createdAt = createdAt,
         isRead = isRead,
         tags = tags,
+        readingTimeMin = readingTimeMin,
     )
 }
 
@@ -41,6 +43,7 @@ fun SummaryCompactDto.toEntity(isReadOverride: Boolean? = null): SummaryEntity {
         createdAt = Instant.parse(createdAt),
         isRead = isReadOverride ?: isRead,
         tags = topicTags,
+        readingTimeMin = readingTimeMin,
     )
 }
 
@@ -54,5 +57,6 @@ fun Summary.toEntity(): SummaryEntity {
         createdAt = createdAt,
         isRead = isRead,
         tags = tags,
+        readingTimeMin = readingTimeMin,
     )
 }

@@ -20,6 +20,13 @@ private val instantColumnAdapter =
         override fun encode(value: Instant): Long = value.toEpochMilliseconds()
     }
 
+private val intColumnAdapter =
+    object : ColumnAdapter<Int, Long> {
+        override fun decode(databaseValue: Long): Int = databaseValue.toInt()
+
+        override fun encode(value: Int): Long = value.toLong()
+    }
+
 @Module
 class DatabaseModule {
     @Single
@@ -30,6 +37,7 @@ class DatabaseModule {
             summaryEntityAdapter =
                 SummaryEntity.Adapter(
                     createdAtAdapter = instantColumnAdapter,
+                    readingTimeMinAdapter = intColumnAdapter,
                     tagsAdapter =
                         object : ColumnAdapter<List<String>, String> {
                             override fun decode(databaseValue: String): List<String> =
