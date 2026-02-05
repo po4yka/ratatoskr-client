@@ -19,12 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.Text
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.ReadIndicator
+import com.po4yka.bitesizereader.util.extractDomain
 
 /**
  * Card component for displaying a summary in a list using Carbon Design System
@@ -34,6 +42,8 @@ import com.po4yka.bitesizereader.ui.theme.ReadIndicator
 fun SummaryCard(
     summary: Summary,
     onClick: () -> Unit,
+    onDeleteClick: () -> Unit = {},
+    onMarkReadClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -46,20 +56,6 @@ fun SummaryCard(
                 .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Image (if available)
-        if (!summary.imageUrl.isNullOrBlank()) {
-            AsyncImage(
-                model = summary.imageUrl,
-                contentDescription = "Thumbnail for ${summary.title}",
-                modifier =
-                    Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(4.dp)),
-                contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-        }
-
         Column(modifier = Modifier.weight(1f)) {
             // Title
             Text(
@@ -69,6 +65,17 @@ fun SummaryCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
+
+            if (summary.content.isNotBlank()) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = summary.content.take(150).replace("\n", " "),
+                    style = Carbon.typography.bodyCompact01,
+                    color = Carbon.theme.textSecondary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -99,18 +106,55 @@ fun SummaryCard(
             }
         }
 
-        // More Options Icon
+        // More Options Menu
         Spacer(modifier = Modifier.width(8.dp))
-        Icon(
-            imageVector = CarbonIcons.OverflowMenuVertical,
-            contentDescription = "More options",
-            tint = Carbon.theme.iconSecondary,
-            modifier = Modifier.size(20.dp),
-        )
-    }
-}
 
-private fun extractDomain(url: String): String? {
-    val noProtocol = url.substringAfter("://", url)
-    return noProtocol.substringBefore("/").ifBlank { null }
+        var menuExpanded by remember { mutableStateOf(false) }
+
+        Box {
+            IconButton(onClick = { menuExpanded = true }) {
+                Icon(
+                    imageVector = CarbonIcons.OverflowMenuVertical,
+                    contentDescription = "More options",
+                    tint = Carbon.theme.iconSecondary,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+            ) {
+                DropdownMenuItem(
+                    text = { Text(if (summary.isRead) "Already read" else "Mark as read") },
+                    onClick = {
+                        menuExpanded = false
+                        if (!summary.isRead) onMarkReadClick()
+                    },
+                    enabled = !summary.isRead,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = CarbonIcons.CheckmarkFilled,
+                            contentDescription = null,
+                            modifier = Modifier.size(IconSizes.xs),
+                        )
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text("Delete", color = Carbon.theme.supportError) },
+                    onClick = {
+                        menuExpanded = false
+                        onDeleteClick()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = CarbonIcons.TrashCan,
+                            contentDescription = null,
+                            tint = Carbon.theme.supportError,
+                            modifier = Modifier.size(IconSizes.xs),
+                        )
+                    },
+                )
+            }
+        }
+    }
 }

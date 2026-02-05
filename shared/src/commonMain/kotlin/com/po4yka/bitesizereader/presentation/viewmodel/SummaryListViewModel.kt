@@ -147,6 +147,7 @@ class SummaryListViewModel(
                         pageSize = DEFAULT_PAGE_SIZE,
                         readFilter = currentState.readFilter,
                         sortOrder = currentState.sortOrder,
+                        selectedTag = currentState.selectedTag,
                     ).first()
 
                 _state.value =
@@ -365,6 +366,7 @@ class SummaryListViewModel(
                                 pageSize = DEFAULT_PAGE_SIZE,
                                 readFilter = startState.readFilter,
                                 sortOrder = startState.sortOrder,
+                                selectedTag = startState.selectedTag,
                             ).first()
 
                         // If filters/search changed while loading, don't merge incompatible pages.
@@ -372,7 +374,8 @@ class SummaryListViewModel(
                         val stateChanged =
                             current.readFilter != startState.readFilter ||
                                 current.sortOrder != startState.sortOrder ||
-                                current.searchQuery != startState.searchQuery
+                                current.searchQuery != startState.searchQuery ||
+                                current.selectedTag != startState.selectedTag
 
                         if (stateChanged) {
                             _state.value = current.copy(isLoadingMore = false)

@@ -11,7 +11,8 @@ CREATE TABLE summaryEntity (
     imageUrl TEXT,
     createdAt INTEGER AS Instant NOT NULL,
     isRead INTEGER AS Boolean NOT NULL DEFAULT 0,
-    tags TEXT AS List<String> NOT NULL
+    tags TEXT AS List<String> NOT NULL,
+    readingTimeMin INTEGER AS kotlin.Int
 );
 
 CREATE INDEX summary_isRead ON summaryEntity(isRead);
@@ -63,13 +64,16 @@ SELECT * FROM summaryEntity
 WHERE id = :id;
 
 insertSummary:
-INSERT OR REPLACE INTO summaryEntity(id, title, content, sourceUrl, imageUrl, createdAt, isRead, tags)
+INSERT OR REPLACE INTO summaryEntity(id, title, content, sourceUrl, imageUrl, createdAt, isRead, tags, readingTimeMin)
 VALUES ?;
 
 updateSummaryReadStatus:
 UPDATE summaryEntity
 SET isRead = :isRead
 WHERE id = :id;
+
+updateSummaryContent:
+UPDATE summaryEntity SET content = :content WHERE id = :id;
 
 deleteSummary:
 DELETE FROM summaryEntity
@@ -90,20 +94,22 @@ LIMIT :limit OFFSET :offset;
 getAllTags:
 SELECT tags FROM summaryEntity;
 
--- Filtered summaries with read filter and sort order
+-- Filtered summaries with read filter, tag filter, and sort order
 selectSummariesFiltered:
 SELECT * FROM summaryEntity
 WHERE (:readFilterAll = 1 OR isRead = :isRead)
+AND (:selectedTag IS NULL OR tags LIKE '%"' || :selectedTag || '"%')
 ORDER BY
     CASE WHEN :sortNewest = 1 THEN createdAt END DESC,
     CASE WHEN :sortOldest = 1 THEN createdAt END ASC,
     CASE WHEN :sortAlphabetical = 1 THEN title END ASC
 LIMIT :limit OFFSET :offset;
 
--- Count summaries with read filter
+-- Count summaries with read filter and tag filter
 countSummariesFiltered:
 SELECT COUNT(*) FROM summaryEntity
-WHERE (:readFilterAll = 1 OR isRead = :isRead);
+WHERE (:readFilterAll = 1 OR isRead = :isRead)
+AND (:selectedTag IS NULL OR tags LIKE '%"' || :selectedTag || '"%');
 
 -- Request Queries
 selectAllRequests:

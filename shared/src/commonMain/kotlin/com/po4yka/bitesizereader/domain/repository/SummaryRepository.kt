@@ -17,9 +17,12 @@ interface SummaryRepository {
         pageSize: Int,
         readFilter: ReadFilter,
         sortOrder: SortOrder,
+        selectedTag: String? = null,
     ): Flow<List<Summary>>
 
     suspend fun getSummaryById(id: String): Summary?
+
+    suspend fun getFullContent(id: String): String?
 
     suspend fun markAsRead(id: String)
 

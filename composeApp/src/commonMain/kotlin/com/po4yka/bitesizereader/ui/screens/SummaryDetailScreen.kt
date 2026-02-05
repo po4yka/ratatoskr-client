@@ -3,12 +3,12 @@
 package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
@@ -45,6 +45,7 @@ import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.ReadIndicator
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import com.po4yka.bitesizereader.util.extractDomain
 import kotlin.time.Instant
 
 /** Summary detail screen using Carbon Design System */
@@ -115,7 +116,7 @@ private fun SummaryDetailHeader(
     onShareClick: () -> Unit,
 ) {
     ScreenHeader(
-        title = "Summary",
+        title = summary?.let { extractDomain(it.sourceUrl) ?: "Summary" } ?: "Summary",
         isDetailScreen = true,
         onBackClick = onBackClick,
         actions = {
@@ -220,10 +221,10 @@ private fun SummaryDetailContent(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         HorizontalDivider(color = Carbon.theme.borderSubtle00)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
             text = "Original Article",
@@ -231,38 +232,37 @@ private fun SummaryDetailContent(
             color = Carbon.theme.textPrimary,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
 
+        val uriHandler = LocalUriHandler.current
         Text(
             text = summary.sourceUrl,
             style = Carbon.typography.label01,
             color = Carbon.theme.linkPrimary,
+            modifier = Modifier.clickable { uriHandler.openUri(summary.sourceUrl) },
         )
     }
 }
 
 private fun formatDate(instant: Instant): String {
-    val epochSeconds = instant.epochSeconds
-    // Convert epoch seconds to date components
-    // Using a simplified calculation for date formatting
-    val days = (epochSeconds / 86400).toInt() + 719468 // Days since year 0
-    var year = (10000L * days.toLong() + 14780) / 3652425
-    var doy = days - (365 * year + year / 4 - year / 100 + year / 400).toInt()
-    if (doy < 0) {
-        year--
-        doy = days - (365 * year + year / 4 - year / 100 + year / 400).toInt()
-    }
-    val mi = (100 * doy + 52) / 3060
-    val month = (mi + 2) % 12 + 1
-    year += (mi + 2) / 12
-    val day = doy - (mi * 306 + 5) / 10 + 1
-
+    val civilDate = civilFromDays((instant.epochSeconds / 86400).toInt())
     val monthNames =
         listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-    return "${monthNames[month - 1]} ${day.toString().padStart(2, '0')}, $year"
+    return "${monthNames[civilDate.month - 1]} ${civilDate.day.toString().padStart(2, '0')}, ${civilDate.year}"
 }
 
-private fun extractDomain(url: String): String? {
-    val noProtocol = url.substringAfter("://", url)
-    return noProtocol.substringBefore("/").ifBlank { null }
+private data class CivilDate(val year: Int, val month: Int, val day: Int)
+
+/** Converts days since Unix epoch to a civil date using Howard Hinnant's algorithm. */
+private fun civilFromDays(daysSinceEpoch: Int): CivilDate {
+    val z = daysSinceEpoch + 719468
+    val era = (if (z >= 0) z else z - 146096) / 146097
+    val doe = z - era * 146097
+    val yoe = (doe - doe / 1461 + doe / 36524 - doe / 146096) / 365
+    val y = yoe + era * 400
+    val doy = doe - (365 * yoe + yoe / 4 - yoe / 100)
+    val mp = (5 * doy + 2) / 153
+    val d = doy - (153 * mp + 2) / 5 + 1
+    val m = mp + (if (mp < 10) 3 else -9)
+    return CivilDate(y + (if (m <= 2) 1 else 0), m, d)
 }

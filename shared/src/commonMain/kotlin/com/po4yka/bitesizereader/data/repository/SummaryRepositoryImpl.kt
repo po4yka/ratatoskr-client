@@ -48,10 +48,12 @@ class SummaryRepositoryImpl(
         pageSize: Int,
         readFilter: ReadFilter,
         sortOrder: SortOrder,
+        selectedTag: String?,
     ): Flow<List<Summary>> {
         return database.databaseQueries.selectSummariesFiltered(
             readFilterAll = if (readFilter == ReadFilter.ALL) 1L else 0L,
             isRead = readFilter == ReadFilter.READ,
+            selectedTag = selectedTag,
             sortNewest = if (sortOrder == SortOrder.NEWEST) 1L else 0L,
             sortOldest = if (sortOrder == SortOrder.OLDEST) 1L else 0L,
             sortAlphabetical = if (sortOrder == SortOrder.ALPHABETICAL) 1L else 0L,
@@ -85,6 +87,22 @@ class SummaryRepositoryImpl(
                     createdAt = Clock.System.now().toEpochMilliseconds(),
                 )
             }
+        }
+    }
+
+    override suspend fun getFullContent(id: String): String? {
+        val remoteId = id.toLongOrNull() ?: return null
+        return try {
+            val response = api.getContent(remoteId)
+            if (response.success && response.data != null) {
+                database.databaseQueries.updateSummaryContent(response.data.content, id)
+                response.data.content
+            } else {
+                null
+            }
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            logger.warn(e) { "Failed to fetch full content for $id" }
+            null
         }
     }
 
