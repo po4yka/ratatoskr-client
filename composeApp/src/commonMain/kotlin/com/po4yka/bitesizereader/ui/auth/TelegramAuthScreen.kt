@@ -9,7 +9,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
@@ -30,6 +35,15 @@ fun TelegramAuthScreen(
     onAuthSuccess: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val authState by authViewModel.state.collectAsState()
+    var loginStarted by remember { mutableStateOf(false) }
+
+    LaunchedEffect(authState.isAuthenticated) {
+        if (loginStarted && authState.isAuthenticated) {
+            onAuthSuccess()
+        }
+    }
+
     val botUsername = AppConfig.Telegram.botUsername
     val origin = AppConfig.Telegram.callbackUrl
     val loginUrl =
@@ -62,10 +76,11 @@ fun TelegramAuthScreen(
                     .fillMaxSize()
                     .padding(top = 56.dp),
             onDeepLink = { url ->
+                if (loginStarted) return@WebView
                 val authData = parseTelegramAuthData(url)
                 if (authData != null) {
+                    loginStarted = true
                     authViewModel.login(authData)
-                    onAuthSuccess()
                 } else {
                     onDismiss()
                 }

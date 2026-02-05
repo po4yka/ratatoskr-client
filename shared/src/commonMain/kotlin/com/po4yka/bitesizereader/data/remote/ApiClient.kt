@@ -131,7 +131,7 @@ class ApiClient(
                         if (refreshToken != null) {
                             try {
                                 val response =
-                                    client.post("/v1/auth/refresh") {
+                                    client.post("v1/auth/refresh") {
                                         setBody(mapOf("refresh_token" to refreshToken))
                                     }
                                 val responseText = response.bodyAsText()

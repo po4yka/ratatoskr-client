@@ -185,6 +185,10 @@ wire {
 
 // SKIE configuration for better Swift/Kotlin interop
 skie {
+    // Temporarily disabled because the configured SKIE version doesn't support Kotlin 2.3.x yet.
+    // Re-enable after upgrading SKIE to a version that supports the Kotlin version in use.
+    isEnabled = false
+
     features {
         enableSwiftUIObservingPreview = true
     }

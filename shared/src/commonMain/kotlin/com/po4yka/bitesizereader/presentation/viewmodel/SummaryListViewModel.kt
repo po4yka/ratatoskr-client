@@ -28,7 +28,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
@@ -59,6 +59,7 @@ class SummaryListViewModel(
 
     private var searchJob: Job? = null
     private var loadJob: Job? = null
+    private var loadMoreJob: Job? = null
 
     init {
         syncAndLoad()
@@ -134,30 +135,35 @@ class SummaryListViewModel(
             // Use search when there's a query
             performSearch(currentState.searchQuery)
         } else {
-            // Use filtered query
-            getFilteredSummariesUseCase(
-                page = currentState.page,
-                pageSize = DEFAULT_PAGE_SIZE,
-                readFilter = currentState.readFilter,
-                sortOrder = currentState.sortOrder,
-            )
-                .catch { e ->
-                    logger.error(e) { "Failed to load summaries" }
-                    _state.value =
-                        _state.value.copy(
-                            isLoading = false,
-                            error = e.toAppError().userMessage(),
-                        )
-                }
-                .collect { summaries ->
-                    _state.value =
-                        _state.value.copy(
-                            summaries = summaries,
-                            isLoading = false,
-                            hasMore = summaries.size >= DEFAULT_PAGE_SIZE,
-                            error = null,
-                        )
-                }
+            // Use filtered query.
+            //
+            // IMPORTANT: We only take a single snapshot (first()).
+            // Collecting a DB-backed Flow indefinitely breaks paging because later DB emissions for
+            // page=1 would overwrite/replace the currently appended pages.
+            try {
+                val summaries =
+                    getFilteredSummariesUseCase(
+                        page = currentState.page,
+                        pageSize = DEFAULT_PAGE_SIZE,
+                        readFilter = currentState.readFilter,
+                        sortOrder = currentState.sortOrder,
+                    ).first()
+
+                _state.value =
+                    _state.value.copy(
+                        summaries = summaries,
+                        isLoading = false,
+                        hasMore = summaries.size >= DEFAULT_PAGE_SIZE,
+                        error = null,
+                    )
+            } catch (e: Exception) {
+                logger.error(e) { "Failed to load summaries" }
+                _state.value =
+                    _state.value.copy(
+                        isLoading = false,
+                        error = e.toAppError().userMessage(),
+                    )
+            }
         }
     }
 
@@ -327,53 +333,65 @@ class SummaryListViewModel(
 
     @Suppress("TooGenericExceptionCaught")
     private fun loadNextPage() {
-        viewModelScope.launch {
-            val currentState = _state.value
-            _state.value = currentState.copy(isLoadingMore = true)
+        loadMoreJob?.cancel()
+        loadMoreJob =
+            viewModelScope.launch {
+                val startState = _state.value
+                _state.value = startState.copy(isLoadingMore = true)
 
-            try {
-                val nextPage = currentState.page + 1
+                try {
+                    val nextPage = startState.page + 1
 
-                if (currentState.searchQuery.isNotBlank()) {
-                    val results =
-                        searchSummariesUseCase(
-                            query = currentState.searchQuery,
-                            page = nextPage,
-                            pageSize = DEFAULT_PAGE_SIZE,
-                        )
-                    _state.value =
-                        _state.value.copy(
-                            summaries = currentState.summaries + results,
-                            page = nextPage,
-                            isLoadingMore = false,
-                            hasMore = results.size >= DEFAULT_PAGE_SIZE,
-                        )
-                } else {
-                    getFilteredSummariesUseCase(
-                        page = nextPage,
-                        pageSize = DEFAULT_PAGE_SIZE,
-                        readFilter = currentState.readFilter,
-                        sortOrder = currentState.sortOrder,
-                    )
-                        .catch { e ->
-                            logger.error(e) { "Failed to load more summaries" }
-                            _state.value = _state.value.copy(isLoadingMore = false)
+                    if (startState.searchQuery.isNotBlank()) {
+                        val results =
+                            searchSummariesUseCase(
+                                query = startState.searchQuery,
+                                page = nextPage,
+                                pageSize = DEFAULT_PAGE_SIZE,
+                            )
+
+                        val current = _state.value
+                        _state.value =
+                            current.copy(
+                                summaries = current.summaries + results,
+                                page = nextPage,
+                                isLoadingMore = false,
+                                hasMore = results.size >= DEFAULT_PAGE_SIZE,
+                            )
+                    } else {
+                        val nextPageItems =
+                            getFilteredSummariesUseCase(
+                                page = nextPage,
+                                pageSize = DEFAULT_PAGE_SIZE,
+                                readFilter = startState.readFilter,
+                                sortOrder = startState.sortOrder,
+                            ).first()
+
+                        // If filters/search changed while loading, don't merge incompatible pages.
+                        val current = _state.value
+                        val stateChanged =
+                            current.readFilter != startState.readFilter ||
+                                current.sortOrder != startState.sortOrder ||
+                                current.searchQuery != startState.searchQuery
+
+                        if (stateChanged) {
+                            _state.value = current.copy(isLoadingMore = false)
+                            return@launch
                         }
-                        .collect { summaries ->
-                            _state.value =
-                                _state.value.copy(
-                                    summaries = currentState.summaries + summaries,
-                                    page = nextPage,
-                                    isLoadingMore = false,
-                                    hasMore = summaries.size >= DEFAULT_PAGE_SIZE,
-                                )
-                        }
+
+                        _state.value =
+                            current.copy(
+                                summaries = current.summaries + nextPageItems,
+                                page = nextPage,
+                                isLoadingMore = false,
+                                hasMore = nextPageItems.size >= DEFAULT_PAGE_SIZE,
+                            )
+                    }
+                } catch (e: Exception) {
+                    logger.error(e) { "Failed to load more summaries" }
+                    _state.value = _state.value.copy(isLoadingMore = false)
                 }
-            } catch (e: Exception) {
-                logger.error(e) { "Failed to load more summaries" }
-                _state.value = _state.value.copy(isLoadingMore = false)
             }
-        }
     }
 
     // Filtering
