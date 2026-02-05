@@ -17,7 +17,9 @@ class NetworkModule {
         engine: HttpClientEngine,
         secureStorage: SecureStorage,
     ): HttpClient {
-        val baseUrl = AppConfig.Api.baseUrl.trimEnd('/') + "/v1"
+        // Base URL should point to the API root (without /v1) because individual API calls already
+        // include the "v1/..." prefix in their paths.
+        val baseUrl = AppConfig.Api.baseUrl.trimEnd('/')
         return ApiClient(
             engine = engine,
             baseUrl = baseUrl,
