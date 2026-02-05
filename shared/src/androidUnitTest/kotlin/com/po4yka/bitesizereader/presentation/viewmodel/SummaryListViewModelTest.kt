@@ -13,8 +13,8 @@ import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
-import com.po4yka.bitesizereader.presentation.state.ReadFilter
-import com.po4yka.bitesizereader.presentation.state.SortOrder
+import com.po4yka.bitesizereader.domain.model.ReadFilter
+import com.po4yka.bitesizereader.domain.model.SortOrder
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

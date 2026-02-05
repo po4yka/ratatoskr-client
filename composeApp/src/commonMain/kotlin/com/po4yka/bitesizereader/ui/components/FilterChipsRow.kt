@@ -21,7 +21,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
-import com.po4yka.bitesizereader.presentation.state.ReadFilter
+import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.ui.theme.Spacing
 
 @Suppress("FunctionNaming", "LongParameterList")

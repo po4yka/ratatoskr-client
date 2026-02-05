@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.domain.model.Request
+import com.po4yka.bitesizereader.domain.model.TelegramLinkData
 import com.po4yka.bitesizereader.domain.model.Session
 import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.SyncProgress
@@ -158,7 +158,7 @@ class SettingsViewModel(
     }
 
     @Suppress("unused")
-    fun completeTelegramLink(telegramAuth: TelegramLoginRequestDto) {
+    fun completeTelegramLink(telegramAuth: TelegramLinkData) {
         val nonce = _state.value.linkNonce ?: return
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)

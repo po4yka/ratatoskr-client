@@ -1,6 +1,6 @@
 package com.po4yka.bitesizereader.domain.usecase
 
-import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
+import com.po4yka.bitesizereader.domain.model.TelegramLinkData
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
 import com.po4yka.bitesizereader.domain.repository.UserRepository
 import org.koin.core.annotation.Factory
@@ -13,7 +13,7 @@ class LinkTelegramUseCase(private val repository: UserRepository) {
 
     suspend fun complete(
         nonce: String,
-        telegramAuth: TelegramLoginRequestDto,
+        telegramAuth: TelegramLinkData,
     ): TelegramLinkStatus {
         return repository.completeTelegramLink(nonce, telegramAuth)
     }

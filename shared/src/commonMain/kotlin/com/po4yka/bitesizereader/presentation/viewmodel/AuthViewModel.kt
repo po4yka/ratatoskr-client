@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
+import com.po4yka.bitesizereader.domain.model.DeveloperCredentials
+import com.po4yka.bitesizereader.domain.model.TelegramAuthData
 import com.po4yka.bitesizereader.domain.usecase.ClearDeveloperCredentialsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetCurrentUserUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetDeveloperCredentialsUseCase
@@ -56,7 +57,7 @@ class AuthViewModel(
     }
 
     @Suppress("TooGenericExceptionCaught")
-    fun login(authData: AuthRequestDto) {
+    fun login(authData: TelegramAuthData) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
@@ -102,10 +103,10 @@ class AuthViewModel(
                         error = null,
                         savedDeveloperCredentials =
                             if (rememberCredentials) {
-                                com.po4yka.bitesizereader.data.local.DeveloperCredentials(
-                                    userId,
-                                    clientId,
-                                    secret,
+                                DeveloperCredentials(
+                                    userId = userId,
+                                    clientId = clientId,
+                                    secret = secret,
                                 )
                             } else {
                                 _state.value.savedDeveloperCredentials

@@ -1,6 +1,6 @@
 package com.po4yka.bitesizereader.domain.repository
 
-import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
+import com.po4yka.bitesizereader.domain.model.TelegramLinkData
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
 
 interface UserRepository {
@@ -12,6 +12,6 @@ interface UserRepository {
 
     suspend fun completeTelegramLink(
         nonce: String,
-        telegramAuth: TelegramLoginRequestDto,
+        telegramAuth: TelegramLinkData,
     ): TelegramLinkStatus
 }

@@ -54,8 +54,12 @@ class SummaryDetailViewModel(
                 } else {
                     _state.value = _state.value.copy(isLoadingContent = false)
                 }
-            } catch (@Suppress("SwallowedException") e: Exception) {
-                _state.value = _state.value.copy(isLoadingContent = false)
+            } catch (e: Exception) {
+                _state.value =
+                    _state.value.copy(
+                        isLoadingContent = false,
+                        error = e.message ?: "Failed to load content",
+                    )
             }
         }
     }

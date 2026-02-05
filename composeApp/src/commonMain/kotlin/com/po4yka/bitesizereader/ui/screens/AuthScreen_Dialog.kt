@@ -34,7 +34,7 @@ import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.gabrieldrn.carbon.textinput.TextInput
 import com.gabrieldrn.carbon.textinput.TextInputState
-import com.po4yka.bitesizereader.data.local.DeveloperCredentials
+import com.po4yka.bitesizereader.domain.model.DeveloperCredentials
 
 /**
  * Developer login dialog using Carbon Design System

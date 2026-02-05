@@ -291,12 +291,12 @@ private fun SearchFiltersPanel(
                 label = "All",
                 isSelected =
                     state.filters.readFilter ==
-                        com.po4yka.bitesizereader.presentation.state.ReadFilter.ALL,
+                        com.po4yka.bitesizereader.domain.model.ReadFilter.ALL,
                 onClick = {
                     onFiltersChanged(
                         state.filters.copy(
                             readFilter =
-                                com.po4yka.bitesizereader.presentation.state.ReadFilter.ALL,
+                                com.po4yka.bitesizereader.domain.model.ReadFilter.ALL,
                         ),
                     )
                 },
@@ -305,12 +305,12 @@ private fun SearchFiltersPanel(
                 label = "Read",
                 isSelected =
                     state.filters.readFilter ==
-                        com.po4yka.bitesizereader.presentation.state.ReadFilter.READ,
+                        com.po4yka.bitesizereader.domain.model.ReadFilter.READ,
                 onClick = {
                     onFiltersChanged(
                         state.filters.copy(
                             readFilter =
-                                com.po4yka.bitesizereader.presentation.state.ReadFilter.READ,
+                                com.po4yka.bitesizereader.domain.model.ReadFilter.READ,
                         ),
                     )
                 },
@@ -319,12 +319,12 @@ private fun SearchFiltersPanel(
                 label = "Unread",
                 isSelected =
                     state.filters.readFilter ==
-                        com.po4yka.bitesizereader.presentation.state.ReadFilter.UNREAD,
+                        com.po4yka.bitesizereader.domain.model.ReadFilter.UNREAD,
                 onClick = {
                     onFiltersChanged(
                         state.filters.copy(
                             readFilter =
-                                com.po4yka.bitesizereader.presentation.state.ReadFilter.UNREAD,
+                                com.po4yka.bitesizereader.domain.model.ReadFilter.UNREAD,
                         ),
                     )
                 },

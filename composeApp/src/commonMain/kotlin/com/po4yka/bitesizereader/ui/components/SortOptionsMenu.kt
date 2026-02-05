@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
-import com.po4yka.bitesizereader.presentation.state.SortOrder
+import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 

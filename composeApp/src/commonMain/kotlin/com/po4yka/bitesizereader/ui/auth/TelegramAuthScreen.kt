@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
-import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
+import com.po4yka.bitesizereader.domain.model.TelegramAuthData
 import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
 import com.po4yka.bitesizereader.util.UrlDecoder
 import com.po4yka.bitesizereader.util.config.AppConfig
@@ -89,7 +89,7 @@ fun TelegramAuthScreen(
     }
 }
 
-private fun parseTelegramAuthData(url: String): AuthRequestDto? {
+private fun parseTelegramAuthData(url: String): TelegramAuthData? {
     try {
         val query = url.substringAfter("?", "")
         if (query.isEmpty()) return null
@@ -105,7 +105,7 @@ private fun parseTelegramAuthData(url: String): AuthRequestDto? {
         val id = params["id"] ?: return null
         val hash = params["hash"] ?: return null
 
-        return AuthRequestDto(
+        return TelegramAuthData(
             id = id,
             firstName = params["first_name"] ?: "",
             lastName = params["last_name"],

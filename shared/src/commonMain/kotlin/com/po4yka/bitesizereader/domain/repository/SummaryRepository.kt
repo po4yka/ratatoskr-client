@@ -1,8 +1,8 @@
 package com.po4yka.bitesizereader.domain.repository
 
 import com.po4yka.bitesizereader.domain.model.Summary
-import com.po4yka.bitesizereader.presentation.state.ReadFilter
-import com.po4yka.bitesizereader.presentation.state.SortOrder
+import com.po4yka.bitesizereader.domain.model.ReadFilter
+import com.po4yka.bitesizereader.domain.model.SortOrder
 import kotlinx.coroutines.flow.Flow
 
 interface SummaryRepository {
