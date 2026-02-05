@@ -31,7 +31,6 @@ CREATE TABLE syncMetadataEntity (
     syncToken TEXT
 );
 
--- FTS5 Search
 -- FTS4 Search
 CREATE VIRTUAL TABLE summaryFTS USING fts4(
     title,
@@ -75,6 +74,9 @@ WHERE id = :id;
 deleteSummary:
 DELETE FROM summaryEntity
 WHERE id = :id;
+
+getAllSummaryIds:
+SELECT id FROM summaryEntity;
 
 searchSummaries:
 SELECT summaryEntity.*
@@ -151,3 +153,22 @@ WHERE query = :query;
 
 clearSearchHistory:
 DELETE FROM searchHistoryEntity;
+
+-- Pending Delete Queue (for offline delete retry)
+CREATE TABLE pendingDeleteEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    createdAt INTEGER NOT NULL
+);
+
+insertPendingDelete:
+INSERT OR IGNORE INTO pendingDeleteEntity(id, createdAt)
+VALUES (:id, :createdAt);
+
+selectAllPendingDeletes:
+SELECT * FROM pendingDeleteEntity;
+
+deletePendingDelete:
+DELETE FROM pendingDeleteEntity WHERE id = :id;
+
+deleteAllPendingDeletes:
+DELETE FROM pendingDeleteEntity;

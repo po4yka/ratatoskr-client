@@ -10,6 +10,7 @@ import com.po4yka.bitesizereader.domain.repository.SummaryRepository
 import com.po4yka.bitesizereader.presentation.state.ReadFilter
 import com.po4yka.bitesizereader.presentation.state.SortOrder
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.time.Clock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -77,9 +78,12 @@ class SummaryRepositoryImpl(
         if (remoteId != null) {
             try {
                 api.deleteSummary(remoteId)
-            } catch (e: Exception) {
-                logger.error(e) { "Failed to delete summary from API for id: $remoteId" }
-                // Handle offline delete or queue it
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                logger.warn(e) { "Failed to delete summary $remoteId from API, queuing for retry" }
+                database.databaseQueries.insertPendingDelete(
+                    id = id,
+                    createdAt = Clock.System.now().toEpochMilliseconds(),
+                )
             }
         }
     }

@@ -8,8 +8,17 @@ import com.po4yka.bitesizereader.database.SearchHistoryEntity
 import com.po4yka.bitesizereader.database.SummaryEntity
 import com.po4yka.bitesizereader.database.SyncMetadataEntity
 import kotlin.time.Instant
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
+
+private val instantColumnAdapter =
+    object : ColumnAdapter<Instant, Long> {
+        override fun decode(databaseValue: Long): Instant = Instant.fromEpochMilliseconds(databaseValue)
+
+        override fun encode(value: Instant): Long = value.toEpochMilliseconds()
+    }
 
 @Module
 class DatabaseModule {
@@ -20,67 +29,33 @@ class DatabaseModule {
             driver = driver,
             summaryEntityAdapter =
                 SummaryEntity.Adapter(
-                    createdAtAdapter =
-                        object : ColumnAdapter<Instant, Long> {
-                            override fun decode(databaseValue: Long): Instant =
-                                Instant.fromEpochMilliseconds(
-                                    databaseValue,
-                                )
-
-                            override fun encode(value: Instant): Long = value.toEpochMilliseconds()
-                        },
+                    createdAtAdapter = instantColumnAdapter,
                     tagsAdapter =
                         object : ColumnAdapter<List<String>, String> {
                             override fun decode(databaseValue: String): List<String> =
-                                if (databaseValue.isBlank()) emptyList() else databaseValue.split(",")
+                                when {
+                                    databaseValue.isBlank() -> emptyList()
+                                    databaseValue.startsWith("[") ->
+                                        Json.decodeFromString<List<String>>(databaseValue)
+                                    else ->
+                                        databaseValue.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+                                }
 
-                            override fun encode(value: List<String>): String = value.joinToString(",")
+                            override fun encode(value: List<String>): String = Json.encodeToString(value)
                         },
                 ),
             requestEntityAdapter =
                 RequestEntity.Adapter(
-                    createdAtAdapter =
-                        object : ColumnAdapter<Instant, Long> {
-                            override fun decode(databaseValue: Long): Instant =
-                                Instant.fromEpochMilliseconds(
-                                    databaseValue,
-                                )
-
-                            override fun encode(value: Instant): Long = value.toEpochMilliseconds()
-                        },
-                    updatedAtAdapter =
-                        object : ColumnAdapter<Instant, Long> {
-                            override fun decode(databaseValue: Long): Instant =
-                                Instant.fromEpochMilliseconds(
-                                    databaseValue,
-                                )
-
-                            override fun encode(value: Instant): Long = value.toEpochMilliseconds()
-                        },
+                    createdAtAdapter = instantColumnAdapter,
+                    updatedAtAdapter = instantColumnAdapter,
                 ),
             syncMetadataEntityAdapter =
                 SyncMetadataEntity.Adapter(
-                    lastSyncTimeAdapter =
-                        object : ColumnAdapter<Instant, Long> {
-                            override fun decode(databaseValue: Long): Instant =
-                                Instant.fromEpochMilliseconds(
-                                    databaseValue,
-                                )
-
-                            override fun encode(value: Instant): Long = value.toEpochMilliseconds()
-                        },
+                    lastSyncTimeAdapter = instantColumnAdapter,
                 ),
             searchHistoryEntityAdapter =
                 SearchHistoryEntity.Adapter(
-                    searchedAtAdapter =
-                        object : ColumnAdapter<Instant, Long> {
-                            override fun decode(databaseValue: Long): Instant =
-                                Instant.fromEpochMilliseconds(
-                                    databaseValue,
-                                )
-
-                            override fun encode(value: Instant): Long = value.toEpochMilliseconds()
-                        },
+                    searchedAtAdapter = instantColumnAdapter,
                 ),
         )
     }
