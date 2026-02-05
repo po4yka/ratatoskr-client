@@ -1,11 +1,11 @@
 package com.po4yka.bitesizereader.domain.usecase
 
-import com.po4yka.bitesizereader.data.local.SecureStorage
+import com.po4yka.bitesizereader.domain.repository.CredentialsRepository
 import org.koin.core.annotation.Factory
 
 @Factory
-class ClearDeveloperCredentialsUseCase(private val secureStorage: SecureStorage) {
+class ClearDeveloperCredentialsUseCase(private val credentialsRepository: CredentialsRepository) {
     suspend operator fun invoke() {
-        secureStorage.clearDeveloperCredentials()
+        credentialsRepository.clearCredentials()
     }
 }

@@ -2,8 +2,8 @@ package com.po4yka.bitesizereader.domain.usecase
 
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.repository.SummaryRepository
-import com.po4yka.bitesizereader.presentation.state.ReadFilter
-import com.po4yka.bitesizereader.presentation.state.SortOrder
+import com.po4yka.bitesizereader.domain.model.ReadFilter
+import com.po4yka.bitesizereader.domain.model.SortOrder
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Factory
 

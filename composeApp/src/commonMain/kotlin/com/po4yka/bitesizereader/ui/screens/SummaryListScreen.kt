@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.presentation.navigation.SummaryListComponent
 import com.po4yka.bitesizereader.presentation.state.LayoutMode
-import com.po4yka.bitesizereader.presentation.state.ReadFilter
-import com.po4yka.bitesizereader.presentation.state.SortOrder
+import com.po4yka.bitesizereader.domain.model.ReadFilter
+import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.presentation.state.SummaryListState
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryListViewModel
 import com.po4yka.bitesizereader.ui.components.ContextualEmptyState

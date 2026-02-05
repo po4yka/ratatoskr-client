@@ -4,6 +4,7 @@ import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.UserApi
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLinkCompleteRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
+import com.po4yka.bitesizereader.domain.model.TelegramLinkData
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
 import com.po4yka.bitesizereader.domain.repository.UserRepository
 import org.koin.core.annotation.Single
@@ -52,9 +53,9 @@ class UserRepositoryImpl(
 
     override suspend fun completeTelegramLink(
         nonce: String,
-        telegramAuth: TelegramLoginRequestDto,
+        telegramAuth: TelegramLinkData,
     ): TelegramLinkStatus {
-        val request = TelegramLinkCompleteRequestDto(nonce, telegramAuth)
+        val request = TelegramLinkCompleteRequestDto(nonce, telegramAuth.toDto())
         val response = userApi.completeTelegramLink(request)
         if (response.success && response.data != null) {
             return response.data.toDomain()
@@ -62,4 +63,16 @@ class UserRepositoryImpl(
             throw response.error?.let { Exception(it.message) } ?: Exception("Failed to complete linking")
         }
     }
+
+    private fun TelegramLinkData.toDto() =
+        TelegramLoginRequestDto(
+            telegramUserId = telegramUserId,
+            authHash = authHash,
+            authDate = authDate,
+            username = username,
+            firstName = firstName,
+            lastName = lastName,
+            photoUrl = photoUrl,
+            clientId = clientId,
+        )
 }

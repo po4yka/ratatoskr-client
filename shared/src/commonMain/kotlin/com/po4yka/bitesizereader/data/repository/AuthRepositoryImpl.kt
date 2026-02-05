@@ -6,12 +6,12 @@ import com.po4yka.bitesizereader.data.mappers.toAuthTokens
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.AuthApi
 import com.po4yka.bitesizereader.data.remote.dto.AppleLoginRequestDto
-import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.GoogleLoginRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SecretLoginRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshRequestDto
 import com.po4yka.bitesizereader.domain.model.AuthTokens
 import com.po4yka.bitesizereader.domain.model.Session
+import com.po4yka.bitesizereader.domain.model.TelegramAuthData
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.model.UserPreferences
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
@@ -46,7 +46,7 @@ class AuthRepositoryImpl(
         logger.debug { "Auth status checked: authenticated=$hasToken" }
     }
 
-    override suspend fun login(authData: AuthRequestDto) {
+    override suspend fun login(authData: TelegramAuthData) {
         val request =
             createTelegramLoginRequest(
                 telegramUserId = authData.id.toLong(),

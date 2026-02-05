@@ -1,5 +1,7 @@
 package com.po4yka.bitesizereader.presentation.state
 
+import com.po4yka.bitesizereader.domain.model.ReadFilter
+import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.domain.model.Summary
 
 data class SummaryListState(

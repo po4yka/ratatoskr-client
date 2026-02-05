@@ -1,14 +1,14 @@
 package com.po4yka.bitesizereader.domain.repository
 
-import com.po4yka.bitesizereader.data.remote.dto.AuthRequestDto
 import com.po4yka.bitesizereader.domain.model.Session
+import com.po4yka.bitesizereader.domain.model.TelegramAuthData
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     /** Login with Telegram auth data */
-    suspend fun login(authData: AuthRequestDto)
+    suspend fun login(authData: TelegramAuthData)
 
     /** Login with developer secret key */
     suspend fun loginWithSecret(

@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.presentation.state
 
+import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.Summary
 
 /**
@@ -35,7 +36,7 @@ enum class SearchMode {
 
 /**
  * Search filter options.
- * Uses the existing ReadFilter enum from SummaryFilterEnums.kt.
+ * Uses the existing ReadFilter enum from domain/model/SummaryFilterEnums.kt.
  */
 data class SearchFilters(
     val tags: List<String> = emptyList(),
