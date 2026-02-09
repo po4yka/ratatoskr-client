@@ -44,7 +44,7 @@ coil = "3.3.0"
 skie = "0.10.8"
 
 # gRPC / Wire
-wire = "5.4.0"
+wire = "5.5.0"
 
 # Testing
 turbine = "1.2.1"
