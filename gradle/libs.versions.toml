@@ -35,7 +35,7 @@ kotlinx-coroutines = "1.10.2"
 kotlin-logging = "7.0.13"
 slf4j = "2.0.17"
 logback-android = "3.0.0"
-logback-classic = "1.5.22"
+logback-classic = "1.5.28"
 
 # Android Specific
 coil = "3.3.0"
