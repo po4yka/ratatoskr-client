@@ -47,6 +47,8 @@ fun SwipeableSummaryCard(
     onClick: () -> Unit,
     onDelete: () -> Unit,
     onMarkRead: () -> Unit,
+    onFavoriteClick: () -> Unit = {},
+    onAddToCollectionClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -184,6 +186,8 @@ fun SwipeableSummaryCard(
                 onClick = onClick,
                 onDeleteClick = onDelete,
                 onMarkReadClick = onMarkRead,
+                onFavoriteClick = onFavoriteClick,
+                onAddToCollectionClick = onAddToCollectionClick,
             )
         }
     }

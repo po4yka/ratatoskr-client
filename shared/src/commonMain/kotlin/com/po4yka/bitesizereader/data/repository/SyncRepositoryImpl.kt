@@ -647,6 +647,7 @@ class SyncRepositoryImpl(
                     isRead = isRead,
                     tags = tags,
                     readingTimeMin = null,
+                    isFavorited = false,
                 ),
             )
             true

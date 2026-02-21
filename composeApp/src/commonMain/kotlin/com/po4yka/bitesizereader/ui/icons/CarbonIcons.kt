@@ -1330,4 +1330,148 @@ object CarbonIcons {
             }
         }.build()
     }
+
+    val Favorite: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Favorite",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Heart outline (Carbon "favorite" icon)
+                moveTo(22.45f, 6f)
+                arcTo(5.47f, 5.47f, Arc.NO_ROTATION, false, true, 27.92f, 11.45f)
+                curveToRelative(0f, 2.87f, -1.82f, 5.81f, -5.41f, 8.72f)
+                lineToRelative(-0.17f, 0.14f)
+                lineTo(16f, 25.28f)
+                lineToRelative(-6.34f, -4.97f)
+                lineToRelative(-0.17f, -0.14f)
+                curveTo(5.9f, 17.26f, 4.08f, 14.32f, 4.08f, 11.45f)
+                arcTo(5.47f, 5.47f, Arc.NO_ROTATION, false, true, 9.55f, 6f)
+                arcTo(5.28f, 5.28f, Arc.NO_ROTATION, false, true, 16f, 9.64f)
+                arcTo(5.28f, 5.28f, Arc.NO_ROTATION, false, true, 22.45f, 6f)
+                moveTo(22.45f, 4f)
+                arcTo(7.27f, 7.27f, Arc.NO_ROTATION, false, false, 16f, 7.58f)
+                arcTo(7.27f, 7.27f, Arc.NO_ROTATION, false, false, 9.55f, 4f)
+                arcTo(7.47f, 7.47f, Arc.NO_ROTATION, false, false, 2.08f, 11.45f)
+                curveToRelative(0f, 3.53f, 2.09f, 6.87f, 6.21f, 10.14f)
+                lineToRelative(0.17f, 0.14f)
+                lineTo(16f, 27.72f)
+                lineToRelative(7.54f, -5.99f)
+                lineToRelative(0.17f, -0.14f)
+                curveToRelative(4.12f, -3.27f, 6.21f, -6.61f, 6.21f, -10.14f)
+                arcTo(7.47f, 7.47f, Arc.NO_ROTATION, false, false, 22.45f, 4f)
+                close()
+            }
+        }.build()
+    }
+
+    val FavoriteFilled: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "FavoriteFilled",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Filled heart (Carbon "favorite--filled" icon)
+                moveTo(22.45f, 4f)
+                arcTo(7.27f, 7.27f, Arc.NO_ROTATION, false, false, 16f, 7.58f)
+                arcTo(7.27f, 7.27f, Arc.NO_ROTATION, false, false, 9.55f, 4f)
+                arcTo(7.47f, 7.47f, Arc.NO_ROTATION, false, false, 2.08f, 11.45f)
+                curveToRelative(0f, 3.53f, 2.09f, 6.87f, 6.21f, 10.14f)
+                lineToRelative(0.17f, 0.14f)
+                lineTo(16f, 27.72f)
+                lineToRelative(7.54f, -5.99f)
+                lineToRelative(0.17f, -0.14f)
+                curveToRelative(4.12f, -3.27f, 6.21f, -6.61f, 6.21f, -10.14f)
+                arcTo(7.47f, 7.47f, Arc.NO_ROTATION, false, false, 22.45f, 4f)
+                close()
+            }
+        }.build()
+    }
+
+    val Add: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Add",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(17f, 15f)
+                verticalLineTo(2f)
+                horizontalLineTo(15f)
+                verticalLineTo(15f)
+                horizontalLineTo(2f)
+                verticalLineTo(17f)
+                horizontalLineTo(15f)
+                verticalLineTo(30f)
+                horizontalLineTo(17f)
+                verticalLineTo(17f)
+                horizontalLineTo(30f)
+                verticalLineTo(15f)
+                horizontalLineTo(17f)
+                close()
+            }
+        }.build()
+    }
+
+    val Notification: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Notification",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Bell icon (Carbon "notification" icon)
+                moveTo(28.71f, 24.29f)
+                lineTo(26f, 21.59f)
+                verticalLineTo(14f)
+                arcTo(10f, 10f, Arc.NO_ROTATION, false, false, 22f, 4.18f)
+                verticalLineTo(2f)
+                horizontalLineTo(20f)
+                verticalLineTo(4.56f)
+                arcTo(8f, 8f, Arc.NO_ROTATION, false, false, 18f, 14f)
+                verticalLineTo(21.59f)
+                lineToRelative(-2.71f, 2.7f)
+                arcTo(1f, 1f, Arc.NO_ROTATION, false, false, 16f, 26f)
+                horizontalLineTo(26f)
+                arcTo(1f, 1f, Arc.NO_ROTATION, false, false, 28.71f, 24.29f)
+                close()
+                moveTo(26f, 24f)
+                horizontalLineTo(18.41f)
+                lineTo(20f, 22.41f)
+                verticalLineTo(14f)
+                arcTo(6f, 6f, Arc.NO_ROTATION, false, true, 26f, 14f)
+                verticalLineTo(22.41f)
+                lineTo(27.59f, 24f)
+                horizontalLineTo(26f)
+                close()
+            }
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(21f, 28f)
+                horizontalLineTo(11f)
+                verticalLineTo(26f)
+                horizontalLineTo(6f)
+                arcTo(1f, 1f, Arc.NO_ROTATION, false, true, 3.29f, 24.29f)
+                lineTo(6f, 21.59f)
+                verticalLineTo(14f)
+                arcTo(10f, 10f, Arc.NO_ROTATION, false, true, 16f, 4.05f)
+                verticalLineTo(6.09f)
+                arcTo(8f, 8f, Arc.NO_ROTATION, false, false, 8f, 14f)
+                verticalLineTo(22.41f)
+                lineTo(4.41f, 26f)
+                horizontalLineTo(21f)
+                verticalLineTo(28f)
+                close()
+            }
+        }.build()
+    }
 }

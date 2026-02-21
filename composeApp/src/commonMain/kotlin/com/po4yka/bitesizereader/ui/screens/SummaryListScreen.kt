@@ -156,6 +156,7 @@ fun SummaryListScreen(
                 onSummaryClick = { id -> component.onSummaryClicked(id) },
                 onDelete = { id -> viewModel.deleteSummary(id) },
                 onMarkRead = { id -> viewModel.markAsRead(id) },
+                onFavoriteClick = { id -> viewModel.toggleFavorite(id) },
                 onLoadMore = { lastIndex -> viewModel.loadMoreIfNeeded(lastIndex) },
                 onClearSearch = { viewModel.onSearchQueryChanged("") },
                 onShowAllArticles = { viewModel.setReadFilter(ReadFilter.ALL) },
@@ -249,6 +250,7 @@ private fun SummaryListContent(
     onSummaryClick: (String) -> Unit,
     onDelete: (String) -> Unit,
     onMarkRead: (String) -> Unit,
+    onFavoriteClick: (String) -> Unit,
     onLoadMore: (Int) -> Unit,
     onClearSearch: () -> Unit,
     onShowAllArticles: () -> Unit,
@@ -312,6 +314,7 @@ private fun SummaryListContent(
                         onSummaryClick = onSummaryClick,
                         onDelete = onDelete,
                         onMarkRead = onMarkRead,
+                        onFavoriteClick = onFavoriteClick,
                         onLoadMore = onLoadMore,
                         modifier = modifier,
                     )
@@ -322,6 +325,7 @@ private fun SummaryListContent(
                         onSummaryClick = onSummaryClick,
                         onDelete = onDelete,
                         onMarkRead = onMarkRead,
+                        onFavoriteClick = onFavoriteClick,
                         onLoadMore = onLoadMore,
                         modifier = modifier,
                     )
@@ -338,6 +342,7 @@ private fun SummaryListView(
     onSummaryClick: (String) -> Unit,
     onDelete: (String) -> Unit,
     onMarkRead: (String) -> Unit,
+    onFavoriteClick: (String) -> Unit,
     onLoadMore: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -369,6 +374,7 @@ private fun SummaryListView(
                 onClick = { onSummaryClick(summary.id) },
                 onDelete = { onDelete(summary.id) },
                 onMarkRead = { onMarkRead(summary.id) },
+                onFavoriteClick = { onFavoriteClick(summary.id) },
             )
         }
 
@@ -396,6 +402,7 @@ private fun SummaryGridView(
     onSummaryClick: (String) -> Unit,
     onDelete: (String) -> Unit,
     onMarkRead: (String) -> Unit,
+    onFavoriteClick: (String) -> Unit,
     onLoadMore: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -429,6 +436,7 @@ private fun SummaryGridView(
                 onClick = { onSummaryClick(summary.id) },
                 onDeleteClick = { onDelete(summary.id) },
                 onMarkReadClick = { onMarkRead(summary.id) },
+                onFavoriteClick = { onFavoriteClick(summary.id) },
             )
         }
 
