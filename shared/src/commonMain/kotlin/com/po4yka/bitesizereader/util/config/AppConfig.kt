@@ -107,7 +107,7 @@ object AppConfig {
         var statisticsEnabled: Boolean = true
 
         /** Enable topic collections */
-        var collectionsEnabled: Boolean = false
+        var collectionsEnabled: Boolean = true
 
         /** Enable export functionality */
         var exportEnabled: Boolean = false
