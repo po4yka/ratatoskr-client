@@ -4,6 +4,7 @@ import com.po4yka.bitesizereader.domain.ProcessingService
 import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
+import com.po4yka.bitesizereader.domain.usecase.CheckDuplicateUrlUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetRequestsUseCase
 import com.po4yka.bitesizereader.domain.usecase.RetryRequestUseCase
 import com.po4yka.bitesizereader.grpc.processing.ProcessingStatus
@@ -28,6 +29,7 @@ class SubmitURLViewModel(
     private val processingService: ProcessingService,
     private val getRequestsUseCase: GetRequestsUseCase,
     private val retryRequestUseCase: RetryRequestUseCase,
+    private val checkDuplicateUrlUseCase: CheckDuplicateUrlUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SubmitURLState())
     val state = _state.asStateFlow()
@@ -65,7 +67,60 @@ class SubmitURLViewModel(
 
     @Suppress("unused") // Public API for UI layer
     fun onUrlChanged(url: String) {
-        _state.value = _state.value.copy(url = url, error = null)
+        _state.value =
+            _state.value.copy(
+                url = url,
+                error = null,
+                isDuplicate = false,
+                duplicateSummaryId = null,
+            )
+    }
+
+    fun checkDuplicate() {
+        val url = _state.value.url
+        if (url.isBlank()) {
+            _state.value = _state.value.copy(error = "URL cannot be empty")
+            return
+        }
+
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isCheckingDuplicate = true, error = null)
+            try {
+                val result = checkDuplicateUrlUseCase(url)
+                if (result.isDuplicate) {
+                    _state.value =
+                        _state.value.copy(
+                            isCheckingDuplicate = false,
+                            isDuplicate = true,
+                            duplicateSummaryId = result.existingSummaryId,
+                        )
+                } else {
+                    _state.value = _state.value.copy(isCheckingDuplicate = false)
+                    submitUrl()
+                }
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to check duplicate URL, proceeding with submit" }
+                _state.value = _state.value.copy(isCheckingDuplicate = false)
+                submitUrl()
+            }
+        }
+    }
+
+    fun forceSubmit() {
+        _state.value =
+            _state.value.copy(
+                isDuplicate = false,
+                duplicateSummaryId = null,
+            )
+        submitUrl()
+    }
+
+    fun dismissDuplicate() {
+        _state.value =
+            _state.value.copy(
+                isDuplicate = false,
+                duplicateSummaryId = null,
+            )
     }
 
     @Suppress("unused") // Public API for UI layer

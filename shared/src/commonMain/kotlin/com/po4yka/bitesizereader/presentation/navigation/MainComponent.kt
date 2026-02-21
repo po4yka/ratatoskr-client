@@ -38,6 +38,8 @@ interface MainComponent {
         data class CollectionView(val component: CollectionViewComponent) : Child()
 
         data class Settings(val component: SettingsComponent) : Child()
+
+        data class SubmitURL(val component: SubmitURLComponent) : Child()
     }
 }
 
@@ -65,6 +67,7 @@ class DefaultMainComponent(
                     DefaultSummaryListComponent(
                         componentContext = componentContext,
                         onSummarySelected = { id -> navigateToSummaryDetail(id) },
+                        onSubmitUrl = { navigateToSubmitUrl() },
                     ),
                 )
             is Config.SummaryDetail ->
@@ -103,7 +106,22 @@ class DefaultMainComponent(
                         onSummarySelected = { id -> navigateToSummaryDetail(id) },
                     ),
                 )
+            is Config.SubmitURL ->
+                MainComponent.Child.SubmitURL(
+                    DefaultSubmitURLComponent(
+                        componentContext = componentContext,
+                        onBack = { navigation.pop() },
+                        onNavigateToSummary = { summaryId ->
+                            navigation.pop()
+                            navigateToSummaryDetail(summaryId)
+                        },
+                    ),
+                )
         }
+
+    private fun navigateToSubmitUrl() {
+        navigation.push(Config.SubmitURL)
+    }
 
     private fun navigateToSummaryDetail(summaryId: String) {
         navigation.push(Config.SummaryDetail(summaryId))
@@ -144,5 +162,8 @@ class DefaultMainComponent(
 
         @kotlinx.serialization.Serializable
         data object Search : Config
+
+        @kotlinx.serialization.Serializable
+        data object SubmitURL : Config
     }
 }
