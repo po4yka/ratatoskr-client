@@ -330,6 +330,37 @@ private fun SearchFiltersPanel(
                 },
             )
         }
+
+        // Language filter (semantic mode only)
+        if (state.searchMode == SearchMode.SEMANTIC) {
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            Text(
+                text = "Language",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+                modifier = Modifier.padding(bottom = Spacing.xs),
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            ) {
+                ReadFilterChip(
+                    label = "All",
+                    isSelected = state.filters.language == null,
+                    onClick = { onFiltersChanged(state.filters.copy(language = null)) },
+                )
+                ReadFilterChip(
+                    label = "English",
+                    isSelected = state.filters.language == "en",
+                    onClick = { onFiltersChanged(state.filters.copy(language = "en")) },
+                )
+                ReadFilterChip(
+                    label = "Russian",
+                    isSelected = state.filters.language == "ru",
+                    onClick = { onFiltersChanged(state.filters.copy(language = "ru")) },
+                )
+            }
+        }
     }
 }
 
