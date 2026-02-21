@@ -39,6 +39,7 @@ import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
+import com.po4yka.bitesizereader.ui.components.ProxiedImage
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.TagChip
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
@@ -178,6 +179,19 @@ private fun SummaryDetailContent(
         )
 
         Spacer(modifier = Modifier.height(Spacing.xs))
+
+        // Hero image
+        if (summary.imageUrl != null) {
+            ProxiedImage(
+                imageUrl = summary.imageUrl!!,
+                contentDescription = summary.title,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+            )
+            Spacer(modifier = Modifier.height(Spacing.md))
+        }
 
         Text(
             text = extractDomain(summary.sourceUrl) ?: "Unknown source",

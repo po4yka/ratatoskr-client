@@ -58,6 +58,19 @@ fun SummaryCard(
                 .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // Thumbnail
+        if (summary.imageUrl != null) {
+            ProxiedImage(
+                imageUrl = summary.imageUrl!!,
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+        }
+
         Column(modifier = Modifier.weight(1f)) {
             // Title
             Text(
