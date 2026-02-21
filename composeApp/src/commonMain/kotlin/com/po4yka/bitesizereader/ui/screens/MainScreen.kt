@@ -74,9 +74,7 @@ fun MainScreen(
                         )
                     is MainComponent.Child.Search -> SearchScreen(component = instance.component)
                     is MainComponent.Child.Collections ->
-                        CollectionsScreen(
-                            onCollectionClick = instance.component::onCollectionClicked,
-                        )
+                        CollectionsScreen(component = instance.component)
                     is MainComponent.Child.CollectionView ->
                         CollectionViewScreen(component = instance.component)
                     is MainComponent.Child.Settings -> SettingsScreen(component = instance.component)
