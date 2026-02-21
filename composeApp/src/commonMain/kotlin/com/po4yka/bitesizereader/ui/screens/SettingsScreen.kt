@@ -3,6 +3,7 @@
 package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -73,6 +74,7 @@ fun SettingsScreen(component: SettingsComponent) {
             onToggleSessions = viewModel::toggleSessionsExpanded,
             onToggleRequests = viewModel::toggleRequestsExpanded,
             onRetryRequest = viewModel::retryRequest,
+            onDigestClicked = component::onDigestClicked,
         )
 
         // Delete Account Confirmation Dialog
@@ -108,6 +110,7 @@ private fun SettingsContent(
     onToggleSessions: () -> Unit,
     onToggleRequests: () -> Unit,
     onRetryRequest: (Request) -> Unit,
+    onDigestClicked: () -> Unit = {},
 ) {
     Column(
         modifier =
@@ -143,6 +146,9 @@ private fun SettingsContent(
                 onCancel = onCancelLink,
             )
         }
+
+        // Digest Channels navigation
+        DigestNavigationRow(onClick = onDigestClicked)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -521,6 +527,41 @@ private fun SyncProgressSection(
                     color = Carbon.theme.supportWarning,
                 )
             }
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun DigestNavigationRow(onClick: () -> Unit) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .clickable(onClick = onClick)
+                .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Icon(
+            imageVector = CarbonIcons.Notification,
+            contentDescription = "Digest",
+            tint = Carbon.theme.iconPrimary,
+            modifier = Modifier.size(24.dp),
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "Digest Channels",
+                style = Carbon.typography.headingCompact01,
+                color = Carbon.theme.textPrimary,
+            )
+            Text(
+                text = "Manage channel subscriptions and preferences",
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textSecondary,
+            )
         }
     }
 }

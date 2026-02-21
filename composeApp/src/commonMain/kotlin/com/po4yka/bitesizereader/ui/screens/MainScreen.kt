@@ -44,7 +44,8 @@ fun MainScreen(
     val showBottomNav =
         activeChild !is MainComponent.Child.SummaryDetail &&
             activeChild !is MainComponent.Child.CollectionView &&
-            activeChild !is MainComponent.Child.SubmitURL
+            activeChild !is MainComponent.Child.SubmitURL &&
+            activeChild !is MainComponent.Child.Digest
 
     Column(
         modifier =
@@ -80,6 +81,8 @@ fun MainScreen(
                     is MainComponent.Child.Settings -> SettingsScreen(component = instance.component)
                     is MainComponent.Child.SubmitURL ->
                         SubmitURLScreen(component = instance.component)
+                    is MainComponent.Child.Digest ->
+                        DigestScreen(component = instance.component)
                 }
             }
         }
