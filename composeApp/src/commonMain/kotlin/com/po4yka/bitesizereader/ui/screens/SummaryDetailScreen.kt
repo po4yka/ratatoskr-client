@@ -37,6 +37,7 @@ import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.DefaultMarkdownColors
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
+import com.po4yka.bitesizereader.ui.components.AddToCollectionDialog
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
 import com.po4yka.bitesizereader.ui.components.ProxiedImage
@@ -76,6 +77,7 @@ fun SummaryDetailScreen(
             onBackClick = onBackClick,
             onShareClick = onShareClick,
             onFavoriteClick = { viewModel.toggleFavorite() },
+            onAddToCollectionClick = { viewModel.showAddToCollection() },
         )
 
         // Content
@@ -108,6 +110,18 @@ fun SummaryDetailScreen(
             }
         }
     }
+
+    // Add to Collection Dialog
+    if (state.showAddToCollectionDialog) {
+        AddToCollectionDialog(
+            collections = state.collections,
+            isLoading = state.isLoadingCollections,
+            isAdding = state.isAddingToCollection,
+            error = state.addToCollectionError,
+            onCollectionSelected = { id -> viewModel.addToCollection(id) },
+            onDismiss = { viewModel.dismissAddToCollection() },
+        )
+    }
 }
 
 @Suppress("FunctionNaming")
@@ -117,6 +131,7 @@ private fun SummaryDetailHeader(
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
     onFavoriteClick: () -> Unit = {},
+    onAddToCollectionClick: () -> Unit = {},
 ) {
     ScreenHeader(
         title = summary?.let { extractDomain(it.sourceUrl) ?: "Summary" } ?: "Summary",
@@ -139,6 +154,12 @@ private fun SummaryDetailHeader(
                         } else {
                             Carbon.theme.iconSecondary
                         },
+                )
+
+                HeaderIconButton(
+                    icon = CarbonIcons.Folder,
+                    contentDescription = "Add to collection",
+                    onClick = onAddToCollectionClick,
                 )
 
                 Icon(
