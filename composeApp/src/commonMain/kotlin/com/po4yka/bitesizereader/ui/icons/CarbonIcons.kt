@@ -1474,4 +1474,46 @@ object CarbonIcons {
             }
         }.build()
     }
+
+    val ChevronUp: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "ChevronUp",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(16f, 10f)
+                lineTo(5.41f, 20.59f)
+                lineTo(6.83f, 22f)
+                lineTo(16f, 12.83f)
+                lineTo(25.17f, 22f)
+                lineTo(26.59f, 20.59f)
+                lineTo(16f, 10f)
+                close()
+            }
+        }.build()
+    }
+
+    val ChevronDown: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "ChevronDown",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(16f, 22f)
+                lineTo(5.41f, 11.41f)
+                lineTo(6.83f, 10f)
+                lineTo(16f, 19.17f)
+                lineTo(25.17f, 10f)
+                lineTo(26.59f, 11.41f)
+                lineTo(16f, 22f)
+                close()
+            }
+        }.build()
+    }
 }

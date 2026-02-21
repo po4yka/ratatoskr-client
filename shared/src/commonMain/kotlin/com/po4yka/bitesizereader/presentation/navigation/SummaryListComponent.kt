@@ -10,15 +10,22 @@ interface SummaryListComponent {
     val viewModel: SummaryListViewModel
 
     fun onSummaryClicked(id: String)
+
+    fun onSubmitUrlClicked()
 }
 
 class DefaultSummaryListComponent(
     componentContext: ComponentContext,
     private val onSummarySelected: (String) -> Unit,
+    private val onSubmitUrl: () -> Unit,
 ) : SummaryListComponent, ComponentContext by componentContext, KoinComponent {
     override val viewModel: SummaryListViewModel = retainedInstance { get() }
 
     override fun onSummaryClicked(id: String) {
         onSummarySelected(id)
+    }
+
+    override fun onSubmitUrlClicked() {
+        onSubmitUrl()
     }
 }

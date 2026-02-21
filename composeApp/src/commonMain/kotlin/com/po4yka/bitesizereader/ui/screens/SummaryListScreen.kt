@@ -91,6 +91,7 @@ fun SummaryListScreen(
                 )
             },
             onSortOrderChanged = { viewModel.setSortOrder(it) },
+            onSubmitUrlClicked = { component.onSubmitUrlClicked() },
         )
 
         // Search bar (collapsible)
@@ -178,6 +179,7 @@ private fun SummaryListHeader(
     onToggleSearch: () -> Unit,
     onToggleLayout: () -> Unit,
     onSortOrderChanged: (SortOrder) -> Unit,
+    onSubmitUrlClicked: () -> Unit,
 ) {
     Row(
         modifier =
@@ -194,6 +196,16 @@ private fun SummaryListHeader(
             color = Carbon.theme.textPrimary,
             modifier = Modifier.weight(1f),
         )
+
+        // Add URL button
+        IconButton(onClick = onSubmitUrlClicked) {
+            Icon(
+                imageVector = CarbonIcons.Add,
+                contentDescription = "Submit URL",
+                tint = Carbon.theme.iconPrimary,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
 
         // Search toggle
         IconButton(onClick = onToggleSearch) {
