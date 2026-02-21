@@ -40,6 +40,8 @@ interface MainComponent {
         data class Settings(val component: SettingsComponent) : Child()
 
         data class SubmitURL(val component: SubmitURLComponent) : Child()
+
+        data class Digest(val component: DigestComponent) : Child()
     }
 }
 
@@ -97,7 +99,10 @@ class DefaultMainComponent(
                 )
             is Config.Settings ->
                 MainComponent.Child.Settings(
-                    DefaultSettingsComponent(componentContext),
+                    DefaultSettingsComponent(
+                        componentContext = componentContext,
+                        onDigest = { navigateToDigest() },
+                    ),
                 )
             is Config.Search ->
                 MainComponent.Child.Search(
@@ -117,10 +122,21 @@ class DefaultMainComponent(
                         },
                     ),
                 )
+            is Config.Digest ->
+                MainComponent.Child.Digest(
+                    DefaultDigestComponent(
+                        componentContext = componentContext,
+                        onBack = { navigation.pop() },
+                    ),
+                )
         }
 
     private fun navigateToSubmitUrl() {
         navigation.push(Config.SubmitURL)
+    }
+
+    private fun navigateToDigest() {
+        navigation.push(Config.Digest)
     }
 
     private fun navigateToSummaryDetail(summaryId: String) {
@@ -165,5 +181,8 @@ class DefaultMainComponent(
 
         @kotlinx.serialization.Serializable
         data object SubmitURL : Config
+
+        @kotlinx.serialization.Serializable
+        data object Digest : Config
     }
 }
