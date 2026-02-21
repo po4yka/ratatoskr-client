@@ -6,16 +6,19 @@ import com.po4yka.bitesizereader.domain.model.Session
 import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
+import com.po4yka.bitesizereader.domain.model.UserPreferences
 import com.po4yka.bitesizereader.domain.model.UserStats
 import com.po4yka.bitesizereader.domain.usecase.DeleteAccountUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetRequestsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetTelegramLinkStatusUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetUserPreferencesUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetUserStatsUseCase
 import com.po4yka.bitesizereader.domain.usecase.LinkTelegramUseCase
 import com.po4yka.bitesizereader.domain.usecase.ListSessionsUseCase
 import com.po4yka.bitesizereader.domain.usecase.RetryRequestUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.domain.usecase.UnlinkTelegramUseCase
+import com.po4yka.bitesizereader.domain.usecase.UpdateUserPreferencesUseCase
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -52,6 +55,10 @@ data class SettingsState(
     val requests: List<Request> = emptyList(),
     val isLoadingRequests: Boolean = false,
     val requestsExpanded: Boolean = false,
+    // User preferences
+    val userPreferences: UserPreferences? = null,
+    val isLoadingPreferences: Boolean = false,
+    val isSavingPreferences: Boolean = false,
 )
 
 private val logger = KotlinLogging.logger {}
@@ -67,6 +74,8 @@ class SettingsViewModel(
     private val listSessionsUseCase: ListSessionsUseCase,
     private val getRequestsUseCase: GetRequestsUseCase,
     private val retryRequestUseCase: RetryRequestUseCase,
+    private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
+    private val updateUserPreferencesUseCase: UpdateUserPreferencesUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
@@ -77,6 +86,7 @@ class SettingsViewModel(
         loadLinkStatus()
         observeSyncProgress()
         loadUserStats()
+        loadPreferences()
     }
 
     private fun observeSyncProgress() {
@@ -212,6 +222,42 @@ class SettingsViewModel(
             logger.info { "Cancelling sync operation" }
             downloadJob?.cancel()
             syncDataUseCase.cancelSync()
+        }
+    }
+
+    // User preferences
+
+    private fun loadPreferences() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoadingPreferences = true)
+            runCatching { getUserPreferencesUseCase() }
+                .onSuccess { prefs ->
+                    _state.value = _state.value.copy(
+                        isLoadingPreferences = false,
+                        userPreferences = prefs,
+                    )
+                }
+                .onFailure { throwable ->
+                    logger.warn(throwable) { "Failed to load user preferences" }
+                    _state.value = _state.value.copy(isLoadingPreferences = false)
+                }
+        }
+    }
+
+    fun updateLanguagePreference(lang: String) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isSavingPreferences = true)
+            runCatching { updateUserPreferencesUseCase(langPreference = lang) }
+                .onSuccess { prefs ->
+                    _state.value = _state.value.copy(
+                        isSavingPreferences = false,
+                        userPreferences = prefs,
+                    )
+                }
+                .onFailure { throwable ->
+                    logger.warn(throwable) { "Failed to update language preference" }
+                    _state.value = _state.value.copy(isSavingPreferences = false)
+                }
         }
     }
 
