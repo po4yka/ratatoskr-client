@@ -6,6 +6,7 @@ import com.po4yka.bitesizereader.domain.usecase.GetRecentSearchesUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
+import com.po4yka.bitesizereader.domain.usecase.SemanticSearchUseCase
 import com.po4yka.bitesizereader.presentation.state.SearchFilters
 import com.po4yka.bitesizereader.presentation.state.SearchMode
 import com.po4yka.bitesizereader.presentation.state.SearchState
@@ -26,6 +27,7 @@ private const val DEFAULT_PAGE_SIZE = 20
 @Factory
 class SearchViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
+    private val semanticSearchUseCase: SemanticSearchUseCase,
     private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase,
     private val getRecentSearchesUseCase: GetRecentSearchesUseCase,
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
@@ -237,7 +239,19 @@ class SearchViewModel(
         }
 
         try {
-            val results = searchSummariesUseCase(query, page, DEFAULT_PAGE_SIZE)
+            val currentState = _state.value
+            val results =
+                when (currentState.searchMode) {
+                    SearchMode.FULLTEXT -> searchSummariesUseCase(query, page, DEFAULT_PAGE_SIZE)
+                    SearchMode.SEMANTIC ->
+                        semanticSearchUseCase(
+                            query = query,
+                            page = page,
+                            pageSize = DEFAULT_PAGE_SIZE,
+                            language = currentState.filters.language,
+                            tags = currentState.filters.tags.ifEmpty { null },
+                        )
+                }
             val hasMore = results.size >= DEFAULT_PAGE_SIZE
 
             _state.update { currentState ->
