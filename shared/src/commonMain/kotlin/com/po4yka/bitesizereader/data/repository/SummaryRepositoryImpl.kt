@@ -95,8 +95,9 @@ class SummaryRepositoryImpl(
         return try {
             val response = api.getContent(remoteId)
             if (response.success && response.data != null) {
-                database.databaseQueries.updateSummaryContent(response.data.content, id)
-                response.data.content
+                val articleContent = response.data.content.content
+                database.databaseQueries.updateSummaryContent(articleContent, id)
+                articleContent
             } else {
                 null
             }

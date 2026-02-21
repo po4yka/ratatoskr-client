@@ -4,7 +4,7 @@ import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.DuplicateUrlCheckResponseEnvelope
 import com.po4yka.bitesizereader.data.remote.dto.RelatedSummariesResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.SearchResponseDataDto
-import com.po4yka.bitesizereader.data.remote.dto.TrendingTopicsResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.TrendingTopicsDataDto
 
 /**
  * Search API matching OpenAPI spec with semantic search enhancements.
@@ -39,7 +39,7 @@ interface SearchApi {
     suspend fun getTrendingTopics(
         limit: Int = 20,
         days: Int = 30,
-    ): ApiResponseDto<TrendingTopicsResponseDto>
+    ): ApiResponseDto<TrendingTopicsDataDto>
 
     suspend fun getRelatedSummaries(
         tag: String,
