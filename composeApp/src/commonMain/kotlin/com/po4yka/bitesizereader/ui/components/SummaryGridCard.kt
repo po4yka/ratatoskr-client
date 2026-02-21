@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -61,6 +62,19 @@ fun SummaryGridCard(
                 .semantics { contentDescription = cardDescription },
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        // Hero image
+        if (summary.imageUrl != null) {
+            ProxiedImage(
+                imageUrl = summary.imageUrl!!,
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+            )
+        }
+
         // Title + overflow menu row
         Row(
             modifier = Modifier.fillMaxWidth(),
