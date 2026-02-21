@@ -94,6 +94,7 @@ fun HeaderIconButton(
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    tint: androidx.compose.ui.graphics.Color = Carbon.theme.iconPrimary,
 ) {
     IconButton(
         onClick = onClick,
@@ -102,7 +103,7 @@ fun HeaderIconButton(
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = Carbon.theme.iconPrimary,
+            tint = tint,
             modifier = Modifier.size(IconSizes.md),
         )
     }

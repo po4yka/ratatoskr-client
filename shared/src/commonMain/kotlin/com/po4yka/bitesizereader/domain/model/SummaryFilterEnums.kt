@@ -7,6 +7,7 @@ enum class ReadFilter {
     ALL,
     UNREAD,
     READ,
+    FAVORITED,
 }
 
 /**

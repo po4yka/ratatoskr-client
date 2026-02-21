@@ -4,6 +4,7 @@ import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryByIdUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
+import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.presentation.state.SummaryDetailState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ class SummaryDetailViewModel(
     private val getSummaryContentUseCase: GetSummaryContentUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val deleteSummaryUseCase: DeleteSummaryUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state = _state.asStateFlow()
@@ -60,6 +62,22 @@ class SummaryDetailViewModel(
                         isLoadingContent = false,
                         error = e.message ?: "Failed to load content",
                     )
+            }
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    fun toggleFavorite() {
+        val summary = _state.value.summary ?: return
+        viewModelScope.launch {
+            try {
+                toggleFavoriteUseCase(summary.id)
+                _state.value =
+                    _state.value.copy(
+                        summary = summary.copy(isFavorited = !summary.isFavorited),
+                    )
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(error = e.message)
             }
         }
     }

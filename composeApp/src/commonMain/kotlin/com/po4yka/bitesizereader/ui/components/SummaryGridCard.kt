@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -33,13 +35,15 @@ import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.util.extractDomain
 
-@Suppress("FunctionNaming", "LongMethod")
+@Suppress("FunctionNaming", "LongMethod", "LongParameterList")
 @Composable
 fun SummaryGridCard(
     summary: Summary,
     onClick: () -> Unit,
     onDeleteClick: () -> Unit = {},
     onMarkReadClick: () -> Unit = {},
+    onFavoriteClick: () -> Unit = {},
+    onAddToCollectionClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val readStatus = if (summary.isRead) "Read" else "Unread"
@@ -87,6 +91,31 @@ fun SummaryGridCard(
                     onDismissRequest = { menuExpanded = false },
                 ) {
                     DropdownMenuItem(
+                        text = { Text(if (summary.isFavorited) "Unfavorite" else "Favorite") },
+                        onClick = {
+                            menuExpanded = false
+                            onFavoriteClick()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector =
+                                    if (summary.isFavorited) {
+                                        CarbonIcons.FavoriteFilled
+                                    } else {
+                                        CarbonIcons.Favorite
+                                    },
+                                contentDescription = null,
+                                tint =
+                                    if (summary.isFavorited) {
+                                        Carbon.theme.supportError
+                                    } else {
+                                        Carbon.theme.iconSecondary
+                                    },
+                                modifier = Modifier.size(IconSizes.xs),
+                            )
+                        },
+                    )
+                    DropdownMenuItem(
                         text = { Text(if (summary.isRead) "Already read" else "Mark as read") },
                         onClick = {
                             menuExpanded = false
@@ -96,6 +125,20 @@ fun SummaryGridCard(
                         leadingIcon = {
                             Icon(
                                 imageVector = CarbonIcons.CheckmarkFilled,
+                                contentDescription = null,
+                                modifier = Modifier.size(IconSizes.xs),
+                            )
+                        },
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Add to collection") },
+                        onClick = {
+                            menuExpanded = false
+                            onAddToCollectionClick()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = CarbonIcons.Folder,
                                 contentDescription = null,
                                 modifier = Modifier.size(IconSizes.xs),
                             )
@@ -120,22 +163,35 @@ fun SummaryGridCard(
             }
         }
 
-        // Read indicator
-        if (summary.isRead) {
-            Box(
-                modifier =
-                    Modifier
-                        .size(20.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Carbon.theme.supportSuccess),
-                contentAlignment = Alignment.Center,
-            ) {
+        // Status indicators
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (summary.isFavorited) {
                 Icon(
-                    imageVector = CarbonIcons.Checkmark,
-                    contentDescription = "Read",
-                    tint = Carbon.theme.textOnColor,
+                    imageVector = CarbonIcons.FavoriteFilled,
+                    contentDescription = "Favorited",
+                    tint = Carbon.theme.supportError,
                     modifier = Modifier.size(IconSizes.xs),
                 )
+            }
+            if (summary.isRead) {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(20.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Carbon.theme.supportSuccess),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = CarbonIcons.Checkmark,
+                        contentDescription = "Read",
+                        tint = Carbon.theme.textOnColor,
+                        modifier = Modifier.size(IconSizes.xs),
+                    )
+                }
             }
         }
 

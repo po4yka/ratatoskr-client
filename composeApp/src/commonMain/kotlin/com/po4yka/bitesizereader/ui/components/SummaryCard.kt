@@ -2,6 +2,7 @@ package com.po4yka.bitesizereader.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,25 +12,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.IconButton
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.material3.Text
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.ReadIndicator
 import com.po4yka.bitesizereader.util.extractDomain
@@ -37,13 +37,15 @@ import com.po4yka.bitesizereader.util.extractDomain
 /**
  * Card component for displaying a summary in a list using Carbon Design System
  */
-@Suppress("FunctionNaming", "LongMethod") // Composable naming convention; UI component with layout logic
+@Suppress("FunctionNaming", "LongMethod", "LongParameterList")
 @Composable
 fun SummaryCard(
     summary: Summary,
     onClick: () -> Unit,
     onDeleteClick: () -> Unit = {},
     onMarkReadClick: () -> Unit = {},
+    onFavoriteClick: () -> Unit = {},
+    onAddToCollectionClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -95,6 +97,16 @@ fun SummaryCard(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
+                if (summary.isFavorited) {
+                    Icon(
+                        imageVector = CarbonIcons.FavoriteFilled,
+                        contentDescription = "Favorited",
+                        tint = Carbon.theme.supportError,
+                        modifier = Modifier.size(IconSizes.xs),
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+
                 if (summary.isRead) {
                     Icon(
                         imageVector = CarbonIcons.CheckmarkFilled,
@@ -125,6 +137,31 @@ fun SummaryCard(
                 onDismissRequest = { menuExpanded = false },
             ) {
                 DropdownMenuItem(
+                    text = { Text(if (summary.isFavorited) "Unfavorite" else "Favorite") },
+                    onClick = {
+                        menuExpanded = false
+                        onFavoriteClick()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector =
+                                if (summary.isFavorited) {
+                                    CarbonIcons.FavoriteFilled
+                                } else {
+                                    CarbonIcons.Favorite
+                                },
+                            contentDescription = null,
+                            tint =
+                                if (summary.isFavorited) {
+                                    Carbon.theme.supportError
+                                } else {
+                                    Carbon.theme.iconSecondary
+                                },
+                            modifier = Modifier.size(IconSizes.xs),
+                        )
+                    },
+                )
+                DropdownMenuItem(
                     text = { Text(if (summary.isRead) "Already read" else "Mark as read") },
                     onClick = {
                         menuExpanded = false
@@ -134,6 +171,20 @@ fun SummaryCard(
                     leadingIcon = {
                         Icon(
                             imageVector = CarbonIcons.CheckmarkFilled,
+                            contentDescription = null,
+                            modifier = Modifier.size(IconSizes.xs),
+                        )
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text("Add to collection") },
+                    onClick = {
+                        menuExpanded = false
+                        onAddToCollectionClick()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = CarbonIcons.Folder,
                             contentDescription = null,
                             modifier = Modifier.size(IconSizes.xs),
                         )

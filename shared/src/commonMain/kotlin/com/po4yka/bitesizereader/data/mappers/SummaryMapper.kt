@@ -17,6 +17,7 @@ fun SummaryCompactDto.toDomain(): Summary {
         isRead = isRead,
         tags = topicTags,
         readingTimeMin = readingTimeMin,
+        isFavorited = isFavorited,
     )
 }
 
@@ -31,6 +32,7 @@ fun SummaryEntity.toDomain(): Summary {
         isRead = isRead,
         tags = tags,
         readingTimeMin = readingTimeMin,
+        isFavorited = isFavorited,
     )
 }
 
@@ -45,6 +47,7 @@ fun SummaryCompactDto.toEntity(isReadOverride: Boolean? = null): SummaryEntity {
         isRead = isReadOverride ?: isRead,
         tags = topicTags,
         readingTimeMin = readingTimeMin,
+        isFavorited = isFavorited,
     )
 }
 
@@ -59,6 +62,7 @@ fun SummaryDetailDataDto.toDomain(): Summary {
         createdAt = Instant.parse(s.createdAt),
         isRead = s.isRead,
         tags = emptyList(),
+        isFavorited = s.isFavorited,
     )
 }
 
@@ -73,5 +77,6 @@ fun Summary.toEntity(): SummaryEntity {
         isRead = isRead,
         tags = tags,
         readingTimeMin = readingTimeMin,
+        isFavorited = isFavorited,
     )
 }

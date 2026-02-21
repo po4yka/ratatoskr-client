@@ -50,9 +50,11 @@ class SummaryRepositoryImpl(
         sortOrder: SortOrder,
         selectedTag: String?,
     ): Flow<List<Summary>> {
+        val isFavoritedFilter = readFilter == ReadFilter.FAVORITED
         return database.databaseQueries.selectSummariesFiltered(
-            readFilterAll = if (readFilter == ReadFilter.ALL) 1L else 0L,
+            readFilterAll = if (readFilter == ReadFilter.ALL || isFavoritedFilter) 1L else 0L,
             isRead = readFilter == ReadFilter.READ,
+            favoritedOnly = if (isFavoritedFilter) 1L else 0L,
             selectedTag = selectedTag,
             sortNewest = if (sortOrder == SortOrder.NEWEST) 1L else 0L,
             sortOldest = if (sortOrder == SortOrder.OLDEST) 1L else 0L,
@@ -72,6 +74,11 @@ class SummaryRepositoryImpl(
 
     override suspend fun markAsRead(id: String) {
         database.databaseQueries.updateSummaryReadStatus(true, id)
+    }
+
+    override suspend fun toggleFavorite(id: String) {
+        val summary = database.databaseQueries.getSummaryById(id).executeAsOneOrNull() ?: return
+        database.databaseQueries.updateSummaryFavoriteStatus(!summary.isFavorited, id)
     }
 
     override suspend fun deleteSummary(id: String) {

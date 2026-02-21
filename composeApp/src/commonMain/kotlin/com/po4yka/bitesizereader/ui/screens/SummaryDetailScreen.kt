@@ -74,6 +74,7 @@ fun SummaryDetailScreen(
             summary = state.summary,
             onBackClick = onBackClick,
             onShareClick = onShareClick,
+            onFavoriteClick = { viewModel.toggleFavorite() },
         )
 
         // Content
@@ -114,6 +115,7 @@ private fun SummaryDetailHeader(
     summary: Summary?,
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
+    onFavoriteClick: () -> Unit = {},
 ) {
     ScreenHeader(
         title = summary?.let { extractDomain(it.sourceUrl) ?: "Summary" } ?: "Summary",
@@ -121,6 +123,23 @@ private fun SummaryDetailHeader(
         onBackClick = onBackClick,
         actions = {
             summary?.let { s ->
+                HeaderIconButton(
+                    icon =
+                        if (s.isFavorited) {
+                            CarbonIcons.FavoriteFilled
+                        } else {
+                            CarbonIcons.Favorite
+                        },
+                    contentDescription = if (s.isFavorited) "Unfavorite" else "Favorite",
+                    onClick = onFavoriteClick,
+                    tint =
+                        if (s.isFavorited) {
+                            Carbon.theme.supportError
+                        } else {
+                            Carbon.theme.iconSecondary
+                        },
+                )
+
                 Icon(
                     imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
                     contentDescription = if (s.isRead) "Read" else "Unread",
