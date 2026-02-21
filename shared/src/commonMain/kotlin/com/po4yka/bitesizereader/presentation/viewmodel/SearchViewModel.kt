@@ -5,6 +5,7 @@ import com.po4yka.bitesizereader.domain.usecase.DeleteSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetRecentSearchesUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetSearchInsightsUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SemanticSearchUseCase
 import com.po4yka.bitesizereader.presentation.state.SearchFilters
@@ -33,6 +34,7 @@ class SearchViewModel(
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
     private val deleteSearchQueryUseCase: DeleteSearchQueryUseCase,
     private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase,
+    private val getSearchInsightsUseCase: GetSearchInsightsUseCase,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : BaseViewModel(dispatcher) {
     private val _state = MutableStateFlow(SearchState())
@@ -47,6 +49,7 @@ class SearchViewModel(
     private fun loadInitialData() {
         loadTrendingTopics()
         loadRecentSearches()
+        loadInsights()
     }
 
     /**
@@ -222,6 +225,19 @@ class SearchViewModel(
                 _state.update { it.copy(trendingTopics = topics) }
             } catch (_: Exception) {
                 // Trending topics are non-critical, silently ignore failures
+            }
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private fun loadInsights() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingInsights = true) }
+            try {
+                val insights = getSearchInsightsUseCase()
+                _state.update { it.copy(insights = insights, isLoadingInsights = false) }
+            } catch (_: Exception) {
+                _state.update { it.copy(isLoadingInsights = false) }
             }
         }
     }

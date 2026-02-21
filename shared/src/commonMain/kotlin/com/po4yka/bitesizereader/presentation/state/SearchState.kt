@@ -24,6 +24,9 @@ data class SearchState(
     // Filters
     val filters: SearchFilters = SearchFilters(),
     val showFilters: Boolean = false,
+    // Insights
+    val insights: List<Summary> = emptyList(),
+    val isLoadingInsights: Boolean = false,
 )
 
 /**
