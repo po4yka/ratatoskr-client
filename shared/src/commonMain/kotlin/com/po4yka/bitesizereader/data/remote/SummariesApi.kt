@@ -56,4 +56,7 @@ interface SummariesApi {
         id: Long,
         format: String? = null,
     ): ApiResponseDto<SummaryContentDataDto>
+
+    /** Look up a summary by original article URL. */
+    suspend fun getSummaryByUrl(url: String): ApiResponseDto<SummaryDetailDataDto>
 }
