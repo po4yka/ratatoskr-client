@@ -80,4 +80,11 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
                 format?.let { parameter("format", it) }
             }.body()
         }
+
+    override suspend fun getSummaryByUrl(url: String): ApiResponseDto<SummaryDetailDataDto> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            client.get("v1/summaries/by-url") {
+                parameter("url", url)
+            }.body()
+        }
 }

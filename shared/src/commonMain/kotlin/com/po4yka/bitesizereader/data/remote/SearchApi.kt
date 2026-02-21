@@ -47,6 +47,12 @@ interface SearchApi {
         pageSize: Int,
     ): ApiResponseDto<RelatedSummariesResponseDto>
 
+    /** Get search insights (popular topics, reading patterns). */
+    suspend fun getSearchInsights(
+        days: Int = 30,
+        limit: Int = 20,
+    ): ApiResponseDto<SearchResponseDataDto>
+
     /**
      * Check if URL has already been summarized.
      *

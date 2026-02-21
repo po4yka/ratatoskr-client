@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.data.mappers
 
 import com.po4yka.bitesizereader.data.remote.dto.SummaryCompactDto
+import com.po4yka.bitesizereader.data.remote.dto.SummaryDetailDataDto
 import com.po4yka.bitesizereader.database.SummaryEntity
 import com.po4yka.bitesizereader.domain.model.Summary
 import kotlin.time.Instant
@@ -44,6 +45,20 @@ fun SummaryCompactDto.toEntity(isReadOverride: Boolean? = null): SummaryEntity {
         isRead = isReadOverride ?: isRead,
         tags = topicTags,
         readingTimeMin = readingTimeMin,
+    )
+}
+
+fun SummaryDetailDataDto.toDomain(): Summary {
+    val s = summary
+    return Summary(
+        id = s.id.toString(),
+        title = source?.title ?: "Untitled",
+        content = "",
+        sourceUrl = source?.url.orEmpty(),
+        imageUrl = source?.imageUrl,
+        createdAt = Instant.parse(s.createdAt),
+        isRead = s.isRead,
+        tags = emptyList(),
     )
 }
 

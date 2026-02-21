@@ -68,6 +68,16 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
         }.body()
     }
 
+    override suspend fun getSearchInsights(
+        days: Int,
+        limit: Int,
+    ): ApiResponseDto<SearchResponseDataDto> {
+        return client.get("v1/search/insights") {
+            parameter("days", days)
+            parameter("limit", limit)
+        }.body()
+    }
+
     override suspend fun checkDuplicateUrl(
         url: String,
         includeSummary: Boolean,
