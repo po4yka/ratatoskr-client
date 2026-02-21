@@ -75,6 +75,7 @@ fun SettingsScreen(component: SettingsComponent) {
             onToggleRequests = viewModel::toggleRequestsExpanded,
             onRetryRequest = viewModel::retryRequest,
             onDigestClicked = component::onDigestClicked,
+            onLanguageChanged = viewModel::updateLanguagePreference,
         )
 
         // Delete Account Confirmation Dialog
@@ -111,6 +112,7 @@ private fun SettingsContent(
     onToggleRequests: () -> Unit,
     onRetryRequest: (Request) -> Unit,
     onDigestClicked: () -> Unit = {},
+    onLanguageChanged: (String) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -149,6 +151,14 @@ private fun SettingsContent(
 
         // Digest Channels navigation
         DigestNavigationRow(onClick = onDigestClicked)
+
+        // Language preference
+        LanguagePreferenceCard(
+            currentLanguage = state.userPreferences?.langPreference ?: "auto",
+            isLoading = state.isLoadingPreferences,
+            isSaving = state.isSavingPreferences,
+            onLanguageChanged = onLanguageChanged,
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -529,6 +539,87 @@ private fun SyncProgressSection(
             }
         }
     }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun LanguagePreferenceCard(
+    currentLanguage: String,
+    isLoading: Boolean,
+    isSaving: Boolean,
+    onLanguageChanged: (String) -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = "Language",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        Text(
+            text = "Select your preferred language for summaries.",
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
+        )
+
+        if (isLoading) {
+            SmallLoading()
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            ) {
+                LanguageChip(
+                    label = "Auto",
+                    isSelected = currentLanguage == "auto",
+                    isEnabled = !isSaving,
+                    onClick = { onLanguageChanged("auto") },
+                )
+                LanguageChip(
+                    label = "English",
+                    isSelected = currentLanguage == "en",
+                    isEnabled = !isSaving,
+                    onClick = { onLanguageChanged("en") },
+                )
+                LanguageChip(
+                    label = "Russian",
+                    isSelected = currentLanguage == "ru",
+                    isEnabled = !isSaving,
+                    onClick = { onLanguageChanged("ru") },
+                )
+            }
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun LanguageChip(
+    label: String,
+    isSelected: Boolean,
+    isEnabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val backgroundColor = if (isSelected) Carbon.theme.linkPrimary else Carbon.theme.layer02
+    val textColor = if (isSelected) Carbon.theme.textOnColor else Carbon.theme.textPrimary
+
+    Text(
+        text = label,
+        style = Carbon.typography.label01,
+        color = if (isEnabled) textColor else Carbon.theme.textDisabled,
+        modifier = modifier
+            .background(backgroundColor)
+            .clickable(enabled = isEnabled && !isSelected, onClick = onClick)
+            .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+    )
 }
 
 @Suppress("FunctionNaming")
