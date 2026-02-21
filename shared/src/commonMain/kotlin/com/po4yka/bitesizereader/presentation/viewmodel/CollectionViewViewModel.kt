@@ -154,14 +154,13 @@ class CollectionViewViewModel(
     fun updateCollection(
         name: String? = null,
         description: String? = null,
-        isPublic: Boolean? = null,
     ) {
         if (collectionId.isEmpty() || !_state.value.canEdit) return
 
         viewModelScope.launch {
             _state.value = _state.value.copy(isUpdating = true, updateError = null, updateSuccess = false)
             try {
-                val updatedCollection = updateCollectionUseCase(collectionId, name, description, isPublic)
+                val updatedCollection = updateCollectionUseCase(collectionId, name, description)
                 _state.value =
                     _state.value.copy(
                         collection = updatedCollection,

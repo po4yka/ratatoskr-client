@@ -16,4 +16,8 @@ data class SubmitURLState(
     val recentRequests: List<Request> = emptyList(),
     val isLoadingHistory: Boolean = false,
     val showHistory: Boolean = false,
+    // Duplicate URL checking
+    val isDuplicate: Boolean = false,
+    val duplicateSummaryId: String? = null,
+    val isCheckingDuplicate: Boolean = false,
 )

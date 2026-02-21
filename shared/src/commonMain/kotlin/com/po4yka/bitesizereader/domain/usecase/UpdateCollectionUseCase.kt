@@ -10,8 +10,7 @@ class UpdateCollectionUseCase(private val repository: CollectionRepository) {
         id: String,
         name: String? = null,
         description: String? = null,
-        isPublic: Boolean? = null,
     ): Collection {
-        return repository.updateCollection(id, name, description, isPublic)
+        return repository.updateCollection(id, name, description)
     }
 }

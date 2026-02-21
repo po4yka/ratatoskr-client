@@ -4,11 +4,10 @@ data class Collection(
     val id: String,
     val name: String,
     val count: Int,
-    val iconName: String? = null, // e.g., "folder", "star", etc.
+    val iconName: String? = null,
     val type: CollectionType = CollectionType.System,
     val description: String? = null,
-    val isPublic: Boolean = false,
-    val ownerId: Long? = null,
+    val isShared: Boolean = false,
     val parentId: String? = null,
     val createdAt: String? = null,
     val updatedAt: String? = null,

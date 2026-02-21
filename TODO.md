@@ -81,8 +81,8 @@ Detailed implementation checklist for Bite-Size Reader Mobile Client.
   - [ ] Live Activities for request processing
 
 ## Technical Debt / Code Health
-- [ ] **Fix error state timing test** in `SummaryListViewModelTest.kt`
-- [ ] Migrate `SubmitUrl().execute()` to non-deprecated API (pass Scope)
+- [X] **Fix error state timing test** in `SummaryListViewModelTest.kt`
+- [X] Migrate `SubmitUrl().execute()` to non-deprecated API (pass Scope)
 - [ ] Fix placeholder app logo in `AuthScreen.kt`
 - [ ] Add proper accessibility labels for VoiceOver/TalkBack
 - [ ] Improve error handling in Submit URL flow

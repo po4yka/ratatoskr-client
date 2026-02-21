@@ -58,13 +58,11 @@ class MockCollectionRepository : CollectionRepository {
         id: String,
         name: String?,
         description: String?,
-        isPublic: Boolean?,
     ): Collection {
         val existing = mockCollections.find { it.id == id } ?: throw IllegalArgumentException("Collection not found")
         return existing.copy(
             name = name ?: existing.name,
             description = description ?: existing.description,
-            isPublic = isPublic ?: existing.isPublic,
         )
     }
 

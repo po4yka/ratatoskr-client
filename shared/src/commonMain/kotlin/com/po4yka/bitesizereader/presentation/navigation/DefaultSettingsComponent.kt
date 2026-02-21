@@ -8,6 +8,11 @@ import org.koin.core.component.get
 
 class DefaultSettingsComponent(
     componentContext: ComponentContext,
+    private val onDigest: () -> Unit = {},
 ) : SettingsComponent, ComponentContext by componentContext, KoinComponent {
     override val viewModel: SettingsViewModel = retainedInstance { get() }
+
+    override fun onDigestClicked() {
+        onDigest()
+    }
 }

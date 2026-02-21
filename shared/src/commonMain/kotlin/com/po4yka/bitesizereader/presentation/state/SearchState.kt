@@ -24,6 +24,9 @@ data class SearchState(
     // Filters
     val filters: SearchFilters = SearchFilters(),
     val showFilters: Boolean = false,
+    // Insights
+    val insights: List<Summary> = emptyList(),
+    val isLoadingInsights: Boolean = false,
 )
 
 /**
@@ -42,6 +45,7 @@ data class SearchFilters(
     val tags: List<String> = emptyList(),
     val readFilter: ReadFilter = ReadFilter.ALL,
     val dateRange: DateRange? = null,
+    val language: String? = null,
 )
 
 /**

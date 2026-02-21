@@ -43,7 +43,9 @@ fun MainScreen(
     // Determine if bottom nav should be shown (hide for detail screens)
     val showBottomNav =
         activeChild !is MainComponent.Child.SummaryDetail &&
-            activeChild !is MainComponent.Child.CollectionView
+            activeChild !is MainComponent.Child.CollectionView &&
+            activeChild !is MainComponent.Child.SubmitURL &&
+            activeChild !is MainComponent.Child.Digest
 
     Column(
         modifier =
@@ -73,12 +75,14 @@ fun MainScreen(
                         )
                     is MainComponent.Child.Search -> SearchScreen(component = instance.component)
                     is MainComponent.Child.Collections ->
-                        CollectionsScreen(
-                            onCollectionClick = instance.component::onCollectionClicked,
-                        )
+                        CollectionsScreen(component = instance.component)
                     is MainComponent.Child.CollectionView ->
                         CollectionViewScreen(component = instance.component)
                     is MainComponent.Child.Settings -> SettingsScreen(component = instance.component)
+                    is MainComponent.Child.SubmitURL ->
+                        SubmitURLScreen(component = instance.component)
+                    is MainComponent.Child.Digest ->
+                        DigestScreen(component = instance.component)
                 }
             }
         }

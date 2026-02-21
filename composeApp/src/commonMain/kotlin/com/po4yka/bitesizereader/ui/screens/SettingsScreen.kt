@@ -3,6 +3,7 @@
 package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -73,6 +74,8 @@ fun SettingsScreen(component: SettingsComponent) {
             onToggleSessions = viewModel::toggleSessionsExpanded,
             onToggleRequests = viewModel::toggleRequestsExpanded,
             onRetryRequest = viewModel::retryRequest,
+            onDigestClicked = component::onDigestClicked,
+            onLanguageChanged = viewModel::updateLanguagePreference,
         )
 
         // Delete Account Confirmation Dialog
@@ -108,6 +111,8 @@ private fun SettingsContent(
     onToggleSessions: () -> Unit,
     onToggleRequests: () -> Unit,
     onRetryRequest: (Request) -> Unit,
+    onDigestClicked: () -> Unit = {},
+    onLanguageChanged: (String) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -143,6 +148,17 @@ private fun SettingsContent(
                 onCancel = onCancelLink,
             )
         }
+
+        // Digest Channels navigation
+        DigestNavigationRow(onClick = onDigestClicked)
+
+        // Language preference
+        LanguagePreferenceCard(
+            currentLanguage = state.userPreferences?.langPreference ?: "auto",
+            isLoading = state.isLoadingPreferences,
+            isSaving = state.isSavingPreferences,
+            onLanguageChanged = onLanguageChanged,
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -521,6 +537,122 @@ private fun SyncProgressSection(
                     color = Carbon.theme.supportWarning,
                 )
             }
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun LanguagePreferenceCard(
+    currentLanguage: String,
+    isLoading: Boolean,
+    isSaving: Boolean,
+    onLanguageChanged: (String) -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = "Language",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        Text(
+            text = "Select your preferred language for summaries.",
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
+        )
+
+        if (isLoading) {
+            SmallLoading()
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            ) {
+                LanguageChip(
+                    label = "Auto",
+                    isSelected = currentLanguage == "auto",
+                    isEnabled = !isSaving,
+                    onClick = { onLanguageChanged("auto") },
+                )
+                LanguageChip(
+                    label = "English",
+                    isSelected = currentLanguage == "en",
+                    isEnabled = !isSaving,
+                    onClick = { onLanguageChanged("en") },
+                )
+                LanguageChip(
+                    label = "Russian",
+                    isSelected = currentLanguage == "ru",
+                    isEnabled = !isSaving,
+                    onClick = { onLanguageChanged("ru") },
+                )
+            }
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun LanguageChip(
+    label: String,
+    isSelected: Boolean,
+    isEnabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val backgroundColor = if (isSelected) Carbon.theme.linkPrimary else Carbon.theme.layer02
+    val textColor = if (isSelected) Carbon.theme.textOnColor else Carbon.theme.textPrimary
+
+    Text(
+        text = label,
+        style = Carbon.typography.label01,
+        color = if (isEnabled) textColor else Carbon.theme.textDisabled,
+        modifier = modifier
+            .background(backgroundColor)
+            .clickable(enabled = isEnabled && !isSelected, onClick = onClick)
+            .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+    )
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun DigestNavigationRow(onClick: () -> Unit) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .clickable(onClick = onClick)
+                .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Icon(
+            imageVector = CarbonIcons.Notification,
+            contentDescription = "Digest",
+            tint = Carbon.theme.iconPrimary,
+            modifier = Modifier.size(24.dp),
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "Digest Channels",
+                style = Carbon.typography.headingCompact01,
+                color = Carbon.theme.textPrimary,
+            )
+            Text(
+                text = "Manage channel subscriptions and preferences",
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textSecondary,
+            )
         }
     }
 }

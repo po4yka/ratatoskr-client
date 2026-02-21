@@ -27,7 +27,7 @@ import kotlin.time.Instant
 
 fun UserDto.toDomain(): User {
     return User(
-        id = userId.toString(),
+        id = id.toString(),
         username = username,
         displayName = displayName,
         photoUrl = photoUrl,
@@ -65,8 +65,8 @@ fun SessionInfoDto.toDomain(): Session {
 
 fun UserPreferencesDto.toDomain(): UserPreferences {
     return UserPreferences(
-        langPreference = langPreference,
-        notificationSettings = null, // JsonObject conversion would require more complex mapping
+        langPreference = langPreference ?: "auto",
+        notificationSettings = null,
         appSettings = null,
     )
 }

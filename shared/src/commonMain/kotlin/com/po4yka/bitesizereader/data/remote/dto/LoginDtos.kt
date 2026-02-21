@@ -20,11 +20,10 @@ data class LoginDataDto(
  */
 @Serializable
 data class UserPreferencesDto(
-    /** Language preference: "auto", "en", or "ru" */
-    @SerialName("lang_preference") val langPreference: String = "auto",
-    /** Notification settings (structure varies) */
+    @SerialName("user_id") val userId: Long,
+    @SerialName("telegram_username") val telegramUsername: String? = null,
+    @SerialName("lang_preference") val langPreference: String? = "auto",
     @SerialName("notification_settings") val notificationSettings: JsonObject? = null,
-    /** App-specific settings (structure varies) */
     @SerialName("app_settings") val appSettings: JsonObject? = null,
 )
 

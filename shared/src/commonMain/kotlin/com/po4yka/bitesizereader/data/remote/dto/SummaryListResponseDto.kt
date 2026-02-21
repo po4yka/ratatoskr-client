@@ -19,6 +19,8 @@ data class SummaryCompactDto(
     @SerialName("created_at") val createdAt: String,
     @SerialName("confidence") val confidence: Double? = null,
     @SerialName("hallucination_risk") val hallucinationRisk: String? = null,
+    @SerialName("is_favorited") val isFavorited: Boolean = false,
+    @SerialName("image_url") val imageUrl: String? = null,
 )
 
 @Serializable
@@ -29,7 +31,7 @@ data class SummaryStatsDto(
 
 @Serializable
 data class SummaryListDataDto(
-    @SerialName("summaries") val summaries: List<SummaryCompactDto>,
+    @SerialName("items") val items: List<SummaryCompactDto>,
     @SerialName("pagination") val pagination: PaginationDto,
-    @SerialName("stats") val stats: SummaryStatsDto,
+    @SerialName("stats") val stats: SummaryStatsDto? = null,
 )

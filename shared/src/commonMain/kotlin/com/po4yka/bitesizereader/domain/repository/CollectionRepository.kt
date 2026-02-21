@@ -22,7 +22,6 @@ interface CollectionRepository {
         id: String,
         name: String? = null,
         description: String? = null,
-        isPublic: Boolean? = null,
     ): Collection
 
     suspend fun deleteCollection(id: String)

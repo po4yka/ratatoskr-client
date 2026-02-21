@@ -37,8 +37,10 @@ import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.DefaultMarkdownColors
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
+import com.po4yka.bitesizereader.ui.components.AddToCollectionDialog
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
+import com.po4yka.bitesizereader.ui.components.ProxiedImage
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.TagChip
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
@@ -74,6 +76,8 @@ fun SummaryDetailScreen(
             summary = state.summary,
             onBackClick = onBackClick,
             onShareClick = onShareClick,
+            onFavoriteClick = { viewModel.toggleFavorite() },
+            onAddToCollectionClick = { viewModel.showAddToCollection() },
         )
 
         // Content
@@ -106,6 +110,18 @@ fun SummaryDetailScreen(
             }
         }
     }
+
+    // Add to Collection Dialog
+    if (state.showAddToCollectionDialog) {
+        AddToCollectionDialog(
+            collections = state.collections,
+            isLoading = state.isLoadingCollections,
+            isAdding = state.isAddingToCollection,
+            error = state.addToCollectionError,
+            onCollectionSelected = { id -> viewModel.addToCollection(id) },
+            onDismiss = { viewModel.dismissAddToCollection() },
+        )
+    }
 }
 
 @Suppress("FunctionNaming")
@@ -114,6 +130,8 @@ private fun SummaryDetailHeader(
     summary: Summary?,
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
+    onFavoriteClick: () -> Unit = {},
+    onAddToCollectionClick: () -> Unit = {},
 ) {
     ScreenHeader(
         title = summary?.let { extractDomain(it.sourceUrl) ?: "Summary" } ?: "Summary",
@@ -121,6 +139,29 @@ private fun SummaryDetailHeader(
         onBackClick = onBackClick,
         actions = {
             summary?.let { s ->
+                HeaderIconButton(
+                    icon =
+                        if (s.isFavorited) {
+                            CarbonIcons.FavoriteFilled
+                        } else {
+                            CarbonIcons.Favorite
+                        },
+                    contentDescription = if (s.isFavorited) "Unfavorite" else "Favorite",
+                    onClick = onFavoriteClick,
+                    tint =
+                        if (s.isFavorited) {
+                            Carbon.theme.supportError
+                        } else {
+                            Carbon.theme.iconSecondary
+                        },
+                )
+
+                HeaderIconButton(
+                    icon = CarbonIcons.Folder,
+                    contentDescription = "Add to collection",
+                    onClick = onAddToCollectionClick,
+                )
+
                 Icon(
                     imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
                     contentDescription = if (s.isRead) "Read" else "Unread",
@@ -159,6 +200,19 @@ private fun SummaryDetailContent(
         )
 
         Spacer(modifier = Modifier.height(Spacing.xs))
+
+        // Hero image
+        if (summary.imageUrl != null) {
+            ProxiedImage(
+                imageUrl = summary.imageUrl!!,
+                contentDescription = summary.title,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+            )
+            Spacer(modifier = Modifier.height(Spacing.md))
+        }
 
         Text(
             text = extractDomain(summary.sourceUrl) ?: "Unknown source",

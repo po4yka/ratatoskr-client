@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.domain.model
 
 data class CollectionAcl(
-    val userId: Int,
+    val userId: Int?,
     val role: CollaboratorRole,
     val status: String,
     val invitedBy: Int? = null,
