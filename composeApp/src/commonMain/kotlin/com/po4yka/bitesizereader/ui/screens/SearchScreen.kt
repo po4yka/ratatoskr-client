@@ -48,6 +48,7 @@ import com.po4yka.bitesizereader.presentation.state.SearchState
 import com.po4yka.bitesizereader.presentation.viewmodel.SearchViewModel
 import com.po4yka.bitesizereader.ui.components.ContextualEmptyState
 import com.po4yka.bitesizereader.ui.components.EmptyStateType
+import com.po4yka.bitesizereader.ui.components.InsightsSection
 import com.po4yka.bitesizereader.ui.components.RecentSearchesSection
 import com.po4yka.bitesizereader.ui.components.SummaryCard
 import com.po4yka.bitesizereader.ui.components.TrendingTopicsSection
@@ -106,6 +107,7 @@ fun SearchScreen(
             onDeleteRecentSearch = viewModel::deleteRecentSearch,
             onClearHistory = viewModel::clearSearchHistory,
             onRetry = { viewModel.onQueryChanged(state.query) },
+            onInsightClick = { id -> component.onSummaryClicked(id) },
             modifier = Modifier.weight(1f),
         )
     }
@@ -330,6 +332,37 @@ private fun SearchFiltersPanel(
                 },
             )
         }
+
+        // Language filter (semantic mode only)
+        if (state.searchMode == SearchMode.SEMANTIC) {
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            Text(
+                text = "Language",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+                modifier = Modifier.padding(bottom = Spacing.xs),
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            ) {
+                ReadFilterChip(
+                    label = "All",
+                    isSelected = state.filters.language == null,
+                    onClick = { onFiltersChanged(state.filters.copy(language = null)) },
+                )
+                ReadFilterChip(
+                    label = "English",
+                    isSelected = state.filters.language == "en",
+                    onClick = { onFiltersChanged(state.filters.copy(language = "en")) },
+                )
+                ReadFilterChip(
+                    label = "Russian",
+                    isSelected = state.filters.language == "ru",
+                    onClick = { onFiltersChanged(state.filters.copy(language = "ru")) },
+                )
+            }
+        }
     }
 }
 
@@ -377,6 +410,7 @@ private fun SearchScreenContent(
     onDeleteRecentSearch: (String) -> Unit,
     onClearHistory: () -> Unit,
     onRetry: () -> Unit,
+    onInsightClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when {
@@ -410,8 +444,19 @@ private fun SearchScreenContent(
                     }
                 }
 
+                // Insights
+                if (state.insights.isNotEmpty()) {
+                    item {
+                        InsightsSection(
+                            insights = state.insights,
+                            onSummaryClick = onInsightClick,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
+
                 // Empty state if no discovery content
-                if (state.trendingTopics.isEmpty() && state.recentSearches.isEmpty()) {
+                if (state.trendingTopics.isEmpty() && state.recentSearches.isEmpty() && state.insights.isEmpty()) {
                     item {
                         ContextualEmptyState(
                             type = EmptyStateType.SEARCH_PROMPT,

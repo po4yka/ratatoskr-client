@@ -10,13 +10,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SessionInfoDto(
     @SerialName("id") val id: Long,
-    @SerialName("client_id") val clientId: String? = null,
-    @SerialName("device_info") val deviceInfo: String? = null,
-    @SerialName("ip_address") val ipAddress: String? = null,
-    @SerialName("last_used_at") val lastUsedAt: String? = null,
-    @SerialName("created_at") val createdAt: String,
-    /** Whether this is the current session making the request */
-    @SerialName("is_current") val isCurrent: Boolean = false,
+    @SerialName("clientId") val clientId: String? = null,
+    @SerialName("deviceInfo") val deviceInfo: String? = null,
+    @SerialName("ipAddress") val ipAddress: String? = null,
+    @SerialName("lastUsedAt") val lastUsedAt: String? = null,
+    @SerialName("createdAt") val createdAt: String,
+    @SerialName("isCurrent") val isCurrent: Boolean = false,
 )
 
 /**

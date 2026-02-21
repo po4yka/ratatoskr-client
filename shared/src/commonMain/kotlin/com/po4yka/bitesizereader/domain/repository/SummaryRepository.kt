@@ -28,5 +28,7 @@ interface SummaryRepository {
 
     suspend fun deleteSummary(id: String)
 
+    suspend fun toggleFavorite(id: String)
+
     suspend fun getAllTags(): List<String>
 }

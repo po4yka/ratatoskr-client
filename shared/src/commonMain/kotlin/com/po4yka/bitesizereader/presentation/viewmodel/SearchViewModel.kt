@@ -5,7 +5,9 @@ import com.po4yka.bitesizereader.domain.usecase.DeleteSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetRecentSearchesUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetSearchInsightsUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
+import com.po4yka.bitesizereader.domain.usecase.SemanticSearchUseCase
 import com.po4yka.bitesizereader.presentation.state.SearchFilters
 import com.po4yka.bitesizereader.presentation.state.SearchMode
 import com.po4yka.bitesizereader.presentation.state.SearchState
@@ -26,11 +28,13 @@ private const val DEFAULT_PAGE_SIZE = 20
 @Factory
 class SearchViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
+    private val semanticSearchUseCase: SemanticSearchUseCase,
     private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase,
     private val getRecentSearchesUseCase: GetRecentSearchesUseCase,
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
     private val deleteSearchQueryUseCase: DeleteSearchQueryUseCase,
     private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase,
+    private val getSearchInsightsUseCase: GetSearchInsightsUseCase,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : BaseViewModel(dispatcher) {
     private val _state = MutableStateFlow(SearchState())
@@ -45,6 +49,7 @@ class SearchViewModel(
     private fun loadInitialData() {
         loadTrendingTopics()
         loadRecentSearches()
+        loadInsights()
     }
 
     /**
@@ -225,6 +230,19 @@ class SearchViewModel(
     }
 
     @Suppress("TooGenericExceptionCaught")
+    private fun loadInsights() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingInsights = true) }
+            try {
+                val insights = getSearchInsightsUseCase()
+                _state.update { it.copy(insights = insights, isLoadingInsights = false) }
+            } catch (_: Exception) {
+                _state.update { it.copy(isLoadingInsights = false) }
+            }
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun performSearch(
         query: String,
         page: Int,
@@ -237,7 +255,19 @@ class SearchViewModel(
         }
 
         try {
-            val results = searchSummariesUseCase(query, page, DEFAULT_PAGE_SIZE)
+            val currentState = _state.value
+            val results =
+                when (currentState.searchMode) {
+                    SearchMode.FULLTEXT -> searchSummariesUseCase(query, page, DEFAULT_PAGE_SIZE)
+                    SearchMode.SEMANTIC ->
+                        semanticSearchUseCase(
+                            query = query,
+                            page = page,
+                            pageSize = DEFAULT_PAGE_SIZE,
+                            language = currentState.filters.language,
+                            tags = currentState.filters.tags.ifEmpty { null },
+                        )
+                }
             val hasMore = results.size >= DEFAULT_PAGE_SIZE
 
             _state.update { currentState ->

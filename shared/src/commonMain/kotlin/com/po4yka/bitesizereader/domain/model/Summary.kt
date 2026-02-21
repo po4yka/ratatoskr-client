@@ -12,4 +12,5 @@ data class Summary(
     val isRead: Boolean,
     val tags: List<String>,
     val readingTimeMin: Int? = null,
+    val isFavorited: Boolean = false,
 )

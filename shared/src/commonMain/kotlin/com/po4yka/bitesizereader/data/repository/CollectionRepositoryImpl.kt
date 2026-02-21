@@ -1,7 +1,6 @@
 package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.data.mappers.toDomain
-import com.po4yka.bitesizereader.data.mappers.toSummary
 import com.po4yka.bitesizereader.data.remote.CollectionsApi
 import com.po4yka.bitesizereader.data.remote.dto.CollectionInviteRequest
 import com.po4yka.bitesizereader.data.remote.dto.CollectionShareRequest
@@ -65,7 +64,23 @@ class CollectionRepositoryImpl(
             val intId = collectionId.toIntOrNull() ?: return emptyList()
             val response = api.listItems(intId, limit, offset)
             if (response.success && response.data != null) {
-                response.data.items.mapNotNull { it.toSummary() }
+                // CollectionItem only has summary_id; return minimal stubs.
+                // Full summary data should be fetched separately.
+                response.data.items.map { item ->
+                    Summary(
+                        id = item.summaryId.toString(),
+                        title = "Summary #${item.summaryId}",
+                        content = "",
+                        sourceUrl = "",
+                        imageUrl = null,
+                        createdAt =
+                            runCatching {
+                                kotlin.time.Instant.parse(item.createdAt)
+                            }.getOrElse { kotlin.time.Clock.System.now() },
+                        isRead = false,
+                        tags = emptyList(),
+                    )
+                }
             } else {
                 logger.error { "Failed to get collection items for $collectionId: ${response.error}" }
                 emptyList()
@@ -80,14 +95,12 @@ class CollectionRepositoryImpl(
         id: String,
         name: String?,
         description: String?,
-        isPublic: Boolean?,
     ): Collection {
         val intId = id.toIntOrNull() ?: throw IllegalArgumentException("Invalid collection ID: $id")
         val request =
             CollectionUpdateRequest(
                 name = name,
                 description = description,
-                isPublic = isPublic,
             )
         val response = api.updateCollection(intId, request)
         if (response.success && response.data != null) {

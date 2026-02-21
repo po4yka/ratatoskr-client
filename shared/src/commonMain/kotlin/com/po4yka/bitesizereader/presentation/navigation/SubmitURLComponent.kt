@@ -10,15 +10,22 @@ interface SubmitURLComponent {
     val viewModel: SubmitURLViewModel
 
     fun onBackClicked()
+
+    fun onViewExistingSummary(summaryId: String)
 }
 
 class DefaultSubmitURLComponent(
     componentContext: ComponentContext,
     private val onBack: () -> Unit,
+    private val onNavigateToSummary: (String) -> Unit,
 ) : SubmitURLComponent, ComponentContext by componentContext, KoinComponent {
     override val viewModel: SubmitURLViewModel = retainedInstance { get() }
 
     override fun onBackClicked() {
         onBack()
+    }
+
+    override fun onViewExistingSummary(summaryId: String) {
+        onNavigateToSummary(summaryId)
     }
 }

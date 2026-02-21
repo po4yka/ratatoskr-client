@@ -10,23 +10,17 @@ import kotlinx.serialization.Serializable
 data class CollectionDto(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
-    @SerialName("description") val description: String? = null,
-    /** Whether collection is shared with others (spec: is_shared) */
-    @SerialName("is_shared") val isShared: Boolean = false,
-    /** Backwards-compatible with older API responses using is_public */
-    @SerialName("is_public") val isPublic: Boolean = false,
-    @SerialName("owner_id") val ownerId: Long,
-    @SerialName("parent_id") val parentId: Int? = null,
-    /** Position within parent collection for ordering */
-    @SerialName("position") val position: Int? = null,
     @SerialName("created_at") val createdAt: String,
-    @SerialName("updated_at") val updatedAt: String,
-    /** Server version for conflict detection */
-    @SerialName("server_version") val serverVersion: Int = 0,
+    @SerialName("description") val description: String? = null,
+    @SerialName("parent_id") val parentId: Int? = null,
+    @SerialName("position") val position: Int? = null,
+    @SerialName("updated_at") val updatedAt: String? = null,
+    @SerialName("server_version") val serverVersion: Int? = null,
+    @SerialName("is_shared") val isShared: Boolean = false,
+    @SerialName("share_count") val shareCount: Int? = null,
     @SerialName("item_count") val itemCount: Int? = null,
-    /** ACL summary showing collaborator counts by role */
+    @SerialName("children") val children: List<CollectionDto>? = null,
     @SerialName("acl_summary") val aclSummary: AclSummaryDto? = null,
-    @SerialName("children") val children: List<CollectionDto> = emptyList(),
 )
 
 /**
@@ -35,47 +29,38 @@ data class CollectionDto(
 @Serializable
 data class AclSummaryDto(
     @SerialName("total_collaborators") val totalCollaborators: Int,
-    /** Role counts, e.g., {"viewer": 2, "editor": 1} */
-    @SerialName("roles") val roles: Map<String, Int> = emptyMap(),
+    @SerialName("roles") val roles: List<String> = emptyList(),
 )
 
-@Serializable
-data class CollectionTreeNodeDto(
-    @SerialName("id") val id: Int,
-    @SerialName("name") val name: String,
-    @SerialName("parent_id") val parentId: Int? = null,
-    @SerialName("children") val children: List<CollectionTreeNodeDto> = emptyList(),
-)
+// CollectionTreeNodeDto removed -- spec uses Collection for tree nodes
 
 @Serializable
 data class CollectionCreateRequest(
     @SerialName("name") val name: String,
     @SerialName("description") val description: String? = null,
-    @SerialName("is_public") val isPublic: Boolean = false,
     @SerialName("parent_id") val parentId: Int? = null,
+    @SerialName("position") val position: Int? = null,
 )
 
 @Serializable
 data class CollectionUpdateRequest(
     @SerialName("name") val name: String? = null,
     @SerialName("description") val description: String? = null,
-    @SerialName("is_public") val isPublic: Boolean? = null,
     @SerialName("parent_id") val parentId: Int? = null,
+    @SerialName("position") val position: Int? = null,
 )
 
 @Serializable
 data class CollectionItemCreateRequest(
-    @SerialName("summary_id") val summaryId: Long,
-    @SerialName("notes") val notes: String? = null,
+    @SerialName("summary_id") val summaryId: Int,
 )
 
 @Serializable
 data class CollectionItemDto(
     @SerialName("collection_id") val collectionId: Int,
-    @SerialName("summary_id") val summaryId: Long,
-    @SerialName("added_at") val addedAt: String,
-    @SerialName("notes") val notes: String? = null,
-    @SerialName("summary") val summary: SummaryDetailDto? = null,
+    @SerialName("summary_id") val summaryId: Int,
+    @SerialName("created_at") val createdAt: String,
+    @SerialName("position") val position: Int? = null,
 )
 
 @Serializable
@@ -144,31 +129,8 @@ data class CollectionItemsResponse(
 
 @Serializable
 data class CollectionTreeResponse(
-    @SerialName("nodes") val nodes: List<CollectionTreeNodeDto>, // Assuming "nodes" or "tree" or just list?
-    // Log for getTree not seen. Assuming sticking to envelope pattern implies "data" contains object.
-    // If "data": [ ... ], then T should be List<CollectionTreeNodeDto>.
-    // If "data": { "nodes": [...] }, then T is CollectionTreeResponse.
-    // Given CollectionListResponse has "collections", likely this has a name too?
-    // Or it might be a direct list.
-    // Safest bet: The current code expected 'data' field inside data.
-    // KtorCollectionsApi called getTree.
-    // Let's assume it returns a list directly in 'data' for now, or check standard pattern.
-    // Actually, earlier I assumed 'data' was wrapper.
-    // If previous code was `data: List<Node>`, it implied `data.data` was the list.
-    // So JSON was `{"data": {"data": []}}`? No.
-    // Previous code: `data class Envelope(success, data: List)`.
-    // This mapped to `{"success":..., "data": [...]}`.
-    // BUT `ApiResponseDto` wraps it. So `{"data": {"success":..., "data": [...]}}`.
-    // Start with strictly removing wrapper.
+    @SerialName("collections") val collections: List<CollectionDto>,
 )
-
-// Actually, if the previous code was `val data: List<CollectionTreeNodeDto>`, it meant it expected
-// `{"data": [...]}` inside the outer `data`.
-// If the API returns `{"data": [...]}` (list directly), then T = List<CollectionTreeNodeDto>.
-// If it returns `{"data": {"nodes": []}}`, then T = Wrapper("nodes").
-// Given `v1/collections` return `{"collections": []}`, it's likely named.
-// I will check `KtorCollectionsApi.kt` usage later.
-// For now, I'll delete this envelope and rely on List or a new wrapper if needed.
 
 @Serializable
 data class SuccessResponse(
@@ -204,12 +166,12 @@ data class CollectionAclResponse(
 
 @Serializable
 data class CollectionAclEntry(
-    @SerialName("user_id") val userId: Int,
     @SerialName("role") val role: String,
     @SerialName("status") val status: String,
-    @SerialName("invited_by") val invitedBy: Int? = null,
     @SerialName("created_at") val createdAt: String,
     @SerialName("updated_at") val updatedAt: String,
+    @SerialName("user_id") val userId: Int? = null,
+    @SerialName("invited_by") val invitedBy: Int? = null,
 )
 
 // CollectionInviteResponseEnvelope removed. Use CollectionInviteResponse directly.

@@ -12,6 +12,7 @@ import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
+import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.presentation.state.LayoutMode
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
@@ -51,6 +52,7 @@ class SummaryListViewModel(
     private val deleteSearchQueryUseCase: DeleteSearchQueryUseCase,
     private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase,
     private val syncDataUseCase: SyncDataUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val logoutUseCase: LogoutUseCase,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : BaseViewModel(dispatcher) {
@@ -453,6 +455,29 @@ class SummaryListViewModel(
                 logger.info { "Deleted summary $id" }
             } catch (e: Exception) {
                 logger.error(e) { "Failed to delete summary: $id" }
+                _state.value =
+                    _state.value.copy(
+                        error = e.toAppError().userMessage(),
+                    )
+            }
+        }
+    }
+
+    fun toggleFavorite(id: String) {
+        viewModelScope.launch {
+            try {
+                toggleFavoriteUseCase(id)
+                // Update local list immediately for responsiveness
+                _state.value =
+                    _state.value.copy(
+                        summaries =
+                            _state.value.summaries.map {
+                                if (it.id == id) it.copy(isFavorited = !it.isFavorited) else it
+                            },
+                    )
+                logger.debug { "Toggled favorite for summary $id" }
+            } catch (e: Exception) {
+                logger.error(e) { "Failed to toggle favorite: $id" }
                 _state.value =
                     _state.value.copy(
                         error = e.toAppError().userMessage(),

@@ -41,6 +41,7 @@ data class RequestStatusResponseDto(
     @SerialName("can_retry") val canRetry: Boolean? = null,
     @SerialName("correlation_id") val correlationId: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
+    @SerialName("queue_position") val queuePosition: Int? = null,
 )
 
 /**
@@ -85,7 +86,7 @@ data class RequestDetailDto(
     @SerialName("request") val request: RequestInfoDto,
     @SerialName("crawl_result") val crawlResult: CrawlResultDto? = null,
     @SerialName("llm_calls") val llmCalls: List<LlmCallDto> = emptyList(),
-    @SerialName("summary") val summary: SummarySimpleDto? = null,
+    @SerialName("summary") val summary: SummaryCompactDto? = null,
 )
 
 @Serializable

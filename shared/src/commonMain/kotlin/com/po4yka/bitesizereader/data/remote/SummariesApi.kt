@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
-import com.po4yka.bitesizereader.data.remote.dto.SummaryContentResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.SummaryContentDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryDetailDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryListDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
@@ -55,5 +55,8 @@ interface SummariesApi {
     suspend fun getContent(
         id: Long,
         format: String? = null,
-    ): ApiResponseDto<SummaryContentResponseDto>
+    ): ApiResponseDto<SummaryContentDataDto>
+
+    /** Look up a summary by original article URL. */
+    suspend fun getSummaryByUrl(url: String): ApiResponseDto<SummaryDetailDataDto>
 }

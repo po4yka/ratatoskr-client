@@ -193,9 +193,9 @@ private fun CollectionInfoSection(collection: Collection) {
                 color = Carbon.theme.textSecondary,
             )
 
-            if (collection.isPublic) {
+            if (collection.isShared) {
                 Text(
-                    text = "Public",
+                    text = "Shared",
                     style = Carbon.typography.label01,
                     color = Carbon.theme.linkPrimary,
                 )
@@ -404,7 +404,7 @@ private fun ItemsTabContent(
 @Composable
 private fun SettingsTabContent(
     state: CollectionViewState,
-    onUpdateCollection: (String?, String?, Boolean?) -> Unit,
+    onUpdateCollection: (String?, String?) -> Unit,
     onDeleteCollection: () -> Unit,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -482,7 +482,6 @@ private fun SettingsTabContent(
                     onUpdateCollection(
                         editedName.takeIf { it != state.collection?.name },
                         editedDescription.takeIf { it != state.collection?.description },
-                        null,
                     )
                 },
                 buttonType = ButtonType.Primary,
@@ -636,7 +635,7 @@ private fun SharingTabContent(
                 )
             }
         } else {
-            items(items = state.collaborators, key = { it.userId }) { collaborator ->
+            items(items = state.collaborators, key = { it.userId ?: it.hashCode() }) { collaborator ->
                 Row(
                     modifier =
                         Modifier
@@ -661,8 +660,8 @@ private fun SharingTabContent(
                         )
                     }
 
-                    if (collaborator.role != CollaboratorRole.Owner) {
-                        IconButton(onClick = { onRemoveCollaborator(collaborator.userId) }) {
+                    if (collaborator.role != CollaboratorRole.Owner && collaborator.userId != null) {
+                        IconButton(onClick = { onRemoveCollaborator(collaborator.userId!!) }) {
                             Icon(
                                 imageVector = CarbonIcons.Close,
                                 contentDescription = "Remove",

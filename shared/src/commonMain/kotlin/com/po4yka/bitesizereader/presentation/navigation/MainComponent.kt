@@ -38,6 +38,10 @@ interface MainComponent {
         data class CollectionView(val component: CollectionViewComponent) : Child()
 
         data class Settings(val component: SettingsComponent) : Child()
+
+        data class SubmitURL(val component: SubmitURLComponent) : Child()
+
+        data class Digest(val component: DigestComponent) : Child()
     }
 }
 
@@ -65,6 +69,7 @@ class DefaultMainComponent(
                     DefaultSummaryListComponent(
                         componentContext = componentContext,
                         onSummarySelected = { id -> navigateToSummaryDetail(id) },
+                        onSubmitUrl = { navigateToSubmitUrl() },
                     ),
                 )
             is Config.SummaryDetail ->
@@ -94,7 +99,10 @@ class DefaultMainComponent(
                 )
             is Config.Settings ->
                 MainComponent.Child.Settings(
-                    DefaultSettingsComponent(componentContext),
+                    DefaultSettingsComponent(
+                        componentContext = componentContext,
+                        onDigest = { navigateToDigest() },
+                    ),
                 )
             is Config.Search ->
                 MainComponent.Child.Search(
@@ -103,7 +111,33 @@ class DefaultMainComponent(
                         onSummarySelected = { id -> navigateToSummaryDetail(id) },
                     ),
                 )
+            is Config.SubmitURL ->
+                MainComponent.Child.SubmitURL(
+                    DefaultSubmitURLComponent(
+                        componentContext = componentContext,
+                        onBack = { navigation.pop() },
+                        onNavigateToSummary = { summaryId ->
+                            navigation.pop()
+                            navigateToSummaryDetail(summaryId)
+                        },
+                    ),
+                )
+            is Config.Digest ->
+                MainComponent.Child.Digest(
+                    DefaultDigestComponent(
+                        componentContext = componentContext,
+                        onBack = { navigation.pop() },
+                    ),
+                )
         }
+
+    private fun navigateToSubmitUrl() {
+        navigation.push(Config.SubmitURL)
+    }
+
+    private fun navigateToDigest() {
+        navigation.push(Config.Digest)
+    }
 
     private fun navigateToSummaryDetail(summaryId: String) {
         navigation.push(Config.SummaryDetail(summaryId))
@@ -144,5 +178,11 @@ class DefaultMainComponent(
 
         @kotlinx.serialization.Serializable
         data object Search : Config
+
+        @kotlinx.serialization.Serializable
+        data object SubmitURL : Config
+
+        @kotlinx.serialization.Serializable
+        data object Digest : Config
     }
 }

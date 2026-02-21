@@ -2,7 +2,7 @@ package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
-import com.po4yka.bitesizereader.data.remote.dto.SummaryContentResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.SummaryContentDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryDetailDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryListDataDto
 import com.po4yka.bitesizereader.data.remote.dto.UpdateSummaryRequestDto
@@ -74,10 +74,17 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
     override suspend fun getContent(
         id: Long,
         format: String?,
-    ): ApiResponseDto<SummaryContentResponseDto> =
+    ): ApiResponseDto<SummaryContentDataDto> =
         retryWithBackoff(RetryPolicy.DEFAULT) {
             client.get("v1/summaries/$id/content") {
                 format?.let { parameter("format", it) }
+            }.body()
+        }
+
+    override suspend fun getSummaryByUrl(url: String): ApiResponseDto<SummaryDetailDataDto> =
+        retryWithBackoff(RetryPolicy.DEFAULT) {
+            client.get("v1/summaries/by-url") {
+                parameter("url", url)
             }.body()
         }
 }

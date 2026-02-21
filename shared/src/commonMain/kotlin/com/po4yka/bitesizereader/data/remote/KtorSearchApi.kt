@@ -4,7 +4,7 @@ import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.DuplicateUrlCheckResponseEnvelope
 import com.po4yka.bitesizereader.data.remote.dto.RelatedSummariesResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.SearchResponseDataDto
-import com.po4yka.bitesizereader.data.remote.dto.TrendingTopicsResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.TrendingTopicsDataDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -48,7 +48,7 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
     override suspend fun getTrendingTopics(
         limit: Int,
         days: Int,
-    ): ApiResponseDto<TrendingTopicsResponseDto> {
+    ): ApiResponseDto<TrendingTopicsDataDto> {
         return client.get("v1/topics/trending") {
             parameter("limit", limit)
             parameter("days", days)
@@ -65,6 +65,16 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
             parameter("tag", tag)
             parameter("limit", pageSize)
             parameter("offset", offset)
+        }.body()
+    }
+
+    override suspend fun getSearchInsights(
+        days: Int,
+        limit: Int,
+    ): ApiResponseDto<SearchResponseDataDto> {
+        return client.get("v1/search/insights") {
+            parameter("days", days)
+            parameter("limit", limit)
         }.body()
     }
 
