@@ -30,12 +30,20 @@ data class SearchResponseDataDto(
 data class TrendingTopicDto(
     @SerialName("tag") val tag: String,
     @SerialName("count") val count: Int,
+    @SerialName("trend") val trend: String? = null,
+    @SerialName("percentage_change") val percentageChange: Double? = null,
 )
 
 @Serializable
-data class TrendingTopicsResponseDto(
-    @SerialName("topics") val topics: List<TrendingTopicDto>,
-    @SerialName("total") val total: Int,
+data class TrendingTopicsDataDto(
+    @SerialName("tags") val tags: List<TrendingTopicDto>,
+    @SerialName("time_range") val timeRange: TimeRangeDto? = null,
+)
+
+@Serializable
+data class TimeRangeDto(
+    @SerialName("start") val start: String,
+    @SerialName("end") val end: String,
 )
 
 @Serializable

@@ -69,11 +69,28 @@ data class UpdateSummaryResponseDto(
 )
 
 /**
- * Summary content for offline reading.
+ * Wrapper for summary content matching OpenAPI SummaryContentData schema.
+ */
+@Serializable
+data class SummaryContentDataDto(
+    @SerialName("content") val content: SummaryContentResponseDto,
+)
+
+/**
+ * Summary content for offline reading matching OpenAPI SummaryContent schema.
  */
 @Serializable
 data class SummaryContentResponseDto(
-    @SerialName("id") val id: Long,
+    @SerialName("summary_id") val summaryId: Long,
+    @SerialName("format") val format: String,
     @SerialName("content") val content: String,
-    @SerialName("format") val format: String, // "markdown" or "text"
+    @SerialName("content_type") val contentType: String,
+    @SerialName("retrieved_at") val retrievedAt: String,
+    @SerialName("request_id") val requestId: Long? = null,
+    @SerialName("lang") val lang: String? = null,
+    @SerialName("source_url") val sourceUrl: String? = null,
+    @SerialName("title") val title: String? = null,
+    @SerialName("domain") val domain: String? = null,
+    @SerialName("size_bytes") val sizeBytes: Int? = null,
+    @SerialName("checksum_sha256") val checksumSha256: String? = null,
 )
