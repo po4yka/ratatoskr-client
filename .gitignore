@@ -94,3 +94,6 @@ fastlane/screenshots
 
 # Node Modules
 node_modules/
+
+# Git Worktrees
+.worktrees/
