@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.ksp)
     kotlin("native.cocoapods")
 }
 
@@ -64,7 +63,6 @@ kotlin {
             implementation(projects.shared)
 
             // Koin
-            implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.kotlin.logging)
 
@@ -92,15 +90,7 @@ kotlin {
 
             // Koin for Android
             implementation(libs.koin.android)
-            implementation(libs.koin.androidx.compose)
             implementation(libs.koin.androidx.startup)
-
-            // Decompose for Compose
-            implementation(libs.decompose.compose)
-
-            // Coil for image loading
-            // Moved to commonMain
-            implementation(libs.ktor.client.okhttp)
 
             // WorkManager for background sync
             implementation(libs.androidx.work.runtime)
@@ -108,36 +98,17 @@ kotlin {
             // Glance for widgets
             implementation(libs.androidx.glance.appwidget)
             implementation(libs.androidx.glance.material3)
-
-            // Coroutines
-            implementation(libs.kotlinx.coroutines.android)
-
-            // Lifecycle
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
         }
 
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation(libs.decompose.compose)
-                implementation(libs.ktor.client.okhttp)
-                implementation(libs.androidx.lifecycle.viewmodel)
             }
         }
 
         iosMain.dependencies {
             // Must be api() for CocoaPods framework export to work properly
             api(projects.shared)
-
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(libs.decompose.core)
-            implementation(libs.decompose.compose)
-            implementation(libs.androidx.lifecycle.viewmodel)
         }
 
         commonTest.dependencies {
@@ -223,6 +194,4 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
-    add("kspAndroid", libs.koin.ksp.compiler)
-    add("kspDesktop", libs.koin.ksp.compiler)
 }
