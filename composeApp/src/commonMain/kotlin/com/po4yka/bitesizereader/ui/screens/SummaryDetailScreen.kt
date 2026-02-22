@@ -9,41 +9,54 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.Loading
 import com.mikepenz.markdown.compose.Markdown
+import com.mikepenz.markdown.compose.MarkdownElement
 import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.DefaultMarkdownColors
+import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.AddToCollectionDialog
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
 import com.po4yka.bitesizereader.ui.components.ProxiedImage
+import com.po4yka.bitesizereader.ui.components.ReadingSettingsPanel
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.TagChip
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
@@ -81,6 +94,15 @@ fun SummaryDetailScreen(
             onShareClick = onShareClick,
             onFavoriteClick = { viewModel.toggleFavorite() },
             onAddToCollectionClick = { viewModel.showAddToCollection() },
+            onReadingSettingsClick = { viewModel.toggleReadingSettings() },
+        )
+
+        // Reading settings panel
+        ReadingSettingsPanel(
+            visible = state.showReadingSettings,
+            preferences = state.readingPreferences,
+            onFontSizeScaleChange = { viewModel.updateFontSizeScale(it) },
+            onLineSpacingScaleChange = { viewModel.updateLineSpacingScale(it) },
         )
 
         // Content
@@ -108,6 +130,12 @@ fun SummaryDetailScreen(
             state.summary != null -> {
                 SummaryDetailContent(
                     summary = state.summary!!,
+                    readingPreferences = state.readingPreferences,
+                    initialScrollPosition = state.lastReadPosition,
+                    initialScrollOffset = state.lastReadOffset,
+                    onSaveReadPosition = { position, offset ->
+                        viewModel.saveReadPosition(position, offset)
+                    },
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -135,6 +163,7 @@ private fun SummaryDetailHeader(
     onShareClick: () -> Unit,
     onFavoriteClick: () -> Unit = {},
     onAddToCollectionClick: () -> Unit = {},
+    onReadingSettingsClick: () -> Unit = {},
 ) {
     ScreenHeader(
         title = summary?.let { extractDomain(it.sourceUrl) ?: "Summary" } ?: "Summary",
@@ -173,6 +202,12 @@ private fun SummaryDetailHeader(
                 )
 
                 HeaderIconButton(
+                    icon = CarbonIcons.Settings,
+                    contentDescription = "Reading settings",
+                    onClick = onReadingSettingsClick,
+                )
+
+                HeaderIconButton(
                     icon = CarbonIcons.Share,
                     contentDescription = "Share",
                     onClick = onShareClick,
@@ -182,70 +217,51 @@ private fun SummaryDetailHeader(
     )
 }
 
-@Suppress("FunctionNaming")
+@Suppress("FunctionNaming", "LongMethod")
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SummaryDetailContent(
     summary: Summary,
+    readingPreferences: ReadingPreferences,
+    initialScrollPosition: Int,
+    initialScrollOffset: Int,
+    onSaveReadPosition: (position: Int, offset: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(Spacing.md),
-    ) {
-        Text(
-            text = summary.title,
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
-        )
+    val lazyListState = rememberLazyListState(
+        initialFirstVisibleItemIndex = initialScrollPosition,
+        initialFirstVisibleItemScrollOffset = initialScrollOffset,
+    )
 
-        Spacer(modifier = Modifier.height(Spacing.xs))
+    val readingProgress by remember {
+        derivedStateOf {
+            val layoutInfo = lazyListState.layoutInfo
+            if (layoutInfo.totalItemsCount == 0) return@derivedStateOf 0f
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull() ?: return@derivedStateOf 0f
+            val lastIndex = lastVisibleItem.index
+            (lastIndex + 1).toFloat() / layoutInfo.totalItemsCount.toFloat()
+        }
+    }
 
-        // Hero image
-        if (summary.imageUrl != null) {
-            ProxiedImage(
-                imageUrl = summary.imageUrl!!,
-                contentDescription = summary.title,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
+    // Save reading position when leaving the screen
+    DisposableEffect(Unit) {
+        onDispose {
+            onSaveReadPosition(
+                lazyListState.firstVisibleItemIndex,
+                lazyListState.firstVisibleItemScrollOffset,
             )
-            Spacer(modifier = Modifier.height(Spacing.md))
         }
+    }
 
-        Text(
-            text = extractDomain(summary.sourceUrl) ?: "Unknown source",
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+    Column(modifier = modifier.fillMaxSize()) {
+        LinearProgressIndicator(
+            progress = { readingProgress },
+            modifier = Modifier.fillMaxWidth().height(2.dp),
+            color = Carbon.theme.linkPrimary,
+            trackColor = Carbon.theme.borderSubtle00,
         )
 
-        Text(
-            text = formatDate(summary.createdAt),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
-        )
-
-        Spacer(modifier = Modifier.height(Spacing.md))
-
-        if (summary.tags.isNotEmpty()) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
-            ) {
-                summary.tags.forEach { tag -> TagChip(tag = tag) }
-            }
-            Spacer(modifier = Modifier.height(Spacing.md))
-        }
-
-        HorizontalDivider(color = Carbon.theme.borderSubtle00)
-        Spacer(modifier = Modifier.height(Spacing.md))
-
-        // Markdown content with Carbon-themed colors
+        // Markdown colors and typography (defined once, used by Markdown composable)
         val markdownColors =
             DefaultMarkdownColors(
                 text = Carbon.theme.textPrimary,
@@ -254,51 +270,139 @@ private fun SummaryDetailContent(
                 dividerColor = Carbon.theme.borderSubtle00,
                 tableBackground = Carbon.theme.layer01,
             )
+
+        val fontScale = readingPreferences.fontSizeScale
+        val lineScale = readingPreferences.lineSpacingScale
+
+        fun TextStyle.scaled(): TextStyle = copy(
+            fontSize = fontSize * fontScale,
+            lineHeight = if (lineHeight.isSp) lineHeight * lineScale else lineHeight,
+        )
+
+        val scaledBody = Carbon.typography.body01.scaled()
         val markdownTypography =
             markdownTypography(
-                h1 = Carbon.typography.heading04,
-                h2 = Carbon.typography.heading03,
-                h3 = Carbon.typography.headingCompact01,
-                h4 = Carbon.typography.headingCompact01,
-                h5 = Carbon.typography.headingCompact01,
-                h6 = Carbon.typography.headingCompact01,
-                paragraph = Carbon.typography.body01,
-                text = Carbon.typography.body01,
-                quote = Carbon.typography.body01.copy(fontStyle = FontStyle.Italic),
-                code = Carbon.typography.body01.copy(fontFamily = FontFamily.Monospace),
-                bullet = Carbon.typography.body01,
-                list = Carbon.typography.body01,
-                ordered = Carbon.typography.body01,
+                h1 = Carbon.typography.heading04.scaled(),
+                h2 = Carbon.typography.heading03.scaled(),
+                h3 = Carbon.typography.headingCompact01.scaled(),
+                h4 = Carbon.typography.headingCompact01.scaled(),
+                h5 = Carbon.typography.headingCompact01.scaled(),
+                h6 = Carbon.typography.headingCompact01.scaled(),
+                paragraph = scaledBody,
+                text = scaledBody,
+                quote = scaledBody.copy(fontStyle = FontStyle.Italic),
+                code = scaledBody.copy(fontFamily = FontFamily.Monospace),
+                bullet = scaledBody,
+                list = scaledBody,
+                ordered = scaledBody,
             )
 
         Markdown(
-            content = summary.content,
+            content = summary.fullContent ?: summary.content,
             colors = markdownColors,
             typography = markdownTypography,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            modifier = Modifier.fillMaxSize().weight(1f),
+            success = { state, components, _ ->
+                val nodes = remember(state.node) { state.node.children }
 
-        Spacer(modifier = Modifier.height(Spacing.lg))
+                LazyColumn(
+                    state = lazyListState,
+                    contentPadding = PaddingValues(Spacing.md),
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    // Header items
+                    item(key = "title") {
+                        Text(
+                            text = summary.title,
+                            style = Carbon.typography.heading04,
+                            color = Carbon.theme.textPrimary,
+                            modifier = Modifier.semantics { heading() },
+                        )
+                        Spacer(modifier = Modifier.height(Spacing.xs))
+                    }
 
-        HorizontalDivider(color = Carbon.theme.borderSubtle00)
-        Spacer(modifier = Modifier.height(Spacing.md))
+                    if (summary.imageUrl != null) {
+                        item(key = "hero_image") {
+                            ProxiedImage(
+                                imageUrl = summary.imageUrl!!,
+                                contentDescription = summary.title,
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp),
+                            )
+                            Spacer(modifier = Modifier.height(Spacing.md))
+                        }
+                    }
 
-        Text(
-            text = "Original Article",
-            style = Carbon.typography.headingCompact01,
-            color = Carbon.theme.textPrimary,
-        )
+                    item(key = "metadata") {
+                        Text(
+                            text = extractDomain(summary.sourceUrl) ?: "Unknown source",
+                            style = Carbon.typography.label01,
+                            color = Carbon.theme.textSecondary,
+                        )
+                        Text(
+                            text = buildString {
+                                append(formatDate(summary.createdAt))
+                                summary.readingTimeMin?.let { append(" | $it min read") }
+                            },
+                            style = Carbon.typography.label01,
+                            color = Carbon.theme.textSecondary,
+                        )
+                        Spacer(modifier = Modifier.height(Spacing.md))
+                    }
 
-        Spacer(modifier = Modifier.height(Spacing.xs))
+                    if (summary.tags.isNotEmpty()) {
+                        item(key = "tags") {
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                            ) {
+                                summary.tags.forEach { tag -> TagChip(tag = tag) }
+                            }
+                            Spacer(modifier = Modifier.height(Spacing.md))
+                        }
+                    }
 
-        val uriHandler = LocalUriHandler.current
-        Text(
-            text = summary.sourceUrl,
-            style = Carbon.typography.label01,
-            color = Carbon.theme.linkPrimary,
-            modifier = Modifier
-                .semantics { role = Role.Button }
-                .clickable { uriHandler.openUri(summary.sourceUrl) },
+                    item(key = "divider_top") {
+                        HorizontalDivider(color = Carbon.theme.borderSubtle00)
+                        Spacer(modifier = Modifier.height(Spacing.md))
+                    }
+
+                    // Lazy markdown content items
+                    items(
+                        items = nodes,
+                        key = { node -> "md_${node.startOffset}" },
+                    ) { node ->
+                        MarkdownElement(node, components, state.content)
+                    }
+
+                    // Footer items
+                    item(key = "footer") {
+                        Spacer(modifier = Modifier.height(Spacing.lg))
+                        HorizontalDivider(color = Carbon.theme.borderSubtle00)
+                        Spacer(modifier = Modifier.height(Spacing.md))
+
+                        Text(
+                            text = "Original Article",
+                            style = Carbon.typography.headingCompact01,
+                            color = Carbon.theme.textPrimary,
+                        )
+                        Spacer(modifier = Modifier.height(Spacing.xs))
+
+                        val uriHandler = LocalUriHandler.current
+                        Text(
+                            text = summary.sourceUrl,
+                            style = Carbon.typography.label01,
+                            color = Carbon.theme.linkPrimary,
+                            modifier = Modifier
+                                .semantics { role = Role.Button }
+                                .clickable { uriHandler.openUri(summary.sourceUrl) },
+                        )
+                    }
+                }
+            },
         )
     }
 }

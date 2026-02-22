@@ -120,4 +120,5 @@ private fun ReadFilter.displayName(): String =
         ReadFilter.UNREAD -> "Unread"
         ReadFilter.READ -> "Read"
         ReadFilter.FAVORITED -> "Favorites"
+        ReadFilter.ARCHIVED -> "Archived"
     }

@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.presentation.PresentationConstants
+import com.po4yka.bitesizereader.domain.usecase.ArchiveSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetAvailableTagsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetFilteredSummariesUseCase
@@ -39,6 +40,7 @@ class SummaryListViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val deleteSummaryUseCase: DeleteSummaryUseCase,
+    private val archiveSummaryUseCase: ArchiveSummaryUseCase,
     private val getAvailableTagsUseCase: GetAvailableTagsUseCase,
     private val searchHistoryManager: SearchHistoryManager,
     private val syncDataUseCase: SyncDataUseCase,
@@ -449,6 +451,26 @@ class SummaryListViewModel(
                 logger.debug { "Toggled favorite for summary $id" }
             } catch (e: Exception) {
                 logger.error(e) { "Failed to toggle favorite: $id" }
+                _state.value =
+                    _state.value.copy(
+                        error = e.toAppError().userMessage(),
+                    )
+            }
+        }
+    }
+
+    fun archiveSummary(id: String) {
+        viewModelScope.launch {
+            try {
+                archiveSummaryUseCase(id)
+                // Remove from local list immediately for responsiveness
+                _state.value =
+                    _state.value.copy(
+                        summaries = _state.value.summaries.filter { it.id != id },
+                    )
+                logger.info { "Archived summary $id" }
+            } catch (e: Exception) {
+                logger.error(e) { "Failed to archive summary: $id" }
                 _state.value =
                     _state.value.copy(
                         error = e.toAppError().userMessage(),

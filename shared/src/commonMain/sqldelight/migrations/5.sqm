@@ -1,0 +1,2 @@
+ALTER TABLE summaryEntity ADD COLUMN fullContent TEXT;
+ALTER TABLE summaryEntity ADD COLUMN fullContentCachedAt INTEGER;

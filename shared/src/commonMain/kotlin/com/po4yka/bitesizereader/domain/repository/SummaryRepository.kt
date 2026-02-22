@@ -39,4 +39,14 @@ interface SummaryRepository {
     suspend fun getSummaryByUrl(url: String): Summary?
 
     suspend fun getAllTags(): List<String>
+
+    suspend fun saveReadPosition(id: String, position: Int, offset: Int)
+
+    suspend fun archiveSummary(id: String)
+
+    suspend fun unarchiveSummary(id: String)
+
+    suspend fun getCacheSize(): Long
+
+    suspend fun clearContentCache()
 }

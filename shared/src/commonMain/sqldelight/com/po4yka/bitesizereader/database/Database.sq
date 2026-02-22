@@ -13,12 +13,18 @@ CREATE TABLE summaryEntity (
     isRead INTEGER AS Boolean NOT NULL DEFAULT 0,
     tags TEXT AS List<String> NOT NULL,
     readingTimeMin INTEGER AS kotlin.Int,
-    isFavorited INTEGER AS Boolean NOT NULL DEFAULT 0
+    isFavorited INTEGER AS Boolean NOT NULL DEFAULT 0,
+    fullContent TEXT,
+    fullContentCachedAt INTEGER AS Instant,
+    lastReadPosition INTEGER AS kotlin.Int NOT NULL DEFAULT 0,
+    lastReadOffset INTEGER AS kotlin.Int NOT NULL DEFAULT 0,
+    isArchived INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 CREATE INDEX summary_isRead ON summaryEntity(isRead);
 CREATE INDEX summary_createdAt ON summaryEntity(createdAt);
 CREATE INDEX summary_isFavorited ON summaryEntity(isFavorited);
+CREATE INDEX summary_isArchived ON summaryEntity(isArchived);
 
 CREATE TABLE requestEntity (
     id TEXT NOT NULL PRIMARY KEY,
@@ -66,7 +72,7 @@ SELECT * FROM summaryEntity
 WHERE id = :id;
 
 insertSummary:
-INSERT OR REPLACE INTO summaryEntity(id, title, content, sourceUrl, imageUrl, createdAt, isRead, tags, readingTimeMin, isFavorited)
+INSERT OR REPLACE INTO summaryEntity(id, title, content, sourceUrl, imageUrl, createdAt, isRead, tags, readingTimeMin, isFavorited, fullContent, fullContentCachedAt, lastReadPosition, lastReadOffset, isArchived)
 VALUES ?;
 
 updateSummaryReadStatus:
@@ -76,6 +82,12 @@ WHERE id = :id;
 
 updateSummaryContent:
 UPDATE summaryEntity SET content = :content WHERE id = :id;
+
+updateSummaryFullContent:
+UPDATE summaryEntity SET fullContent = :fullContent, fullContentCachedAt = :cachedAt WHERE id = :id;
+
+updateReadPosition:
+UPDATE summaryEntity SET lastReadPosition = :position, lastReadOffset = :offset WHERE id = :id;
 
 deleteSummary:
 DELETE FROM summaryEntity
@@ -96,12 +108,13 @@ LIMIT :limit OFFSET :offset;
 getAllTags:
 SELECT tags FROM summaryEntity;
 
--- Filtered summaries with read filter, favorite filter, tag filter, and sort order
+-- Filtered summaries with read filter, favorite filter, tag filter, archive filter, and sort order
 selectSummariesFiltered:
 SELECT * FROM summaryEntity
 WHERE (:readFilterAll = 1 OR isRead = :isRead)
 AND (:favoritedOnly = 0 OR isFavorited = 1)
 AND (:selectedTag IS NULL OR tags LIKE '%"' || :selectedTag || '"%')
+AND (isArchived = :isArchived)
 ORDER BY
     CASE WHEN :sortNewest = 1 THEN createdAt END DESC,
     CASE WHEN :sortOldest = 1 THEN createdAt END ASC,
@@ -113,13 +126,28 @@ countSummariesFiltered:
 SELECT COUNT(*) FROM summaryEntity
 WHERE (:readFilterAll = 1 OR isRead = :isRead)
 AND (:favoritedOnly = 0 OR isFavorited = 1)
-AND (:selectedTag IS NULL OR tags LIKE '%"' || :selectedTag || '"%');
+AND (:selectedTag IS NULL OR tags LIKE '%"' || :selectedTag || '"%')
+AND (isArchived = :isArchived);
 
 -- Toggle favorite status
 updateSummaryFavoriteStatus:
 UPDATE summaryEntity
 SET isFavorited = :isFavorited
 WHERE id = :id;
+
+-- Archive / unarchive
+archiveSummary:
+UPDATE summaryEntity SET isArchived = 1 WHERE id = :id;
+
+unarchiveSummary:
+UPDATE summaryEntity SET isArchived = 0 WHERE id = :id;
+
+-- Cache management
+getCacheSize:
+SELECT COALESCE(SUM(LENGTH(fullContent)), 0) FROM summaryEntity WHERE fullContent IS NOT NULL;
+
+clearContentCache:
+UPDATE summaryEntity SET fullContent = NULL, fullContentCachedAt = NULL WHERE fullContent IS NOT NULL;
 
 -- Request Queries
 selectAllRequests:

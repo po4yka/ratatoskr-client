@@ -1,11 +1,13 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.repository.CollectionRepository
+import com.po4yka.bitesizereader.domain.repository.ReadingPreferencesRepository
 import com.po4yka.bitesizereader.domain.usecase.AddToCollectionUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryByIdUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
+import com.po4yka.bitesizereader.domain.usecase.SaveReadPositionUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.presentation.state.SummaryDetailState
 import com.po4yka.bitesizereader.util.error.toAppError
@@ -14,6 +16,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
@@ -26,11 +30,21 @@ class SummaryDetailViewModel(
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val deleteSummaryUseCase: DeleteSummaryUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val saveReadPositionUseCase: SaveReadPositionUseCase,
+    private val readingPreferencesRepository: ReadingPreferencesRepository,
     private val collectionRepository: CollectionRepository,
     private val addToCollectionUseCase: AddToCollectionUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state = _state.asStateFlow()
+
+    init {
+        readingPreferencesRepository.getPreferences()
+            .onEach { prefs ->
+                _state.value = _state.value.copy(readingPreferences = prefs)
+            }
+            .launchIn(viewModelScope)
+    }
 
     @Suppress("TooGenericExceptionCaught")
     fun loadSummary(id: String) {
@@ -38,7 +52,12 @@ class SummaryDetailViewModel(
             _state.value = SummaryDetailState(isLoading = true)
             try {
                 val summary = getSummaryByIdUseCase(id)
-                _state.value = _state.value.copy(summary = summary, isLoading = false)
+                _state.value = _state.value.copy(
+                    summary = summary,
+                    isLoading = false,
+                    lastReadPosition = summary?.lastReadPosition ?: 0,
+                    lastReadOffset = summary?.lastReadOffset ?: 0,
+                )
                 if (summary != null && !summary.isRead) {
                     markSummaryAsReadUseCase(id)
                 }
@@ -60,7 +79,10 @@ class SummaryDetailViewModel(
                 if (fullContent != null) {
                     _state.value =
                         _state.value.copy(
-                            summary = _state.value.summary?.copy(content = fullContent),
+                            summary = _state.value.summary?.copy(
+                                fullContent = fullContent,
+                                isFullContentCached = true,
+                            ),
                             isLoadingContent = false,
                         )
                 } else {
@@ -88,6 +110,33 @@ class SummaryDetailViewModel(
                     )
             } catch (e: Exception) {
                 _state.value = _state.value.copy(error = e.toAppError().userMessage())
+            }
+        }
+    }
+
+    fun toggleReadingSettings() {
+        _state.value = _state.value.copy(showReadingSettings = !_state.value.showReadingSettings)
+    }
+
+    fun updateFontSizeScale(scale: Float) {
+        viewModelScope.launch {
+            readingPreferencesRepository.updateFontSizeScale(scale)
+        }
+    }
+
+    fun updateLineSpacingScale(scale: Float) {
+        viewModelScope.launch {
+            readingPreferencesRepository.updateLineSpacingScale(scale)
+        }
+    }
+
+    fun saveReadPosition(position: Int, offset: Int) {
+        val summaryId = _state.value.summary?.id ?: return
+        viewModelScope.launch {
+            try {
+                saveReadPositionUseCase(summaryId, position, offset)
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                logger.debug(e) { "Failed to save read position for $summaryId" }
             }
         }
     }

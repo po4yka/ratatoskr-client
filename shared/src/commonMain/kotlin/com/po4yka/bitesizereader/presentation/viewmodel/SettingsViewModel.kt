@@ -4,6 +4,7 @@ import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.TelegramLinkData
 import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.TelegramLinkStatus
+import com.po4yka.bitesizereader.domain.repository.SummaryRepository
 import com.po4yka.bitesizereader.presentation.state.SettingsState
 import com.po4yka.bitesizereader.domain.usecase.DeleteAccountUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetRequestsUseCase
@@ -44,6 +45,7 @@ class SettingsViewModel(
     private val retryRequestUseCase: RetryRequestUseCase,
     private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
     private val updateUserPreferencesUseCase: UpdateUserPreferencesUseCase,
+    private val summaryRepository: SummaryRepository,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
@@ -55,6 +57,7 @@ class SettingsViewModel(
         observeSyncProgress()
         loadUserStats()
         loadPreferences()
+        loadCacheSize()
     }
 
     private fun observeSyncProgress() {
@@ -225,6 +228,35 @@ class SettingsViewModel(
                 .onFailure { throwable ->
                     logger.warn(throwable) { "Failed to update language preference" }
                     _state.value = _state.value.copy(isSavingPreferences = false)
+                }
+        }
+    }
+
+    // Cache management
+
+    private fun loadCacheSize() {
+        viewModelScope.launch {
+            runCatching { summaryRepository.getCacheSize() }
+                .onSuccess { size ->
+                    _state.value = _state.value.copy(cacheSize = size)
+                }
+                .onFailure { throwable ->
+                    logger.warn(throwable) { "Failed to load cache size" }
+                }
+        }
+    }
+
+    fun clearContentCache() {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isClearingCache = true)
+            runCatching { summaryRepository.clearContentCache() }
+                .onSuccess {
+                    _state.value = _state.value.copy(isClearingCache = false, cacheSize = 0L)
+                    logger.info { "Content cache cleared" }
+                }
+                .onFailure { throwable ->
+                    logger.warn(throwable) { "Failed to clear content cache" }
+                    _state.value = _state.value.copy(isClearingCache = false)
                 }
         }
     }

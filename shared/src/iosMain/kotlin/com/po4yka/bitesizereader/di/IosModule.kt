@@ -10,6 +10,8 @@ import com.po4yka.bitesizereader.util.network.IosNetworkMonitor
 import com.po4yka.bitesizereader.util.network.NetworkMonitor
 import com.po4yka.bitesizereader.util.share.IosShareManager
 import com.po4yka.bitesizereader.util.share.ShareManager
+import com.russhwolf.settings.NSUserDefaultsSettings
+import com.russhwolf.settings.ObservableSettings
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.darwin.Darwin
 import org.koin.dsl.module
@@ -33,4 +35,5 @@ val iosPlatformModule =
             IosNetworkMonitor()
         }
         single<ShareManager> { IosShareManager() }
+        single<ObservableSettings> { NSUserDefaultsSettings.Factory().create("reading_preferences") }
     }

@@ -49,6 +49,7 @@ fun SwipeableSummaryCard(
     onMarkRead: () -> Unit,
     onFavoriteClick: () -> Unit = {},
     onAddToCollectionClick: () -> Unit = {},
+    onArchiveClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -63,7 +64,7 @@ fun SwipeableSummaryCard(
     val leftBackgroundColor by animateColorAsState(
         targetValue =
             if (offsetX < -SWIPE_THRESHOLD / 2) {
-                Carbon.theme.supportError
+                Carbon.theme.supportWarning
             } else {
                 Carbon.theme.layer02
             },
@@ -80,9 +81,10 @@ fun SwipeableSummaryCard(
         label = "right_bg_color",
     )
 
-    // Accessibility content description
     val readStatus = if (summary.isRead) "Read" else "Unread"
-    val cardDescription = "${summary.title}. $readStatus article"
+    val favoriteStatus = if (summary.isFavorited) ", Favorited" else ""
+    val readingTime = summary.readingTimeMin?.let { ", $it minute read" } ?: ""
+    val cardDescription = "${summary.title}. $readStatus article$favoriteStatus$readingTime"
 
     Box(
         modifier =
@@ -93,6 +95,10 @@ fun SwipeableSummaryCard(
                     contentDescription = cardDescription
                     customActions =
                         listOf(
+                            CustomAccessibilityAction("Archive article") {
+                                onArchiveClick()
+                                true
+                            },
                             CustomAccessibilityAction("Delete article") {
                                 onDelete()
                                 true
@@ -131,7 +137,7 @@ fun SwipeableSummaryCard(
                 )
             }
 
-            // Left swipe background (delete)
+            // Left swipe background (archive)
             Box(
                 modifier =
                     Modifier
@@ -141,8 +147,8 @@ fun SwipeableSummaryCard(
                 contentAlignment = Alignment.CenterEnd,
             ) {
                 Icon(
-                    imageVector = CarbonIcons.TrashCan,
-                    contentDescription = "Delete",
+                    imageVector = CarbonIcons.Archive,
+                    contentDescription = "Archive",
                     tint = Carbon.theme.textOnColor,
                     modifier =
                         Modifier
@@ -167,7 +173,7 @@ fun SwipeableSummaryCard(
                                         offsetX = 0f
                                     }
                                     offsetX < -SWIPE_THRESHOLD -> {
-                                        onDelete()
+                                        onArchiveClick()
                                         offsetX = 0f
                                     }
                                     else -> {

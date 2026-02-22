@@ -156,6 +156,7 @@ fun SummaryListScreen(
                 state = state,
                 onSummaryClick = { id -> component.onSummaryClicked(id) },
                 onDelete = { id -> viewModel.deleteSummary(id) },
+                onArchive = { id -> viewModel.archiveSummary(id) },
                 onMarkRead = { id -> viewModel.markAsRead(id) },
                 onFavoriteClick = { id -> viewModel.toggleFavorite(id) },
                 onLoadMore = { lastIndex -> viewModel.loadMoreIfNeeded(lastIndex) },
@@ -261,6 +262,7 @@ private fun SummaryListContent(
     state: SummaryListState,
     onSummaryClick: (String) -> Unit,
     onDelete: (String) -> Unit,
+    onArchive: (String) -> Unit,
     onMarkRead: (String) -> Unit,
     onFavoriteClick: (String) -> Unit,
     onLoadMore: (Int) -> Unit,
@@ -299,6 +301,7 @@ private fun SummaryListContent(
                     state.searchQuery.isNotBlank() -> EmptyStateType.NO_SEARCH_RESULTS
                     state.readFilter == ReadFilter.UNREAD -> EmptyStateType.NO_UNREAD_ARTICLES
                     state.readFilter == ReadFilter.READ -> EmptyStateType.NO_READ_ARTICLES
+                    state.readFilter == ReadFilter.ARCHIVED -> EmptyStateType.NO_ARCHIVED_ARTICLES
                     else -> EmptyStateType.NO_ARTICLES
                 }
             val onAction: (() -> Unit)? =
@@ -306,6 +309,7 @@ private fun SummaryListContent(
                     EmptyStateType.NO_SEARCH_RESULTS -> onClearSearch
                     EmptyStateType.NO_UNREAD_ARTICLES,
                     EmptyStateType.NO_READ_ARTICLES,
+                    EmptyStateType.NO_ARCHIVED_ARTICLES,
                     -> onShowAllArticles
                     else -> null
                 }
@@ -325,6 +329,7 @@ private fun SummaryListContent(
                         state = state,
                         onSummaryClick = onSummaryClick,
                         onDelete = onDelete,
+                        onArchive = onArchive,
                         onMarkRead = onMarkRead,
                         onFavoriteClick = onFavoriteClick,
                         onLoadMore = onLoadMore,
@@ -353,6 +358,7 @@ private fun SummaryListView(
     state: SummaryListState,
     onSummaryClick: (String) -> Unit,
     onDelete: (String) -> Unit,
+    onArchive: (String) -> Unit,
     onMarkRead: (String) -> Unit,
     onFavoriteClick: (String) -> Unit,
     onLoadMore: (Int) -> Unit,
@@ -387,6 +393,7 @@ private fun SummaryListView(
                 onDelete = { onDelete(summary.id) },
                 onMarkRead = { onMarkRead(summary.id) },
                 onFavoriteClick = { onFavoriteClick(summary.id) },
+                onArchiveClick = { onArchive(summary.id) },
             )
         }
 

@@ -9,6 +9,8 @@ import com.po4yka.bitesizereader.util.network.AndroidNetworkMonitor
 import com.po4yka.bitesizereader.util.network.NetworkMonitor
 import com.po4yka.bitesizereader.util.share.AndroidShareManager
 import com.po4yka.bitesizereader.util.share.ShareManager
+import com.russhwolf.settings.ObservableSettings
+import com.russhwolf.settings.SharedPreferencesSettings
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.core.annotation.Module
@@ -33,6 +35,12 @@ class AndroidModule {
 
     @Single
     fun provideFileSaver(context: Context): FileSaver = FileSaver(context)
+
+    @Single
+    fun provideObservableSettings(context: Context): ObservableSettings {
+        val sharedPrefs = context.getSharedPreferences("reading_preferences", Context.MODE_PRIVATE)
+        return SharedPreferencesSettings(sharedPrefs)
+    }
 
     @Single
     fun providePlatform(): com.po4yka.bitesizereader.Platform =

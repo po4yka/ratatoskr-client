@@ -1516,4 +1516,81 @@ object CarbonIcons {
             }
         }.build()
     }
+
+    val Download: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Download",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Arrow pointing down
+                moveTo(26f, 24f)
+                verticalLineTo(28f)
+                horizontalLineTo(6f)
+                verticalLineTo(24f)
+                horizontalLineTo(4f)
+                verticalLineTo(28f)
+                arcToRelative(2f, 2f, Arc.NO_ROTATION, false, false, 2f, 2f)
+                horizontalLineTo(26f)
+                arcToRelative(2f, 2f, Arc.NO_ROTATION, false, false, 2f, -2f)
+                verticalLineTo(24f)
+                close()
+                // Down arrow
+                moveTo(26f, 14f)
+                lineToRelative(-1.41f, -1.41f)
+                lineTo(17f, 20.17f)
+                verticalLineTo(2f)
+                horizontalLineTo(15f)
+                verticalLineTo(20.17f)
+                lineToRelative(-7.59f, -7.58f)
+                lineTo(6f, 14f)
+                lineToRelative(10f, 10f)
+                close()
+            }
+        }.build()
+    }
+
+    val Archive: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Archive",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Box base
+                moveTo(14f, 19f)
+                horizontalLineTo(18f)
+                verticalLineTo(17f)
+                horizontalLineTo(14f)
+                close()
+                // Box body
+                moveTo(6f, 6f)
+                verticalLineTo(26f)
+                horizontalLineTo(26f)
+                verticalLineTo(6f)
+                close()
+                moveTo(24f, 24f)
+                horizontalLineTo(8f)
+                verticalLineTo(10f)
+                horizontalLineTo(24f)
+                close()
+                // Lid
+                moveTo(4f, 2f)
+                verticalLineTo(8f)
+                horizontalLineTo(28f)
+                verticalLineTo(2f)
+                close()
+                moveTo(26f, 6f)
+                horizontalLineTo(6f)
+                verticalLineTo(4f)
+                horizontalLineTo(26f)
+                close()
+            }
+        }.build()
+    }
 }

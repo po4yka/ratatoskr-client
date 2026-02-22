@@ -33,6 +33,11 @@ fun SummaryEntity.toDomain(): Summary {
         tags = tags,
         readingTimeMin = readingTimeMin,
         isFavorited = isFavorited,
+        fullContent = fullContent,
+        isFullContentCached = fullContent != null,
+        lastReadPosition = lastReadPosition,
+        lastReadOffset = lastReadOffset,
+        isArchived = isArchived,
     )
 }
 
@@ -48,6 +53,11 @@ fun SummaryCompactDto.toEntity(isReadOverride: Boolean? = null): SummaryEntity {
         tags = topicTags,
         readingTimeMin = readingTimeMin,
         isFavorited = isFavorited,
+        fullContent = null,
+        fullContentCachedAt = null,
+        lastReadPosition = 0,
+        lastReadOffset = 0,
+        isArchived = false,
     )
 }
 
@@ -78,5 +88,10 @@ fun Summary.toEntity(): SummaryEntity {
         tags = tags,
         readingTimeMin = readingTimeMin,
         isFavorited = isFavorited,
+        fullContent = fullContent,
+        fullContentCachedAt = null,
+        lastReadPosition = lastReadPosition,
+        lastReadOffset = lastReadOffset,
+        isArchived = isArchived,
     )
 }

@@ -34,4 +34,7 @@ data class SettingsState(
     val userPreferences: UserPreferences? = null,
     val isLoadingPreferences: Boolean = false,
     val isSavingPreferences: Boolean = false,
+    // Cache management
+    val cacheSize: Long = 0L,
+    val isClearingCache: Boolean = false,
 )

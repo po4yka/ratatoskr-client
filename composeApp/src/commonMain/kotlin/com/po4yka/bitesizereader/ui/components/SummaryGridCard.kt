@@ -49,7 +49,9 @@ fun SummaryGridCard(
 ) {
     val readStatus = if (summary.isRead) "Read" else "Unread"
     val source = extractDomain(summary.sourceUrl) ?: "Saved Article"
-    val cardDescription = "${summary.title}. $readStatus article from $source"
+    val favoriteStatus = if (summary.isFavorited) ", Favorited" else ""
+    val readingTime = summary.readingTimeMin?.let { ", $it minute read" } ?: ""
+    val cardDescription = "${summary.title}. $readStatus article from $source$favoriteStatus$readingTime"
 
     Column(
         modifier =
@@ -182,6 +184,14 @@ fun SummaryGridCard(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (summary.isFullContentCached) {
+                Icon(
+                    imageVector = CarbonIcons.Download,
+                    contentDescription = "Available offline",
+                    tint = Carbon.theme.iconSecondary,
+                    modifier = Modifier.size(IconSizes.xs),
+                )
+            }
             if (summary.isFavorited) {
                 Icon(
                     imageVector = CarbonIcons.FavoriteFilled,
@@ -209,9 +219,12 @@ fun SummaryGridCard(
             }
         }
 
-        // Source
+        // Source and reading time
         Text(
-            text = source,
+            text = buildString {
+                append(source)
+                summary.readingTimeMin?.let { append(" | $it min") }
+            },
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
             maxLines = 1,

@@ -654,6 +654,11 @@ class SyncRepositoryImpl(
                     tags = tags,
                     readingTimeMin = null,
                     isFavorited = false,
+                    fullContent = null,
+                    fullContentCachedAt = null,
+                    lastReadPosition = 0,
+                    lastReadOffset = 0,
+                    isArchived = false,
                 ),
             )
             true
