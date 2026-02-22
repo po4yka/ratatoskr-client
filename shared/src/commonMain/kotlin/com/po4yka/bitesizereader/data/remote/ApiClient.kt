@@ -155,8 +155,11 @@ class ApiClient(
                                     secureStorage.clearTokens()
                                     null
                                 }
+                            } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+                                throw e
                             } catch (e: Exception) {
                                 logger.error(e) { "Failed to refresh tokens" }
+                                secureStorage.clearTokens()
                                 null
                             }
                         } else {

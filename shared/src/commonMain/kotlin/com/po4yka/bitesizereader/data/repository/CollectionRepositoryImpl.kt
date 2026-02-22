@@ -2,9 +2,12 @@ package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.CollectionsApi
+import com.po4yka.bitesizereader.data.remote.dto.CollectionCreateRequest
 import com.po4yka.bitesizereader.data.remote.dto.CollectionInviteRequest
+import com.po4yka.bitesizereader.data.remote.dto.CollectionItemCreateRequest
 import com.po4yka.bitesizereader.data.remote.dto.CollectionShareRequest
 import com.po4yka.bitesizereader.data.remote.dto.CollectionUpdateRequest
+import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.Collection
 import com.po4yka.bitesizereader.domain.model.CollaboratorRole
 import com.po4yka.bitesizereader.domain.model.CollectionAcl
@@ -21,37 +24,26 @@ private val logger = KotlinLogging.logger {}
 @Single(binds = [CollectionRepository::class])
 class CollectionRepositoryImpl(
     private val api: CollectionsApi,
+    private val database: Database,
 ) : CollectionRepository {
     override fun getCollections(): Flow<List<Collection>> =
         flow {
-            try {
-                val response = api.listCollections()
-                if (response.success && response.data != null) {
-                    val collections = response.data.collections.map { it.toDomain() }
-                    emit(collections)
-                } else {
-                    logger.error { "Failed to fetch collections: ${response.error}" }
-                    emit(emptyList())
-                }
-            } catch (e: Exception) {
-                logger.error(e) { "Error fetching collections" }
-                emit(emptyList())
+            val response = api.listCollections()
+            if (response.success && response.data != null) {
+                val collections = response.data.collections.map { it.toDomain() }
+                emit(collections)
+            } else {
+                throw Exception("Failed to fetch collections: ${response.error}")
             }
         }
 
     override suspend fun getCollection(id: String): Collection? {
-        return try {
-            val intId = id.toIntOrNull() ?: return null
-            val response = api.getCollection(intId)
-            if (response.success && response.data != null) {
-                response.data.toDomain()
-            } else {
-                logger.error { "Failed to get collection $id: ${response.error}" }
-                null
-            }
-        } catch (e: Exception) {
-            logger.error(e) { "Error getting collection $id" }
-            null
+        val intId = id.toIntOrNull() ?: return null
+        val response = api.getCollection(intId)
+        if (response.success && response.data != null) {
+            return response.data.toDomain()
+        } else {
+            throw Exception("Failed to get collection $id: ${response.error}")
         }
     }
 
@@ -60,34 +52,26 @@ class CollectionRepositoryImpl(
         limit: Int,
         offset: Int,
     ): List<Summary> {
-        return try {
-            val intId = collectionId.toIntOrNull() ?: return emptyList()
-            val response = api.listItems(intId, limit, offset)
-            if (response.success && response.data != null) {
-                // CollectionItem only has summary_id; return minimal stubs.
-                // Full summary data should be fetched separately.
-                response.data.items.map { item ->
-                    Summary(
-                        id = item.summaryId.toString(),
-                        title = "Summary #${item.summaryId}",
-                        content = "",
-                        sourceUrl = "",
-                        imageUrl = null,
-                        createdAt =
-                            runCatching {
-                                kotlin.time.Instant.parse(item.createdAt)
-                            }.getOrElse { kotlin.time.Clock.System.now() },
-                        isRead = false,
-                        tags = emptyList(),
-                    )
+        val intId =
+            collectionId.toIntOrNull()
+                ?: throw IllegalArgumentException("Invalid collection ID: $collectionId")
+        val response = api.listItems(intId, limit, offset)
+        if (response.success && response.data != null) {
+            // CollectionItem only contains summary_id. Look up full summary data
+            // from the local database (offline-first). Items not yet synced locally
+            // are skipped with a warning.
+            return response.data.items.mapNotNull { item ->
+                val summaryId = item.summaryId.toString()
+                val entity = database.databaseQueries.getSummaryById(summaryId).executeAsOneOrNull()
+                if (entity != null) {
+                    entity.toDomain()
+                } else {
+                    logger.warn { "Summary $summaryId not found in local DB, skipping" }
+                    null
                 }
-            } else {
-                logger.error { "Failed to get collection items for $collectionId: ${response.error}" }
-                emptyList()
             }
-        } catch (e: Exception) {
-            logger.error(e) { "Error getting collection items for $collectionId" }
-            emptyList()
+        } else {
+            throw Exception("Failed to get collection items for $collectionId: ${response.error}")
         }
     }
 
@@ -119,18 +103,12 @@ class CollectionRepositoryImpl(
     }
 
     override suspend fun getCollectionAcl(id: String): List<CollectionAcl> {
-        return try {
-            val intId = id.toIntOrNull() ?: return emptyList()
-            val response = api.getAcl(intId)
-            if (response.success && response.data != null) {
-                response.data.acl.map { it.toDomain() }
-            } else {
-                logger.error { "Failed to get ACL for collection $id: ${response.error}" }
-                emptyList()
-            }
-        } catch (e: Exception) {
-            logger.error(e) { "Error getting ACL for collection $id" }
-            emptyList()
+        val intId = id.toIntOrNull() ?: throw IllegalArgumentException("Invalid collection ID: $id")
+        val response = api.getAcl(intId)
+        if (response.success && response.data != null) {
+            return response.data.acl.map { it.toDomain() }
+        } else {
+            throw Exception("Failed to get ACL for collection $id: ${response.error}")
         }
     }
 
@@ -178,6 +156,30 @@ class CollectionRepositoryImpl(
             return response.data.toDomain()
         } else {
             throw Exception("Failed to create invite link: ${response.error}")
+        }
+    }
+
+    override suspend fun addToCollection(collectionId: String, summaryId: String) {
+        val intId =
+            collectionId.toIntOrNull() ?: throw IllegalArgumentException("Invalid collection ID: $collectionId")
+        val intSummaryId =
+            summaryId.toIntOrNull() ?: throw IllegalArgumentException("Invalid summary ID: $summaryId")
+        val response = api.addItem(
+            id = intId,
+            request = CollectionItemCreateRequest(summaryId = intSummaryId),
+        )
+        if (!response.success) {
+            throw Exception("Failed to add item to collection: ${response.error}")
+        }
+    }
+
+    override suspend fun createCollection(name: String, description: String?): Collection {
+        val request = CollectionCreateRequest(name = name, description = description)
+        val response = api.createCollection(request)
+        if (response.success && response.data != null) {
+            return response.data.toDomain()
+        } else {
+            throw Exception("Failed to create collection: ${response.error}")
         }
     }
 }

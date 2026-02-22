@@ -1,12 +1,11 @@
 package com.po4yka.bitesizereader.domain.usecase
 
-import com.po4yka.bitesizereader.data.mappers.toDomain
-import com.po4yka.bitesizereader.data.remote.SearchApi
 import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.domain.repository.SearchRepository
 import org.koin.core.annotation.Factory
 
 @Factory
-class SemanticSearchUseCase(private val searchApi: SearchApi) {
+class SemanticSearchUseCase(private val searchRepository: SearchRepository) {
     suspend operator fun invoke(
         query: String,
         page: Int,
@@ -14,13 +13,12 @@ class SemanticSearchUseCase(private val searchApi: SearchApi) {
         language: String? = null,
         tags: List<String>? = null,
     ): List<Summary> {
-        val response = searchApi.semanticSearch(
+        return searchRepository.semanticSearch(
             query = query,
             page = page,
             pageSize = pageSize,
             language = language,
             tags = tags,
         )
-        return response.data?.toDomain() ?: emptyList()
     }
 }

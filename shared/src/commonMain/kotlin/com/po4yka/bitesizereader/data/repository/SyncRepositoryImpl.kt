@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,10 +109,12 @@ class SyncRepositoryImpl(
             logger.info { "Sync already in progress, skipping" }
             return
         }
-        currentSyncJob = coroutineContext[Job]
         try {
-            withTimeout(SYNC_TIMEOUT_MS) {
-                syncWithSessionBasedEndpoint(forceFull)
+            coroutineScope {
+                currentSyncJob = coroutineContext[Job]
+                withTimeout(SYNC_TIMEOUT_MS) {
+                    syncWithSessionBasedEndpoint(forceFull)
+                }
             }
         } catch (e: TimeoutCancellationException) {
             logger.error { "Sync operation timed out after ${SYNC_TIMEOUT_MS / 1000}s" }
@@ -125,6 +128,7 @@ class SyncRepositoryImpl(
             throw e
         } finally {
             currentSyncJob = null
+            fullSyncReceivedIds = null
             syncMutex.unlock()
         }
     }

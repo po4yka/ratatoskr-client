@@ -16,11 +16,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
+import kotlin.coroutines.cancellation.CancellationException
+import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
-@Factory
+@Single
 class AuthViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
     private val loginWithSecretUseCase: LoginWithSecretUseCase,
@@ -38,21 +39,40 @@ class AuthViewModel(
         loadSavedDeveloperCredentials()
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun checkAuthStatus() {
         viewModelScope.launch {
-            val user = getCurrentUserUseCase()
-            _state.value =
-                _state.value.copy(
-                    user = user,
-                    isAuthenticated = user != null,
-                )
+            try {
+                val user = getCurrentUserUseCase()
+                _state.value =
+                    _state.value.copy(
+                        user = user,
+                        isAuthenticated = user != null,
+                    )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error(e) { "Failed to check auth status" }
+                _state.value =
+                    _state.value.copy(
+                        user = null,
+                        isAuthenticated = false,
+                    )
+            }
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun loadSavedDeveloperCredentials() {
         viewModelScope.launch {
-            val credentials = getDeveloperCredentialsUseCase()
-            _state.value = _state.value.copy(savedDeveloperCredentials = credentials)
+            try {
+                val credentials = getDeveloperCredentialsUseCase()
+                _state.value = _state.value.copy(savedDeveloperCredentials = credentials)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error(e) { "Failed to load saved developer credentials" }
+            }
         }
     }
 
@@ -119,12 +139,18 @@ class AuthViewModel(
         }
     }
 
-    @Suppress("unused") // Public API for UI layer
+    @Suppress("unused", "TooGenericExceptionCaught") // Public API for UI layer
     fun logout(clearSavedCredentials: Boolean = false) {
         viewModelScope.launch {
-            logoutUseCase()
-            if (clearSavedCredentials) {
-                clearDeveloperCredentialsUseCase()
+            try {
+                logoutUseCase()
+                if (clearSavedCredentials) {
+                    clearDeveloperCredentialsUseCase()
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error(e) { "Logout failed" }
             }
             _state.value =
                 _state.value.copy(

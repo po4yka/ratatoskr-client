@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
+import com.po4yka.bitesizereader.presentation.PresentationConstants
 import com.po4yka.bitesizereader.domain.usecase.GetDigestChannelsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetDigestHistoryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetDigestPreferencesUseCase
@@ -16,7 +17,6 @@ import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
-private const val DEFAULT_PAGE_SIZE = 20
 
 @Factory
 class DigestViewModel(
@@ -195,14 +195,14 @@ class DigestViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoadingHistory = true, historyError = null) }
             try {
-                val items = getDigestHistoryUseCase(page, DEFAULT_PAGE_SIZE)
+                val items = getDigestHistoryUseCase(page, PresentationConstants.DEFAULT_PAGE_SIZE)
                 _state.update { current ->
                     val allItems = if (loadMore) current.historyItems + items else items
                     current.copy(
                         historyItems = allItems,
                         isLoadingHistory = false,
                         historyPage = page,
-                        hasMoreHistory = items.size >= DEFAULT_PAGE_SIZE,
+                        hasMoreHistory = items.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
                     )
                 }
             } catch (e: Exception) {

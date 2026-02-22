@@ -39,35 +39,3 @@ interface ShareManager {
         title: String? = null,
     )
 }
-
-/**
- * Build a shareable text from a summary
- */
-fun Summary.toShareText(customMessage: String? = null): String {
-    return buildString {
-        if (!customMessage.isNullOrBlank()) {
-            appendLine(customMessage)
-            appendLine()
-        }
-
-        appendLine(title)
-        appendLine()
-
-        // Use available fields from current Summary model
-        // Note: tldr, keyIdeas, topicTags might not be present in the new Summary model
-        // Adjusting to what's available: content, sourceUrl, tags
-
-        if (content.isNotBlank()) {
-            appendLine("Summary:")
-            appendLine(content)
-            appendLine()
-        }
-
-        appendLine("Read more: $sourceUrl")
-
-        if (tags.isNotEmpty()) {
-            appendLine()
-            append("Tags: ${tags.joinToString(", ") { "#$it" }}")
-        }
-    }
-}

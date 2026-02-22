@@ -30,5 +30,13 @@ interface SummaryRepository {
 
     suspend fun toggleFavorite(id: String)
 
+    /**
+     * Toggle favorite status locally and sync with the server.
+     * Reverts local change on server failure.
+     */
+    suspend fun toggleFavoriteWithSync(id: String)
+
+    suspend fun getSummaryByUrl(url: String): Summary?
+
     suspend fun getAllTags(): List<String>
 }

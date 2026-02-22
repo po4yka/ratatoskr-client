@@ -36,7 +36,7 @@ import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
-import com.po4yka.bitesizereader.presentation.viewmodel.SettingsState
+import com.po4yka.bitesizereader.presentation.state.SettingsState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.ui.components.DeleteAccountDialog

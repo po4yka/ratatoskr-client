@@ -1,21 +1,21 @@
 package com.po4yka.bitesizereader.domain.repository
 
+import com.po4yka.bitesizereader.domain.model.DigestHistoryItem
+import com.po4yka.bitesizereader.domain.model.DigestPreferences
+import com.po4yka.bitesizereader.domain.model.DigestSubscriptionInfo
 import kotlinx.serialization.json.JsonObject
 
 /**
  * Repository for digest operations: channel subscriptions, preferences, history, triggers.
- *
- * All methods return raw [JsonObject] because the backend digest responses are untyped
- * in the OpenAPI spec. Domain models can be introduced later as the API stabilizes.
  */
 interface DigestRepository {
-    suspend fun getChannels(): JsonObject
+    suspend fun getChannels(): DigestSubscriptionInfo
 
-    suspend fun subscribe(channelUsername: String): JsonObject
+    suspend fun subscribe(channelUsername: String): DigestSubscriptionInfo
 
-    suspend fun unsubscribe(channelUsername: String): JsonObject
+    suspend fun unsubscribe(channelUsername: String): DigestSubscriptionInfo
 
-    suspend fun getPreferences(): JsonObject
+    suspend fun getPreferences(): DigestPreferences
 
     suspend fun updatePreferences(
         deliveryTime: String? = null,
@@ -23,12 +23,12 @@ interface DigestRepository {
         hoursLookback: Int? = null,
         maxPostsPerDigest: Int? = null,
         minRelevanceScore: Double? = null,
-    ): JsonObject
+    ): DigestPreferences
 
     suspend fun getHistory(
         page: Int = 1,
         pageSize: Int = 20,
-    ): JsonObject
+    ): List<DigestHistoryItem>
 
     suspend fun triggerDigest(): JsonObject
 }

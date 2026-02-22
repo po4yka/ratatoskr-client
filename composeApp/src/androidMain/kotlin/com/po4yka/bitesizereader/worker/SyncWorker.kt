@@ -20,6 +20,8 @@ class SyncWorker(
         return try {
             syncDataUseCase()
             Result.success()
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             logger.error(e) { "Sync worker failed, will retry" }
             Result.retry()

@@ -92,13 +92,3 @@ data class SyncResult(
     val serverVersion: Long?,
 )
 
-/**
- * Represents a conflict detected during sync apply.
- */
-data class SyncConflict(
-    val id: Long,
-    val entityType: String,
-    val clientVersion: Long,
-    val serverVersion: Long,
-    val reason: String,
-)
