@@ -35,8 +35,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run detekt
-        run: ./gradlew detekt --no-daemon || echo "⚠️ Detekt not yet configured - add 'io.gitlab.arturbosch.detekt' plugin to enable"
-        continue-on-error: true
+        run: ./gradlew detekt --no-daemon
 
       - name: Upload detekt reports
         if: always()
