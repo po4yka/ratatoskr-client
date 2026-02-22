@@ -1,15 +1,10 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import com.po4yka.bitesizereader.domain.usecase.ClearSearchHistoryUseCase
-import com.po4yka.bitesizereader.domain.usecase.DeleteSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetAvailableTagsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetFilteredSummariesUseCase
-import com.po4yka.bitesizereader.domain.usecase.GetRecentSearchesUseCase
-import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
 import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
-import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
@@ -46,11 +41,7 @@ class SummaryListViewModel(
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val deleteSummaryUseCase: DeleteSummaryUseCase,
     private val getAvailableTagsUseCase: GetAvailableTagsUseCase,
-    private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase,
-    private val getRecentSearchesUseCase: GetRecentSearchesUseCase,
-    private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
-    private val deleteSearchQueryUseCase: DeleteSearchQueryUseCase,
-    private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase,
+    private val searchHistoryManager: SearchHistoryManager,
     private val syncDataUseCase: SyncDataUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val logoutUseCase: LogoutUseCase,
@@ -184,14 +175,8 @@ class SummaryListViewModel(
     }
 
     private fun loadTrendingTopics() {
-        viewModelScope.launch {
-            try {
-                val topics = getTrendingTopicsUseCase()
-                _state.value = _state.value.copy(trendingTopics = topics)
-            } catch (e: Exception) {
-                // Non-critical, silently ignore
-                logger.warn(e) { "Failed to load trending topics" }
-            }
+        searchHistoryManager.loadTrendingTopics(viewModelScope) { topics ->
+            _state.value = _state.value.copy(trendingTopics = topics)
         }
     }
 
@@ -203,7 +188,7 @@ class SummaryListViewModel(
         searchJob?.cancel()
         searchJob =
             viewModelScope.launch {
-                saveSearchQueryUseCase(topic)
+                searchHistoryManager.saveSearch(topic)
                 performSearch(topic)
                 loadRecentSearches()
             }
@@ -212,13 +197,8 @@ class SummaryListViewModel(
     // Recent searches
 
     private fun loadRecentSearches() {
-        viewModelScope.launch {
-            try {
-                val searches = getRecentSearchesUseCase()
-                _state.value = _state.value.copy(recentSearches = searches)
-            } catch (e: Exception) {
-                logger.warn(e) { "Failed to load recent searches" }
-            }
+        searchHistoryManager.loadRecentSearches(viewModelScope) { searches ->
+            _state.value = _state.value.copy(recentSearches = searches)
         }
     }
 
@@ -230,7 +210,7 @@ class SummaryListViewModel(
         searchJob?.cancel()
         searchJob =
             viewModelScope.launch {
-                saveSearchQueryUseCase(query)
+                searchHistoryManager.saveSearch(query)
                 performSearch(query)
                 loadRecentSearches()
             }
@@ -240,13 +220,8 @@ class SummaryListViewModel(
      * Deletes a single search query from history.
      */
     fun deleteRecentSearch(query: String) {
-        viewModelScope.launch {
-            try {
-                deleteSearchQueryUseCase(query)
-                loadRecentSearches()
-            } catch (e: Exception) {
-                logger.warn(e) { "Failed to delete recent search" }
-            }
+        searchHistoryManager.deleteSearch(viewModelScope, query) {
+            loadRecentSearches()
         }
     }
 
@@ -254,13 +229,8 @@ class SummaryListViewModel(
      * Clears all search history.
      */
     fun clearSearchHistory() {
-        viewModelScope.launch {
-            try {
-                clearSearchHistoryUseCase()
-                _state.value = _state.value.copy(recentSearches = emptyList())
-            } catch (e: Exception) {
-                logger.warn(e) { "Failed to clear search history" }
-            }
+        searchHistoryManager.clearHistory(viewModelScope) {
+            _state.value = _state.value.copy(recentSearches = emptyList())
         }
     }
 

@@ -18,6 +18,7 @@ CREATE TABLE summaryEntity (
 
 CREATE INDEX summary_isRead ON summaryEntity(isRead);
 CREATE INDEX summary_createdAt ON summaryEntity(createdAt);
+CREATE INDEX summary_isFavorited ON summaryEntity(isFavorited);
 
 CREATE TABLE requestEntity (
     id TEXT NOT NULL PRIMARY KEY,

@@ -1,10 +1,5 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import com.po4yka.bitesizereader.domain.usecase.ClearSearchHistoryUseCase
-import com.po4yka.bitesizereader.domain.usecase.DeleteSearchQueryUseCase
-import com.po4yka.bitesizereader.domain.usecase.GetRecentSearchesUseCase
-import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
-import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSearchInsightsUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SemanticSearchUseCase
@@ -29,11 +24,7 @@ private const val DEFAULT_PAGE_SIZE = 20
 class SearchViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
     private val semanticSearchUseCase: SemanticSearchUseCase,
-    private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase,
-    private val getRecentSearchesUseCase: GetRecentSearchesUseCase,
-    private val saveSearchQueryUseCase: SaveSearchQueryUseCase,
-    private val deleteSearchQueryUseCase: DeleteSearchQueryUseCase,
-    private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase,
+    private val searchHistoryManager: SearchHistoryManager,
     private val getSearchInsightsUseCase: GetSearchInsightsUseCase,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : BaseViewModel(dispatcher) {
@@ -79,7 +70,7 @@ class SearchViewModel(
         searchJob?.cancel()
         searchJob =
             viewModelScope.launch {
-                saveSearchQueryUseCase(topic)
+                searchHistoryManager.saveSearch(topic)
                 performSearch(topic, page = DEFAULT_PAGE, isNewSearch = true)
                 loadRecentSearches()
             }
@@ -93,7 +84,7 @@ class SearchViewModel(
         searchJob?.cancel()
         searchJob =
             viewModelScope.launch {
-                saveSearchQueryUseCase(query)
+                searchHistoryManager.saveSearch(query)
                 performSearch(query, page = DEFAULT_PAGE, isNewSearch = true)
                 loadRecentSearches()
             }
@@ -165,8 +156,7 @@ class SearchViewModel(
      * Deletes a single recent search query.
      */
     fun deleteRecentSearch(query: String) {
-        viewModelScope.launch {
-            deleteSearchQueryUseCase(query)
+        searchHistoryManager.deleteSearch(viewModelScope, query) {
             loadRecentSearches()
         }
     }
@@ -175,8 +165,7 @@ class SearchViewModel(
      * Clears all search history.
      */
     fun clearSearchHistory() {
-        viewModelScope.launch {
-            clearSearchHistoryUseCase()
+        searchHistoryManager.clearHistory(viewModelScope) {
             _state.update { it.copy(recentSearches = emptyList()) }
         }
     }
@@ -207,25 +196,14 @@ class SearchViewModel(
     }
 
     private fun loadRecentSearches() {
-        viewModelScope.launch {
-            try {
-                val searches = getRecentSearchesUseCase()
-                _state.update { it.copy(recentSearches = searches) }
-            } catch (_: Exception) {
-                // Recent searches are non-critical, silently ignore failures
-            }
+        searchHistoryManager.loadRecentSearches(viewModelScope) { searches ->
+            _state.update { it.copy(recentSearches = searches) }
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     private fun loadTrendingTopics() {
-        viewModelScope.launch {
-            try {
-                val topics = getTrendingTopicsUseCase()
-                _state.update { it.copy(trendingTopics = topics) }
-            } catch (_: Exception) {
-                // Trending topics are non-critical, silently ignore failures
-            }
+        searchHistoryManager.loadTrendingTopics(viewModelScope) { topics ->
+            _state.update { it.copy(trendingTopics = topics) }
         }
     }
 
@@ -289,7 +267,7 @@ class SearchViewModel(
 
             // Save successful search to history
             if (isNewSearch && results.isNotEmpty()) {
-                saveSearchQueryUseCase(query)
+                searchHistoryManager.saveSearch(query)
                 loadRecentSearches()
             }
         } catch (e: Exception) {
