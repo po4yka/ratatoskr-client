@@ -72,12 +72,9 @@ kotlin {
             api(libs.decompose.core)
             implementation(libs.essenty.lifecycle.coroutines)
 
-            // Store (Repository Pattern)
-            implementation(libs.store)
-
             // Koin DI
             api(libs.koin.core)
-            api(libs.koin.annotations)
+            implementation(libs.koin.annotations)
 
             // Kotlinx
             implementation(libs.kotlinx.serialization.json)
@@ -217,9 +214,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().con
     }
 }
 
-// Make KSP tasks for each platform depend on the metadata KSP task
-afterEvaluate {
-    tasks.matching { it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata" }.configureEach {
+// KSP platform tasks also need to depend on common metadata KSP
+tasks.withType<com.google.devtools.ksp.gradle.KspAATask>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
 }
