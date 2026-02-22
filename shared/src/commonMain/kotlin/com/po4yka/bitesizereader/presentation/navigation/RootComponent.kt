@@ -6,6 +6,9 @@ import com.arkivanov.decompose.value.Value
 interface RootComponent {
     val childStack: Value<ChildStack<*, Child>>
 
+    fun navigateToSubmitUrl(prefilledUrl: String)
+    fun navigateToSummaryDetail(summaryId: String)
+
     sealed class Child {
         class Auth(val component: AuthComponent) : Child()
 

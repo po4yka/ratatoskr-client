@@ -60,6 +60,22 @@ class DefaultRootComponent(
             .launchIn(scope)
     }
 
+    override fun navigateToSubmitUrl(prefilledUrl: String) {
+        // TODO(po4yka): Wire through to SubmitURLComponent with prefilledUrl
+        val currentConfig = childStack.value.active.configuration
+        if (currentConfig is Config.Auth) {
+            navigation.replaceCurrent(Config.Main)
+        }
+    }
+
+    override fun navigateToSummaryDetail(summaryId: String) {
+        // TODO(po4yka): Wire through to SummaryDetailComponent with summaryId
+        val currentConfig = childStack.value.active.configuration
+        if (currentConfig is Config.Auth) {
+            navigation.replaceCurrent(Config.Main)
+        }
+    }
+
     private fun createChild(
         config: Config,
         componentContext: ComponentContext,
