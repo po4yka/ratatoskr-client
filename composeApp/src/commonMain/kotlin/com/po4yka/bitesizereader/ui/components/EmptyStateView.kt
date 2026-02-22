@@ -30,6 +30,7 @@ enum class EmptyStateType {
     NO_SEARCH_RESULTS,
     NO_UNREAD_ARTICLES,
     NO_READ_ARTICLES,
+    NO_ARCHIVED_ARTICLES,
     ERROR,
     SEARCH_PROMPT,
     COLLECTION_EMPTY,
@@ -79,6 +80,13 @@ fun ContextualEmptyState(
                     title = "No read articles",
                     message = "Articles you've read will appear here",
                     icon = CarbonIcons.Document,
+                    actionText = "Show all articles",
+                )
+            EmptyStateType.NO_ARCHIVED_ARTICLES ->
+                EmptyStateConfig(
+                    title = "No archived articles",
+                    message = "Archived articles will appear here",
+                    icon = CarbonIcons.Archive,
                     actionText = "Show all articles",
                 )
             EmptyStateType.ERROR ->

@@ -100,7 +100,10 @@ fun SummaryCard(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = extractDomain(summary.sourceUrl) ?: "Saved Article",
+                    text = buildString {
+                        append(extractDomain(summary.sourceUrl) ?: "Saved Article")
+                        summary.readingTimeMin?.let { append(" | $it min") }
+                    },
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                     maxLines = 1,
@@ -115,6 +118,16 @@ fun SummaryCard(
                         imageVector = CarbonIcons.FavoriteFilled,
                         contentDescription = "Favorited",
                         tint = Carbon.theme.supportError,
+                        modifier = Modifier.size(IconSizes.xs),
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+
+                if (summary.isFullContentCached) {
+                    Icon(
+                        imageVector = CarbonIcons.Download,
+                        contentDescription = "Available offline",
+                        tint = Carbon.theme.iconSecondary,
                         modifier = Modifier.size(IconSizes.xs),
                     )
                     Spacer(modifier = Modifier.width(4.dp))

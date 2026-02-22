@@ -73,6 +73,7 @@ fun SettingsScreen(component: SettingsComponent) {
             onCancelLink = viewModel::cancelTelegramLink,
             onImport = viewModel::importFromBackend,
             onCancelSync = viewModel::cancelSync,
+            onClearCache = viewModel::clearContentCache,
             onShowDeleteConfirmation = viewModel::showDeleteConfirmation,
             onToggleSessions = viewModel::toggleSessionsExpanded,
             onToggleRequests = viewModel::toggleRequestsExpanded,
@@ -110,6 +111,7 @@ private fun SettingsContent(
     onCancelLink: () -> Unit,
     onImport: () -> Unit,
     onCancelSync: () -> Unit,
+    onClearCache: () -> Unit,
     onShowDeleteConfirmation: () -> Unit,
     onToggleSessions: () -> Unit,
     onToggleRequests: () -> Unit,
@@ -175,6 +177,12 @@ private fun SettingsContent(
             state = state,
             onImport = onImport,
             onCancelSync = onCancelSync,
+        )
+
+        CacheManagementCard(
+            cacheSize = state.cacheSize,
+            isClearing = state.isClearingCache,
+            onClearCache = onClearCache,
         )
 
         RequestHistorySection(
@@ -437,6 +445,59 @@ private fun SyncCard(
             )
         }
     }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun CacheManagementCard(
+    cacheSize: Long,
+    isClearing: Boolean,
+    onClearCache: () -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = "Cached Content",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        Text(
+            text = "Full article content cached for offline reading.",
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
+        )
+        Text(
+            text = "Cache size: ${formatCacheSize(cacheSize)}",
+            style = Carbon.typography.label01,
+            color = Carbon.theme.textSecondary,
+        )
+        if (isClearing) {
+            SmallLoading()
+        } else {
+            Button(
+                label = "Clear Cache",
+                onClick = onClearCache,
+                isEnabled = cacheSize > 0,
+                buttonType = ButtonType.Secondary,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
+
+private fun formatCacheSize(bytes: Long): String {
+    if (bytes < 1024) return "$bytes B"
+    val kb = bytes / 1024.0
+    if (kb < 1024) return "%.1f KB".format(kb)
+    val mb = kb / 1024.0
+    return "%.1f MB".format(mb)
 }
 
 @Suppress("FunctionNaming")

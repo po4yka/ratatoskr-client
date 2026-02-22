@@ -12,6 +12,7 @@ import com.po4yka.bitesizereader.domain.model.SortOrder
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -53,12 +54,14 @@ class SummaryRepositoryImpl(
         sortOrder: SortOrder,
         selectedTag: String?,
     ): Flow<List<Summary>> {
+        val isArchivedFilter = readFilter == ReadFilter.ARCHIVED
         val isFavoritedFilter = readFilter == ReadFilter.FAVORITED
         return database.databaseQueries.selectSummariesFiltered(
-            readFilterAll = if (readFilter == ReadFilter.ALL || isFavoritedFilter) 1L else 0L,
+            readFilterAll = if (readFilter == ReadFilter.ALL || isFavoritedFilter || isArchivedFilter) 1L else 0L,
             isRead = readFilter == ReadFilter.READ,
             favoritedOnly = if (isFavoritedFilter) 1L else 0L,
             selectedTag = selectedTag,
+            isArchived = isArchivedFilter,
             sortNewest = if (sortOrder == SortOrder.NEWEST) 1L else 0L,
             sortOldest = if (sortOrder == SortOrder.OLDEST) 1L else 0L,
             sortAlphabetical = if (sortOrder == SortOrder.ALPHABETICAL) 1L else 0L,
@@ -131,20 +134,65 @@ class SummaryRepositoryImpl(
     }
 
     override suspend fun getFullContent(id: String): String? {
-        val remoteId = id.toLongOrNull() ?: return null
+        // Check cache first
+        val entity = database.databaseQueries.getSummaryById(id).executeAsOneOrNull()
+        if (entity?.fullContent != null) {
+            val cachedAt = entity.fullContentCachedAt
+            val isFresh = cachedAt != null &&
+                (Clock.System.now() - cachedAt) < CONTENT_CACHE_TTL
+            if (isFresh) {
+                return entity.fullContent
+            }
+            // Stale: return cached but trigger background refetch handled by caller
+            // For now, just refetch inline since we don't have a background mechanism yet
+        }
+
+        val remoteId = id.toLongOrNull() ?: return entity?.fullContent
         return try {
             val response = api.getContent(remoteId)
             if (response.success && response.data != null) {
                 val articleContent = response.data.content.content
-                database.databaseQueries.updateSummaryContent(articleContent, id)
+                database.databaseQueries.updateSummaryFullContent(
+                    fullContent = articleContent,
+                    cachedAt = Clock.System.now(),
+                    id = id,
+                )
                 articleContent
             } else {
-                null
+                entity?.fullContent
             }
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.warn(e) { "Failed to fetch full content for $id" }
-            null
+            entity?.fullContent
         }
+    }
+
+    override suspend fun saveReadPosition(id: String, position: Int, offset: Int) {
+        database.databaseQueries.updateReadPosition(
+            position = position,
+            offset = offset,
+            id = id,
+        )
+    }
+
+    override suspend fun archiveSummary(id: String) {
+        database.databaseQueries.archiveSummary(id)
+    }
+
+    override suspend fun unarchiveSummary(id: String) {
+        database.databaseQueries.unarchiveSummary(id)
+    }
+
+    override suspend fun getCacheSize(): Long {
+        return database.databaseQueries.getCacheSize().executeAsOne().toLong()
+    }
+
+    override suspend fun clearContentCache() {
+        database.databaseQueries.clearContentCache()
+    }
+
+    companion object {
+        private val CONTENT_CACHE_TTL = 7.days
     }
 
     override suspend fun getAllTags(): List<String> {

@@ -38,6 +38,9 @@ class DatabaseModule {
                 SummaryEntity.Adapter(
                     createdAtAdapter = instantColumnAdapter,
                     readingTimeMinAdapter = intColumnAdapter,
+                    fullContentCachedAtAdapter = instantColumnAdapter,
+                    lastReadPositionAdapter = intColumnAdapter,
+                    lastReadOffsetAdapter = intColumnAdapter,
                     tagsAdapter =
                         object : ColumnAdapter<List<String>, String> {
                             override fun decode(databaseValue: String): List<String> =
