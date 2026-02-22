@@ -10,6 +10,7 @@ import com.po4yka.bitesizereader.domain.repository.SummaryRepository
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -81,6 +82,36 @@ class SummaryRepositoryImpl(
     override suspend fun toggleFavorite(id: String) {
         val summary = database.databaseQueries.getSummaryById(id).executeAsOneOrNull() ?: return
         database.databaseQueries.updateSummaryFavoriteStatus(!summary.isFavorited, id)
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun toggleFavoriteWithSync(id: String) {
+        // Optimistic local update first
+        toggleFavorite(id)
+
+        // Then sync with server
+        val remoteId = id.toLongOrNull()
+        if (remoteId != null) {
+            try {
+                api.toggleFavorite(remoteId)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to toggle favorite on server for $id, reverting" }
+                // Revert on failure
+                toggleFavorite(id)
+                throw e
+            }
+        }
+    }
+
+    override suspend fun getSummaryByUrl(url: String): Summary? {
+        val response = api.getSummaryByUrl(url)
+        return if (response.success && response.data != null) {
+            response.data.toDomain()
+        } else {
+            null
+        }
     }
 
     override suspend fun deleteSummary(id: String) {

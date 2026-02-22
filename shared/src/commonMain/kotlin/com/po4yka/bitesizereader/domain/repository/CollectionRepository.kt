@@ -44,4 +44,8 @@ interface CollectionRepository {
         role: CollaboratorRole,
         expiresAt: String? = null,
     ): CollectionInvite
+
+    suspend fun addToCollection(collectionId: String, summaryId: String)
+
+    suspend fun createCollection(name: String, description: String? = null): Collection
 }

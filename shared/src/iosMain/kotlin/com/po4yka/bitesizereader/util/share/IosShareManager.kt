@@ -15,12 +15,32 @@ class IosShareManager : ShareManager {
         summary: Summary,
         customMessage: String?,
     ) {
-        val shareText = summary.toShareText(customMessage)
+        val shareText = buildShareText(summary, customMessage)
         val url = NSURL.URLWithString(summary.sourceUrl)
 
         // Call the Swift ShareHelper to present the share sheet
         shareItems(listOfNotNull(shareText, url))
     }
+
+    private fun buildShareText(summary: Summary, customMessage: String? = null): String =
+        buildString {
+            if (!customMessage.isNullOrBlank()) {
+                appendLine(customMessage)
+                appendLine()
+            }
+            appendLine(summary.title)
+            appendLine()
+            if (summary.content.isNotBlank()) {
+                appendLine("Summary:")
+                appendLine(summary.content)
+                appendLine()
+            }
+            appendLine("Read more: ${summary.sourceUrl}")
+            if (summary.tags.isNotEmpty()) {
+                appendLine()
+                append("Tags: ${summary.tags.joinToString(", ") { "#$it" }}")
+            }
+        }
 
     override fun shareText(
         text: String,

@@ -1,6 +1,6 @@
 package com.po4yka.bitesizereader.domain.usecase
 
-import com.po4yka.bitesizereader.data.remote.SearchApi
+import com.po4yka.bitesizereader.domain.repository.SearchRepository
 import org.koin.core.annotation.Factory
 
 data class DuplicateCheckResult(
@@ -9,17 +9,8 @@ data class DuplicateCheckResult(
 )
 
 @Factory
-class CheckDuplicateUrlUseCase(private val searchApi: SearchApi) {
+class CheckDuplicateUrlUseCase(private val searchRepository: SearchRepository) {
     suspend operator fun invoke(url: String): DuplicateCheckResult {
-        val response = searchApi.checkDuplicateUrl(url, includeSummary = false)
-        val data = response.data
-        return if (response.success && data != null) {
-            DuplicateCheckResult(
-                isDuplicate = data.data.isDuplicate,
-                existingSummaryId = data.data.summaryId?.toString(),
-            )
-        } else {
-            DuplicateCheckResult(isDuplicate = false, existingSummaryId = null)
-        }
+        return searchRepository.checkDuplicateUrl(url)
     }
 }

@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
+import com.po4yka.bitesizereader.presentation.PresentationConstants
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetAvailableTagsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetFilteredSummariesUseCase
@@ -30,8 +31,6 @@ import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
-private const val DEFAULT_PAGE_SIZE = 20
-private const val SEARCH_DEBOUNCE_MS = 300L
 private const val LOAD_MORE_THRESHOLD = 5
 
 @Factory
@@ -139,7 +138,7 @@ class SummaryListViewModel(
                 val summaries =
                     getFilteredSummariesUseCase(
                         page = currentState.page,
-                        pageSize = DEFAULT_PAGE_SIZE,
+                        pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
                         readFilter = currentState.readFilter,
                         sortOrder = currentState.sortOrder,
                         selectedTag = currentState.selectedTag,
@@ -149,7 +148,7 @@ class SummaryListViewModel(
                     _state.value.copy(
                         summaries = summaries,
                         isLoading = false,
-                        hasMore = summaries.size >= DEFAULT_PAGE_SIZE,
+                        hasMore = summaries.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
                         error = null,
                     )
             } catch (e: Exception) {
@@ -260,7 +259,7 @@ class SummaryListViewModel(
 
         searchJob =
             viewModelScope.launch {
-                delay(SEARCH_DEBOUNCE_MS)
+                delay(PresentationConstants.SEARCH_DEBOUNCE_MS)
                 performSearch(query)
             }
     }
@@ -273,13 +272,13 @@ class SummaryListViewModel(
                 searchSummariesUseCase(
                     query = query,
                     page = _state.value.page,
-                    pageSize = DEFAULT_PAGE_SIZE,
+                    pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
                 )
             _state.value =
                 _state.value.copy(
                     summaries = results,
                     isLoading = false,
-                    hasMore = results.size >= DEFAULT_PAGE_SIZE,
+                    hasMore = results.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
                 )
         } catch (e: Exception) {
             logger.error(e) { "Search failed" }
@@ -322,7 +321,7 @@ class SummaryListViewModel(
                             searchSummariesUseCase(
                                 query = startState.searchQuery,
                                 page = nextPage,
-                                pageSize = DEFAULT_PAGE_SIZE,
+                                pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
                             )
 
                         val current = _state.value
@@ -331,13 +330,13 @@ class SummaryListViewModel(
                                 summaries = current.summaries + results,
                                 page = nextPage,
                                 isLoadingMore = false,
-                                hasMore = results.size >= DEFAULT_PAGE_SIZE,
+                                hasMore = results.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
                             )
                     } else {
                         val nextPageItems =
                             getFilteredSummariesUseCase(
                                 page = nextPage,
-                                pageSize = DEFAULT_PAGE_SIZE,
+                                pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
                                 readFilter = startState.readFilter,
                                 sortOrder = startState.sortOrder,
                                 selectedTag = startState.selectedTag,
@@ -361,7 +360,7 @@ class SummaryListViewModel(
                                 summaries = current.summaries + nextPageItems,
                                 page = nextPage,
                                 isLoadingMore = false,
-                                hasMore = nextPageItems.size >= DEFAULT_PAGE_SIZE,
+                                hasMore = nextPageItems.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
                             )
                     }
                 } catch (e: Exception) {

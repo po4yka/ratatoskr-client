@@ -1,11 +1,16 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
+import com.po4yka.bitesizereader.presentation.PresentationConstants
 import com.po4yka.bitesizereader.domain.usecase.GetSearchInsightsUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SemanticSearchUseCase
 import com.po4yka.bitesizereader.presentation.state.SearchFilters
 import com.po4yka.bitesizereader.presentation.state.SearchMode
 import com.po4yka.bitesizereader.presentation.state.SearchState
+import com.po4yka.bitesizereader.util.error.toAppError
+import com.po4yka.bitesizereader.util.error.userMessage
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,9 +21,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
-private const val DEBOUNCE_DELAY_MS = 500L
+private val logger = KotlinLogging.logger {}
+
 private const val DEFAULT_PAGE = 1
-private const val DEFAULT_PAGE_SIZE = 20
 
 @Factory
 class SearchViewModel(
@@ -57,7 +62,7 @@ class SearchViewModel(
 
         searchJob =
             viewModelScope.launch {
-                delay(DEBOUNCE_DELAY_MS)
+                delay(PresentationConstants.SEARCH_DEBOUNCE_MS)
                 performSearch(query, page = DEFAULT_PAGE, isNewSearch = true)
             }
     }
@@ -155,6 +160,7 @@ class SearchViewModel(
     /**
      * Deletes a single recent search query.
      */
+    @Suppress("TooGenericExceptionCaught")
     fun deleteRecentSearch(query: String) {
         searchHistoryManager.deleteSearch(viewModelScope, query) {
             loadRecentSearches()
@@ -195,6 +201,7 @@ class SearchViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun loadRecentSearches() {
         searchHistoryManager.loadRecentSearches(viewModelScope) { searches ->
             _state.update { it.copy(recentSearches = searches) }
@@ -214,7 +221,10 @@ class SearchViewModel(
             try {
                 val insights = getSearchInsightsUseCase()
                 _state.update { it.copy(insights = insights, isLoadingInsights = false) }
-            } catch (_: Exception) {
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to load search insights" }
                 _state.update { it.copy(isLoadingInsights = false) }
             }
         }
@@ -236,17 +246,17 @@ class SearchViewModel(
             val currentState = _state.value
             val results =
                 when (currentState.searchMode) {
-                    SearchMode.FULLTEXT -> searchSummariesUseCase(query, page, DEFAULT_PAGE_SIZE)
+                    SearchMode.FULLTEXT -> searchSummariesUseCase(query, page, PresentationConstants.DEFAULT_PAGE_SIZE)
                     SearchMode.SEMANTIC ->
                         semanticSearchUseCase(
                             query = query,
                             page = page,
-                            pageSize = DEFAULT_PAGE_SIZE,
+                            pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
                             language = currentState.filters.language,
                             tags = currentState.filters.tags.ifEmpty { null },
                         )
                 }
-            val hasMore = results.size >= DEFAULT_PAGE_SIZE
+            val hasMore = results.size >= PresentationConstants.DEFAULT_PAGE_SIZE
 
             _state.update { currentState ->
                 val newResults =
@@ -275,7 +285,7 @@ class SearchViewModel(
                 it.copy(
                     isLoading = false,
                     isLoadingMore = false,
-                    error = e.message ?: "Search failed",
+                    error = e.toAppError().userMessage(),
                 )
             }
         }

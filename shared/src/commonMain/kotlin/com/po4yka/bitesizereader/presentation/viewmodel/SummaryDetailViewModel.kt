@@ -8,6 +8,8 @@ import com.po4yka.bitesizereader.domain.usecase.GetSummaryContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.presentation.state.SummaryDetailState
+import com.po4yka.bitesizereader.util.error.toAppError
+import com.po4yka.bitesizereader.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,7 +46,7 @@ class SummaryDetailViewModel(
                     fetchFullContent(id)
                 }
             } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.message)
+                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
             }
         }
     }
@@ -68,7 +70,7 @@ class SummaryDetailViewModel(
                 _state.value =
                     _state.value.copy(
                         isLoadingContent = false,
-                        error = e.message ?: "Failed to load content",
+                        error = e.toAppError().userMessage(),
                     )
             }
         }
@@ -85,7 +87,7 @@ class SummaryDetailViewModel(
                         summary = summary.copy(isFavorited = !summary.isFavorited),
                     )
             } catch (e: Exception) {
-                _state.value = _state.value.copy(error = e.message)
+                _state.value = _state.value.copy(error = e.toAppError().userMessage())
             }
         }
     }
@@ -96,7 +98,7 @@ class SummaryDetailViewModel(
             try {
                 deleteSummaryUseCase(id)
             } catch (e: Exception) {
-                _state.value = _state.value.copy(error = e.message)
+                _state.value = _state.value.copy(error = e.toAppError().userMessage())
             }
         }
     }
@@ -119,7 +121,7 @@ class SummaryDetailViewModel(
                 logger.warn(e) { "Failed to load collections" }
                 _state.value = _state.value.copy(
                     isLoadingCollections = false,
-                    addToCollectionError = e.message ?: "Failed to load collections",
+                    addToCollectionError = e.toAppError().userMessage(),
                 )
             }
         }
@@ -147,7 +149,7 @@ class SummaryDetailViewModel(
                 logger.warn(e) { "Failed to add to collection" }
                 _state.value = _state.value.copy(
                     isAddingToCollection = false,
-                    addToCollectionError = e.message ?: "Failed to add to collection",
+                    addToCollectionError = e.toAppError().userMessage(),
                 )
             }
         }

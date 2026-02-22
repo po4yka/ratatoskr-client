@@ -32,16 +32,6 @@ interface NetworkMonitor {
 }
 
 /**
- * Get user-friendly message for network status
- */
-fun NetworkStatus.getMessage(): String =
-    when (this) {
-        NetworkStatus.CONNECTED -> "Connected"
-        NetworkStatus.DISCONNECTED -> "You are offline"
-        NetworkStatus.UNKNOWN -> "Connection status unknown"
-    }
-
-/**
  * Check if network status indicates connectivity
  */
 fun NetworkStatus.isConnected(): Boolean = this == NetworkStatus.CONNECTED
