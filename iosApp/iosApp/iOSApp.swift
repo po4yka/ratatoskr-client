@@ -16,9 +16,20 @@ struct iOSApp: App {
             ContentView(rootComponent: appDelegate.rootComponent)
         }
         .onChange(of: scenePhase) { newPhase in
-            if newPhase == .active {
+            switch newPhase {
+            case .active:
+                appDelegate.lifecycle.onStart()
+                appDelegate.lifecycle.onResume()
                 // Check for shared URL from Share Extension when app becomes active
                 checkForSharedURL()
+            case .inactive:
+                appDelegate.lifecycle.onPause()
+                appDelegate.lifecycle.onStop()
+            case .background:
+                appDelegate.lifecycle.onPause()
+                appDelegate.lifecycle.onStop()
+            @unknown default:
+                break
             }
         }
         .onOpenURL { url in
@@ -55,10 +66,9 @@ struct iOSApp: App {
         }
 
         if url.host == "summary",
-           let summaryIdString = url.pathComponents.last,
-           let summaryId = Int32(summaryIdString) {
+           let summaryId = url.pathComponents.last {
             logger.debug("Opening summary with ID: \(summaryId)")
-            appDelegate.rootComponent.navigateToSummaryDetail(id: summaryId)
+            appDelegate.rootComponent.navigateToSummaryDetail(summaryId: summaryId)
         } else {
             logger.warning("Could not parse summary ID from URL: \(url)")
         }
@@ -67,6 +77,7 @@ struct iOSApp: App {
 
 /// App delegate for initialization and background tasks
 class AppDelegate: NSObject, UIApplicationDelegate {
+    let lifecycle = ApplicationLifecycle()
     let rootComponent: RootComponent
     let koinHelper: KoinHelper
 
@@ -78,8 +89,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         let koinApp = KoinInitializerKt.initKoin(appDeclaration: { _ in })
         koinHelper = KoinHelper(koin: koinApp.koin)
 
-        // Create root navigation component
-        rootComponent = RootComponent(componentContext: DefaultComponentContext(lifecycle: ApplicationLifecycle()))
+        // Create root navigation component using the shared lifecycle
+        rootComponent = RootComponent(componentContext: DefaultComponentContext(lifecycle: lifecycle))
 
         super.init()
 
@@ -91,6 +102,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Schedule initial background sync
         scheduleBackgroundSync()
         return true
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {
+        lifecycle.onDestroy()
     }
 
     // MARK: - Background Tasks
@@ -169,9 +184,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 
-/// iOS lifecycle implementation
-private class ApplicationLifecycle: LifecycleRegistry {
-    init() {
+/// iOS lifecycle implementation that starts in the CREATED state.
+/// Subsequent state transitions (start, resume, pause, stop, destroy)
+/// are driven by SwiftUI's scenePhase and UIApplicationDelegate callbacks.
+class ApplicationLifecycle: LifecycleRegistry {
+    override init() {
         super.init()
         onCreate()
     }
