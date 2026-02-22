@@ -25,6 +25,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
@@ -616,6 +619,7 @@ private fun LanguageChip(
         style = Carbon.typography.label01,
         color = if (isEnabled) textColor else Carbon.theme.textDisabled,
         modifier = modifier
+            .semantics { role = Role.Button }
             .background(backgroundColor)
             .clickable(enabled = isEnabled && !isSelected, onClick = onClick)
             .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
@@ -631,6 +635,7 @@ private fun DigestNavigationRow(onClick: () -> Unit) {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(4.dp))
                 .background(Carbon.theme.layer01)
+                .semantics { role = Role.Button }
                 .clickable(onClick = onClick)
                 .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,

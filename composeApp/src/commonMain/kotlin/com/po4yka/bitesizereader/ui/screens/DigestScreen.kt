@@ -23,6 +23,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
@@ -122,6 +125,7 @@ private fun DigestTabBar(
             Box(
                 modifier = Modifier
                     .weight(1f)
+                    .semantics { role = Role.Tab }
                     .clickable { onTabSelected(tab) }
                     .padding(vertical = Spacing.sm),
                 contentAlignment = Alignment.Center,

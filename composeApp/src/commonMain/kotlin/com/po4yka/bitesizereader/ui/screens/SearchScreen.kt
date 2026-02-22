@@ -36,6 +36,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
@@ -257,6 +260,7 @@ private fun SearchModeChip(
         color = Carbon.theme.textOnColor,
         modifier =
             modifier
+                .semantics { role = Role.Button }
                 .background(Carbon.theme.linkPrimary)
                 .clickable(onClick = onClick)
                 .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
@@ -393,6 +397,7 @@ private fun ReadFilterChip(
         color = textColor,
         modifier =
             modifier
+                .semantics { role = Role.Button }
                 .background(backgroundColor)
                 .clickable(onClick = onClick)
                 .padding(horizontal = Spacing.sm, vertical = Spacing.xs),

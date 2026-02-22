@@ -27,6 +27,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
@@ -293,7 +296,9 @@ private fun SummaryDetailContent(
             text = summary.sourceUrl,
             style = Carbon.typography.label01,
             color = Carbon.theme.linkPrimary,
-            modifier = Modifier.clickable { uriHandler.openUri(summary.sourceUrl) },
+            modifier = Modifier
+                .semantics { role = Role.Button }
+                .clickable { uriHandler.openUri(summary.sourceUrl) },
         )
     }
 }
