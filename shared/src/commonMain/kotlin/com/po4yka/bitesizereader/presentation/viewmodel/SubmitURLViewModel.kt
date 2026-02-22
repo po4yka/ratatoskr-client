@@ -7,8 +7,6 @@ import com.po4yka.bitesizereader.domain.model.RequestStatus
 import com.po4yka.bitesizereader.domain.usecase.CheckDuplicateUrlUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetRequestsUseCase
 import com.po4yka.bitesizereader.domain.usecase.RetryRequestUseCase
-import com.po4yka.bitesizereader.grpc.processing.ProcessingStatus
-import com.po4yka.bitesizereader.grpc.processing.ProcessingStage as GrpcProcessingStage
 import com.po4yka.bitesizereader.presentation.state.SubmitURLState
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
@@ -154,43 +152,20 @@ class SubmitURLViewModel(
                         )
                 }
                 .collect { update ->
-                    val appStatus = mapStatus(update.status)
-                    val appStage = mapStage(update.stage)
-
                     _state.value =
                         _state.value.copy(
-                            isLoading = appStatus != RequestStatus.COMPLETED && appStatus != RequestStatus.FAILED,
-                            status = appStatus,
-                            stage = appStage,
+                            isLoading = update.status != RequestStatus.COMPLETED &&
+                                update.status != RequestStatus.FAILED,
+                            status = update.status,
+                            stage = update.stage,
                             progress = update.progress,
                             message = update.message,
                         )
 
-                    if (appStatus == RequestStatus.FAILED) {
+                    if (update.status == RequestStatus.FAILED) {
                         _state.value = _state.value.copy(error = update.error)
                     }
                 }
-        }
-    }
-
-    private fun mapStatus(grpcStatus: ProcessingStatus): RequestStatus {
-        return when (grpcStatus) {
-            ProcessingStatus.PROCESSING_STATUS_PENDING -> RequestStatus.PENDING
-            ProcessingStatus.PROCESSING_STATUS_PROCESSING -> RequestStatus.PROCESSING
-            ProcessingStatus.PROCESSING_STATUS_COMPLETED -> RequestStatus.COMPLETED
-            ProcessingStatus.PROCESSING_STATUS_FAILED -> RequestStatus.FAILED
-            else -> RequestStatus.PENDING
-        }
-    }
-
-    private fun mapStage(grpcStage: GrpcProcessingStage): ProcessingStage {
-        return when (grpcStage) {
-            GrpcProcessingStage.PROCESSING_STAGE_QUEUED -> ProcessingStage.QUEUED
-            GrpcProcessingStage.PROCESSING_STAGE_EXTRACTION -> ProcessingStage.EXTRACTION
-            GrpcProcessingStage.PROCESSING_STAGE_SUMMARIZATION -> ProcessingStage.SUMMARIZATION
-            GrpcProcessingStage.PROCESSING_STAGE_SAVING -> ProcessingStage.SAVING
-            GrpcProcessingStage.PROCESSING_STAGE_DONE -> ProcessingStage.DONE
-            else -> ProcessingStage.UNSPECIFIED
         }
     }
 }

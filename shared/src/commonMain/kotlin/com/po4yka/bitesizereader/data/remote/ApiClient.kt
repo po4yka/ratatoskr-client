@@ -59,9 +59,9 @@ class ApiClient(
             }
 
             install(io.ktor.client.plugins.HttpTimeout) {
-                requestTimeoutMillis = 60_000
-                connectTimeoutMillis = 60_000
-                socketTimeoutMillis = 60_000
+                requestTimeoutMillis = AppConfig.Api.REQUEST_TIMEOUT_MS
+                connectTimeoutMillis = AppConfig.Api.CONNECT_TIMEOUT_MS
+                socketTimeoutMillis = AppConfig.Api.REQUEST_TIMEOUT_MS
             }
 
             if (AppConfig.Api.loggingEnabled) {

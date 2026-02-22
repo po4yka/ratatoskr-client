@@ -11,6 +11,7 @@ import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.time.Clock
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,7 @@ private val logger = KotlinLogging.logger {}
 class SummaryRepositoryImpl(
     private val database: Database,
     private val api: SummariesApi,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SummaryRepository {
     override fun getSummaries(
         page: Int,
@@ -37,7 +39,7 @@ class SummaryRepositoryImpl(
         return database.databaseQueries.selectAllSummaries(
             limit = pageSize.toLong(),
             offset = ((page - 1) * pageSize).toLong(),
-        ).asFlow().mapToList(Dispatchers.IO).map { entities ->
+        ).asFlow().mapToList(ioDispatcher).map { entities ->
             logger.debug { "Fetched ${entities.size} summaries from DB" }
             entities.map { it.toDomain() }
         }
@@ -61,7 +63,7 @@ class SummaryRepositoryImpl(
             sortAlphabetical = if (sortOrder == SortOrder.ALPHABETICAL) 1L else 0L,
             limit = pageSize.toLong(),
             offset = ((page - 1) * pageSize).toLong(),
-        ).asFlow().mapToList(Dispatchers.IO).map { entities ->
+        ).asFlow().mapToList(ioDispatcher).map { entities ->
             logger.debug { "Fetched ${entities.size} filtered summaries from DB" }
             entities.map { it.toDomain() }
         }
