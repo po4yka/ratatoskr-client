@@ -17,6 +17,7 @@ import com.po4yka.bitesizereader.domain.repository.LocalChange
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -54,6 +55,7 @@ private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncRepository {
     // ========================================================================
     // Progress Tracking
@@ -344,7 +346,7 @@ class SyncRepositoryImpl(
 
     override fun getSyncState(): Flow<SyncState> {
         return database.databaseQueries.getSyncMetadata()
-            .asFlow().mapToOneOrNull(Dispatchers.IO).map { entity ->
+            .asFlow().mapToOneOrNull(ioDispatcher).map { entity ->
                 SyncState(
                     lastSyncTime = entity?.lastSyncTime,
                     lastSyncHash = entity?.syncToken,

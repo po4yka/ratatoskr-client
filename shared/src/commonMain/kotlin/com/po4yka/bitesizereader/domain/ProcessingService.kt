@@ -1,6 +1,6 @@
 package com.po4yka.bitesizereader.domain
 
-import com.po4yka.bitesizereader.grpc.processing.ProcessingUpdate
+import com.po4yka.bitesizereader.domain.model.DomainProcessingUpdate
 import kotlinx.coroutines.flow.Flow
 
 interface ProcessingService {
@@ -8,5 +8,5 @@ interface ProcessingService {
         url: String,
         language: String? = null,
         forceRefresh: Boolean = false,
-    ): Flow<ProcessingUpdate>
+    ): Flow<DomainProcessingUpdate>
 }

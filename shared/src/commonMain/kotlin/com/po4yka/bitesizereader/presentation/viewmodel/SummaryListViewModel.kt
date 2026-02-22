@@ -76,6 +76,7 @@ class SummaryListViewModel(
      */
     @Suppress("TooGenericExceptionCaught")
     fun syncAndLoad() {
+        loadMoreJob?.cancel()
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
@@ -96,6 +97,7 @@ class SummaryListViewModel(
      * Pull-to-refresh action. Syncs with server and reloads from page 1.
      */
     fun refresh() {
+        loadMoreJob?.cancel()
         viewModelScope.launch {
             _state.value =
                 _state.value.copy(
@@ -489,6 +491,7 @@ class SummaryListViewModel(
     // Utility
 
     private fun resetAndLoad() {
+        loadMoreJob?.cancel()
         _state.value =
             _state.value.copy(
                 page = 1,
