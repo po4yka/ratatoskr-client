@@ -6,6 +6,7 @@ import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.util.MarkdownSanitizer
 import com.po4yka.bitesizereader.domain.repository.SummaryRepository
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
@@ -166,12 +167,13 @@ class SummaryRepositoryImpl(
         return try {
             val response = api.getContent(remoteId)
             if (response.success && response.data != null) {
-                val articleContent = response.data.content.content
+                val articleContent = MarkdownSanitizer.sanitize(response.data.content.content)
                 database.databaseQueries.updateSummaryFullContent(
                     fullContent = articleContent,
                     cachedAt = Clock.System.now(),
                     id = id,
                 )
+                evictContentCacheIfNeeded()
                 articleContent
             } else {
                 entity?.fullContent
@@ -210,8 +212,18 @@ class SummaryRepositoryImpl(
         database.databaseQueries.clearContentCache()
     }
 
+    override suspend fun evictContentCacheIfNeeded() {
+        val currentSize = getCacheSize()
+        if (currentSize > MAX_CACHE_SIZE_BYTES) {
+            logger.info { "Content cache size ${currentSize / 1024}KB exceeds limit, evicting oldest entries" }
+            database.databaseQueries.evictOldestContentCache(count = EVICTION_BATCH_SIZE.toLong())
+        }
+    }
+
     companion object {
         private val CONTENT_CACHE_TTL = 7.days
+        private const val MAX_CACHE_SIZE_BYTES = 50L * 1024 * 1024
+        private const val EVICTION_BATCH_SIZE = 10
     }
 
     override suspend fun getAllTags(): List<String> {
