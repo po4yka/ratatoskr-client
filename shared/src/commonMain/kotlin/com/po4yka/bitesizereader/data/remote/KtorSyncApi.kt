@@ -11,10 +11,14 @@ import com.po4yka.bitesizereader.util.retry.RetryPolicy
 import com.po4yka.bitesizereader.util.retry.retryWithBackoff
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import org.koin.core.annotation.Single
 
 @Single(binds = [SyncApi::class])
@@ -47,13 +51,27 @@ class KtorSyncApi(private val client: HttpClient) : SyncApi {
         sessionId: String,
         since: Long,
         limit: Int?,
-    ): ApiResponseDto<DeltaSyncResponseDto> =
+        etag: String?,
+    ): DeltaSyncResult =
         retryWithBackoff(RetryPolicy.DEFAULT) {
-            client.get("v1/sync/delta") {
-                parameter("session_id", sessionId)
-                parameter("since", since)
-                limit?.let { parameter("limit", it) }
-            }.body()
+            try {
+                val response =
+                    client.get("v1/sync/delta") {
+                        parameter("session_id", sessionId)
+                        parameter("since", since)
+                        limit?.let { parameter("limit", it) }
+                        etag?.let { header(HttpHeaders.IfNoneMatch, it) }
+                    }
+                val responseEtag = response.headers[HttpHeaders.ETag]
+                DeltaSyncResult(response = response.body(), etag = responseEtag)
+            } catch (e: RedirectResponseException) {
+                if (e.response.status == HttpStatusCode.NotModified) {
+                    val responseEtag = e.response.headers[HttpHeaders.ETag]
+                    DeltaSyncResult(response = null, etag = responseEtag)
+                } else {
+                    throw e
+                }
+            }
         }
 
     override suspend fun applyChanges(request: SyncApplyRequestDto): ApiResponseDto<SyncApplyResponseDto> =

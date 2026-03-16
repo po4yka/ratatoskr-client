@@ -38,7 +38,8 @@ CREATE TABLE syncMetadataEntity (
     id INTEGER NOT NULL PRIMARY KEY DEFAULT 0,
     lastSyncTime INTEGER AS Instant,
     syncToken TEXT,
-    fullSyncInProgress INTEGER NOT NULL DEFAULT 0
+    fullSyncInProgress INTEGER NOT NULL DEFAULT 0,
+    deltaSyncEtag TEXT
 );
 
 -- FTS4 Search
@@ -180,11 +181,18 @@ SELECT * FROM syncMetadataEntity
 WHERE id = 0;
 
 updateSyncMetadata:
-INSERT OR REPLACE INTO syncMetadataEntity(id, lastSyncTime, syncToken, fullSyncInProgress)
-VALUES (0, :lastSyncTime, :syncToken, :fullSyncInProgress);
+INSERT OR REPLACE INTO syncMetadataEntity(id, lastSyncTime, syncToken, fullSyncInProgress, deltaSyncEtag)
+VALUES (0, :lastSyncTime, :syncToken, :fullSyncInProgress,
+    (SELECT deltaSyncEtag FROM syncMetadataEntity WHERE id = 0));
 
 setFullSyncInProgress:
 UPDATE syncMetadataEntity SET fullSyncInProgress = :inProgress WHERE id = 0;
+
+getDeltaSyncEtag:
+SELECT deltaSyncEtag FROM syncMetadataEntity WHERE id = 0;
+
+updateDeltaSyncEtag:
+UPDATE syncMetadataEntity SET deltaSyncEtag = :etag WHERE id = 0;
 
 -- Search History Table
 CREATE TABLE searchHistoryEntity (

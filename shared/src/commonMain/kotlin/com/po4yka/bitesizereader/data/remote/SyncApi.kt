@@ -9,6 +9,15 @@ import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionResponseDto
 
 /**
+ * Result of a delta sync call, wrapping both the response body and ETag header.
+ * When the server returns 304 Not Modified, [response] is null.
+ */
+data class DeltaSyncResult(
+    val response: ApiResponseDto<DeltaSyncResponseDto>?,
+    val etag: String?,
+)
+
+/**
  * Sync API matching OpenAPI spec with session-based sync.
  */
 interface SyncApi {
@@ -26,12 +35,13 @@ interface SyncApi {
         cursor: Long? = null,
     ): ApiResponseDto<FullSyncResponseDto>
 
-    /** Fetch delta sync (changes since cursor) */
+    /** Fetch delta sync (changes since cursor). Returns [DeltaSyncResult] with null response on 304. */
     suspend fun deltaSync(
         sessionId: String,
         since: Long,
         limit: Int? = null,
-    ): ApiResponseDto<DeltaSyncResponseDto>
+        etag: String? = null,
+    ): DeltaSyncResult
 
     /** Apply client-side changes with conflict detection */
     suspend fun applyChanges(request: SyncApplyRequestDto): ApiResponseDto<SyncApplyResponseDto>
