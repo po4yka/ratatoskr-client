@@ -26,6 +26,8 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -38,6 +40,8 @@ class ApiClient(
     private val baseUrl: String,
     private val secureStorage: SecureStorage,
 ) {
+    private val tokenRefreshMutex = Mutex()
+
     val client =
         HttpClient(engine) {
             expectSuccess = true
@@ -134,42 +138,54 @@ class ApiClient(
                         }
                     }
                     refreshTokens {
-                        val refreshToken = secureStorage.getRefreshToken()
-                        if (refreshToken != null) {
-                            try {
-                                val response =
-                                    client.post("v1/auth/refresh") {
-                                        setBody(mapOf("refresh_token" to refreshToken))
-                                    }
-                                val responseText = response.bodyAsText()
-                                val parsed: ApiResponseDto<TokenRefreshResponseDto> =
-                                    Json.decodeFromString(responseText)
+                        tokenRefreshMutex.withLock {
+                            // After acquiring the lock, check if another coroutine already refreshed
+                            val currentAccessToken = secureStorage.getAccessToken()
+                            if (currentAccessToken != null && currentAccessToken != oldTokens?.accessToken) {
+                                // Another coroutine already refreshed the tokens
+                                val currentRefreshToken = secureStorage.getRefreshToken()
+                                if (currentRefreshToken != null) {
+                                    return@withLock BearerTokens(currentAccessToken, currentRefreshToken)
+                                }
+                            }
 
-                                if (parsed.success && parsed.data != null) {
-                                    val tokens =
-                                        parsed.data.toAuthTokens(
-                                            currentTime = Clock.System.now(),
-                                            refreshToken = refreshToken,
-                                        )
-                                    secureStorage.saveAccessToken(tokens.accessToken)
-                                    secureStorage.saveRefreshToken(tokens.refreshToken)
-                                    BearerTokens(tokens.accessToken, tokens.refreshToken)
-                                } else {
-                                    logger.error {
-                                        "Token refresh failed (success=${parsed.success})"
+                            val refreshToken = secureStorage.getRefreshToken()
+                            if (refreshToken != null) {
+                                try {
+                                    val response =
+                                        client.post("v1/auth/refresh") {
+                                            setBody(mapOf("refresh_token" to refreshToken))
+                                        }
+                                    val responseText = response.bodyAsText()
+                                    val parsed: ApiResponseDto<TokenRefreshResponseDto> =
+                                        Json.decodeFromString(responseText)
+
+                                    if (parsed.success && parsed.data != null) {
+                                        val tokens =
+                                            parsed.data.toAuthTokens(
+                                                currentTime = Clock.System.now(),
+                                                refreshToken = refreshToken,
+                                            )
+                                        secureStorage.saveAccessToken(tokens.accessToken)
+                                        secureStorage.saveRefreshToken(tokens.refreshToken)
+                                        BearerTokens(tokens.accessToken, tokens.refreshToken)
+                                    } else {
+                                        logger.error {
+                                            "Token refresh failed (success=${parsed.success})"
+                                        }
+                                        secureStorage.clearTokens()
+                                        null
                                     }
+                                } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+                                    throw e
+                                } catch (e: Exception) {
+                                    logger.error(e) { "Failed to refresh tokens" }
                                     secureStorage.clearTokens()
                                     null
                                 }
-                            } catch (e: kotlin.coroutines.cancellation.CancellationException) {
-                                throw e
-                            } catch (e: Exception) {
-                                logger.error(e) { "Failed to refresh tokens" }
-                                secureStorage.clearTokens()
+                            } else {
                                 null
                             }
-                        } else {
-                            null
                         }
                     }
                 }
