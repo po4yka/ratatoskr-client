@@ -285,8 +285,13 @@ private fun SummaryDetailContent(
         val body01 = Carbon.typography.body01
         val markdownTypography =
             remember(
-                readingPreferences.fontSizeScale, readingPreferences.lineSpacingScale,
-                heading04, heading03, headingCompact01, bodyCompact01, body01,
+                readingPreferences.fontSizeScale,
+                readingPreferences.lineSpacingScale,
+                heading04,
+                heading03,
+                headingCompact01,
+                bodyCompact01,
+                body01,
             ) {
                 buildMarkdownTypography(
                     fontScale = readingPreferences.fontSizeScale,
