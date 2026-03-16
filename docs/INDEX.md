@@ -91,10 +91,13 @@ Central navigation hub for Bite-Size Reader client documentation.
 
 ## API Specifications
 
-| File | Format |
-|------|--------|
-| [openapi/mobile_api.yaml](openapi/mobile_api.yaml) | OpenAPI spec (YAML) |
-| [openapi/mobile_api.json](openapi/mobile_api.json) | OpenAPI spec (JSON) |
+The canonical OpenAPI specs live in the [backend repository](https://github.com/nickolay-p/bite-size-reader/tree/main/docs/openapi).
+
+| File | Description |
+|------|-------------|
+| [openapi/README.md](openapi/README.md) | How to access the API specs |
+| [openapi/DTO_AUDIT.md](openapi/DTO_AUDIT.md) | Kotlin DTO alignment audit |
+| [openapi/grpc_processing.md](openapi/grpc_processing.md) | gRPC ProcessingService docs |
 
 ---
 
