@@ -307,8 +307,9 @@ class SyncRepositoryImpl(
             // Validate integrity
             validateSyncIntegrity(totalItems, totalCreated)
 
-            // Mark full sync as complete
+            // Mark full sync as complete and clear stale ETag
             database.databaseQueries.setFullSyncInProgress(0)
+            database.databaseQueries.updateDeltaSyncEtag(null)
 
             logger.info { "Full sync complete. Total items: $totalCreated, errors: $totalErrors" }
         } finally {
@@ -322,6 +323,8 @@ class SyncRepositoryImpl(
         initialSessionExpiresAt: Instant?,
     ) {
         updateProgress(phase = SyncPhase.FETCHING_DELTA)
+
+        val storedEtag = database.databaseQueries.getDeltaSyncEtag().executeAsOneOrNull()?.deltaSyncEtag
 
         var sessionId = initialSessionId
         var sessionExpiresAt = initialSessionExpiresAt
@@ -339,7 +342,8 @@ class SyncRepositoryImpl(
             sessionExpiresAt = renewed.second
 
             val previousCursor = cursor
-            val result = deltaSync(sessionId, since = cursor, limit = DEFAULT_BATCH_SIZE)
+            val currentEtag = if (cursor == lastSyncCursor) storedEtag else null
+            val result = deltaSync(sessionId, since = cursor, limit = DEFAULT_BATCH_SIZE, etag = currentEtag)
             totalCreated += result.createdCount
             totalUpdated += result.updatedCount
             totalDeleted += result.deletedCount
@@ -515,9 +519,28 @@ class SyncRepositoryImpl(
         sessionId: String,
         since: Long,
         limit: Int?,
+        etag: String?,
     ): SyncResult {
         logger.info { "Starting delta sync with sessionId=$sessionId, since=$since, limit=$limit" }
-        val response = api.deltaSync(sessionId, since, limit)
+        val deltaSyncResult = api.deltaSync(sessionId, since, limit, etag)
+
+        // Handle 304 Not Modified
+        if (deltaSyncResult.response == null) {
+            logger.info { "Delta sync returned 304 Not Modified, no changes" }
+            deltaSyncResult.etag?.let { newEtag ->
+                database.databaseQueries.updateDeltaSyncEtag(newEtag)
+            }
+            return SyncResult(
+                createdCount = 0,
+                updatedCount = 0,
+                deletedCount = 0,
+                hasMore = false,
+                nextCursor = since,
+                serverVersion = null,
+            )
+        }
+
+        val response = deltaSyncResult.response
 
         if (!response.success || response.data == null) {
             logger.error { "Delta sync failed: ${response.error}" }
@@ -569,6 +592,11 @@ class SyncRepositoryImpl(
                 syncToken = data.newCursor?.toString(),
                 fullSyncInProgress = 0,
             )
+        }
+
+        // Save new ETag for future conditional requests
+        deltaSyncResult.etag?.let { newEtag ->
+            database.databaseQueries.updateDeltaSyncEtag(newEtag)
         }
 
         // Progress update happens outside the transaction (see fullSync comment for rationale)

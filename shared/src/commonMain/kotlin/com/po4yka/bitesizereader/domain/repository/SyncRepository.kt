@@ -47,6 +47,7 @@ interface SyncRepository {
         sessionId: String,
         since: Long,
         limit: Int? = null,
+        etag: String? = null,
     ): SyncResult
 
     /** Apply local changes to the server */
