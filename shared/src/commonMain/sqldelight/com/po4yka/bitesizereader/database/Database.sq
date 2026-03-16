@@ -149,6 +149,16 @@ SELECT COALESCE(SUM(LENGTH(fullContent)), 0) FROM summaryEntity WHERE fullConten
 clearContentCache:
 UPDATE summaryEntity SET fullContent = NULL, fullContentCachedAt = NULL WHERE fullContent IS NOT NULL;
 
+evictOldestContentCache:
+UPDATE summaryEntity
+SET fullContent = NULL, fullContentCachedAt = NULL
+WHERE id IN (
+    SELECT id FROM summaryEntity
+    WHERE fullContent IS NOT NULL
+    ORDER BY fullContentCachedAt ASC
+    LIMIT :count
+);
+
 -- Request Queries
 selectAllRequests:
 SELECT * FROM requestEntity

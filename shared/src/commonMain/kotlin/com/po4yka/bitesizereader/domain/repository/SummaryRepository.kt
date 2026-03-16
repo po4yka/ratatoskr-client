@@ -53,4 +53,6 @@ interface SummaryRepository {
     suspend fun getCacheSize(): Long
 
     suspend fun clearContentCache()
+
+    suspend fun evictContentCacheIfNeeded()
 }

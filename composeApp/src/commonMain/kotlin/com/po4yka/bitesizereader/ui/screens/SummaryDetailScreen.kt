@@ -39,6 +39,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.Loading
@@ -50,9 +51,11 @@ import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.AddToCollectionDialog
+import com.po4yka.bitesizereader.domain.usecase.GetProxiedImageUrlUseCase
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
 import com.po4yka.bitesizereader.ui.components.ProxiedImage
+import com.po4yka.bitesizereader.ui.components.ProxiedImageTransformer
 import com.po4yka.bitesizereader.ui.components.ReadingSettingsPanel
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.TagChip
@@ -61,6 +64,7 @@ import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
 import com.po4yka.bitesizereader.util.extractDomain
 import kotlin.time.Instant
+import org.koin.compose.koinInject
 
 /** Summary detail screen using Carbon Design System */
 @Suppress("FunctionNaming")
@@ -248,6 +252,9 @@ private fun SummaryDetailContent(
         }
     }
 
+    val getProxiedImageUrlUseCase = koinInject<GetProxiedImageUrlUseCase>()
+    val imageTransformer = remember { ProxiedImageTransformer(getProxiedImageUrlUseCase) }
+
     Column(modifier = modifier.fillMaxSize()) {
         LinearProgressIndicator(
             progress = { readingProgress },
@@ -271,37 +278,81 @@ private fun SummaryDetailContent(
                 lineScale = readingPreferences.lineSpacingScale,
             )
 
-        Markdown(
-            content = summary.fullContent ?: summary.content,
-            colors = markdownColors,
-            typography = markdownTypography,
-            modifier = Modifier.fillMaxSize().weight(1f),
-            success = { state, components, _ ->
-                val nodes = remember(state.node) { state.node.children }
-
-                LazyColumn(
-                    state = lazyListState,
-                    contentPadding = PaddingValues(Spacing.md),
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    item(key = "header") { ArticleHeader(summary = summary) }
-
-                    item(key = "divider_top") {
-                        HorizontalDivider(color = Carbon.theme.borderSubtle00)
-                        Spacer(modifier = Modifier.height(Spacing.md))
+        val markdownContent = summary.fullContent ?: summary.content
+        if (markdownContent.isBlank()) {
+            Box(
+                modifier = Modifier.fillMaxSize().weight(1f),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "No content available",
+                    style = Carbon.typography.body01,
+                    color = Carbon.theme.textSecondary,
+                )
+            }
+        } else {
+            Markdown(
+                content = markdownContent,
+                colors = markdownColors,
+                typography = markdownTypography,
+                imageTransformer = imageTransformer,
+                modifier = Modifier.fillMaxSize().weight(1f),
+                loading = {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Loading(modifier = Modifier.size(48.dp))
                     }
-
-                    items(
-                        items = nodes,
-                        key = { node -> "md_${node.startOffset}" },
-                    ) { node ->
-                        MarkdownElement(node, components, state.content)
+                },
+                error = { content ->
+                    LazyColumn(
+                        state = lazyListState,
+                        contentPadding = PaddingValues(Spacing.md),
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        item(key = "header") { ArticleHeader(summary = summary) }
+                        item(key = "divider_top") {
+                            HorizontalDivider(color = Carbon.theme.borderSubtle00)
+                            Spacer(modifier = Modifier.height(Spacing.md))
+                        }
+                        item(key = "fallback_text") {
+                            Text(
+                                text = content,
+                                style = Carbon.typography.body01,
+                                color = Carbon.theme.textPrimary,
+                            )
+                        }
+                        item(key = "footer") { ArticleFooter(sourceUrl = summary.sourceUrl) }
                     }
+                },
+                success = { state, components, _ ->
+                    val nodes = remember(state.node) { state.node.children }
 
-                    item(key = "footer") { ArticleFooter(sourceUrl = summary.sourceUrl) }
-                }
-            },
-        )
+                    LazyColumn(
+                        state = lazyListState,
+                        contentPadding = PaddingValues(Spacing.md),
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        item(key = "header") { ArticleHeader(summary = summary) }
+
+                        item(key = "divider_top") {
+                            HorizontalDivider(color = Carbon.theme.borderSubtle00)
+                            Spacer(modifier = Modifier.height(Spacing.md))
+                        }
+
+                        items(
+                            items = nodes,
+                            key = { node -> "md_${node.startOffset}" },
+                        ) { node ->
+                            MarkdownElement(node, components, state.content)
+                        }
+
+                        item(key = "footer") { ArticleFooter(sourceUrl = summary.sourceUrl) }
+                    }
+                },
+            )
+        }
     }
 }
 
@@ -404,9 +455,9 @@ private fun buildMarkdownTypography(
         h1 = Carbon.typography.heading04.scaled(),
         h2 = Carbon.typography.heading03.scaled(),
         h3 = Carbon.typography.headingCompact01.scaled(),
-        h4 = Carbon.typography.headingCompact01.scaled(),
-        h5 = Carbon.typography.headingCompact01.scaled(),
-        h6 = Carbon.typography.headingCompact01.scaled(),
+        h4 = Carbon.typography.bodyCompact01.copy(fontWeight = FontWeight.Bold).scaled(),
+        h5 = Carbon.typography.bodyCompact01.copy(fontWeight = FontWeight.Medium).scaled(),
+        h6 = Carbon.typography.bodyCompact01.scaled(),
         paragraph = scaledBody,
         text = scaledBody,
         quote = scaledBody.copy(fontStyle = FontStyle.Italic),
