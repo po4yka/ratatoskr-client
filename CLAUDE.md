@@ -98,6 +98,10 @@ Uses **Koin 4.x with Koin Annotations** + KSP. Use `@Single` for singletons, `@F
 
 UI uses **Carbon Compose** (IBM Carbon Design System). Access colors via `Carbon.theme.*`, typography via `Carbon.typography.*`, icons via `CarbonIcons.*`. Use Material3 `Text` and `Icon` composables (Carbon's are internal). See `composeApp/CLAUDE.md` for detailed component, theming, and icon rules.
 
+### Exemptions
+
+- **Android Glance widgets** (`widget/` package) are exempt from Carbon theming requirements. Glance uses its own theming API (`GlanceTheme`, `ColorProviders`) which is incompatible with Compose Carbon components.
+
 ## Configuration
 
 Create `local.properties` in project root (not committed):
