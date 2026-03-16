@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +59,23 @@ fun SettingsScreen(component: SettingsComponent) {
     val viewModel: SettingsViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
 
+    val onRetryLinkStatus = remember<() -> Unit>(viewModel) { viewModel::loadLinkStatus }
+    val onBeginLink = remember<() -> Unit>(viewModel) { viewModel::beginTelegramLink }
+    val onUnlink = remember<() -> Unit>(viewModel) { viewModel::unlinkTelegram }
+    val onCheckLinkStatus = remember<() -> Unit>(viewModel) { viewModel::loadLinkStatus }
+    val onCancelLink = remember<() -> Unit>(viewModel) { viewModel::cancelTelegramLink }
+    val onImport = remember<() -> Unit>(viewModel) { viewModel::importFromBackend }
+    val onCancelSync = remember<() -> Unit>(viewModel) { viewModel::cancelSync }
+    val onClearCache = remember<() -> Unit>(viewModel) { viewModel::clearContentCache }
+    val onShowDeleteConfirmation = remember<() -> Unit>(viewModel) { viewModel::showDeleteConfirmation }
+    val onToggleSessions = remember<() -> Unit>(viewModel) { viewModel::toggleSessionsExpanded }
+    val onToggleRequests = remember<() -> Unit>(viewModel) { viewModel::toggleRequestsExpanded }
+    val onRetryRequest = remember<(Request) -> Unit>(viewModel) { viewModel::retryRequest }
+    val onDigestClicked = remember<() -> Unit>(component) { component::onDigestClicked }
+    val onLanguageChanged = remember<(String) -> Unit>(viewModel) { viewModel::updateLanguagePreference }
+    val onDeleteAccount = remember<() -> Unit>(viewModel) { viewModel::deleteAccount }
+    val onHideDeleteConfirmation = remember<() -> Unit>(viewModel) { viewModel::hideDeleteConfirmation }
+
     Column(
         modifier =
             Modifier
@@ -68,20 +86,20 @@ fun SettingsScreen(component: SettingsComponent) {
 
         SettingsContent(
             state = state,
-            onRetryLinkStatus = viewModel::loadLinkStatus,
-            onBeginLink = viewModel::beginTelegramLink,
-            onUnlink = viewModel::unlinkTelegram,
-            onCheckLinkStatus = viewModel::loadLinkStatus,
-            onCancelLink = viewModel::cancelTelegramLink,
-            onImport = viewModel::importFromBackend,
-            onCancelSync = viewModel::cancelSync,
-            onClearCache = viewModel::clearContentCache,
-            onShowDeleteConfirmation = viewModel::showDeleteConfirmation,
-            onToggleSessions = viewModel::toggleSessionsExpanded,
-            onToggleRequests = viewModel::toggleRequestsExpanded,
-            onRetryRequest = viewModel::retryRequest,
-            onDigestClicked = component::onDigestClicked,
-            onLanguageChanged = viewModel::updateLanguagePreference,
+            onRetryLinkStatus = onRetryLinkStatus,
+            onBeginLink = onBeginLink,
+            onUnlink = onUnlink,
+            onCheckLinkStatus = onCheckLinkStatus,
+            onCancelLink = onCancelLink,
+            onImport = onImport,
+            onCancelSync = onCancelSync,
+            onClearCache = onClearCache,
+            onShowDeleteConfirmation = onShowDeleteConfirmation,
+            onToggleSessions = onToggleSessions,
+            onToggleRequests = onToggleRequests,
+            onRetryRequest = onRetryRequest,
+            onDigestClicked = onDigestClicked,
+            onLanguageChanged = onLanguageChanged,
         )
 
         // Delete Account Confirmation Dialog
@@ -89,8 +107,8 @@ fun SettingsScreen(component: SettingsComponent) {
             DeleteAccountDialog(
                 isDeleting = state.account.isDeleting,
                 error = state.account.deleteError,
-                onConfirm = viewModel::deleteAccount,
-                onDismiss = viewModel::hideDeleteConfirmation,
+                onConfirm = onDeleteAccount,
+                onDismiss = onHideDeleteConfirmation,
             )
         }
     }

@@ -2,6 +2,7 @@ package com.po4yka.bitesizereader.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -96,6 +97,7 @@ fun SummaryCard(
             // Source and Icons
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
@@ -111,8 +113,6 @@ fun SummaryCard(
                     modifier = Modifier.weight(1f, fill = false),
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
-
                 if (summary.isFavorited) {
                     Icon(
                         imageVector = CarbonIcons.FavoriteFilled,
@@ -120,7 +120,6 @@ fun SummaryCard(
                         tint = Carbon.theme.supportError,
                         modifier = Modifier.size(IconSizes.xs),
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
                 }
 
                 if (summary.isFullContentCached) {
@@ -130,7 +129,6 @@ fun SummaryCard(
                         tint = Carbon.theme.iconSecondary,
                         modifier = Modifier.size(IconSizes.xs),
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
                 }
 
                 if (summary.isRead) {
