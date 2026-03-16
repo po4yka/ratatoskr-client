@@ -12,7 +12,6 @@ import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.ensureActive
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -83,6 +82,19 @@ class SummaryRepositoryImpl(
 
     override suspend fun markAsRead(id: String) {
         database.databaseQueries.updateSummaryReadStatus(true, id)
+        // Queue for server sync
+        val remoteId = id.toLongOrNull() ?: return
+        database.databaseQueries.deletePendingOperationsForEntity(
+            entityId = id,
+            action = "update_read",
+        )
+        database.databaseQueries.insertPendingOperation(
+            entityId = id,
+            entityType = "summary",
+            action = "update_read",
+            payload = """{"is_read": true}""",
+            createdAt = Clock.System.now().toEpochMilliseconds(),
+        )
     }
 
     override suspend fun toggleFavorite(id: String) {
@@ -90,25 +102,25 @@ class SummaryRepositoryImpl(
         database.databaseQueries.updateSummaryFavoriteStatus(!summary.isFavorited, id)
     }
 
-    @Suppress("TooGenericExceptionCaught")
     override suspend fun toggleFavoriteWithSync(id: String) {
-        // Optimistic local update first
+        // Optimistic local update
         toggleFavorite(id)
 
-        // Then sync with server
-        val remoteId = id.toLongOrNull()
-        if (remoteId != null) {
-            try {
-                api.toggleFavorite(remoteId)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                logger.warn(e) { "Failed to toggle favorite on server for $id, reverting" }
-                // Revert on failure
-                toggleFavorite(id)
-                throw e
-            }
-        }
+        // Queue for server sync instead of immediate API call
+        val remoteId = id.toLongOrNull() ?: return
+        val summary = database.databaseQueries.getSummaryById(id).executeAsOneOrNull() ?: return
+        // Remove any existing pending favorite toggle for this entity
+        database.databaseQueries.deletePendingOperationsForEntity(
+            entityId = id,
+            action = "toggle_favorite",
+        )
+        database.databaseQueries.insertPendingOperation(
+            entityId = id,
+            entityType = "summary",
+            action = "toggle_favorite",
+            payload = null,
+            createdAt = Clock.System.now().toEpochMilliseconds(),
+        )
     }
 
     override suspend fun getSummaryByUrl(url: String): Summary? {
@@ -127,20 +139,25 @@ class SummaryRepositoryImpl(
         database.transaction {
             database.databaseQueries.deleteSummary(id)
             if (remoteId != null) {
-                database.databaseQueries.insertPendingDelete(
-                    id = id,
+                database.databaseQueries.insertPendingOperation(
+                    entityId = id,
+                    entityType = "summary",
+                    action = "delete",
+                    payload = null,
                     createdAt = Clock.System.now().toEpochMilliseconds(),
                 )
             }
         }
 
-        // 2. Attempt remote delete, then clear pending queue on success
+        // 2. Attempt remote delete immediately, clear from queue on success
         if (remoteId != null) {
             try {
                 api.deleteSummary(remoteId)
-                database.databaseQueries.deletePendingDelete(id)
+                database.databaseQueries.deletePendingOperationsForEntity(
+                    entityId = id,
+                    action = "delete",
+                )
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                // Already in pending queue, will retry later
                 logger.warn(e) { "Remote delete failed for $remoteId, queued for retry" }
             }
         }

@@ -1,0 +1,13 @@
+CREATE TABLE pendingOperationEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    entityId TEXT NOT NULL,
+    entityType TEXT NOT NULL DEFAULT 'summary',
+    action TEXT NOT NULL,
+    payload TEXT,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX pendingOp_entityId ON pendingOperationEntity(entityId);
+
+INSERT INTO pendingOperationEntity(entityId, entityType, action, payload, createdAt)
+SELECT id, 'summary', 'delete', NULL, createdAt FROM pendingDeleteEntity;
