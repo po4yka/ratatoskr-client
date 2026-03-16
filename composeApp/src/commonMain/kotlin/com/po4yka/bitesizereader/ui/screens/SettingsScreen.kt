@@ -36,7 +36,10 @@ import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
+import com.po4yka.bitesizereader.presentation.state.AccountSettingsState
 import com.po4yka.bitesizereader.presentation.state.SettingsState
+import com.po4yka.bitesizereader.presentation.state.SyncSettingsState
+import com.po4yka.bitesizereader.presentation.state.TelegramLinkState
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.ui.components.DeleteAccountDialog
@@ -83,10 +86,10 @@ fun SettingsScreen(component: SettingsComponent) {
         )
 
         // Delete Account Confirmation Dialog
-        if (state.showDeleteConfirmation) {
+        if (state.account.showDeleteConfirmation) {
             DeleteAccountDialog(
-                isDeleting = state.isDeleting,
-                error = state.deleteError,
+                isDeleting = state.account.isDeleting,
+                error = state.account.deleteError,
                 onConfirm = viewModel::deleteAccount,
                 onDismiss = viewModel::hideDeleteConfirmation,
             )
@@ -128,8 +131,8 @@ private fun SettingsContent(
     ) {
         // User Stats Card
         UserStatsCard(
-            stats = state.userStats,
-            isLoading = state.isLoadingStats,
+            stats = state.account.userStats,
+            isLoading = state.account.isLoadingStats,
         )
 
         Text(
@@ -139,16 +142,16 @@ private fun SettingsContent(
         )
 
         AccountBindingCard(
-            state = state,
+            telegramState = state.telegram,
             onRetryLinkStatus = onRetryLinkStatus,
             onBeginLink = onBeginLink,
             onUnlink = onUnlink,
         )
 
-        state.linkNonce?.let { nonce ->
+        state.telegram.linkNonce?.let { nonce ->
             LinkNonceCard(
                 nonce = nonce,
-                isLoading = state.isLoading,
+                isLoading = state.telegram.isLoading,
                 onCheckStatus = onCheckLinkStatus,
                 onCancel = onCancelLink,
             )
@@ -159,9 +162,9 @@ private fun SettingsContent(
 
         // Language preference
         LanguagePreferenceCard(
-            currentLanguage = state.userPreferences?.langPreference ?: "auto",
-            isLoading = state.isLoadingPreferences,
-            isSaving = state.isSavingPreferences,
+            currentLanguage = state.account.userPreferences?.langPreference ?: "auto",
+            isLoading = state.account.isLoadingPreferences,
+            isSaving = state.account.isSavingPreferences,
             onLanguageChanged = onLanguageChanged,
         )
 
@@ -174,21 +177,22 @@ private fun SettingsContent(
         )
 
         SyncCard(
-            state = state,
+            syncState = state.sync,
+            isTelegramLoading = state.telegram.isLoading,
             onImport = onImport,
             onCancelSync = onCancelSync,
         )
 
         CacheManagementCard(
-            cacheSize = state.cacheSize,
-            isClearing = state.isClearingCache,
+            cacheSize = state.sync.cacheSize,
+            isClearing = state.sync.isClearingCache,
             onClearCache = onClearCache,
         )
 
         RequestHistorySection(
-            requests = state.requests,
-            isLoading = state.isLoadingRequests,
-            isExpanded = state.requestsExpanded,
+            requests = state.sync.requests,
+            isLoading = state.sync.isLoadingRequests,
+            isExpanded = state.sync.requestsExpanded,
             onToggleExpanded = onToggleRequests,
             onRetryRequest = onRetryRequest,
         )
@@ -202,9 +206,9 @@ private fun SettingsContent(
         )
 
         SessionsSection(
-            sessions = state.sessions,
-            isLoading = state.isLoadingSessions,
-            isExpanded = state.sessionsExpanded,
+            sessions = state.account.sessions,
+            isLoading = state.account.isLoadingSessions,
+            isExpanded = state.account.sessionsExpanded,
             onToggleExpanded = onToggleSessions,
         )
 
@@ -260,7 +264,7 @@ private fun DangerZoneSection(onDeleteAccount: () -> Unit) {
 @Suppress("FunctionNaming")
 @Composable
 private fun AccountBindingCard(
-    state: SettingsState,
+    telegramState: TelegramLinkState,
     onRetryLinkStatus: () -> Unit,
     onBeginLink: () -> Unit,
     onUnlink: () -> Unit,
@@ -281,7 +285,7 @@ private fun AccountBindingCard(
         )
 
         when {
-            state.isLoading -> {
+            telegramState.isLoading -> {
                 SmallLoading()
                 Text(
                     text = "Loading...",
@@ -289,9 +293,9 @@ private fun AccountBindingCard(
                     color = Carbon.theme.textSecondary,
                 )
             }
-            state.error != null -> {
+            telegramState.error != null -> {
                 Text(
-                    text = "Error: ${state.error}",
+                    text = "Error: ${telegramState.error}",
                     style = Carbon.typography.label01,
                     color = Carbon.theme.supportError,
                 )
@@ -302,8 +306,8 @@ private fun AccountBindingCard(
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-            state.linkStatus?.linked == true -> {
-                val linkStatus = state.linkStatus
+            telegramState.linkStatus?.linked == true -> {
+                val linkStatus = telegramState.linkStatus
                 Text(
                     text = "Linked to: ${linkStatus?.username ?: "Unknown"}",
                     style = Carbon.typography.bodyCompact01,
@@ -398,7 +402,8 @@ private fun LinkNonceCard(
 @Suppress("FunctionNaming")
 @Composable
 private fun SyncCard(
-    state: SettingsState,
+    syncState: SyncSettingsState,
+    isTelegramLoading: Boolean,
     onImport: () -> Unit,
     onCancelSync: () -> Unit,
 ) {
@@ -422,22 +427,22 @@ private fun SyncCard(
             color = Carbon.theme.textSecondary,
         )
 
-        if (state.isDownloading) {
+        if (syncState.isDownloading) {
             SyncProgressSection(
-                progress = state.syncProgress,
+                progress = syncState.syncProgress,
                 onCancelSync = onCancelSync,
             )
         } else {
             Button(
                 label = "Import from Backend",
                 onClick = onImport,
-                isEnabled = !state.isLoading,
+                isEnabled = !isTelegramLoading,
                 buttonType = ButtonType.Primary,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
 
-        state.downloadError?.let { error ->
+        syncState.downloadError?.let { error ->
             Text(
                 text = "Sync Failed: $error",
                 style = Carbon.typography.label01,
