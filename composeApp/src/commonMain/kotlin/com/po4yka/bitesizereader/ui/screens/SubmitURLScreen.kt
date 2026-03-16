@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
@@ -59,9 +58,10 @@ fun SubmitURLScreen(
     val state by viewModel.state.collectAsState()
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Carbon.theme.background),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Carbon.theme.background),
     ) {
         // Header with back button
         SubmitURLHeader(
@@ -70,9 +70,10 @@ fun SubmitURLScreen(
 
         // Main content
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = Spacing.md),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = Spacing.md),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
             // URL Input section
@@ -140,9 +141,10 @@ fun SubmitURLScreen(
                 if (state.isLoadingHistory) {
                     item {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(Spacing.lg),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(Spacing.lg),
                             contentAlignment = Alignment.Center,
                         ) {
                             SmallLoading()
@@ -180,15 +182,14 @@ fun SubmitURLScreen(
 
 @Suppress("FunctionNaming")
 @Composable
-private fun SubmitURLHeader(
-    onBackClick: () -> Unit,
-) {
+private fun SubmitURLHeader(onBackClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(Dimensions.detailHeaderHeight)
-            .background(Carbon.theme.layer01)
-            .padding(horizontal = Spacing.xs),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(Dimensions.detailHeaderHeight)
+                .background(Carbon.theme.layer01)
+                .padding(horizontal = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackClick) {
@@ -233,22 +234,25 @@ private fun URLInputSection(
             label = "URL",
             value = url,
             onValueChange = onUrlChanged,
-            state = when {
-                error != null -> TextInputState.Error
-                isLoading -> TextInputState.Disabled
-                else -> TextInputState.Enabled
-            },
-            placeholderText = "https://example.com/article",
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Uri,
-                imeAction = ImeAction.Done,
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                    onSubmit()
+            state =
+                when {
+                    error != null -> TextInputState.Error
+                    isLoading -> TextInputState.Disabled
+                    else -> TextInputState.Enabled
                 },
-            ),
+            placeholderText = "https://example.com/article",
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Uri,
+                    imeAction = ImeAction.Done,
+                ),
+            keyboardActions =
+                KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        onSubmit()
+                    },
+                ),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -279,10 +283,11 @@ private fun DuplicateWarningSection(
     onDismiss: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer01)
-            .padding(Spacing.md),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Row(
@@ -340,14 +345,13 @@ private fun DuplicateWarningSection(
 
 @Suppress("FunctionNaming")
 @Composable
-private fun SubmissionProgressSection(
-    state: SubmitURLState,
-) {
+private fun SubmissionProgressSection(state: SubmitURLState) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer01)
-            .padding(Spacing.md),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
@@ -385,10 +389,11 @@ private fun SubmissionProgressSection(
 @Composable
 private fun CompletionSection() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer01)
-            .padding(Spacing.md),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
@@ -413,8 +418,9 @@ private fun RequestHistoryHeader(
     onToggle: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -442,25 +448,28 @@ private fun RequestHistoryItem(
     onRetry: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer01)
-            .padding(Spacing.sm),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Status icon
-        val statusIcon = when (request.status) {
-            RequestStatus.COMPLETED -> CarbonIcons.CheckmarkFilled
-            RequestStatus.FAILED -> CarbonIcons.Close
-            RequestStatus.PROCESSING -> CarbonIcons.Renew
-            RequestStatus.PENDING -> CarbonIcons.CircleOutline
-        }
-        val statusColor = when (request.status) {
-            RequestStatus.COMPLETED -> Carbon.theme.supportSuccess
-            RequestStatus.FAILED -> Carbon.theme.supportError
-            RequestStatus.PROCESSING -> Carbon.theme.linkPrimary
-            RequestStatus.PENDING -> Carbon.theme.iconSecondary
-        }
+        val statusIcon =
+            when (request.status) {
+                RequestStatus.COMPLETED -> CarbonIcons.CheckmarkFilled
+                RequestStatus.FAILED -> CarbonIcons.Close
+                RequestStatus.PROCESSING -> CarbonIcons.Renew
+                RequestStatus.PENDING -> CarbonIcons.CircleOutline
+            }
+        val statusColor =
+            when (request.status) {
+                RequestStatus.COMPLETED -> Carbon.theme.supportSuccess
+                RequestStatus.FAILED -> Carbon.theme.supportError
+                RequestStatus.PROCESSING -> Carbon.theme.linkPrimary
+                RequestStatus.PENDING -> Carbon.theme.iconSecondary
+            }
 
         Icon(
             imageVector = statusIcon,

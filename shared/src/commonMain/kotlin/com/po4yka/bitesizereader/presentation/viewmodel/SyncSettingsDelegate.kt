@@ -76,9 +76,7 @@ class SyncSettingsDelegate(
             }
     }
 
-    fun cancelSync(
-        currentState: () -> SyncSettingsState,
-    ) {
+    fun cancelSync(currentState: () -> SyncSettingsState) {
         if (currentState().isDownloading) {
             logger.info { "Cancelling sync operation" }
             downloadJob?.cancel()

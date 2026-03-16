@@ -52,12 +52,13 @@ class SummaryDetailViewModel(
             _state.value = SummaryDetailState(isLoading = true)
             try {
                 val summary = getSummaryByIdUseCase(id)
-                _state.value = _state.value.copy(
-                    summary = summary,
-                    isLoading = false,
-                    lastReadPosition = summary?.lastReadPosition ?: 0,
-                    lastReadOffset = summary?.lastReadOffset ?: 0,
-                )
+                _state.value =
+                    _state.value.copy(
+                        summary = summary,
+                        isLoading = false,
+                        lastReadPosition = summary?.lastReadPosition ?: 0,
+                        lastReadOffset = summary?.lastReadOffset ?: 0,
+                    )
                 if (summary != null && !summary.isRead) {
                     markSummaryAsReadUseCase(id)
                 }
@@ -79,10 +80,11 @@ class SummaryDetailViewModel(
                 if (fullContent != null) {
                     _state.value =
                         _state.value.copy(
-                            summary = _state.value.summary?.copy(
-                                fullContent = fullContent,
-                                isFullContentCached = true,
-                            ),
+                            summary =
+                                _state.value.summary?.copy(
+                                    fullContent = fullContent,
+                                    isFullContentCached = true,
+                                ),
                             isLoadingContent = false,
                         )
                 } else {
@@ -130,7 +132,10 @@ class SummaryDetailViewModel(
         }
     }
 
-    fun saveReadPosition(position: Int, offset: Int) {
+    fun saveReadPosition(
+        position: Int,
+        offset: Int,
+    ) {
         val summaryId = _state.value.summary?.id ?: return
         viewModelScope.launch {
             try {
@@ -154,33 +159,37 @@ class SummaryDetailViewModel(
 
     @Suppress("TooGenericExceptionCaught")
     fun showAddToCollection() {
-        _state.value = _state.value.copy(
-            showAddToCollectionDialog = true,
-            isLoadingCollections = true,
-            addToCollectionError = null,
-        )
+        _state.value =
+            _state.value.copy(
+                showAddToCollectionDialog = true,
+                isLoadingCollections = true,
+                addToCollectionError = null,
+            )
         viewModelScope.launch {
             try {
                 val collections = collectionRepository.getCollections().first()
-                _state.value = _state.value.copy(
-                    collections = collections,
-                    isLoadingCollections = false,
-                )
+                _state.value =
+                    _state.value.copy(
+                        collections = collections,
+                        isLoadingCollections = false,
+                    )
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load collections" }
-                _state.value = _state.value.copy(
-                    isLoadingCollections = false,
-                    addToCollectionError = e.toAppError().userMessage(),
-                )
+                _state.value =
+                    _state.value.copy(
+                        isLoadingCollections = false,
+                        addToCollectionError = e.toAppError().userMessage(),
+                    )
             }
         }
     }
 
     fun dismissAddToCollection() {
-        _state.value = _state.value.copy(
-            showAddToCollectionDialog = false,
-            addToCollectionError = null,
-        )
+        _state.value =
+            _state.value.copy(
+                showAddToCollectionDialog = false,
+                addToCollectionError = null,
+            )
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -190,16 +199,18 @@ class SummaryDetailViewModel(
             _state.value = _state.value.copy(isAddingToCollection = true, addToCollectionError = null)
             try {
                 addToCollectionUseCase(collectionId, summaryId)
-                _state.value = _state.value.copy(
-                    isAddingToCollection = false,
-                    showAddToCollectionDialog = false,
-                )
+                _state.value =
+                    _state.value.copy(
+                        isAddingToCollection = false,
+                        showAddToCollectionDialog = false,
+                    )
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to add to collection" }
-                _state.value = _state.value.copy(
-                    isAddingToCollection = false,
-                    addToCollectionError = e.toAppError().userMessage(),
-                )
+                _state.value =
+                    _state.value.copy(
+                        isAddingToCollection = false,
+                        addToCollectionError = e.toAppError().userMessage(),
+                    )
             }
         }
     }

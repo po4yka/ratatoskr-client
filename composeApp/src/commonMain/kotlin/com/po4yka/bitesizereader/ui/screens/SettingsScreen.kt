@@ -36,7 +36,6 @@ import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
-import com.po4yka.bitesizereader.presentation.state.AccountSettingsState
 import com.po4yka.bitesizereader.presentation.state.SettingsState
 import com.po4yka.bitesizereader.presentation.state.SyncSettingsState
 import com.po4yka.bitesizereader.presentation.state.TelegramLinkState
@@ -698,11 +697,12 @@ private fun LanguageChip(
         text = label,
         style = Carbon.typography.label01,
         color = if (isEnabled) textColor else Carbon.theme.textDisabled,
-        modifier = modifier
-            .semantics { role = Role.Button }
-            .background(backgroundColor)
-            .clickable(enabled = isEnabled && !isSelected, onClick = onClick)
-            .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+        modifier =
+            modifier
+                .semantics { role = Role.Button }
+                .background(backgroundColor)
+                .clickable(enabled = isEnabled && !isSelected, onClick = onClick)
+                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
     )
 }
 

@@ -159,21 +159,28 @@ class CollectionRepositoryImpl(
         }
     }
 
-    override suspend fun addToCollection(collectionId: String, summaryId: String) {
+    override suspend fun addToCollection(
+        collectionId: String,
+        summaryId: String,
+    ) {
         val intId =
             collectionId.toIntOrNull() ?: throw IllegalArgumentException("Invalid collection ID: $collectionId")
         val intSummaryId =
             summaryId.toIntOrNull() ?: throw IllegalArgumentException("Invalid summary ID: $summaryId")
-        val response = api.addItem(
-            id = intId,
-            request = CollectionItemCreateRequest(summaryId = intSummaryId),
-        )
+        val response =
+            api.addItem(
+                id = intId,
+                request = CollectionItemCreateRequest(summaryId = intSummaryId),
+            )
         if (!response.success) {
             throw Exception("Failed to add item to collection: ${response.error}")
         }
     }
 
-    override suspend fun createCollection(name: String, description: String?): Collection {
+    override suspend fun createCollection(
+        name: String,
+        description: String?,
+    ): Collection {
         val request = CollectionCreateRequest(name = name, description = description)
         val response = api.createCollection(request)
         if (response.success && response.data != null) {

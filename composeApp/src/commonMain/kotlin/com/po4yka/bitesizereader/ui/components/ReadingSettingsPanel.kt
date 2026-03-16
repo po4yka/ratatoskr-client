@@ -37,10 +37,11 @@ fun ReadingSettingsPanel(
         modifier = modifier,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Carbon.theme.layer01)
-                .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(Carbon.theme.layer01)
+                    .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         ) {
             Text(
                 text = "Reading Settings",
@@ -67,11 +68,12 @@ fun ReadingSettingsPanel(
                     valueRange = ReadingPreferences.MIN_FONT_SCALE..ReadingPreferences.MAX_FONT_SCALE,
                     steps = 7,
                     modifier = Modifier.weight(0.55f),
-                    colors = SliderDefaults.colors(
-                        thumbColor = Carbon.theme.linkPrimary,
-                        activeTrackColor = Carbon.theme.linkPrimary,
-                        inactiveTrackColor = Carbon.theme.borderSubtle00,
-                    ),
+                    colors =
+                        SliderDefaults.colors(
+                            thumbColor = Carbon.theme.linkPrimary,
+                            activeTrackColor = Carbon.theme.linkPrimary,
+                            inactiveTrackColor = Carbon.theme.borderSubtle00,
+                        ),
                 )
                 Text(
                     text = "${(preferences.fontSizeScale * 100).toInt()}%",
@@ -98,11 +100,12 @@ fun ReadingSettingsPanel(
                     valueRange = ReadingPreferences.MIN_LINE_SPACING_SCALE..ReadingPreferences.MAX_LINE_SPACING_SCALE,
                     steps = 9,
                     modifier = Modifier.weight(0.55f),
-                    colors = SliderDefaults.colors(
-                        thumbColor = Carbon.theme.linkPrimary,
-                        activeTrackColor = Carbon.theme.linkPrimary,
-                        inactiveTrackColor = Carbon.theme.borderSubtle00,
-                    ),
+                    colors =
+                        SliderDefaults.colors(
+                            thumbColor = Carbon.theme.linkPrimary,
+                            activeTrackColor = Carbon.theme.linkPrimary,
+                            inactiveTrackColor = Carbon.theme.borderSubtle00,
+                        ),
                 )
                 Text(
                     text = "${(preferences.lineSpacingScale * 100).toInt()}%",

@@ -1,6 +1,5 @@
 package com.po4yka.bitesizereader.ui.auth
 
-import android.graphics.Bitmap
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient

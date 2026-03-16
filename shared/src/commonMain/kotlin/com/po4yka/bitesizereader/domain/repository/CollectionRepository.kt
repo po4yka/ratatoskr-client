@@ -45,7 +45,13 @@ interface CollectionRepository {
         expiresAt: String? = null,
     ): CollectionInvite
 
-    suspend fun addToCollection(collectionId: String, summaryId: String)
+    suspend fun addToCollection(
+        collectionId: String,
+        summaryId: String,
+    )
 
-    suspend fun createCollection(name: String, description: String? = null): Collection
+    suspend fun createCollection(
+        name: String,
+        description: String? = null,
+    ): Collection
 }

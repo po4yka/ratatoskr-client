@@ -58,9 +58,10 @@ fun DigestScreen(
     val state by viewModel.state.collectAsState()
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Carbon.theme.background),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Carbon.theme.background),
     ) {
         // Header
         DigestHeader(onBackClick = component::onBackClicked)
@@ -73,19 +74,22 @@ fun DigestScreen(
 
         // Tab content
         when (state.selectedTab) {
-            DigestTab.CHANNELS -> ChannelsTab(
-                channels = state.channels,
-                trigger = state.trigger,
-                viewModel = viewModel,
-            )
-            DigestTab.PREFERENCES -> PreferencesTab(
-                preferences = state.preferences,
-                viewModel = viewModel,
-            )
-            DigestTab.HISTORY -> HistoryTab(
-                history = state.history,
-                viewModel = viewModel,
-            )
+            DigestTab.CHANNELS ->
+                ChannelsTab(
+                    channels = state.channels,
+                    trigger = state.trigger,
+                    viewModel = viewModel,
+                )
+            DigestTab.PREFERENCES ->
+                PreferencesTab(
+                    preferences = state.preferences,
+                    viewModel = viewModel,
+                )
+            DigestTab.HISTORY ->
+                HistoryTab(
+                    history = state.history,
+                    viewModel = viewModel,
+                )
         }
     }
 }
@@ -94,11 +98,12 @@ fun DigestScreen(
 @Composable
 private fun DigestHeader(onBackClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(Dimensions.detailHeaderHeight)
-            .background(Carbon.theme.layer01)
-            .padding(horizontal = Spacing.xs),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(Dimensions.detailHeaderHeight)
+                .background(Carbon.theme.layer01)
+                .padding(horizontal = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackClick) {
@@ -124,23 +129,26 @@ private fun DigestTabBar(
     onTabSelected: (DigestTab) -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer01),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01),
     ) {
         DigestTab.entries.forEach { tab ->
             val isSelected = tab == selectedTab
-            val label = when (tab) {
-                DigestTab.CHANNELS -> "Channels"
-                DigestTab.PREFERENCES -> "Preferences"
-                DigestTab.HISTORY -> "History"
-            }
+            val label =
+                when (tab) {
+                    DigestTab.CHANNELS -> "Channels"
+                    DigestTab.PREFERENCES -> "Preferences"
+                    DigestTab.HISTORY -> "History"
+                }
             Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .semantics { role = Role.Tab }
-                    .clickable { onTabSelected(tab) }
-                    .padding(vertical = Spacing.sm),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .semantics { role = Role.Tab }
+                        .clickable { onTabSelected(tab) }
+                        .padding(vertical = Spacing.sm),
                 contentAlignment = Alignment.Center,
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -152,10 +160,11 @@ private fun DigestTabBar(
                     if (isSelected) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Box(
-                            modifier = Modifier
-                                .width(48.dp)
-                                .height(2.dp)
-                                .background(Carbon.theme.borderInteractive),
+                            modifier =
+                                Modifier
+                                    .width(48.dp)
+                                    .height(2.dp)
+                                    .background(Carbon.theme.borderInteractive),
                         )
                     }
                 }
@@ -237,7 +246,10 @@ private fun ChannelsTab(
 
 @Suppress("FunctionNaming")
 @Composable
-private fun ChannelSlotUsage(usedSlots: Int, maxSlots: Int) {
+private fun ChannelSlotUsage(
+    usedSlots: Int,
+    maxSlots: Int,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
         Text(
             text = "Subscriptions ($usedSlots/$maxSlots)",
@@ -263,10 +275,11 @@ private fun AddChannelForm(
     onSubscribe: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer01)
-            .padding(Spacing.md),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
@@ -343,10 +356,11 @@ private fun DigestChannelRow(
     onUnsubscribe: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer01)
-            .padding(Spacing.sm),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
@@ -551,22 +565,25 @@ private fun HistoryTab(
 @Composable
 private fun DigestHistoryRow(item: DigestHistoryItem) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer01)
-            .padding(Spacing.sm),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val statusIcon = when (item.status) {
-            "delivered", "completed" -> CarbonIcons.CheckmarkFilled
-            "failed" -> CarbonIcons.Close
-            else -> CarbonIcons.CircleOutline
-        }
-        val statusColor = when (item.status) {
-            "delivered", "completed" -> Carbon.theme.supportSuccess
-            "failed" -> Carbon.theme.supportError
-            else -> Carbon.theme.iconSecondary
-        }
+        val statusIcon =
+            when (item.status) {
+                "delivered", "completed" -> CarbonIcons.CheckmarkFilled
+                "failed" -> CarbonIcons.Close
+                else -> CarbonIcons.CircleOutline
+            }
+        val statusColor =
+            when (item.status) {
+                "delivered", "completed" -> Carbon.theme.supportSuccess
+                "failed" -> Carbon.theme.supportError
+                else -> Carbon.theme.iconSecondary
+            }
 
         Icon(
             imageVector = statusIcon,

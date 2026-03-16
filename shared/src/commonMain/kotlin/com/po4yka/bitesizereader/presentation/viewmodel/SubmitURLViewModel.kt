@@ -154,8 +154,9 @@ class SubmitURLViewModel(
                 .collect { update ->
                     _state.value =
                         _state.value.copy(
-                            isLoading = update.status != RequestStatus.COMPLETED &&
-                                update.status != RequestStatus.FAILED,
+                            isLoading =
+                                update.status != RequestStatus.COMPLETED &&
+                                    update.status != RequestStatus.FAILED,
                             status = update.status,
                             stage = update.stage,
                             progress = update.progress,

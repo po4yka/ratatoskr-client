@@ -1,6 +1,5 @@
 package com.po4yka.bitesizereader.widget
 
-import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp

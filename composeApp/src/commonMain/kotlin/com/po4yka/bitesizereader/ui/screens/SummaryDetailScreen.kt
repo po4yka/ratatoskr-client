@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,7 +40,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.Loading
 import com.mikepenz.markdown.compose.Markdown
@@ -226,10 +224,11 @@ private fun SummaryDetailContent(
     onSaveReadPosition: (position: Int, offset: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val lazyListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = initialScrollPosition,
-        initialFirstVisibleItemScrollOffset = initialScrollOffset,
-    )
+    val lazyListState =
+        rememberLazyListState(
+            initialFirstVisibleItemIndex = initialScrollPosition,
+            initialFirstVisibleItemScrollOffset = initialScrollOffset,
+        )
 
     val readingProgress by remember {
         derivedStateOf {
@@ -267,10 +266,11 @@ private fun SummaryDetailContent(
                 tableBackground = Carbon.theme.layer01,
             )
 
-        val markdownTypography = buildMarkdownTypography(
-            fontScale = readingPreferences.fontSizeScale,
-            lineScale = readingPreferences.lineSpacingScale,
-        )
+        val markdownTypography =
+            buildMarkdownTypography(
+                fontScale = readingPreferences.fontSizeScale,
+                lineScale = readingPreferences.lineSpacingScale,
+            )
 
         Markdown(
             content = summary.fullContent ?: summary.content,
@@ -337,10 +337,11 @@ private fun ArticleHeader(summary: Summary) {
             color = Carbon.theme.textSecondary,
         )
         Text(
-            text = buildString {
-                append(formatDate(summary.createdAt))
-                summary.readingTimeMin?.let { append(" | $it min read") }
-            },
+            text =
+                buildString {
+                    append(formatDate(summary.createdAt))
+                    summary.readingTimeMin?.let { append(" | $it min read") }
+                },
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )
@@ -379,20 +380,25 @@ private fun ArticleFooter(sourceUrl: String) {
             text = sourceUrl,
             style = Carbon.typography.label01,
             color = Carbon.theme.linkPrimary,
-            modifier = Modifier
-                .semantics { role = Role.Button }
-                .clickable { uriHandler.openUri(sourceUrl) },
+            modifier =
+                Modifier
+                    .semantics { role = Role.Button }
+                    .clickable { uriHandler.openUri(sourceUrl) },
         )
     }
 }
 
 @Suppress("FunctionNaming")
 @Composable
-private fun buildMarkdownTypography(fontScale: Float, lineScale: Float) = run {
-    fun TextStyle.scaled(): TextStyle = copy(
-        fontSize = fontSize * fontScale,
-        lineHeight = if (lineHeight.isSp) lineHeight * lineScale else lineHeight,
-    )
+private fun buildMarkdownTypography(
+    fontScale: Float,
+    lineScale: Float,
+) = run {
+    fun TextStyle.scaled(): TextStyle =
+        copy(
+            fontSize = fontSize * fontScale,
+            lineHeight = if (lineHeight.isSp) lineHeight * lineScale else lineHeight,
+        )
 
     val scaledBody = Carbon.typography.body01.scaled()
     markdownTypography(

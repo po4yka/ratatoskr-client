@@ -7,6 +7,7 @@ interface RootComponent {
     val childStack: Value<ChildStack<*, Child>>
 
     fun navigateToSubmitUrl(prefilledUrl: String)
+
     fun navigateToSummaryDetail(summaryId: String)
 
     sealed class Child {

@@ -43,7 +43,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.navigation.SearchComponent
 import com.po4yka.bitesizereader.presentation.state.SearchMode

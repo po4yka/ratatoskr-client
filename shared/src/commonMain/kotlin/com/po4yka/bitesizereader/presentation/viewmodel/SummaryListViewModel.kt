@@ -53,22 +53,24 @@ class SummaryListViewModel(
 
     private val stateAccessor = MutableStateFlowAccessor(_state)
 
-    val searchDelegate = SummarySearchDelegate(
-        scope = viewModelScope,
-        stateAccessor = stateAccessor,
-        searchSummariesUseCase = searchSummariesUseCase,
-        searchHistoryManager = searchHistoryManager,
-        onResetAndLoad = ::resetAndLoad,
-    )
+    val searchDelegate =
+        SummarySearchDelegate(
+            scope = viewModelScope,
+            stateAccessor = stateAccessor,
+            searchSummariesUseCase = searchSummariesUseCase,
+            searchHistoryManager = searchHistoryManager,
+            onResetAndLoad = ::resetAndLoad,
+        )
 
-    val actionHandler = SummaryActionHandler(
-        scope = viewModelScope,
-        stateAccessor = stateAccessor,
-        markSummaryAsReadUseCase = markSummaryAsReadUseCase,
-        deleteSummaryUseCase = deleteSummaryUseCase,
-        toggleFavoriteUseCase = toggleFavoriteUseCase,
-        archiveSummaryUseCase = archiveSummaryUseCase,
-    )
+    val actionHandler =
+        SummaryActionHandler(
+            scope = viewModelScope,
+            stateAccessor = stateAccessor,
+            markSummaryAsReadUseCase = markSummaryAsReadUseCase,
+            deleteSummaryUseCase = deleteSummaryUseCase,
+            toggleFavoriteUseCase = toggleFavoriteUseCase,
+            archiveSummaryUseCase = archiveSummaryUseCase,
+        )
 
     val layoutPreferences = LayoutPreferencesManager(stateAccessor)
 
@@ -185,22 +187,31 @@ class SummaryListViewModel(
     // Search delegation
 
     fun toggleSearch() = searchDelegate.toggleSearch()
+
     fun onSearchQueryChanged(query: String) = searchDelegate.onSearchQueryChanged(query)
+
     fun selectTrendingTopic(topic: String) = searchDelegate.selectTrendingTopic(topic)
+
     fun selectRecentSearch(query: String) = searchDelegate.selectRecentSearch(query)
+
     fun deleteRecentSearch(query: String) = searchDelegate.deleteRecentSearch(query)
+
     fun clearSearchHistory() = searchDelegate.clearSearchHistory()
 
     // Action delegation
 
     fun markAsRead(id: String) = actionHandler.markAsRead(id)
+
     fun deleteSummary(id: String) = actionHandler.deleteSummary(id)
+
     fun toggleFavorite(id: String) = actionHandler.toggleFavorite(id)
+
     fun archiveSummary(id: String) = actionHandler.archiveSummary(id)
 
     // Layout delegation
 
     fun setLayoutMode(mode: LayoutMode) = layoutPreferences.setLayoutMode(mode)
+
     fun setViewDensity(density: ViewDensity) = layoutPreferences.setViewDensity(density)
 
     // Pagination

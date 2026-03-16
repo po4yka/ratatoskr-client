@@ -7,7 +7,10 @@ import org.koin.core.annotation.Factory
 class ArchiveSummaryUseCase(
     private val summaryRepository: SummaryRepository,
 ) {
-    suspend operator fun invoke(id: String, archive: Boolean = true) {
+    suspend operator fun invoke(
+        id: String,
+        archive: Boolean = true,
+    ) {
         if (archive) {
             summaryRepository.archiveSummary(id)
         } else {
