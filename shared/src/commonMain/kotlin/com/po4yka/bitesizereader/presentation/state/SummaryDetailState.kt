@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.presentation.state
 
+import com.po4yka.bitesizereader.domain.model.AudioPlaybackState
 import com.po4yka.bitesizereader.domain.model.Collection
 import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.domain.model.Summary
@@ -21,4 +22,6 @@ data class SummaryDetailState(
     val isLoadingCollections: Boolean = false,
     val isAddingToCollection: Boolean = false,
     val addToCollectionError: String? = null,
+    // Audio playback
+    val audioState: AudioPlaybackState? = null,
 )

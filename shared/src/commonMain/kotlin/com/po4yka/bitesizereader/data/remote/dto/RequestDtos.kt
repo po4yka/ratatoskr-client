@@ -89,6 +89,25 @@ data class RequestDetailDto(
     @SerialName("summary") val summary: SummaryCompactDto? = null,
 )
 
+/**
+ * Forward message submission matching backend SubmitForwardRequest schema.
+ */
+@Serializable
+data class SubmitForwardRequestDto(
+    @SerialName("content_text") val contentText: String,
+    @SerialName("forward_metadata") val forwardMetadata: ForwardMetadataDto? = null,
+    @SerialName("lang_preference") val langPreference: String = "auto",
+    @SerialName("type") val type: String = "forward",
+)
+
+@Serializable
+data class ForwardMetadataDto(
+    @SerialName("from_chat_id") val fromChatId: Long? = null,
+    @SerialName("from_message_id") val fromMessageId: Long? = null,
+    @SerialName("from_chat_title") val fromChatTitle: String? = null,
+    @SerialName("forwarded_at") val forwardedAt: String? = null,
+)
+
 @Serializable
 data class RetryRequestResponseDto(
     @SerialName("new_request_id") val newRequestId: Long,

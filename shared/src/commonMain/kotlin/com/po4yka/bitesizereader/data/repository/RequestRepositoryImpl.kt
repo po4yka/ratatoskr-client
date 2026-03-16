@@ -3,6 +3,7 @@ package com.po4yka.bitesizereader.data.repository
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.mappers.toEntity
 import com.po4yka.bitesizereader.data.remote.RequestsApi
+import com.po4yka.bitesizereader.data.remote.dto.SubmitForwardRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SubmitURLRequestDto
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.Request
@@ -28,6 +29,18 @@ class RequestRepositoryImpl(
         val requestEntity = requestDto.toEntity(url)
         database.databaseQueries.insertRequest(requestEntity)
         return requestDto.toDomain(url)
+    }
+
+    override suspend fun submitForward(
+        contentText: String,
+        langPreference: String,
+    ): Request {
+        val request = SubmitForwardRequestDto(contentText = contentText, langPreference = langPreference)
+        val response = api.submitForward(request)
+        val requestDto = response.data ?: throw IllegalStateException("Failed to submit forward request")
+        val requestEntity = requestDto.toEntity("forward:text")
+        database.databaseQueries.insertRequest(requestEntity)
+        return requestDto.toDomain("forward:text")
     }
 
     override suspend fun getRequestStatus(id: String): Request {

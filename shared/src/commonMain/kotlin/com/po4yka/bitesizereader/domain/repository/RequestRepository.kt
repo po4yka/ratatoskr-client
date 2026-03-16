@@ -6,6 +6,12 @@ import kotlinx.coroutines.flow.Flow
 interface RequestRepository {
     suspend fun submitUrl(url: String): Request
 
+    /** Submit a forwarded message for summarization. */
+    suspend fun submitForward(
+        contentText: String,
+        langPreference: String = "auto",
+    ): Request
+
     suspend fun getRequestStatus(id: String): Request
 
     fun getRequests(): Flow<List<Request>>

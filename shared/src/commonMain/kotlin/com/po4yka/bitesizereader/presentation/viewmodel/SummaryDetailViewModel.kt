@@ -1,14 +1,19 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
+import com.po4yka.bitesizereader.domain.model.AudioPlaybackState
+import com.po4yka.bitesizereader.domain.model.AudioStatus
 import com.po4yka.bitesizereader.domain.repository.CollectionRepository
 import com.po4yka.bitesizereader.domain.repository.ReadingPreferencesRepository
 import com.po4yka.bitesizereader.domain.usecase.AddToCollectionUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
+import com.po4yka.bitesizereader.domain.usecase.GenerateAudioUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetAudioUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryByIdUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveReadPositionUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
+import com.po4yka.bitesizereader.util.audio.AudioPlayer
 import com.po4yka.bitesizereader.presentation.state.SummaryDetailState
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
@@ -34,6 +39,9 @@ class SummaryDetailViewModel(
     private val readingPreferencesRepository: ReadingPreferencesRepository,
     private val collectionRepository: CollectionRepository,
     private val addToCollectionUseCase: AddToCollectionUseCase,
+    private val generateAudioUseCase: GenerateAudioUseCase,
+    private val getAudioUseCase: GetAudioUseCase,
+    private val audioPlayer: AudioPlayer,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state = _state.asStateFlow()
@@ -190,6 +198,70 @@ class SummaryDetailViewModel(
                 showAddToCollectionDialog = false,
                 addToCollectionError = null,
             )
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    fun generateAndPlayAudio(sourceField: String = "summary_1000") {
+        val summaryId = _state.value.summary?.id?.toLongOrNull() ?: return
+        _state.value =
+            _state.value.copy(
+                audioState = AudioPlaybackState(summaryId = summaryId, status = AudioStatus.GENERATING),
+            )
+        viewModelScope.launch {
+            try {
+                val genResult = generateAudioUseCase(summaryId, sourceField)
+                genResult.getOrThrow()
+                _state.value =
+                    _state.value.copy(
+                        audioState = _state.value.audioState?.copy(status = AudioStatus.LOADING),
+                    )
+                val audioBytes = getAudioUseCase(summaryId).getOrThrow()
+                audioPlayer.playFromBytes(audioBytes)
+                _state.value =
+                    _state.value.copy(
+                        audioState =
+                            _state.value.audioState?.copy(
+                                status = AudioStatus.PLAYING,
+                                durationMs = audioPlayer.durationMs,
+                            ),
+                    )
+            } catch (e: Exception) {
+                _state.value =
+                    _state.value.copy(
+                        audioState =
+                            _state.value.audioState?.copy(
+                                status = AudioStatus.ERROR,
+                                error = e.toAppError().userMessage(),
+                            ),
+                    )
+            }
+        }
+    }
+
+    fun toggleAudioPlayback() {
+        val audio = _state.value.audioState ?: return
+        when (audio.status) {
+            AudioStatus.PLAYING -> {
+                audioPlayer.pause()
+                _state.value =
+                    _state.value.copy(
+                        audioState = audio.copy(status = AudioStatus.PAUSED),
+                    )
+            }
+            AudioStatus.PAUSED -> {
+                audioPlayer.resume()
+                _state.value =
+                    _state.value.copy(
+                        audioState = audio.copy(status = AudioStatus.PLAYING),
+                    )
+            }
+            else -> { /* no-op for other states */ }
+        }
+    }
+
+    fun stopAudio() {
+        audioPlayer.stop()
+        _state.value = _state.value.copy(audioState = null)
     }
 
     @Suppress("TooGenericExceptionCaught")
