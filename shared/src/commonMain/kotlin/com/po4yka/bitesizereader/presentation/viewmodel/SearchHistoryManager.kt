@@ -6,6 +6,7 @@ import com.po4yka.bitesizereader.domain.usecase.GetRecentSearchesUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
@@ -29,7 +30,9 @@ class SearchHistoryManager(
                 val searches = getRecentSearchesUseCase()
                 onResult(searches)
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 logger.warn(e) { "Failed to load recent searches" }
+                onResult(emptyList())
             }
         }
     }
@@ -43,7 +46,9 @@ class SearchHistoryManager(
                 val topics = getTrendingTopicsUseCase()
                 onResult(topics)
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 logger.warn(e) { "Failed to load trending topics" }
+                onResult(emptyList())
             }
         }
     }
@@ -62,7 +67,9 @@ class SearchHistoryManager(
                 deleteSearchQueryUseCase(query)
                 onComplete()
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 logger.warn(e) { "Failed to delete recent search" }
+                onComplete()
             }
         }
     }
@@ -76,7 +83,9 @@ class SearchHistoryManager(
                 clearSearchHistoryUseCase()
                 onComplete()
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 logger.warn(e) { "Failed to clear search history" }
+                onComplete()
             }
         }
     }

@@ -65,18 +65,29 @@ class SyncRepositoryImpl(
     private val _syncProgress = MutableStateFlow<SyncProgress?>(null)
     override val syncProgress: StateFlow<SyncProgress?> = _syncProgress.asStateFlow()
 
+    // @Volatile ensures visibility across threads. cancelSync() reads currentSyncJob without
+    // the mutex, so volatile guarantees it sees the latest value written by sync().
+    // fullSyncReceivedIds is only mutated under syncMutex but read inside fullSync() which
+    // runs on a potentially different dispatcher, so volatile ensures visibility.
+    @Volatile
     private var currentSyncJob: Job? = null
     private val syncMutex = Mutex()
+
+    @Volatile
     private var fullSyncReceivedIds: MutableSet<String>? = null
 
     override fun cancelSync() {
         currentSyncJob?.cancel()
-        _syncProgress.value?.let { progress ->
-            _syncProgress.value = progress.copy(phase = SyncPhase.CANCELLED)
+        _syncProgress.update { current ->
+            current?.copy(phase = SyncPhase.CANCELLED)
         }
         logger.info { "Sync cancelled by user" }
     }
 
+    /**
+     * Updates sync progress state. MutableStateFlow is thread-safe, so this can be called
+     * from any dispatcher (including IO) without needing to switch to Main.
+     */
     private fun updateProgress(
         phase: SyncPhase,
         totalItems: Int? = _syncProgress.value?.totalItems,
@@ -86,8 +97,7 @@ class SyncRepositoryImpl(
         errorCount: Int = _syncProgress.value?.errorCount ?: 0,
         errorMessage: String? = null,
     ) {
-        val startTime = _syncProgress.value?.startTime ?: Clock.System.now()
-        _syncProgress.value =
+        _syncProgress.update { current ->
             SyncProgress(
                 phase = phase,
                 totalItems = totalItems,
@@ -95,9 +105,10 @@ class SyncRepositoryImpl(
                 currentBatch = currentBatch,
                 totalBatches = totalBatches,
                 errorCount = errorCount,
-                startTime = startTime,
+                startTime = current?.startTime ?: Clock.System.now(),
                 errorMessage = errorMessage,
             )
+        }
     }
 
     // ========================================================================
@@ -105,6 +116,8 @@ class SyncRepositoryImpl(
     // ========================================================================
 
     override suspend fun sync(forceFull: Boolean) {
+        // tryLock() returns false if already locked -> we return before entering try.
+        // This ensures unlock() in finally only runs when we actually acquired the lock.
         if (!syncMutex.tryLock()) {
             logger.info { "Sync already in progress, skipping" }
             return
@@ -127,8 +140,10 @@ class SyncRepositoryImpl(
             updateProgress(phase = SyncPhase.FAILED, errorMessage = e.message)
             throw e
         } finally {
-            currentSyncJob = null
+            // Defensive cleanup: ensure these are always cleared even if performFullSync
+            // did not reach its own finally block (e.g., CancellationException in outer scope)
             fullSyncReceivedIds = null
+            currentSyncJob = null
             syncMutex.unlock()
         }
     }
@@ -169,11 +184,12 @@ class SyncRepositoryImpl(
 
     private suspend fun syncWithSessionBasedEndpoint(forceFull: Boolean) {
         logger.info { "Starting session-based sync, forceFull=$forceFull" }
-        _syncProgress.value =
+        _syncProgress.update {
             SyncProgress(
                 phase = SyncPhase.CREATING_SESSION,
                 startTime = Clock.System.now(),
             )
+        }
 
         coroutineContext.ensureActive()
         val session = createSyncSessionInternal()
@@ -208,6 +224,7 @@ class SyncRepositoryImpl(
         var totalCreated = 0
         var totalErrors = 0
         var cursor: Long? = null
+        var previousCursor: Long? = null
         var batchNumber = 0
         val totalBatches = totalItems?.let { (it + DEFAULT_BATCH_SIZE - 1) / DEFAULT_BATCH_SIZE }
 
@@ -219,8 +236,15 @@ class SyncRepositoryImpl(
 
             totalCreated += firstResult.createdCount
             hasMore = firstResult.hasMore
+            previousCursor = cursor
             cursor = firstResult.nextCursor
             batchNumber++
+
+            // Guard: break if server says hasMore but provides no cursor to advance
+            if (hasMore && cursor == null) {
+                logger.warn { "Server reports hasMore=true but returned null cursor, stopping" }
+                hasMore = false
+            }
 
             updateProgress(
                 phase = SyncPhase.FETCHING_FULL,
@@ -237,8 +261,17 @@ class SyncRepositoryImpl(
                 val result = fullSync(sessionId, limit = DEFAULT_BATCH_SIZE, cursor = cursor)
                 totalCreated += result.createdCount
                 hasMore = result.hasMore
+                previousCursor = cursor
                 cursor = result.nextCursor
                 batchNumber++
+
+                // Guard: break if cursor did not advance (prevents infinite loop)
+                if (hasMore && (cursor == null || cursor == previousCursor)) {
+                    logger.warn {
+                        "Cursor did not advance (was=$previousCursor, now=$cursor), breaking sync loop"
+                    }
+                    break
+                }
 
                 updateProgress(
                     phase = SyncPhase.FETCHING_FULL,
@@ -284,6 +317,7 @@ class SyncRepositoryImpl(
             coroutineContext.ensureActive()
             checkSessionExpiry(sessionExpiresAt)
 
+            val previousCursor = cursor
             val result = deltaSync(sessionId, since = cursor, limit = DEFAULT_BATCH_SIZE)
             totalCreated += result.createdCount
             totalUpdated += result.updatedCount
@@ -300,6 +334,14 @@ class SyncRepositoryImpl(
 
             if (result.nextCursor != null) {
                 cursor = result.nextCursor
+            }
+
+            // Guard: break if cursor did not advance (prevents infinite loop)
+            if (hasMore && cursor == previousCursor) {
+                logger.warn {
+                    "Delta sync cursor did not advance (stuck at $cursor), breaking sync loop"
+                }
+                break
             }
 
             // Note: Delta sync saves checkpoint in deltaSync() method itself
@@ -412,14 +454,17 @@ class SyncRepositoryImpl(
                     }
                 }
             }
-            // Checkpoint inside transaction
+            // Checkpoint inside transaction: use null instead of empty string when no cursor
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
-                syncToken = data.nextCursor?.toString() ?: "",
+                syncToken = data.nextCursor?.toString(),
             )
         }
 
-        // Update progress with error count
+        // Progress update happens outside the transaction. This is intentional: StateFlow
+        // updates are thread-safe and we avoid holding the DB transaction open longer than
+        // needed. A crash between transaction commit and this update is acceptable because
+        // the DB state is the source of truth for sync position.
         if (errorCount > 0) {
             _syncProgress.update { current ->
                 current?.copy(errorCount = (current.errorCount) + errorCount)
@@ -491,14 +536,14 @@ class SyncRepositoryImpl(
                 database.databaseQueries.deleteSummary(id.toString())
             }
 
-            // Update sync metadata (checkpoint)
+            // Update sync metadata (checkpoint): use null instead of empty string when no cursor
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
-                syncToken = data.newCursor?.toString() ?: "",
+                syncToken = data.newCursor?.toString(),
             )
         }
 
-        // Update progress with error count
+        // Progress update happens outside the transaction (see fullSync comment for rationale)
         if (errorCount > 0) {
             _syncProgress.update { current ->
                 current?.copy(errorCount = (current.errorCount) + errorCount)
