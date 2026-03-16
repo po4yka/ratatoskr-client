@@ -50,6 +50,8 @@ interface SummaryRepository {
 
     suspend fun unarchiveSummary(id: String)
 
+    suspend fun prefetchContent(maxItems: Int): Int
+
     suspend fun getCacheSize(): Long
 
     suspend fun clearContentCache()

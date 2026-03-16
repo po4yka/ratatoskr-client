@@ -11,7 +11,9 @@ import com.po4yka.bitesizereader.domain.repository.SummaryRepository
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.ensureActive
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.CoroutineDispatcher
@@ -202,6 +204,31 @@ class SummaryRepositoryImpl(
 
     override suspend fun unarchiveSummary(id: String) {
         database.databaseQueries.unarchiveSummary(id)
+    }
+
+    override suspend fun prefetchContent(maxItems: Int): Int {
+        val uncachedIds =
+            database.databaseQueries
+                .getUncachedUnreadSummaryIds(count = maxItems.toLong())
+                .executeAsList()
+
+        if (uncachedIds.isEmpty()) return 0
+
+        var prefetched = 0
+        for (id in uncachedIds) {
+            coroutineContext.ensureActive()
+            try {
+                getFullContent(id)
+                prefetched++
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                logger.warn(e) { "Prefetch failed for $id, stopping" }
+                break
+            }
+        }
+        if (prefetched > 0) {
+            logger.info { "Prefetched content for $prefetched/$maxItems summaries" }
+        }
+        return prefetched
     }
 
     override suspend fun getCacheSize(): Long {
