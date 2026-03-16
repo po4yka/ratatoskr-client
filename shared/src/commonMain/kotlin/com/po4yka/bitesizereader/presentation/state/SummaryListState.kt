@@ -4,32 +4,36 @@ import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.domain.model.Summary
 
-data class SummaryListState(
-    // Data
-    val summaries: List<Summary> = emptyList(),
-    // Loading states
-    val isLoading: Boolean = false,
-    val isRefreshing: Boolean = false,
-    val isLoadingMore: Boolean = false,
-    // Error handling
-    val error: String? = null,
-    // Pagination
-    val page: Int = 1,
-    val hasMore: Boolean = true,
-    // Search
-    val searchQuery: String = "",
-    val isSearchActive: Boolean = false,
-    // Filtering
+data class SummarySearchState(
+    val query: String = "",
+    val isActive: Boolean = false,
+    val trendingTopics: List<String> = emptyList(),
+    val recentSearches: List<String> = emptyList(),
+)
+
+data class SummaryFilterState(
     val selectedTag: String? = null,
     val availableTags: List<String> = emptyList(),
     val readFilter: ReadFilter = ReadFilter.ALL,
-    // Sorting
     val sortOrder: SortOrder = SortOrder.NEWEST,
-    // Layout preferences
+)
+
+data class SummaryLayoutState(
     val layoutMode: LayoutMode = LayoutMode.LIST,
     val viewDensity: ViewDensity = ViewDensity.COMFORTABLE,
-    // Trending topics (shown when search active but query empty)
-    val trendingTopics: List<String> = emptyList(),
-    // Recent searches (shown when search active but query empty)
-    val recentSearches: List<String> = emptyList(),
+)
+
+data class SummaryListState(
+    // Core list data
+    val summaries: List<Summary> = emptyList(),
+    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val isLoadingMore: Boolean = false,
+    val error: String? = null,
+    val page: Int = 1,
+    val hasMore: Boolean = true,
+    // Sub-states
+    val search: SummarySearchState = SummarySearchState(),
+    val filter: SummaryFilterState = SummaryFilterState(),
+    val layout: SummaryLayoutState = SummaryLayoutState(),
 )

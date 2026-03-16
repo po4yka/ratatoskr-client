@@ -126,15 +126,12 @@ private fun SearchScreenHeader(
     onFilterClick: () -> Unit,
     onClearQuery: () -> Unit,
 ) {
-    val focusManager = LocalFocusManager.current
-
     Column(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .background(Carbon.theme.layer01),
     ) {
-        // Title row
         Row(
             modifier =
                 Modifier
@@ -150,7 +147,6 @@ private fun SearchScreenHeader(
                 modifier = Modifier.weight(1f),
             )
 
-            // Filter toggle
             IconButton(onClick = onFilterClick) {
                 Icon(
                     imageVector = CarbonIcons.Filter,
@@ -161,83 +157,100 @@ private fun SearchScreenHeader(
             }
         }
 
-        // Search input row
+        SearchInputRow(
+            query = query,
+            searchMode = searchMode,
+            onQueryChange = onQueryChange,
+            onClearQuery = onClearQuery,
+            onModeToggle = onModeToggle,
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun SearchInputRow(
+    query: String,
+    searchMode: SearchMode,
+    onQueryChange: (String) -> Unit,
+    onClearQuery: () -> Unit,
+    onModeToggle: () -> Unit,
+) {
+    val focusManager = LocalFocusManager.current
+
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Spacing.md)
+                .padding(bottom = Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Row(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Spacing.md)
-                    .padding(bottom = Spacing.sm),
+                    .weight(1f)
+                    .background(Carbon.theme.layer02)
+                    .padding(horizontal = Spacing.sm, vertical = Spacing.xs + 2.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Search input
-            Row(
+            Icon(
+                imageVector = CarbonIcons.Search,
+                contentDescription = null,
+                tint = Carbon.theme.iconSecondary,
+                modifier = Modifier.size(20.dp),
+            )
+
+            BasicTextField(
+                value = query,
+                onValueChange = onQueryChange,
                 modifier =
                     Modifier
                         .weight(1f)
-                        .background(Carbon.theme.layer02)
-                        .padding(horizontal = Spacing.sm, vertical = Spacing.xs + 2.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = CarbonIcons.Search,
-                    contentDescription = null,
-                    tint = Carbon.theme.iconSecondary,
-                    modifier = Modifier.size(20.dp),
-                )
-
-                BasicTextField(
-                    value = query,
-                    onValueChange = onQueryChange,
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .padding(horizontal = Spacing.sm),
-                    singleLine = true,
-                    textStyle =
-                        Carbon.typography.bodyCompact01.copy(
-                            color = Carbon.theme.textPrimary,
-                        ),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions =
-                        KeyboardActions(
-                            onSearch = { focusManager.clearFocus() },
-                        ),
-                    decorationBox = { innerTextField ->
-                        if (query.isEmpty()) {
-                            Text(
-                                text = "Search summaries...",
-                                style = Carbon.typography.bodyCompact01,
-                                color = Carbon.theme.textPlaceholder,
-                            )
-                        }
-                        innerTextField()
-                    },
-                )
-
-                if (query.isNotEmpty()) {
-                    IconButton(
-                        onClick = onClearQuery,
-                        modifier = Modifier.size(24.dp),
-                    ) {
-                        Icon(
-                            imageVector = CarbonIcons.Close,
-                            contentDescription = "Clear search",
-                            tint = Carbon.theme.iconSecondary,
-                            modifier = Modifier.size(16.dp),
+                        .padding(horizontal = Spacing.sm),
+                singleLine = true,
+                textStyle =
+                    Carbon.typography.bodyCompact01.copy(
+                        color = Carbon.theme.textPrimary,
+                    ),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions =
+                    KeyboardActions(
+                        onSearch = { focusManager.clearFocus() },
+                    ),
+                decorationBox = { innerTextField ->
+                    if (query.isEmpty()) {
+                        Text(
+                            text = "Search summaries...",
+                            style = Carbon.typography.bodyCompact01,
+                            color = Carbon.theme.textPlaceholder,
                         )
                     }
+                    innerTextField()
+                },
+            )
+
+            if (query.isNotEmpty()) {
+                IconButton(
+                    onClick = onClearQuery,
+                    modifier = Modifier.size(24.dp),
+                ) {
+                    Icon(
+                        imageVector = CarbonIcons.Close,
+                        contentDescription = "Clear search",
+                        tint = Carbon.theme.iconSecondary,
+                        modifier = Modifier.size(16.dp),
+                    )
                 }
             }
-
-            Spacer(modifier = Modifier.width(Spacing.xs))
-
-            // Search mode toggle
-            SearchModeChip(
-                mode = searchMode,
-                onClick = onModeToggle,
-            )
         }
+
+        Spacer(modifier = Modifier.width(Spacing.xs))
+
+        SearchModeChip(
+            mode = searchMode,
+            onClick = onModeToggle,
+        )
     }
 }
 

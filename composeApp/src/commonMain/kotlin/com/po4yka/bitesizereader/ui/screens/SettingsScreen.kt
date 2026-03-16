@@ -514,37 +514,11 @@ private fun SyncProgressSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // Progress header with cancel button
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                SmallLoading()
-                Text(
-                    text = getSyncPhaseText(progress?.phase),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
-                )
-            }
-            IconButton(
-                onClick = onCancelSync,
-                modifier = Modifier.size(32.dp),
-            ) {
-                Icon(
-                    imageVector = CarbonIcons.Close,
-                    contentDescription = "Cancel sync",
-                    tint = Carbon.theme.iconSecondary,
-                    modifier = Modifier.size(16.dp),
-                )
-            }
-        }
+        SyncProgressHeader(
+            phaseText = getSyncPhaseText(progress?.phase),
+            onCancelSync = onCancelSync,
+        )
 
-        // Progress bar
         progress?.progressFraction?.let { fraction ->
             LinearProgressIndicator(
                 progress = { fraction },
@@ -566,47 +540,87 @@ private fun SyncProgressSection(
             trackColor = Carbon.theme.borderSubtle00,
         )
 
-        // Progress details
-        progress?.let { p ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                val itemsText =
-                    if (p.totalItems != null) {
-                        "${p.processedItems} / ${p.totalItems} items"
-                    } else {
-                        "${p.processedItems} items"
-                    }
-                Text(
-                    text = itemsText,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
-                )
-                if (p.currentBatch > 0) {
-                    val batchText =
-                        if (p.totalBatches != null) {
-                            "Batch ${p.currentBatch}/${p.totalBatches}"
-                        } else {
-                            "Batch ${p.currentBatch}"
-                        }
-                    Text(
-                        text = batchText,
-                        style = Carbon.typography.label01,
-                        color = Carbon.theme.textSecondary,
-                    )
-                }
-            }
-
-            // Error count warning
-            if (p.errorCount > 0) {
-                Text(
-                    text = "${p.errorCount} items failed to sync",
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportWarning,
-                )
-            }
+        if (progress != null) {
+            SyncProgressDetails(progress = progress)
         }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun SyncProgressHeader(
+    phaseText: String,
+    onCancelSync: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SmallLoading()
+            Text(
+                text = phaseText,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
+        }
+        IconButton(
+            onClick = onCancelSync,
+            modifier = Modifier.size(32.dp),
+        ) {
+            Icon(
+                imageVector = CarbonIcons.Close,
+                contentDescription = "Cancel sync",
+                tint = Carbon.theme.iconSecondary,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun SyncProgressDetails(progress: SyncProgress) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        val itemsText =
+            if (progress.totalItems != null) {
+                "${progress.processedItems} / ${progress.totalItems} items"
+            } else {
+                "${progress.processedItems} items"
+            }
+        Text(
+            text = itemsText,
+            style = Carbon.typography.label01,
+            color = Carbon.theme.textSecondary,
+        )
+        if (progress.currentBatch > 0) {
+            val batchText =
+                if (progress.totalBatches != null) {
+                    "Batch ${progress.currentBatch}/${progress.totalBatches}"
+                } else {
+                    "Batch ${progress.currentBatch}"
+                }
+            Text(
+                text = batchText,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
+        }
+    }
+
+    if (progress.errorCount > 0) {
+        Text(
+            text = "${progress.errorCount} items failed to sync",
+            style = Carbon.typography.label01,
+            color = Carbon.theme.supportWarning,
+        )
     }
 }
 

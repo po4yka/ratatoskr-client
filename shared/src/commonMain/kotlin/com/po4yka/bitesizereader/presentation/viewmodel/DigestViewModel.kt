@@ -37,55 +37,77 @@ class DigestViewModel(
     fun selectTab(tab: DigestTab) {
         _state.update { it.copy(selectedTab = tab) }
         when (tab) {
-            DigestTab.CHANNELS -> if (_state.value.subscriptionInfo.channels.isEmpty()) loadChannels()
+            DigestTab.CHANNELS -> if (_state.value.channels.subscriptionInfo.channels.isEmpty()) loadChannels()
             DigestTab.PREFERENCES -> loadPreferences()
-            DigestTab.HISTORY -> if (_state.value.historyItems.isEmpty()) loadHistory()
+            DigestTab.HISTORY -> if (_state.value.history.items.isEmpty()) loadHistory()
         }
     }
+
+    // Channels
 
     @Suppress("TooGenericExceptionCaught")
     fun loadChannels() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoadingChannels = true, channelsError = null) }
+            _state.update { it.copy(channels = it.channels.copy(isLoading = true, error = null)) }
             try {
                 val info = getDigestChannelsUseCase()
-                _state.update { it.copy(subscriptionInfo = info, isLoadingChannels = false) }
+                _state.update {
+                    it.copy(channels = it.channels.copy(subscriptionInfo = info, isLoading = false))
+                }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load digest channels" }
                 _state.update {
-                    it.copy(isLoadingChannels = false, channelsError = e.message ?: "Failed to load channels")
+                    it.copy(
+                        channels = it.channels.copy(
+                            isLoading = false,
+                            error = e.message ?: "Failed to load channels",
+                        ),
+                    )
                 }
             }
         }
     }
 
     fun onNewChannelUsernameChanged(username: String) {
-        _state.update { it.copy(newChannelUsername = username, subscribeError = null) }
+        _state.update {
+            it.copy(channels = it.channels.copy(newChannelUsername = username, subscribeError = null))
+        }
     }
 
     @Suppress("TooGenericExceptionCaught")
     fun subscribe() {
-        val username = _state.value.newChannelUsername.trim()
+        val username = _state.value.channels.newChannelUsername.trim()
         if (username.isBlank()) {
-            _state.update { it.copy(subscribeError = "Channel username cannot be empty") }
+            _state.update {
+                it.copy(channels = it.channels.copy(subscribeError = "Channel username cannot be empty"))
+            }
             return
         }
 
         viewModelScope.launch {
-            _state.update { it.copy(isSubscribing = true, subscribeError = null) }
+            _state.update {
+                it.copy(channels = it.channels.copy(isSubscribing = true, subscribeError = null))
+            }
             try {
                 val info = manageDigestSubscriptionUseCase.subscribe(username)
                 _state.update {
                     it.copy(
-                        subscriptionInfo = info,
-                        isSubscribing = false,
-                        newChannelUsername = "",
+                        channels = it.channels.copy(
+                            subscriptionInfo = info,
+                            isSubscribing = false,
+                            newChannelUsername = "",
+                        ),
                     )
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to subscribe to channel: $username" }
                 _state.update {
-                    it.copy(isSubscribing = false, subscribeError = e.message ?: "Failed to subscribe")
+                    it.copy(
+                        channels = it.channels.copy(
+                            isSubscribing = false,
+                            subscribeError = e.message ?: "Failed to subscribe",
+                        ),
+                    )
                 }
             }
         }
@@ -94,143 +116,189 @@ class DigestViewModel(
     @Suppress("TooGenericExceptionCaught")
     fun unsubscribe(channelUsername: String) {
         viewModelScope.launch {
-            _state.update { it.copy(isSubscribing = true) }
+            _state.update { it.copy(channels = it.channels.copy(isSubscribing = true)) }
             try {
                 val info = manageDigestSubscriptionUseCase.unsubscribe(channelUsername)
-                _state.update { it.copy(subscriptionInfo = info, isSubscribing = false) }
+                _state.update {
+                    it.copy(channels = it.channels.copy(subscriptionInfo = info, isSubscribing = false))
+                }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to unsubscribe from channel: $channelUsername" }
                 _state.update {
-                    it.copy(isSubscribing = false, channelsError = e.message ?: "Failed to unsubscribe")
+                    it.copy(
+                        channels = it.channels.copy(
+                            isSubscribing = false,
+                            error = e.message ?: "Failed to unsubscribe",
+                        ),
+                    )
                 }
             }
         }
     }
 
+    // Preferences
+
     @Suppress("TooGenericExceptionCaught")
     fun loadPreferences() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoadingPreferences = true, preferencesError = null) }
+            _state.update {
+                it.copy(preferences = it.preferences.copy(isLoading = true, error = null))
+            }
             try {
                 val prefs = getDigestPreferencesUseCase()
                 _state.update {
                     it.copy(
-                        preferences = prefs,
-                        isLoadingPreferences = false,
-                        editedDeliveryTime = null,
-                        editedTimezone = null,
-                        editedHoursLookback = null,
-                        editedMaxPosts = null,
-                        editedMinRelevance = null,
+                        preferences = it.preferences.copy(
+                            preferences = prefs,
+                            isLoading = false,
+                            editedDeliveryTime = null,
+                            editedTimezone = null,
+                            editedHoursLookback = null,
+                            editedMaxPosts = null,
+                            editedMinRelevance = null,
+                        ),
                     )
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load digest preferences" }
                 _state.update {
-                    it.copy(isLoadingPreferences = false, preferencesError = e.message ?: "Failed to load preferences")
+                    it.copy(
+                        preferences = it.preferences.copy(
+                            isLoading = false,
+                            error = e.message ?: "Failed to load preferences",
+                        ),
+                    )
                 }
             }
         }
     }
 
     fun onDeliveryTimeChanged(value: String) {
-        _state.update { it.copy(editedDeliveryTime = value) }
+        _state.update { it.copy(preferences = it.preferences.copy(editedDeliveryTime = value)) }
     }
 
     fun onTimezoneChanged(value: String) {
-        _state.update { it.copy(editedTimezone = value) }
+        _state.update { it.copy(preferences = it.preferences.copy(editedTimezone = value)) }
     }
 
     fun onHoursLookbackChanged(value: String) {
-        _state.update { it.copy(editedHoursLookback = value) }
+        _state.update { it.copy(preferences = it.preferences.copy(editedHoursLookback = value)) }
     }
 
     fun onMaxPostsChanged(value: String) {
-        _state.update { it.copy(editedMaxPosts = value) }
+        _state.update { it.copy(preferences = it.preferences.copy(editedMaxPosts = value)) }
     }
 
     fun onMinRelevanceChanged(value: String) {
-        _state.update { it.copy(editedMinRelevance = value) }
+        _state.update { it.copy(preferences = it.preferences.copy(editedMinRelevance = value)) }
     }
 
     @Suppress("TooGenericExceptionCaught")
     fun savePreferences() {
-        val current = _state.value
+        val currentPrefs = _state.value.preferences
         viewModelScope.launch {
-            _state.update { it.copy(isSavingPreferences = true, savePreferencesError = null) }
+            _state.update {
+                it.copy(preferences = it.preferences.copy(isSaving = true, saveError = null))
+            }
             try {
                 val prefs = updateDigestPreferencesUseCase(
-                    deliveryTime = current.editedDeliveryTime,
-                    timezone = current.editedTimezone,
-                    hoursLookback = current.editedHoursLookback?.toIntOrNull(),
-                    maxPostsPerDigest = current.editedMaxPosts?.toIntOrNull(),
-                    minRelevanceScore = current.editedMinRelevance?.toDoubleOrNull(),
+                    deliveryTime = currentPrefs.editedDeliveryTime,
+                    timezone = currentPrefs.editedTimezone,
+                    hoursLookback = currentPrefs.editedHoursLookback?.toIntOrNull(),
+                    maxPostsPerDigest = currentPrefs.editedMaxPosts?.toIntOrNull(),
+                    minRelevanceScore = currentPrefs.editedMinRelevance?.toDoubleOrNull(),
                 )
                 _state.update {
                     it.copy(
-                        preferences = prefs,
-                        isSavingPreferences = false,
-                        editedDeliveryTime = null,
-                        editedTimezone = null,
-                        editedHoursLookback = null,
-                        editedMaxPosts = null,
-                        editedMinRelevance = null,
+                        preferences = it.preferences.copy(
+                            preferences = prefs,
+                            isSaving = false,
+                            editedDeliveryTime = null,
+                            editedTimezone = null,
+                            editedHoursLookback = null,
+                            editedMaxPosts = null,
+                            editedMinRelevance = null,
+                        ),
                     )
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to save digest preferences" }
                 _state.update {
                     it.copy(
-                        isSavingPreferences = false,
-                        savePreferencesError = e.message ?: "Failed to save preferences",
+                        preferences = it.preferences.copy(
+                            isSaving = false,
+                            saveError = e.message ?: "Failed to save preferences",
+                        ),
                     )
                 }
             }
         }
     }
 
+    // History
+
     @Suppress("TooGenericExceptionCaught")
     fun loadHistory(loadMore: Boolean = false) {
-        val page = if (loadMore) _state.value.historyPage + 1 else 1
+        val page = if (loadMore) _state.value.history.page + 1 else 1
         viewModelScope.launch {
-            _state.update { it.copy(isLoadingHistory = true, historyError = null) }
+            _state.update {
+                it.copy(history = it.history.copy(isLoading = true, error = null))
+            }
             try {
                 val items = getDigestHistoryUseCase(page, PresentationConstants.DEFAULT_PAGE_SIZE)
                 _state.update { current ->
-                    val allItems = if (loadMore) current.historyItems + items else items
+                    val allItems = if (loadMore) current.history.items + items else items
                     current.copy(
-                        historyItems = allItems,
-                        isLoadingHistory = false,
-                        historyPage = page,
-                        hasMoreHistory = items.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
+                        history = current.history.copy(
+                            items = allItems,
+                            isLoading = false,
+                            page = page,
+                            hasMore = items.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
+                        ),
                     )
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load digest history" }
                 _state.update {
-                    it.copy(isLoadingHistory = false, historyError = e.message ?: "Failed to load history")
+                    it.copy(
+                        history = it.history.copy(
+                            isLoading = false,
+                            error = e.message ?: "Failed to load history",
+                        ),
+                    )
                 }
             }
         }
     }
 
+    // Trigger
+
     @Suppress("TooGenericExceptionCaught")
     fun triggerDigest() {
         viewModelScope.launch {
-            _state.update { it.copy(isTriggering = true, triggerSuccess = false, triggerError = null) }
+            _state.update {
+                it.copy(trigger = it.trigger.copy(isTriggering = true, success = false, error = null))
+            }
             try {
                 triggerDigestUseCase()
-                _state.update { it.copy(isTriggering = false, triggerSuccess = true) }
+                _state.update {
+                    it.copy(trigger = it.trigger.copy(isTriggering = false, success = true))
+                }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to trigger digest" }
                 _state.update {
-                    it.copy(isTriggering = false, triggerError = e.message ?: "Failed to trigger digest")
+                    it.copy(
+                        trigger = it.trigger.copy(
+                            isTriggering = false,
+                            error = e.message ?: "Failed to trigger digest",
+                        ),
+                    )
                 }
             }
         }
     }
 
     fun dismissTriggerSuccess() {
-        _state.update { it.copy(triggerSuccess = false) }
+        _state.update { it.copy(trigger = it.trigger.copy(success = false)) }
     }
 }

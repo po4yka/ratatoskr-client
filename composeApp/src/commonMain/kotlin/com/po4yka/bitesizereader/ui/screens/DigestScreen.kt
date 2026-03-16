@@ -37,8 +37,11 @@ import com.gabrieldrn.carbon.textinput.TextInputState
 import com.po4yka.bitesizereader.domain.model.DigestChannel
 import com.po4yka.bitesizereader.domain.model.DigestHistoryItem
 import com.po4yka.bitesizereader.presentation.navigation.DigestComponent
-import com.po4yka.bitesizereader.presentation.state.DigestState
+import com.po4yka.bitesizereader.presentation.state.DigestChannelsState
+import com.po4yka.bitesizereader.presentation.state.DigestHistoryState
+import com.po4yka.bitesizereader.presentation.state.DigestPreferencesState
 import com.po4yka.bitesizereader.presentation.state.DigestTab
+import com.po4yka.bitesizereader.presentation.state.DigestTriggerState
 import com.po4yka.bitesizereader.presentation.viewmodel.DigestViewModel
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
@@ -70,9 +73,19 @@ fun DigestScreen(
 
         // Tab content
         when (state.selectedTab) {
-            DigestTab.CHANNELS -> ChannelsTab(state = state, viewModel = viewModel)
-            DigestTab.PREFERENCES -> PreferencesTab(state = state, viewModel = viewModel)
-            DigestTab.HISTORY -> HistoryTab(state = state, viewModel = viewModel)
+            DigestTab.CHANNELS -> ChannelsTab(
+                channels = state.channels,
+                trigger = state.trigger,
+                viewModel = viewModel,
+            )
+            DigestTab.PREFERENCES -> PreferencesTab(
+                preferences = state.preferences,
+                viewModel = viewModel,
+            )
+            DigestTab.HISTORY -> HistoryTab(
+                history = state.history,
+                viewModel = viewModel,
+            )
         }
     }
 }
@@ -151,36 +164,25 @@ private fun DigestTabBar(
     }
 }
 
-@Suppress("FunctionNaming", "LongMethod")
+@Suppress("FunctionNaming")
 @Composable
 private fun ChannelsTab(
-    state: DigestState,
+    channels: DigestChannelsState,
+    trigger: DigestTriggerState,
     viewModel: DigestViewModel,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
-        // Slot usage
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                Text(
-                    text = "Subscriptions (${state.subscriptionInfo.usedSlots}/${state.subscriptionInfo.maxSlots})",
-                    style = Carbon.typography.headingCompact01,
-                    color = Carbon.theme.textPrimary,
-                )
-                if (state.subscriptionInfo.maxSlots > 0) {
-                    ProgressBar(
-                        value = state.subscriptionInfo.usedSlots.toFloat() /
-                            state.subscriptionInfo.maxSlots.toFloat(),
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
+            ChannelSlotUsage(
+                usedSlots = channels.subscriptionInfo.usedSlots,
+                maxSlots = channels.subscriptionInfo.maxSlots,
+            )
         }
 
-        // Channel list
-        if (state.isLoadingChannels && state.subscriptionInfo.channels.isEmpty()) {
+        if (channels.isLoading && channels.subscriptionInfo.channels.isEmpty()) {
             item {
                 Box(
                     modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
@@ -191,86 +193,37 @@ private fun ChannelsTab(
             }
         } else {
             items(
-                items = state.subscriptionInfo.channels,
+                items = channels.subscriptionInfo.channels,
                 key = { it.username },
             ) { channel ->
                 DigestChannelRow(
                     channel = channel,
-                    isLoading = state.isSubscribing,
+                    isLoading = channels.isSubscribing,
                     onUnsubscribe = { viewModel.unsubscribe(channel.username) },
                 )
             }
         }
 
-        // Add channel form
         item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Carbon.theme.layer01)
-                    .padding(Spacing.md),
-                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
-            ) {
-                Text(
-                    text = "Add Channel",
-                    style = Carbon.typography.headingCompact01,
-                    color = Carbon.theme.textPrimary,
-                )
-                TextInput(
-                    label = "Channel Username",
-                    value = state.newChannelUsername,
-                    onValueChange = viewModel::onNewChannelUsernameChanged,
-                    placeholderText = "@channel_name",
-                    state = if (state.isSubscribing) TextInputState.Disabled else TextInputState.Enabled,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                state.subscribeError?.let { error ->
-                    Text(
-                        text = error,
-                        style = Carbon.typography.label01,
-                        color = Carbon.theme.supportError,
-                    )
-                }
-                Button(
-                    label = if (state.isSubscribing) "Subscribing..." else "Subscribe",
-                    onClick = viewModel::subscribe,
-                    isEnabled = !state.isSubscribing && state.newChannelUsername.isNotBlank(),
-                    buttonType = ButtonType.Primary,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        }
-
-        // Trigger digest button
-        item {
-            Spacer(modifier = Modifier.height(Spacing.md))
-            Button(
-                label = if (state.isTriggering) "Triggering..." else "Trigger Digest Now",
-                onClick = viewModel::triggerDigest,
-                isEnabled = !state.isTriggering,
-                buttonType = ButtonType.Secondary,
-                modifier = Modifier.fillMaxWidth(),
+            AddChannelForm(
+                username = channels.newChannelUsername,
+                onUsernameChanged = viewModel::onNewChannelUsernameChanged,
+                isSubscribing = channels.isSubscribing,
+                subscribeError = channels.subscribeError,
+                onSubscribe = viewModel::subscribe,
             )
-            if (state.triggerSuccess) {
-                Spacer(modifier = Modifier.height(Spacing.xs))
-                Text(
-                    text = "Digest triggered successfully!",
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.supportSuccess,
-                )
-            }
-            state.triggerError?.let { error ->
-                Spacer(modifier = Modifier.height(Spacing.xs))
-                Text(
-                    text = error,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
-                )
-            }
         }
 
-        // Error
-        state.channelsError?.let { error ->
+        item {
+            TriggerDigestSection(
+                isTriggering = trigger.isTriggering,
+                triggerSuccess = trigger.success,
+                triggerError = trigger.error,
+                onTrigger = viewModel::triggerDigest,
+            )
+        }
+
+        channels.error?.let { error ->
             item {
                 Text(
                     text = error,
@@ -278,6 +231,106 @@ private fun ChannelsTab(
                     color = Carbon.theme.supportError,
                 )
             }
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun ChannelSlotUsage(usedSlots: Int, maxSlots: Int) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        Text(
+            text = "Subscriptions ($usedSlots/$maxSlots)",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        if (maxSlots > 0) {
+            ProgressBar(
+                value = usedSlots.toFloat() / maxSlots.toFloat(),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun AddChannelForm(
+    username: String,
+    onUsernameChanged: (String) -> Unit,
+    isSubscribing: Boolean,
+    subscribeError: String?,
+    onSubscribe: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Carbon.theme.layer01)
+            .padding(Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        Text(
+            text = "Add Channel",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        TextInput(
+            label = "Channel Username",
+            value = username,
+            onValueChange = onUsernameChanged,
+            placeholderText = "@channel_name",
+            state = if (isSubscribing) TextInputState.Disabled else TextInputState.Enabled,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        if (subscribeError != null) {
+            Text(
+                text = subscribeError,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.supportError,
+            )
+        }
+        Button(
+            label = if (isSubscribing) "Subscribing..." else "Subscribe",
+            onClick = onSubscribe,
+            isEnabled = !isSubscribing && username.isNotBlank(),
+            buttonType = ButtonType.Primary,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun TriggerDigestSection(
+    isTriggering: Boolean,
+    triggerSuccess: Boolean,
+    triggerError: String?,
+    onTrigger: () -> Unit,
+) {
+    Column {
+        Spacer(modifier = Modifier.height(Spacing.md))
+        Button(
+            label = if (isTriggering) "Triggering..." else "Trigger Digest Now",
+            onClick = onTrigger,
+            isEnabled = !isTriggering,
+            buttonType = ButtonType.Secondary,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        if (triggerSuccess) {
+            Spacer(modifier = Modifier.height(Spacing.xs))
+            Text(
+                text = "Digest triggered successfully!",
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.supportSuccess,
+            )
+        }
+        if (triggerError != null) {
+            Spacer(modifier = Modifier.height(Spacing.xs))
+            Text(
+                text = triggerError,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.supportError,
+            )
         }
     }
 }
@@ -324,13 +377,13 @@ private fun DigestChannelRow(
     }
 }
 
-@Suppress("FunctionNaming", "LongMethod")
+@Suppress("FunctionNaming")
 @Composable
 private fun PreferencesTab(
-    state: DigestState,
+    preferences: DigestPreferencesState,
     viewModel: DigestViewModel,
 ) {
-    if (state.isLoadingPreferences) {
+    if (preferences.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
@@ -345,87 +398,9 @@ private fun PreferencesTab(
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         item {
-            TextInput(
-                label = "Delivery Time",
-                value = state.editedDeliveryTime ?: state.preferences.deliveryTime,
-                onValueChange = viewModel::onDeliveryTimeChanged,
-                placeholderText = "HH:MM",
-                state = if (state.isSavingPreferences) TextInputState.Disabled else TextInputState.Enabled,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        item {
-            TextInput(
-                label = "Timezone",
-                value = state.editedTimezone ?: state.preferences.timezone,
-                onValueChange = viewModel::onTimezoneChanged,
-                placeholderText = "UTC",
-                state = if (state.isSavingPreferences) TextInputState.Disabled else TextInputState.Enabled,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        item {
-            TextInput(
-                label = "Hours Lookback",
-                value = state.editedHoursLookback ?: state.preferences.hoursLookback.toString(),
-                onValueChange = viewModel::onHoursLookbackChanged,
-                placeholderText = "24",
-                state = if (state.isSavingPreferences) TextInputState.Disabled else TextInputState.Enabled,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        item {
-            TextInput(
-                label = "Max Posts Per Digest",
-                value = state.editedMaxPosts ?: state.preferences.maxPostsPerDigest.toString(),
-                onValueChange = viewModel::onMaxPostsChanged,
-                placeholderText = "10",
-                state = if (state.isSavingPreferences) TextInputState.Disabled else TextInputState.Enabled,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        item {
-            TextInput(
-                label = "Min Relevance Score",
-                value = state.editedMinRelevance ?: state.preferences.minRelevanceScore.toString(),
-                onValueChange = viewModel::onMinRelevanceChanged,
-                placeholderText = "0.5",
-                state = if (state.isSavingPreferences) TextInputState.Disabled else TextInputState.Enabled,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        state.savePreferencesError?.let { error ->
-            item {
-                Text(
-                    text = error,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
-                )
-            }
-        }
-
-        state.preferencesError?.let { error ->
-            item {
-                Text(
-                    text = error,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
-                )
-            }
-        }
-
-        item {
-            Button(
-                label = if (state.isSavingPreferences) "Saving..." else "Save Preferences",
-                onClick = viewModel::savePreferences,
-                isEnabled = !state.isSavingPreferences,
-                buttonType = ButtonType.Primary,
-                modifier = Modifier.fillMaxWidth(),
+            DigestPreferencesForm(
+                preferences = preferences,
+                viewModel = viewModel,
             )
         }
     }
@@ -433,15 +408,95 @@ private fun PreferencesTab(
 
 @Suppress("FunctionNaming")
 @Composable
+private fun DigestPreferencesForm(
+    preferences: DigestPreferencesState,
+    viewModel: DigestViewModel,
+) {
+    val inputState = if (preferences.isSaving) TextInputState.Disabled else TextInputState.Enabled
+
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        TextInput(
+            label = "Delivery Time",
+            value = preferences.editedDeliveryTime ?: preferences.preferences.deliveryTime,
+            onValueChange = viewModel::onDeliveryTimeChanged,
+            placeholderText = "HH:MM",
+            state = inputState,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        TextInput(
+            label = "Timezone",
+            value = preferences.editedTimezone ?: preferences.preferences.timezone,
+            onValueChange = viewModel::onTimezoneChanged,
+            placeholderText = "UTC",
+            state = inputState,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        TextInput(
+            label = "Hours Lookback",
+            value = preferences.editedHoursLookback ?: preferences.preferences.hoursLookback.toString(),
+            onValueChange = viewModel::onHoursLookbackChanged,
+            placeholderText = "24",
+            state = inputState,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        TextInput(
+            label = "Max Posts Per Digest",
+            value = preferences.editedMaxPosts ?: preferences.preferences.maxPostsPerDigest.toString(),
+            onValueChange = viewModel::onMaxPostsChanged,
+            placeholderText = "10",
+            state = inputState,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        TextInput(
+            label = "Min Relevance Score",
+            value = preferences.editedMinRelevance ?: preferences.preferences.minRelevanceScore.toString(),
+            onValueChange = viewModel::onMinRelevanceChanged,
+            placeholderText = "0.5",
+            state = inputState,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        preferences.saveError?.let { error ->
+            Text(
+                text = error,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.supportError,
+            )
+        }
+
+        preferences.error?.let { error ->
+            Text(
+                text = error,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.supportError,
+            )
+        }
+
+        Button(
+            label = if (preferences.isSaving) "Saving..." else "Save Preferences",
+            onClick = viewModel::savePreferences,
+            isEnabled = !preferences.isSaving,
+            buttonType = ButtonType.Primary,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
 private fun HistoryTab(
-    state: DigestState,
+    history: DigestHistoryState,
     viewModel: DigestViewModel,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        if (state.isLoadingHistory && state.historyItems.isEmpty()) {
+        if (history.isLoading && history.items.isEmpty()) {
             item {
                 Box(
                     modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
@@ -450,7 +505,7 @@ private fun HistoryTab(
                     SmallLoading()
                 }
             }
-        } else if (state.historyItems.isEmpty()) {
+        } else if (history.items.isEmpty()) {
             item {
                 Text(
                     text = "No digest history yet",
@@ -461,18 +516,18 @@ private fun HistoryTab(
             }
         } else {
             items(
-                items = state.historyItems,
+                items = history.items,
                 key = { it.id },
             ) { item ->
                 DigestHistoryRow(item = item)
             }
 
-            if (state.hasMoreHistory) {
+            if (history.hasMore) {
                 item {
                     Button(
-                        label = if (state.isLoadingHistory) "Loading..." else "Load More",
+                        label = if (history.isLoading) "Loading..." else "Load More",
                         onClick = { viewModel.loadHistory(loadMore = true) },
-                        isEnabled = !state.isLoadingHistory,
+                        isEnabled = !history.isLoading,
                         buttonType = ButtonType.Ghost,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -480,7 +535,7 @@ private fun HistoryTab(
             }
         }
 
-        state.historyError?.let { error ->
+        history.error?.let { error ->
             item {
                 Text(
                     text = error,

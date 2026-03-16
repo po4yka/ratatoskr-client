@@ -34,29 +34,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
-import com.po4yka.bitesizereader.presentation.navigation.SummaryListComponent
-import com.po4yka.bitesizereader.presentation.state.LayoutMode
+import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
+import com.po4yka.bitesizereader.presentation.navigation.SummaryListComponent
+import com.po4yka.bitesizereader.presentation.state.LayoutMode
 import com.po4yka.bitesizereader.presentation.state.SummaryListState
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryListViewModel
 import com.po4yka.bitesizereader.ui.components.ContextualEmptyState
 import com.po4yka.bitesizereader.ui.components.EmptyStateType
-import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.FilterChipsRow
 import com.po4yka.bitesizereader.ui.components.PullToRefreshContainer
-import com.po4yka.bitesizereader.ui.components.SortOptionsMenu
-import com.po4yka.bitesizereader.ui.components.SummarySearchBar
-import com.po4yka.bitesizereader.ui.components.SummaryCardSkeleton
-import com.po4yka.bitesizereader.ui.components.TrendingTopicsSection
 import com.po4yka.bitesizereader.ui.components.RecentSearchesSection
+import com.po4yka.bitesizereader.ui.components.SortOptionsMenu
+import com.po4yka.bitesizereader.ui.components.SummaryCardSkeleton
 import com.po4yka.bitesizereader.ui.components.SummaryGridCard
+import com.po4yka.bitesizereader.ui.components.SummarySearchBar
 import com.po4yka.bitesizereader.ui.components.SwipeableSummaryCard
+import com.po4yka.bitesizereader.ui.components.TrendingTopicsSection
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
-import com.gabrieldrn.carbon.loading.SmallLoading
 
 /**
  * Summary list screen with search, filtering, sorting, swipe actions,
@@ -80,14 +79,14 @@ fun SummaryListScreen(
         // Header with actions
         SummaryListHeader(
             title = "Read Later",
-            isSearchActive = state.isSearchActive,
-            layoutMode = state.layoutMode,
-            sortOrder = state.sortOrder,
+            isSearchActive = state.search.isActive,
+            layoutMode = state.layout.layoutMode,
+            sortOrder = state.filter.sortOrder,
             onRefresh = { viewModel.syncAndLoad() },
             onToggleSearch = { viewModel.toggleSearch() },
             onToggleLayout = {
                 viewModel.setLayoutMode(
-                    if (state.layoutMode == LayoutMode.LIST) LayoutMode.GRID else LayoutMode.LIST,
+                    if (state.layout.layoutMode == LayoutMode.LIST) LayoutMode.GRID else LayoutMode.LIST,
                 )
             },
             onSortOrderChanged = { viewModel.setSortOrder(it) },
@@ -96,12 +95,12 @@ fun SummaryListScreen(
 
         // Search bar (collapsible)
         AnimatedVisibility(
-            visible = state.isSearchActive,
+            visible = state.search.isActive,
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
             SummarySearchBar(
-                query = state.searchQuery,
+                query = state.search.query,
                 onQueryChange = { query -> viewModel.onSearchQueryChanged(query) },
                 onClose = { viewModel.toggleSearch() },
                 modifier = Modifier.fillMaxWidth(),
@@ -110,12 +109,14 @@ fun SummaryListScreen(
 
         // Trending topics (shown when search is active but query is empty)
         AnimatedVisibility(
-            visible = state.isSearchActive && state.searchQuery.isBlank() && state.trendingTopics.isNotEmpty(),
+            visible = state.search.isActive &&
+                state.search.query.isBlank() &&
+                state.search.trendingTopics.isNotEmpty(),
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
             TrendingTopicsSection(
-                topics = state.trendingTopics,
+                topics = state.search.trendingTopics,
                 onTopicClick = { topic -> viewModel.selectTrendingTopic(topic) },
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -123,12 +124,14 @@ fun SummaryListScreen(
 
         // Recent searches (shown when search is active but query is empty)
         AnimatedVisibility(
-            visible = state.isSearchActive && state.searchQuery.isBlank() && state.recentSearches.isNotEmpty(),
+            visible = state.search.isActive &&
+                state.search.query.isBlank() &&
+                state.search.recentSearches.isNotEmpty(),
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
             RecentSearchesSection(
-                searches = state.recentSearches,
+                searches = state.search.recentSearches,
                 onSearchClick = { query -> viewModel.selectRecentSearch(query) },
                 onDeleteSearch = { query -> viewModel.deleteRecentSearch(query) },
                 onClearAll = { viewModel.clearSearchHistory() },
@@ -138,10 +141,10 @@ fun SummaryListScreen(
 
         // Filter chips
         FilterChipsRow(
-            readFilter = state.readFilter,
+            readFilter = state.filter.readFilter,
             onReadFilterChange = { viewModel.setReadFilter(it) },
-            availableTags = state.availableTags,
-            selectedTag = state.selectedTag,
+            availableTags = state.filter.availableTags,
+            selectedTag = state.filter.selectedTag,
             onTagSelected = { viewModel.onTagSelected(it) },
             modifier = Modifier.fillMaxWidth(),
         )
@@ -298,10 +301,10 @@ private fun SummaryListContent(
         state.summaries.isEmpty() -> {
             val emptyStateType =
                 when {
-                    state.searchQuery.isNotBlank() -> EmptyStateType.NO_SEARCH_RESULTS
-                    state.readFilter == ReadFilter.UNREAD -> EmptyStateType.NO_UNREAD_ARTICLES
-                    state.readFilter == ReadFilter.READ -> EmptyStateType.NO_READ_ARTICLES
-                    state.readFilter == ReadFilter.ARCHIVED -> EmptyStateType.NO_ARCHIVED_ARTICLES
+                    state.search.query.isNotBlank() -> EmptyStateType.NO_SEARCH_RESULTS
+                    state.filter.readFilter == ReadFilter.UNREAD -> EmptyStateType.NO_UNREAD_ARTICLES
+                    state.filter.readFilter == ReadFilter.READ -> EmptyStateType.NO_READ_ARTICLES
+                    state.filter.readFilter == ReadFilter.ARCHIVED -> EmptyStateType.NO_ARCHIVED_ARTICLES
                     else -> EmptyStateType.NO_ARTICLES
                 }
             val onAction: (() -> Unit)? =
@@ -315,7 +318,7 @@ private fun SummaryListContent(
                 }
             ContextualEmptyState(
                 type = emptyStateType,
-                searchQuery = state.searchQuery.takeIf { it.isNotBlank() },
+                searchQuery = state.search.query.takeIf { it.isNotBlank() },
                 onAction = onAction,
                 modifier = modifier,
             )
@@ -323,7 +326,7 @@ private fun SummaryListContent(
 
         // Data loaded - show list or grid
         else -> {
-            when (state.layoutMode) {
+            when (state.layout.layoutMode) {
                 LayoutMode.LIST -> {
                     SummaryListView(
                         state = state,
