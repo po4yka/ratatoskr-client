@@ -6,6 +6,7 @@ import com.po4yka.bitesizereader.data.mappers.toDto
 import com.po4yka.bitesizereader.data.mappers.toSummaryEntity
 import com.po4yka.bitesizereader.data.remote.SyncApi
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
+import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.domain.model.SyncConflict
@@ -42,6 +43,9 @@ private val logger = KotlinLogging.logger {}
 
 /** Default batch size for sync operations */
 private const val DEFAULT_BATCH_SIZE = 100
+
+/** Sub-chunk size for database transactions within a batch */
+private const val TRANSACTION_CHUNK_SIZE = 25
 
 /** Timeout for the entire sync operation (5 minutes) */
 private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
@@ -193,9 +197,15 @@ class SyncRepositoryImpl(
 
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val lastSyncCursor = metadata?.syncToken?.toLongOrNull() ?: 0L
+        val fullSyncInProgress = metadata?.fullSyncInProgress == 1L
 
-        if (forceFull || lastSyncCursor == 0L) {
-            performFullSync(session.sessionId, session.totalItems, session.expiresAt)
+        if (forceFull || lastSyncCursor == 0L || fullSyncInProgress) {
+            // Resume from checkpoint if a previous full sync was interrupted
+            val resumeCursor = if (fullSyncInProgress && lastSyncCursor > 0L) lastSyncCursor else null
+            if (resumeCursor != null) {
+                logger.info { "Resuming interrupted full sync from cursor $resumeCursor" }
+            }
+            performFullSync(session.sessionId, session.totalItems, session.expiresAt, resumeCursor)
         } else {
             performDeltaSync(session.sessionId, lastSyncCursor, session.expiresAt)
         }
@@ -205,19 +215,25 @@ class SyncRepositoryImpl(
     }
 
     private suspend fun performFullSync(
-        sessionId: String,
+        initialSessionId: String,
         totalItems: Int?,
-        sessionExpiresAt: Instant?,
+        initialSessionExpiresAt: Instant?,
+        resumeCursor: Long? = null,
     ) {
         updateProgress(phase = SyncPhase.FETCHING_FULL)
+
+        // Mark full sync as in progress
+        database.databaseQueries.setFullSyncInProgress(1)
 
         val receivedIds = mutableSetOf<String>()
         fullSyncReceivedIds = receivedIds
 
+        var sessionId = initialSessionId
+        var sessionExpiresAt = initialSessionExpiresAt
         var hasMore = true
         var totalCreated = 0
         var totalErrors = 0
-        var cursor: Long? = null
+        var cursor: Long? = resumeCursor
         var previousCursor: Long? = null
         var batchNumber = 0
         val totalBatches = totalItems?.let { (it + DEFAULT_BATCH_SIZE - 1) / DEFAULT_BATCH_SIZE }
@@ -225,7 +241,9 @@ class SyncRepositoryImpl(
         try {
             // First batch
             coroutineContext.ensureActive()
-            checkSessionExpiry(sessionExpiresAt)
+            val renewed = createOrRenewSession(sessionId, sessionExpiresAt)
+            sessionId = renewed.first
+            sessionExpiresAt = renewed.second
             val firstResult = fullSync(sessionId, limit = DEFAULT_BATCH_SIZE, cursor = cursor)
 
             totalCreated += firstResult.createdCount
@@ -250,7 +268,9 @@ class SyncRepositoryImpl(
 
             while (hasMore) {
                 coroutineContext.ensureActive()
-                checkSessionExpiry(sessionExpiresAt)
+                val renewedInLoop = createOrRenewSession(sessionId, sessionExpiresAt)
+                sessionId = renewedInLoop.first
+                sessionExpiresAt = renewedInLoop.second
 
                 val result = fullSync(sessionId, limit = DEFAULT_BATCH_SIZE, cursor = cursor)
                 totalCreated += result.createdCount
@@ -287,6 +307,9 @@ class SyncRepositoryImpl(
             // Validate integrity
             validateSyncIntegrity(totalItems, totalCreated)
 
+            // Mark full sync as complete
+            database.databaseQueries.setFullSyncInProgress(0)
+
             logger.info { "Full sync complete. Total items: $totalCreated, errors: $totalErrors" }
         } finally {
             fullSyncReceivedIds = null
@@ -294,12 +317,14 @@ class SyncRepositoryImpl(
     }
 
     private suspend fun performDeltaSync(
-        sessionId: String,
+        initialSessionId: String,
         lastSyncCursor: Long,
-        sessionExpiresAt: Instant?,
+        initialSessionExpiresAt: Instant?,
     ) {
         updateProgress(phase = SyncPhase.FETCHING_DELTA)
 
+        var sessionId = initialSessionId
+        var sessionExpiresAt = initialSessionExpiresAt
         var hasMore = true
         var cursor = lastSyncCursor
         var totalCreated = 0
@@ -309,7 +334,9 @@ class SyncRepositoryImpl(
 
         while (hasMore) {
             coroutineContext.ensureActive()
-            checkSessionExpiry(sessionExpiresAt)
+            val renewed = createOrRenewSession(sessionId, sessionExpiresAt)
+            sessionId = renewed.first
+            sessionExpiresAt = renewed.second
 
             val previousCursor = cursor
             val result = deltaSync(sessionId, since = cursor, limit = DEFAULT_BATCH_SIZE)
@@ -346,18 +373,27 @@ class SyncRepositoryImpl(
         }
     }
 
-    private fun checkSessionExpiry(sessionExpiresAt: Instant?) {
-        if (sessionExpiresAt != null && Clock.System.now() >= sessionExpiresAt) {
-            throw IllegalStateException("Sync session expired")
+    /**
+     * Returns the current session if still valid, or creates a new one if expired.
+     */
+    private suspend fun createOrRenewSession(
+        currentSessionId: String,
+        sessionExpiresAt: Instant?,
+    ): Pair<String, Instant?> {
+        if (sessionExpiresAt == null || Clock.System.now() < sessionExpiresAt) {
+            return currentSessionId to sessionExpiresAt
         }
+        logger.info { "Session expired, creating new session" }
+        val newSession = createSyncSessionInternal()
+        return newSession.sessionId to newSession.expiresAt
     }
 
     private fun cleanupStaleSummaries(receivedIds: Set<String>) {
-        val localIds = database.databaseQueries.getAllSummaryIds().executeAsList().toSet()
-        val staleIds = localIds - receivedIds
-        if (staleIds.isNotEmpty()) {
-            logger.info { "Removing ${staleIds.size} stale summaries not present on server" }
-            database.transaction {
+        database.transaction {
+            val localIds = database.databaseQueries.getAllSummaryIds().executeAsList()
+            val staleIds = localIds.filterNot { it in receivedIds }
+            if (staleIds.isNotEmpty()) {
+                logger.info { "Removing ${staleIds.size} stale summaries not present on server" }
                 staleIds.forEach { id ->
                     database.databaseQueries.deleteSummary(id)
                 }
@@ -429,30 +465,28 @@ class SyncRepositoryImpl(
         var successCount = 0
         var errorCount = 0
 
-        // Process items and store in database
-        database.transaction {
-            data.items.forEach { item ->
-                when (item.entityType) {
-                    "summary" -> {
-                        val entity = item.summary?.toSummaryEntity(item.id)
-                        if (entity != null) {
-                            database.databaseQueries.insertSummary(entity)
-                            successCount++
-                            fullSyncReceivedIds?.add(item.id.toString())
-                        } else {
-                            errorCount++
-                        }
-                    }
-                    else -> {
-                        logger.warn { "Unknown entity type: ${item.entityType}" }
+        // Process items in sub-chunks for partial-failure resilience
+        data.items.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
+            database.transaction {
+                chunk.forEach { item ->
+                    if (processSyncItem(item)) {
+                        successCount++
+                        fullSyncReceivedIds?.add(item.id.toString())
+                    } else {
                         errorCount++
                     }
                 }
             }
-            // Checkpoint inside transaction: use null instead of empty string when no cursor
+        }
+
+        // Checkpoint outside item transactions
+        val currentMetadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
+        val currentFullSyncInProgress = currentMetadata?.fullSyncInProgress ?: 0L
+        database.transaction {
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
                 syncToken = data.nextCursor?.toString(),
+                fullSyncInProgress = currentFullSyncInProgress,
             )
         }
 
@@ -501,50 +535,39 @@ class SyncRepositoryImpl(
         var updatedCount = 0
         var errorCount = 0
 
-        // Process changes and store in database
-        database.transaction {
-            data.created.forEach { item ->
-                when (item.entityType) {
-                    "summary" -> {
-                        val entity = item.summary?.toSummaryEntity(item.id)
-                        if (entity != null) {
-                            database.databaseQueries.insertSummary(entity)
-                            createdCount++
-                        } else {
-                            errorCount++
-                        }
-                    }
-                    else -> {
-                        logger.warn { "Unknown entity type: ${item.entityType}" }
-                        errorCount++
-                    }
+        // Process created items in sub-chunks
+        data.created.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
+            database.transaction {
+                chunk.forEach { item ->
+                    if (processSyncItem(item)) createdCount++ else errorCount++
                 }
             }
-            data.updated.forEach { item ->
-                when (item.entityType) {
-                    "summary" -> {
-                        val entity = item.summary?.toSummaryEntity(item.id)
-                        if (entity != null) {
-                            database.databaseQueries.insertSummary(entity)
-                            updatedCount++
-                        } else {
-                            errorCount++
-                        }
-                    }
-                    else -> {
-                        logger.warn { "Unknown entity type: ${item.entityType}" }
-                        errorCount++
-                    }
-                }
-            }
-            data.deleted.forEach { id ->
-                database.databaseQueries.deleteSummary(id.toString())
-            }
+        }
 
-            // Update sync metadata (checkpoint): use null instead of empty string when no cursor
+        // Process updated items in sub-chunks
+        data.updated.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
+            database.transaction {
+                chunk.forEach { item ->
+                    if (processSyncItem(item)) updatedCount++ else errorCount++
+                }
+            }
+        }
+
+        // Process deletes in sub-chunks
+        data.deleted.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
+            database.transaction {
+                chunk.forEach { id ->
+                    database.databaseQueries.deleteSummary(id.toString())
+                }
+            }
+        }
+
+        // Update sync metadata (checkpoint)
+        database.transaction {
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
                 syncToken = data.newCursor?.toString(),
+                fullSyncInProgress = 0,
             )
         }
 
@@ -605,6 +628,30 @@ class SyncRepositoryImpl(
                 },
             serverVersion = data.serverVersion,
         )
+    }
+
+    /**
+     * Process a single sync item by dispatching on its entity type.
+     * Must be called within a database transaction.
+     *
+     * @return true if item was processed successfully, false if there was an error
+     */
+    private fun processSyncItem(item: SyncItemDto): Boolean {
+        return when (item.entityType) {
+            "summary" -> {
+                val entity = item.summary?.toSummaryEntity(item.id)
+                if (entity != null) {
+                    database.databaseQueries.insertSummary(entity)
+                    true
+                } else {
+                    false
+                }
+            }
+            else -> {
+                logger.warn { "Unknown entity type: ${item.entityType}" }
+                false
+            }
+        }
     }
 
     private suspend fun flushPendingDeletes(sessionId: String) {

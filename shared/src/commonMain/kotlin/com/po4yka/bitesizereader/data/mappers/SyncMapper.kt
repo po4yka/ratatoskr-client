@@ -23,13 +23,18 @@ private val logger = KotlinLogging.logger {}
  * ```json
  * {
  *   "is_read": false,
+ *   "is_favorited": true,
+ *   "is_archived": false,
+ *   "last_read_position": 42,
+ *   "last_read_offset": 100,
  *   "json_payload": {
  *     "summary_1000": "Full summary text...",
  *     "topic_tags": ["#tag1", "#tag2"],
  *     "metadata": {
  *       "title": "Article Title",
  *       "canonical_url": "https://...",
- *       "domain": "example.com"
+ *       "domain": "example.com",
+ *       "image_url": "https://..."
  *     }
  *   },
  *   "created_at": "2024-12-14T10:20:00Z"
@@ -42,6 +47,12 @@ fun JsonObject.toSummaryEntity(id: Long): SummaryEntity? {
     return try {
         // Extract top-level fields
         val isRead = this["is_read"]?.jsonPrimitive?.booleanOrNull ?: false
+        val isFavorited = this["is_favorited"]?.jsonPrimitive?.booleanOrNull ?: false
+        val isArchived = this["is_archived"]?.jsonPrimitive?.booleanOrNull ?: false
+        val lastReadPosition =
+            this["last_read_position"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: 0
+        val lastReadOffset =
+            this["last_read_offset"]?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: 0
         val createdAtStr = this["created_at"]?.jsonPrimitive?.contentOrNull
         val jsonPayload = this["json_payload"]?.jsonObject
 
@@ -79,8 +90,16 @@ fun JsonObject.toSummaryEntity(id: Long): SummaryEntity? {
                 tag.jsonPrimitive.contentOrNull?.removePrefix("#")
             } ?: emptyList()
 
-        // Note: imageUrl is not provided by the server in the current schema
-        val imageUrl: String? = null
+        // Parse imageUrl from metadata if available
+        val imageUrl: String? = metadata?.get("image_url")?.jsonPrimitive?.contentOrNull
+
+        // Estimate reading time from content length (~200 words/min, ~5 chars/word)
+        val readingTimeMin: Int? =
+            if (content.isNotEmpty()) {
+                (content.length / 5 / 200).coerceAtLeast(1)
+            } else {
+                null
+            }
 
         logger.debug {
             "Mapping summary $id: title='$title', sourceUrl='$sourceUrl', " +
@@ -96,13 +115,13 @@ fun JsonObject.toSummaryEntity(id: Long): SummaryEntity? {
             createdAt = createdAt,
             isRead = isRead,
             tags = tags,
-            readingTimeMin = null,
-            isFavorited = false,
+            readingTimeMin = readingTimeMin,
+            isFavorited = isFavorited,
             fullContent = null,
             fullContentCachedAt = null,
-            lastReadPosition = 0,
-            lastReadOffset = 0,
-            isArchived = false,
+            lastReadPosition = lastReadPosition,
+            lastReadOffset = lastReadOffset,
+            isArchived = isArchived,
         )
     } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
         logger.error(e) { "Failed to map sync summary item $id" }
