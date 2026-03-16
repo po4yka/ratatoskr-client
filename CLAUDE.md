@@ -22,7 +22,7 @@ Bite-Size Reader is a **Kotlin Multiplatform + Compose Multiplatform** mobile cl
 ./gradlew :composeApp:installDebug
 
 # Desktop (Hot Reload for UI development)
-./gradlew :composeApp:runDesktop
+./gradlew :composeApp:hotRunDesktop
 
 # iOS - open in Xcode
 open iosApp/iosApp.xcodeproj
