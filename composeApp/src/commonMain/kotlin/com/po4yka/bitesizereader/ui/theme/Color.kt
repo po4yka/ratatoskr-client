@@ -61,9 +61,3 @@ val DarkSurfaceVariant = Color(0xFF43474E)
 val DarkOnSurfaceVariant = Color(0xFFC3C7CF)
 val DarkOutline = Color(0xFF8D9199)
 val DarkOutlineVariant = Color(0xFF43474E)
-
-// Semantic Colors
-val ReadIndicator = Color(0xFF4CAF50)
-val UnreadIndicator = Color(0xFF2196F3)
-val ProcessingIndicator = Color(0xFFFF9800)
-val FailedIndicator = Color(0xFFF44336)

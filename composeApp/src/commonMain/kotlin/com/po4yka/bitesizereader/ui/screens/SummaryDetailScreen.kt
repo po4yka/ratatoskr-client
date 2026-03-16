@@ -58,7 +58,6 @@ import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.TagChip
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.IconSizes
-import com.po4yka.bitesizereader.ui.theme.ReadIndicator
 import com.po4yka.bitesizereader.ui.theme.Spacing
 import com.po4yka.bitesizereader.util.extractDomain
 import kotlin.time.Instant
@@ -194,7 +193,7 @@ private fun SummaryDetailHeader(
                 Icon(
                     imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
                     contentDescription = if (s.isRead) "Read" else "Unread",
-                    tint = if (s.isRead) ReadIndicator else Carbon.theme.iconSecondary,
+                    tint = if (s.isRead) Carbon.theme.supportSuccess else Carbon.theme.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
                 )
 

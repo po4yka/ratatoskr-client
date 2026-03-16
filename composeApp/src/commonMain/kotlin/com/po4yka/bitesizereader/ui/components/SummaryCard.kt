@@ -31,7 +31,6 @@ import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.IconSizes
-import com.po4yka.bitesizereader.ui.theme.ReadIndicator
 import com.po4yka.bitesizereader.util.extractDomain
 
 /**
@@ -138,7 +137,7 @@ fun SummaryCard(
                     Icon(
                         imageVector = CarbonIcons.CheckmarkFilled,
                         contentDescription = "Read",
-                        tint = ReadIndicator,
+                        tint = Carbon.theme.supportSuccess,
                         modifier = Modifier.size(IconSizes.xs),
                     )
                 }
