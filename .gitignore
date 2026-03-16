@@ -50,7 +50,8 @@ playground.xcworkspace
 ._*
 
 # Claude Code
-.claude/
+.claude/*
+!.claude/skills/
 *.claude.json
 
 # Logs
