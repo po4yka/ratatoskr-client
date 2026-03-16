@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.domain.usecase.ArchiveSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.ClearSearchHistoryUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
@@ -13,6 +14,7 @@ import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
+import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import io.mockk.coEvery
@@ -39,7 +41,9 @@ class SummaryListViewModelTest {
     private val searchSummariesUseCase: SearchSummariesUseCase = mockk()
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase = mockk()
     private val deleteSummaryUseCase: DeleteSummaryUseCase = mockk()
+    private val archiveSummaryUseCase: ArchiveSummaryUseCase = mockk()
     private val getAvailableTagsUseCase: GetAvailableTagsUseCase = mockk()
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase = mockk()
     private val getTrendingTopicsUseCase: GetTrendingTopicsUseCase = mockk()
     private val getRecentSearchesUseCase: GetRecentSearchesUseCase = mockk()
     private val saveSearchQueryUseCase: SaveSearchQueryUseCase = mockk()
@@ -47,6 +51,7 @@ class SummaryListViewModelTest {
     private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase = mockk()
     private val syncDataUseCase: SyncDataUseCase = mockk()
     private val logoutUseCase: LogoutUseCase = mockk()
+    private lateinit var searchHistoryManager: SearchHistoryManager
     private lateinit var viewModel: SummaryListViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -80,8 +85,17 @@ class SummaryListViewModelTest {
                 pageSize = any(),
                 readFilter = any(),
                 sortOrder = any(),
+                selectedTag = any(),
             )
         } returns flowOf(listOf(testSummary))
+
+        searchHistoryManager = SearchHistoryManager(
+            getRecentSearchesUseCase = getRecentSearchesUseCase,
+            saveSearchQueryUseCase = saveSearchQueryUseCase,
+            deleteSearchQueryUseCase = deleteSearchQueryUseCase,
+            clearSearchHistoryUseCase = clearSearchHistoryUseCase,
+            getTrendingTopicsUseCase = getTrendingTopicsUseCase,
+        )
 
         viewModel =
             SummaryListViewModel(
@@ -89,13 +103,11 @@ class SummaryListViewModelTest {
                 searchSummariesUseCase = searchSummariesUseCase,
                 markSummaryAsReadUseCase = markSummaryAsReadUseCase,
                 deleteSummaryUseCase = deleteSummaryUseCase,
+                archiveSummaryUseCase = archiveSummaryUseCase,
                 getAvailableTagsUseCase = getAvailableTagsUseCase,
-                getTrendingTopicsUseCase = getTrendingTopicsUseCase,
-                getRecentSearchesUseCase = getRecentSearchesUseCase,
-                saveSearchQueryUseCase = saveSearchQueryUseCase,
-                deleteSearchQueryUseCase = deleteSearchQueryUseCase,
-                clearSearchHistoryUseCase = clearSearchHistoryUseCase,
+                searchHistoryManager = searchHistoryManager,
                 syncDataUseCase = syncDataUseCase,
+                toggleFavoriteUseCase = toggleFavoriteUseCase,
                 logoutUseCase = logoutUseCase,
                 dispatcher = testDispatcher,
             )
