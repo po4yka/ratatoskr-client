@@ -58,10 +58,11 @@ class DigestViewModel(
                 logger.warn(e) { "Failed to load digest channels" }
                 _state.update {
                     it.copy(
-                        channels = it.channels.copy(
-                            isLoading = false,
-                            error = e.message ?: "Failed to load channels",
-                        ),
+                        channels =
+                            it.channels.copy(
+                                isLoading = false,
+                                error = e.message ?: "Failed to load channels",
+                            ),
                     )
                 }
             }
@@ -92,21 +93,23 @@ class DigestViewModel(
                 val info = manageDigestSubscriptionUseCase.subscribe(username)
                 _state.update {
                     it.copy(
-                        channels = it.channels.copy(
-                            subscriptionInfo = info,
-                            isSubscribing = false,
-                            newChannelUsername = "",
-                        ),
+                        channels =
+                            it.channels.copy(
+                                subscriptionInfo = info,
+                                isSubscribing = false,
+                                newChannelUsername = "",
+                            ),
                     )
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to subscribe to channel: $username" }
                 _state.update {
                     it.copy(
-                        channels = it.channels.copy(
-                            isSubscribing = false,
-                            subscribeError = e.message ?: "Failed to subscribe",
-                        ),
+                        channels =
+                            it.channels.copy(
+                                isSubscribing = false,
+                                subscribeError = e.message ?: "Failed to subscribe",
+                            ),
                     )
                 }
             }
@@ -126,10 +129,11 @@ class DigestViewModel(
                 logger.warn(e) { "Failed to unsubscribe from channel: $channelUsername" }
                 _state.update {
                     it.copy(
-                        channels = it.channels.copy(
-                            isSubscribing = false,
-                            error = e.message ?: "Failed to unsubscribe",
-                        ),
+                        channels =
+                            it.channels.copy(
+                                isSubscribing = false,
+                                error = e.message ?: "Failed to unsubscribe",
+                            ),
                     )
                 }
             }
@@ -148,25 +152,27 @@ class DigestViewModel(
                 val prefs = getDigestPreferencesUseCase()
                 _state.update {
                     it.copy(
-                        preferences = it.preferences.copy(
-                            preferences = prefs,
-                            isLoading = false,
-                            editedDeliveryTime = null,
-                            editedTimezone = null,
-                            editedHoursLookback = null,
-                            editedMaxPosts = null,
-                            editedMinRelevance = null,
-                        ),
+                        preferences =
+                            it.preferences.copy(
+                                preferences = prefs,
+                                isLoading = false,
+                                editedDeliveryTime = null,
+                                editedTimezone = null,
+                                editedHoursLookback = null,
+                                editedMaxPosts = null,
+                                editedMinRelevance = null,
+                            ),
                     )
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load digest preferences" }
                 _state.update {
                     it.copy(
-                        preferences = it.preferences.copy(
-                            isLoading = false,
-                            error = e.message ?: "Failed to load preferences",
-                        ),
+                        preferences =
+                            it.preferences.copy(
+                                isLoading = false,
+                                error = e.message ?: "Failed to load preferences",
+                            ),
                     )
                 }
             }
@@ -201,34 +207,37 @@ class DigestViewModel(
                 it.copy(preferences = it.preferences.copy(isSaving = true, saveError = null))
             }
             try {
-                val prefs = updateDigestPreferencesUseCase(
-                    deliveryTime = currentPrefs.editedDeliveryTime,
-                    timezone = currentPrefs.editedTimezone,
-                    hoursLookback = currentPrefs.editedHoursLookback?.toIntOrNull(),
-                    maxPostsPerDigest = currentPrefs.editedMaxPosts?.toIntOrNull(),
-                    minRelevanceScore = currentPrefs.editedMinRelevance?.toDoubleOrNull(),
-                )
+                val prefs =
+                    updateDigestPreferencesUseCase(
+                        deliveryTime = currentPrefs.editedDeliveryTime,
+                        timezone = currentPrefs.editedTimezone,
+                        hoursLookback = currentPrefs.editedHoursLookback?.toIntOrNull(),
+                        maxPostsPerDigest = currentPrefs.editedMaxPosts?.toIntOrNull(),
+                        minRelevanceScore = currentPrefs.editedMinRelevance?.toDoubleOrNull(),
+                    )
                 _state.update {
                     it.copy(
-                        preferences = it.preferences.copy(
-                            preferences = prefs,
-                            isSaving = false,
-                            editedDeliveryTime = null,
-                            editedTimezone = null,
-                            editedHoursLookback = null,
-                            editedMaxPosts = null,
-                            editedMinRelevance = null,
-                        ),
+                        preferences =
+                            it.preferences.copy(
+                                preferences = prefs,
+                                isSaving = false,
+                                editedDeliveryTime = null,
+                                editedTimezone = null,
+                                editedHoursLookback = null,
+                                editedMaxPosts = null,
+                                editedMinRelevance = null,
+                            ),
                     )
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to save digest preferences" }
                 _state.update {
                     it.copy(
-                        preferences = it.preferences.copy(
-                            isSaving = false,
-                            saveError = e.message ?: "Failed to save preferences",
-                        ),
+                        preferences =
+                            it.preferences.copy(
+                                isSaving = false,
+                                saveError = e.message ?: "Failed to save preferences",
+                            ),
                     )
                 }
             }
@@ -249,22 +258,24 @@ class DigestViewModel(
                 _state.update { current ->
                     val allItems = if (loadMore) current.history.items + items else items
                     current.copy(
-                        history = current.history.copy(
-                            items = allItems,
-                            isLoading = false,
-                            page = page,
-                            hasMore = items.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
-                        ),
+                        history =
+                            current.history.copy(
+                                items = allItems,
+                                isLoading = false,
+                                page = page,
+                                hasMore = items.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
+                            ),
                     )
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load digest history" }
                 _state.update {
                     it.copy(
-                        history = it.history.copy(
-                            isLoading = false,
-                            error = e.message ?: "Failed to load history",
-                        ),
+                        history =
+                            it.history.copy(
+                                isLoading = false,
+                                error = e.message ?: "Failed to load history",
+                            ),
                     )
                 }
             }
@@ -288,10 +299,11 @@ class DigestViewModel(
                 logger.warn(e) { "Failed to trigger digest" }
                 _state.update {
                     it.copy(
-                        trigger = it.trigger.copy(
-                            isTriggering = false,
-                            error = e.message ?: "Failed to trigger digest",
-                        ),
+                        trigger =
+                            it.trigger.copy(
+                                isTriggering = false,
+                                error = e.message ?: "Failed to trigger digest",
+                            ),
                     )
                 }
             }

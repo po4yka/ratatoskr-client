@@ -34,18 +34,20 @@ fun InsightsSection(
     if (insights.isEmpty()) return
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer01)
-            .padding(vertical = Spacing.md),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(vertical = Spacing.md),
     ) {
         Text(
             text = "Popular this month",
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
-            modifier = Modifier
-                .padding(horizontal = Spacing.md)
-                .padding(bottom = Spacing.sm),
+            modifier =
+                Modifier
+                    .padding(horizontal = Spacing.md)
+                    .padding(bottom = Spacing.sm),
         )
 
         LazyRow(
@@ -73,21 +75,23 @@ private fun InsightCard(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .width(200.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(Carbon.theme.layer02)
-            .clickable(onClick = onClick)
-            .padding(Spacing.sm),
+        modifier =
+            modifier
+                .width(200.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer02)
+                .clickable(onClick = onClick)
+                .padding(Spacing.sm),
     ) {
         if (summary.imageUrl != null) {
             ProxiedImage(
                 imageUrl = summary.imageUrl!!,
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .clip(RoundedCornerShape(4.dp)),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(4.dp)),
             )
             Spacer(modifier = Modifier.height(Spacing.xs))
         }

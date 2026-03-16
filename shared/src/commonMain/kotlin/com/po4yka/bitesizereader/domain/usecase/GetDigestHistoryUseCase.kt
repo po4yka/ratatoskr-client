@@ -6,7 +6,10 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GetDigestHistoryUseCase(private val repository: DigestRepository) {
-    suspend operator fun invoke(page: Int = 1, pageSize: Int = 20): List<DigestHistoryItem> {
+    suspend operator fun invoke(
+        page: Int = 1,
+        pageSize: Int = 20,
+    ): List<DigestHistoryItem> {
         return repository.getHistory(page, pageSize)
     }
 }

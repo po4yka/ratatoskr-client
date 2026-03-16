@@ -109,9 +109,10 @@ fun SummaryListScreen(
 
         // Trending topics (shown when search is active but query is empty)
         AnimatedVisibility(
-            visible = state.search.isActive &&
-                state.search.query.isBlank() &&
-                state.search.trendingTopics.isNotEmpty(),
+            visible =
+                state.search.isActive &&
+                    state.search.query.isBlank() &&
+                    state.search.trendingTopics.isNotEmpty(),
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
@@ -124,9 +125,10 @@ fun SummaryListScreen(
 
         // Recent searches (shown when search is active but query is empty)
         AnimatedVisibility(
-            visible = state.search.isActive &&
-                state.search.query.isBlank() &&
-                state.search.recentSearches.isNotEmpty(),
+            visible =
+                state.search.isActive &&
+                    state.search.query.isBlank() &&
+                    state.search.recentSearches.isNotEmpty(),
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {

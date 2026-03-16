@@ -43,6 +43,5 @@ class AndroidModule {
     }
 
     @Single
-    fun providePlatform(): com.po4yka.bitesizereader.Platform =
-        com.po4yka.bitesizereader.AndroidPlatform()
+    fun providePlatform(): com.po4yka.bitesizereader.Platform = com.po4yka.bitesizereader.AndroidPlatform()
 }

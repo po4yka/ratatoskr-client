@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -55,9 +54,10 @@ fun CollectionsScreen(
     val state by viewModel.state.collectAsState()
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Carbon.theme.background),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Carbon.theme.background),
     ) {
         // Header with "New Collection" button
         CollectionsHeader(
@@ -144,15 +144,14 @@ fun CollectionsScreen(
 
 @Suppress("FunctionNaming")
 @Composable
-private fun CollectionsHeader(
-    onCreateClick: () -> Unit,
-) {
+private fun CollectionsHeader(onCreateClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(Dimensions.headerHeight)
-            .background(Carbon.theme.background)
-            .padding(horizontal = Spacing.md),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(Dimensions.headerHeight)
+                .background(Carbon.theme.background)
+                .padding(horizontal = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -180,10 +179,11 @@ private fun SectionHeader(title: String) {
         text = title,
         style = Carbon.typography.label01,
         color = Carbon.theme.textSecondary,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.background)
-            .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.background)
+                .padding(horizontal = Spacing.md, vertical = Spacing.xs),
     )
 }
 

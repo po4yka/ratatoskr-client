@@ -14,7 +14,6 @@ import org.koin.core.annotation.Single
 class ReadingPreferencesRepositoryImpl(
     private val settings: ObservableSettings,
 ) : ReadingPreferencesRepository {
-
     override fun getPreferences(): Flow<ReadingPreferences> {
         return combine(
             settings.getFloatFlow(KEY_FONT_SIZE_SCALE, DEFAULT_FONT_SIZE_SCALE),

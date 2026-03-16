@@ -22,7 +22,10 @@ class IosShareManager : ShareManager {
         shareItems(listOfNotNull(shareText, url))
     }
 
-    private fun buildShareText(summary: Summary, customMessage: String? = null): String =
+    private fun buildShareText(
+        summary: Summary,
+        customMessage: String? = null,
+    ): String =
         buildString {
             if (!customMessage.isNullOrBlank()) {
                 appendLine(customMessage)

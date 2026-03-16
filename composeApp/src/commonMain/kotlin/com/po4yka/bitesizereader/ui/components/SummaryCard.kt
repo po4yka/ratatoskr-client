@@ -100,10 +100,11 @@ fun SummaryCard(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = buildString {
-                        append(extractDomain(summary.sourceUrl) ?: "Saved Article")
-                        summary.readingTimeMin?.let { append(" | $it min") }
-                    },
+                    text =
+                        buildString {
+                            append(extractDomain(summary.sourceUrl) ?: "Saved Article")
+                            summary.readingTimeMin?.let { append(" | $it min") }
+                        },
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                     maxLines = 1,

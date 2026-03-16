@@ -89,13 +89,14 @@ class SummaryListViewModelTest {
             )
         } returns flowOf(listOf(testSummary))
 
-        searchHistoryManager = SearchHistoryManager(
-            getRecentSearchesUseCase = getRecentSearchesUseCase,
-            saveSearchQueryUseCase = saveSearchQueryUseCase,
-            deleteSearchQueryUseCase = deleteSearchQueryUseCase,
-            clearSearchHistoryUseCase = clearSearchHistoryUseCase,
-            getTrendingTopicsUseCase = getTrendingTopicsUseCase,
-        )
+        searchHistoryManager =
+            SearchHistoryManager(
+                getRecentSearchesUseCase = getRecentSearchesUseCase,
+                saveSearchQueryUseCase = saveSearchQueryUseCase,
+                deleteSearchQueryUseCase = deleteSearchQueryUseCase,
+                clearSearchHistoryUseCase = clearSearchHistoryUseCase,
+                getTrendingTopicsUseCase = getTrendingTopicsUseCase,
+            )
 
         viewModel =
             SummaryListViewModel(

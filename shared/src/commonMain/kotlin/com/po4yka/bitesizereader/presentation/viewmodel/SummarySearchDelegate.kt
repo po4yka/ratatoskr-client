@@ -27,10 +27,11 @@ class SummarySearchDelegate(
         stateAccessor.update {
             wasSearchActive = it.search.isActive
             it.copy(
-                search = it.search.copy(
-                    isActive = !it.search.isActive,
-                    query = if (it.search.isActive) "" else it.search.query,
-                ),
+                search =
+                    it.search.copy(
+                        isActive = !it.search.isActive,
+                        query = if (it.search.isActive) "" else it.search.query,
+                    ),
             )
         }
         if (wasSearchActive) {

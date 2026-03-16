@@ -49,7 +49,10 @@ class AndroidShareManager(private val context: Context) : ShareManager {
         context.startActivity(shareIntent)
     }
 
-    private fun buildShareText(summary: Summary, customMessage: String? = null): String =
+    private fun buildShareText(
+        summary: Summary,
+        customMessage: String? = null,
+    ): String =
         buildString {
             if (!customMessage.isNullOrBlank()) {
                 appendLine(customMessage)

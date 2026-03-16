@@ -40,7 +40,11 @@ interface SummaryRepository {
 
     suspend fun getAllTags(): List<String>
 
-    suspend fun saveReadPosition(id: String, position: Int, offset: Int)
+    suspend fun saveReadPosition(
+        id: String,
+        position: Int,
+        offset: Int,
+    )
 
     suspend fun archiveSummary(id: String)
 

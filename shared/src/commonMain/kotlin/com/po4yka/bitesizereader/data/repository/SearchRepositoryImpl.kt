@@ -48,13 +48,14 @@ class SearchRepositoryImpl(
         language: String?,
         tags: List<String>?,
     ): List<Summary> {
-        val response = api.semanticSearch(
-            query = query,
-            page = page,
-            pageSize = pageSize,
-            language = language,
-            tags = tags,
-        )
+        val response =
+            api.semanticSearch(
+                query = query,
+                page = page,
+                pageSize = pageSize,
+                language = language,
+                tags = tags,
+            )
         return response.data?.toDomain() ?: emptyList()
     }
 

@@ -121,11 +121,12 @@ private fun CollectionSelectionRow(
     onClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Carbon.theme.layer02)
-            .clickable(enabled = isEnabled, onClick = onClick)
-            .padding(Spacing.sm),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer02)
+                .clickable(enabled = isEnabled, onClick = onClick)
+                .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {

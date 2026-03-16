@@ -148,8 +148,9 @@ class SummaryRepositoryImpl(
         val entity = database.databaseQueries.getSummaryById(id).executeAsOneOrNull()
         if (entity?.fullContent != null) {
             val cachedAt = entity.fullContentCachedAt
-            val isFresh = cachedAt != null &&
-                (Clock.System.now() - cachedAt) < CONTENT_CACHE_TTL
+            val isFresh =
+                cachedAt != null &&
+                    (Clock.System.now() - cachedAt) < CONTENT_CACHE_TTL
             if (isFresh) {
                 return entity.fullContent
             }
@@ -181,7 +182,11 @@ class SummaryRepositoryImpl(
         }
     }
 
-    override suspend fun saveReadPosition(id: String, position: Int, offset: Int) {
+    override suspend fun saveReadPosition(
+        id: String,
+        position: Int,
+        offset: Int,
+    ) {
         database.databaseQueries.updateReadPosition(
             position = position,
             offset = offset,

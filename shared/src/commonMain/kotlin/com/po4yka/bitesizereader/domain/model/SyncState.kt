@@ -91,4 +91,3 @@ data class SyncResult(
     /** Current server version */
     val serverVersion: Long?,
 )
-

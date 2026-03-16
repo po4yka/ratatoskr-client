@@ -5,7 +5,10 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class AddToCollectionUseCase(private val repository: CollectionRepository) {
-    suspend operator fun invoke(collectionId: String, summaryId: String) {
+    suspend operator fun invoke(
+        collectionId: String,
+        summaryId: String,
+    ) {
         repository.addToCollection(collectionId = collectionId, summaryId = summaryId)
     }
 }

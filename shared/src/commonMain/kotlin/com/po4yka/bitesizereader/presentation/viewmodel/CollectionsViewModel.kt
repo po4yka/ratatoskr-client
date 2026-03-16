@@ -61,7 +61,10 @@ class CollectionsViewModel(
     }
 
     @Suppress("TooGenericExceptionCaught")
-    fun createCollection(name: String, description: String?) {
+    fun createCollection(
+        name: String,
+        description: String?,
+    ) {
         if (name.isBlank()) {
             _state.update { it.copy(createError = "Name cannot be empty") }
             return

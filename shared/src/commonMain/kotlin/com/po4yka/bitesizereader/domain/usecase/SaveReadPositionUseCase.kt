@@ -7,7 +7,11 @@ import org.koin.core.annotation.Factory
 class SaveReadPositionUseCase(
     private val repository: SummaryRepository,
 ) {
-    suspend operator fun invoke(id: String, position: Int, offset: Int) {
+    suspend operator fun invoke(
+        id: String,
+        position: Int,
+        offset: Int,
+    ) {
         repository.saveReadPosition(id, position, offset)
     }
 }
