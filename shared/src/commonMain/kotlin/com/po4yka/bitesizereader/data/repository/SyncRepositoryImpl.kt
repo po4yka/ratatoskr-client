@@ -2,8 +2,9 @@ package com.po4yka.bitesizereader.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.po4yka.bitesizereader.data.mappers.toDto
+import com.po4yka.bitesizereader.data.mappers.toSummaryEntity
 import com.po4yka.bitesizereader.data.remote.SyncApi
-import com.po4yka.bitesizereader.data.remote.dto.SyncApplyItemDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto
 import com.po4yka.bitesizereader.database.Database
@@ -32,13 +33,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withTimeout
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -440,8 +434,9 @@ class SyncRepositoryImpl(
             data.items.forEach { item ->
                 when (item.entityType) {
                     "summary" -> {
-                        val success = processSyncSummaryItem(item.id, item.summary)
-                        if (success) {
+                        val entity = item.summary?.toSummaryEntity(item.id)
+                        if (entity != null) {
+                            database.databaseQueries.insertSummary(entity)
                             successCount++
                             fullSyncReceivedIds?.add(item.id.toString())
                         } else {
@@ -511,8 +506,13 @@ class SyncRepositoryImpl(
             data.created.forEach { item ->
                 when (item.entityType) {
                     "summary" -> {
-                        val success = processSyncSummaryItem(item.id, item.summary)
-                        if (success) createdCount++ else errorCount++
+                        val entity = item.summary?.toSummaryEntity(item.id)
+                        if (entity != null) {
+                            database.databaseQueries.insertSummary(entity)
+                            createdCount++
+                        } else {
+                            errorCount++
+                        }
                     }
                     else -> {
                         logger.warn { "Unknown entity type: ${item.entityType}" }
@@ -523,8 +523,13 @@ class SyncRepositoryImpl(
             data.updated.forEach { item ->
                 when (item.entityType) {
                     "summary" -> {
-                        val success = processSyncSummaryItem(item.id, item.summary)
-                        if (success) updatedCount++ else errorCount++
+                        val entity = item.summary?.toSummaryEntity(item.id)
+                        if (entity != null) {
+                            database.databaseQueries.insertSummary(entity)
+                            updatedCount++
+                        } else {
+                            errorCount++
+                        }
                     }
                     else -> {
                         logger.warn { "Unknown entity type: ${item.entityType}" }
@@ -602,117 +607,6 @@ class SyncRepositoryImpl(
         )
     }
 
-    // ========================================================================
-    // Private Helpers
-    // ========================================================================
-
-    /**
-     * Process a sync summary item and persist to database.
-     *
-     * Server sends summary data in this structure:
-     * {
-     *   "id": 42,
-     *   "request_id": 10,
-     *   "lang": "en",
-     *   "is_read": false,
-     *   "json_payload": {
-     *     "summary_1000": "Full summary text...",
-     *     "topic_tags": ["#tag1", "#tag2"],
-     *     "metadata": {
-     *       "title": "Article Title",
-     *       "canonical_url": "https://...",
-     *       "domain": "example.com"
-     *     }
-     *   },
-     *   "created_at": "2024-12-14T10:20:00Z"
-     * }
-     *
-     * @return true if item was processed successfully, false if there was an error
-     */
-    private fun processSyncSummaryItem(
-        id: Long,
-        summaryData: JsonObject?,
-    ): Boolean {
-        if (summaryData == null) {
-            logger.warn { "Sync item $id has no summary data, skipping" }
-            return false
-        }
-
-        return try {
-            // Extract top-level fields
-            val isRead = summaryData["is_read"]?.jsonPrimitive?.booleanOrNull ?: false
-            val createdAtStr = summaryData["created_at"]?.jsonPrimitive?.contentOrNull
-            val jsonPayload = summaryData["json_payload"]?.jsonObject
-
-            // Parse created_at timestamp
-            val createdAt =
-                createdAtStr?.let {
-                    try {
-                        Instant.parse(it)
-                    } catch (_: Exception) {
-                        logger.warn { "Failed to parse created_at for item $id: $it" }
-                        Clock.System.now()
-                    }
-                } ?: run {
-                    logger.warn { "Missing created_at for item $id, using current time" }
-                    Clock.System.now()
-                }
-
-            // Extract from json_payload
-            val metadata = jsonPayload?.get("metadata")?.jsonObject
-            val title =
-                metadata?.get("title")?.jsonPrimitive?.contentOrNull
-                    ?: "Untitled Summary"
-            val sourceUrl =
-                metadata?.get("canonical_url")?.jsonPrimitive?.contentOrNull
-                    ?: ""
-            val content =
-                jsonPayload?.get("summary_1000")?.jsonPrimitive?.contentOrNull
-                    ?: jsonPayload?.get("summary_250")?.jsonPrimitive?.contentOrNull
-                    ?: ""
-
-            // Extract tags from topic_tags (they come as ["#tag1", "#tag2"])
-            val topicTags = jsonPayload?.get("topic_tags")?.jsonArray
-            val tags =
-                topicTags?.mapNotNull { tag ->
-                    tag.jsonPrimitive.contentOrNull?.removePrefix("#")
-                } ?: emptyList()
-
-            // Note: imageUrl is not provided by the server in the current schema
-            val imageUrl: String? = null
-
-            logger.debug {
-                "Inserting summary $id: title='$title', sourceUrl='$sourceUrl', " +
-                    "contentLength=${content.length}, tags=$tags, isRead=$isRead"
-            }
-
-            // Insert or replace in database
-            database.databaseQueries.insertSummary(
-                com.po4yka.bitesizereader.database.SummaryEntity(
-                    id = id.toString(),
-                    title = title,
-                    content = content,
-                    sourceUrl = sourceUrl,
-                    imageUrl = imageUrl,
-                    createdAt = createdAt,
-                    isRead = isRead,
-                    tags = tags,
-                    readingTimeMin = null,
-                    isFavorited = false,
-                    fullContent = null,
-                    fullContentCachedAt = null,
-                    lastReadPosition = 0,
-                    lastReadOffset = 0,
-                    isArchived = false,
-                ),
-            )
-            true
-        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-            logger.error(e) { "Failed to process sync summary item $id" }
-            false
-        }
-    }
-
     private suspend fun flushPendingDeletes(sessionId: String) {
         val pendingDeletes = database.databaseQueries.selectAllPendingDeletes().executeAsList()
         if (pendingDeletes.isEmpty()) return
@@ -745,30 +639,5 @@ class SyncRepositoryImpl(
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.warn(e) { "Failed to flush pending deletes, will retry next sync" }
         }
-    }
-
-    private fun LocalChange.toDto(): SyncApplyItemDto {
-        val jsonPayload =
-            payload?.let { map ->
-                JsonObject(
-                    map.mapValues { (_, value) ->
-                        when (value) {
-                            is String -> JsonPrimitive(value)
-                            is Number -> JsonPrimitive(value)
-                            is Boolean -> JsonPrimitive(value)
-                            else -> JsonPrimitive(value?.toString())
-                        }
-                    },
-                )
-            }
-
-        return SyncApplyItemDto(
-            entityType = entityType,
-            id = id,
-            action = action,
-            lastSeenVersion = lastSeenVersion,
-            payload = jsonPayload,
-            clientTimestamp = clientTimestamp,
-        )
     }
 }
