@@ -8,10 +8,10 @@ class LayoutPreferencesManager(
     private val stateAccessor: StateAccessor<SummaryListState>,
 ) {
     fun setLayoutMode(mode: LayoutMode) {
-        stateAccessor.update { it.copy(layoutMode = mode) }
+        stateAccessor.update { it.copy(layout = it.layout.copy(layoutMode = mode)) }
     }
 
     fun setViewDensity(density: ViewDensity) {
-        stateAccessor.update { it.copy(viewDensity = density) }
+        stateAccessor.update { it.copy(layout = it.layout.copy(viewDensity = density)) }
     }
 }

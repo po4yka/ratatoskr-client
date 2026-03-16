@@ -25,10 +25,12 @@ class SummarySearchDelegate(
     fun toggleSearch() {
         var wasSearchActive = false
         stateAccessor.update {
-            wasSearchActive = it.isSearchActive
+            wasSearchActive = it.search.isActive
             it.copy(
-                isSearchActive = !it.isSearchActive,
-                searchQuery = if (it.isSearchActive) "" else it.searchQuery,
+                search = it.search.copy(
+                    isActive = !it.search.isActive,
+                    query = if (it.search.isActive) "" else it.search.query,
+                ),
             )
         }
         if (wasSearchActive) {
@@ -37,7 +39,7 @@ class SummarySearchDelegate(
     }
 
     fun onSearchQueryChanged(query: String) {
-        stateAccessor.update { it.copy(searchQuery = query) }
+        stateAccessor.update { it.copy(search = it.search.copy(query = query)) }
         searchJob?.cancel()
 
         if (query.isBlank()) {
@@ -82,7 +84,7 @@ class SummarySearchDelegate(
     }
 
     fun selectTrendingTopic(topic: String) {
-        stateAccessor.update { it.copy(searchQuery = topic) }
+        stateAccessor.update { it.copy(search = it.search.copy(query = topic)) }
         searchJob?.cancel()
         searchJob =
             scope.launch {
@@ -93,7 +95,7 @@ class SummarySearchDelegate(
     }
 
     fun selectRecentSearch(query: String) {
-        stateAccessor.update { it.copy(searchQuery = query) }
+        stateAccessor.update { it.copy(search = it.search.copy(query = query)) }
         searchJob?.cancel()
         searchJob =
             scope.launch {
@@ -111,19 +113,25 @@ class SummarySearchDelegate(
 
     fun clearSearchHistory() {
         searchHistoryManager.clearHistory(scope) {
-            stateAccessor.update { it.copy(recentSearches = emptyList()) }
+            stateAccessor.update {
+                it.copy(search = it.search.copy(recentSearches = emptyList()))
+            }
         }
     }
 
     fun loadRecentSearches() {
         searchHistoryManager.loadRecentSearches(scope) { searches ->
-            stateAccessor.update { it.copy(recentSearches = searches) }
+            stateAccessor.update {
+                it.copy(search = it.search.copy(recentSearches = searches))
+            }
         }
     }
 
     fun loadTrendingTopics() {
         searchHistoryManager.loadTrendingTopics(scope) { topics ->
-            stateAccessor.update { it.copy(trendingTopics = topics) }
+            stateAccessor.update {
+                it.copy(search = it.search.copy(trendingTopics = topics))
+            }
         }
     }
 }

@@ -43,31 +43,35 @@ class CollectionViewViewModel(
     fun loadCollection(id: String) {
         collectionId = id
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoadingCollection = true, collectionError = null)
+            _state.value = _state.value.copy(
+                header = _state.value.header.copy(isLoading = true, error = null),
+            )
             try {
                 val collection = getCollectionUseCase(id)
                 val isSystem = collection?.type == CollectionType.System
                 val canEdit = !isSystem
                 val canShare = !isSystem
 
-                _state.value =
-                    _state.value.copy(
+                _state.value = _state.value.copy(
+                    header = _state.value.header.copy(
                         collection = collection,
-                        isLoadingCollection = false,
+                        isLoading = false,
                         isSystemCollection = isSystem,
                         canEdit = canEdit,
                         canShare = canShare,
-                    )
+                    ),
+                )
 
                 // Load items for the default tab
                 loadItems()
             } catch (e: Exception) {
                 logger.error(e) { "Error loading collection $id" }
-                _state.value =
-                    _state.value.copy(
-                        isLoadingCollection = false,
-                        collectionError = e.message ?: "Failed to load collection",
-                    )
+                _state.value = _state.value.copy(
+                    header = _state.value.header.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load collection",
+                    ),
+                )
             }
         }
     }
@@ -100,52 +104,60 @@ class CollectionViewViewModel(
         if (collectionId.isEmpty()) return
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoadingItems = true, itemsError = null)
+            _state.value = _state.value.copy(
+                items = _state.value.items.copy(isLoading = true, error = null),
+            )
             try {
                 val items = getCollectionItemsUseCase(collectionId, PAGE_SIZE, 0)
-                _state.value =
-                    _state.value.copy(
+                _state.value = _state.value.copy(
+                    items = _state.value.items.copy(
                         items = items,
-                        isLoadingItems = false,
-                        itemsPage = 0,
-                        hasMoreItems = items.size >= PAGE_SIZE,
-                    )
+                        isLoading = false,
+                        page = 0,
+                        hasMore = items.size >= PAGE_SIZE,
+                    ),
+                )
                 itemsLoaded = true
             } catch (e: Exception) {
                 logger.error(e) { "Error loading items for collection $collectionId" }
-                _state.value =
-                    _state.value.copy(
-                        isLoadingItems = false,
-                        itemsError = e.message ?: "Failed to load items",
-                    )
+                _state.value = _state.value.copy(
+                    items = _state.value.items.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load items",
+                    ),
+                )
             }
         }
     }
 
     @Suppress("TooGenericExceptionCaught")
     fun loadMoreItems() {
-        if (collectionId.isEmpty() || !_state.value.hasMoreItems || _state.value.isLoadingItems) return
+        if (collectionId.isEmpty() || !_state.value.items.hasMore || _state.value.items.isLoading) return
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoadingItems = true)
+            _state.value = _state.value.copy(
+                items = _state.value.items.copy(isLoading = true),
+            )
             try {
-                val nextPage = _state.value.itemsPage + 1
+                val nextPage = _state.value.items.page + 1
                 val offset = nextPage * PAGE_SIZE
                 val newItems = getCollectionItemsUseCase(collectionId, PAGE_SIZE, offset)
-                _state.value =
-                    _state.value.copy(
-                        items = _state.value.items + newItems,
-                        isLoadingItems = false,
-                        itemsPage = nextPage,
-                        hasMoreItems = newItems.size >= PAGE_SIZE,
-                    )
+                _state.value = _state.value.copy(
+                    items = _state.value.items.copy(
+                        items = _state.value.items.items + newItems,
+                        isLoading = false,
+                        page = nextPage,
+                        hasMore = newItems.size >= PAGE_SIZE,
+                    ),
+                )
             } catch (e: Exception) {
                 logger.error(e) { "Error loading more items for collection $collectionId" }
-                _state.value =
-                    _state.value.copy(
-                        isLoadingItems = false,
-                        itemsError = e.message ?: "Failed to load more items",
-                    )
+                _state.value = _state.value.copy(
+                    items = _state.value.items.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load more items",
+                    ),
+                )
             }
         }
     }
@@ -155,46 +167,56 @@ class CollectionViewViewModel(
         name: String? = null,
         description: String? = null,
     ) {
-        if (collectionId.isEmpty() || !_state.value.canEdit) return
+        if (collectionId.isEmpty() || !_state.value.header.canEdit) return
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isUpdating = true, updateError = null, updateSuccess = false)
+            _state.value = _state.value.copy(
+                settings = _state.value.settings.copy(
+                    isUpdating = true,
+                    updateError = null,
+                    updateSuccess = false,
+                ),
+            )
             try {
                 val updatedCollection = updateCollectionUseCase(collectionId, name, description)
-                _state.value =
-                    _state.value.copy(
-                        collection = updatedCollection,
-                        isUpdating = false,
-                        updateSuccess = true,
-                    )
+                _state.value = _state.value.copy(
+                    header = _state.value.header.copy(collection = updatedCollection),
+                    settings = _state.value.settings.copy(isUpdating = false, updateSuccess = true),
+                )
             } catch (e: Exception) {
                 logger.error(e) { "Error updating collection $collectionId" }
-                _state.value =
-                    _state.value.copy(
+                _state.value = _state.value.copy(
+                    settings = _state.value.settings.copy(
                         isUpdating = false,
                         updateError = e.message ?: "Failed to update collection",
-                    )
+                    ),
+                )
             }
         }
     }
 
     @Suppress("TooGenericExceptionCaught")
     fun deleteCollection(onDeleted: () -> Unit) {
-        if (collectionId.isEmpty() || !_state.value.canEdit) return
+        if (collectionId.isEmpty() || !_state.value.header.canEdit) return
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isDeleting = true, deleteError = null)
+            _state.value = _state.value.copy(
+                settings = _state.value.settings.copy(isDeleting = true, deleteError = null),
+            )
             try {
                 deleteCollectionUseCase(collectionId)
-                _state.value = _state.value.copy(isDeleting = false)
+                _state.value = _state.value.copy(
+                    settings = _state.value.settings.copy(isDeleting = false),
+                )
                 onDeleted()
             } catch (e: Exception) {
                 logger.error(e) { "Error deleting collection $collectionId" }
-                _state.value =
-                    _state.value.copy(
+                _state.value = _state.value.copy(
+                    settings = _state.value.settings.copy(
                         isDeleting = false,
                         deleteError = e.message ?: "Failed to delete collection",
-                    )
+                    ),
+                )
             }
         }
     }
@@ -204,22 +226,26 @@ class CollectionViewViewModel(
         if (collectionId.isEmpty()) return
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoadingCollaborators = true, collaboratorsError = null)
+            _state.value = _state.value.copy(
+                sharing = _state.value.sharing.copy(isLoading = true, error = null),
+            )
             try {
                 val collaborators = getCollectionAclUseCase(collectionId)
-                _state.value =
-                    _state.value.copy(
+                _state.value = _state.value.copy(
+                    sharing = _state.value.sharing.copy(
                         collaborators = collaborators,
-                        isLoadingCollaborators = false,
-                    )
+                        isLoading = false,
+                    ),
+                )
                 collaboratorsLoaded = true
             } catch (e: Exception) {
                 logger.error(e) { "Error loading collaborators for collection $collectionId" }
-                _state.value =
-                    _state.value.copy(
-                        isLoadingCollaborators = false,
-                        collaboratorsError = e.message ?: "Failed to load collaborators",
-                    )
+                _state.value = _state.value.copy(
+                    sharing = _state.value.sharing.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to load collaborators",
+                    ),
+                )
             }
         }
     }
@@ -229,7 +255,7 @@ class CollectionViewViewModel(
         userId: Int,
         role: CollaboratorRole,
     ) {
-        if (collectionId.isEmpty() || !_state.value.canShare) return
+        if (collectionId.isEmpty() || !_state.value.header.canShare) return
 
         viewModelScope.launch {
             try {
@@ -238,67 +264,78 @@ class CollectionViewViewModel(
                 loadCollaborators()
             } catch (e: Exception) {
                 logger.error(e) { "Error adding collaborator to collection $collectionId" }
-                _state.value =
-                    _state.value.copy(
-                        collaboratorsError = e.message ?: "Failed to add collaborator",
-                    )
+                _state.value = _state.value.copy(
+                    sharing = _state.value.sharing.copy(
+                        error = e.message ?: "Failed to add collaborator",
+                    ),
+                )
             }
         }
     }
 
     @Suppress("TooGenericExceptionCaught")
     fun removeCollaborator(userId: Int) {
-        if (collectionId.isEmpty() || !_state.value.canShare) return
+        if (collectionId.isEmpty() || !_state.value.header.canShare) return
 
         viewModelScope.launch {
             try {
                 manageCollaboratorUseCase.removeCollaborator(collectionId, userId)
                 // Remove from local state immediately
-                _state.value =
-                    _state.value.copy(
-                        collaborators = _state.value.collaborators.filter { it.userId != userId },
-                    )
+                _state.value = _state.value.copy(
+                    sharing = _state.value.sharing.copy(
+                        collaborators = _state.value.sharing.collaborators.filter { it.userId != userId },
+                    ),
+                )
             } catch (e: Exception) {
                 logger.error(e) { "Error removing collaborator from collection $collectionId" }
-                _state.value =
-                    _state.value.copy(
-                        collaboratorsError = e.message ?: "Failed to remove collaborator",
-                    )
+                _state.value = _state.value.copy(
+                    sharing = _state.value.sharing.copy(
+                        error = e.message ?: "Failed to remove collaborator",
+                    ),
+                )
             }
         }
     }
 
     @Suppress("TooGenericExceptionCaught")
     fun createInviteLink(role: CollaboratorRole) {
-        if (collectionId.isEmpty() || !_state.value.canShare) return
+        if (collectionId.isEmpty() || !_state.value.header.canShare) return
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isCreatingInvite = true, inviteError = null)
+            _state.value = _state.value.copy(
+                sharing = _state.value.sharing.copy(isCreatingInvite = true, inviteError = null),
+            )
             try {
                 val invite = createInviteLinkUseCase(collectionId, role)
-                _state.value =
-                    _state.value.copy(
+                _state.value = _state.value.copy(
+                    sharing = _state.value.sharing.copy(
                         inviteLink = invite,
                         isCreatingInvite = false,
-                    )
+                    ),
+                )
             } catch (e: Exception) {
                 logger.error(e) { "Error creating invite link for collection $collectionId" }
-                _state.value =
-                    _state.value.copy(
+                _state.value = _state.value.copy(
+                    sharing = _state.value.sharing.copy(
                         isCreatingInvite = false,
                         inviteError = e.message ?: "Failed to create invite link",
-                    )
+                    ),
+                )
             }
         }
     }
 
     @Suppress("unused") // Public API for UI layer
     fun clearUpdateSuccess() {
-        _state.value = _state.value.copy(updateSuccess = false)
+        _state.value = _state.value.copy(
+            settings = _state.value.settings.copy(updateSuccess = false),
+        )
     }
 
     @Suppress("unused") // Public API for UI layer
     fun clearInviteLink() {
-        _state.value = _state.value.copy(inviteLink = null)
+        _state.value = _state.value.copy(
+            sharing = _state.value.sharing.copy(inviteLink = null),
+        )
     }
 }

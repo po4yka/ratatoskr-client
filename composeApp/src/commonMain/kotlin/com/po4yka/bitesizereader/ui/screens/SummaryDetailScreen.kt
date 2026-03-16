@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
@@ -217,8 +216,7 @@ private fun SummaryDetailHeader(
     )
 }
 
-@Suppress("FunctionNaming", "LongMethod")
-@OptIn(ExperimentalLayoutApi::class)
+@Suppress("FunctionNaming")
 @Composable
 private fun SummaryDetailContent(
     summary: Summary,
@@ -243,7 +241,6 @@ private fun SummaryDetailContent(
         }
     }
 
-    // Save reading position when leaving the screen
     DisposableEffect(Unit) {
         onDispose {
             onSaveReadPosition(
@@ -261,7 +258,6 @@ private fun SummaryDetailContent(
             trackColor = Carbon.theme.borderSubtle00,
         )
 
-        // Markdown colors and typography (defined once, used by Markdown composable)
         val markdownColors =
             DefaultMarkdownColors(
                 text = Carbon.theme.textPrimary,
@@ -271,31 +267,10 @@ private fun SummaryDetailContent(
                 tableBackground = Carbon.theme.layer01,
             )
 
-        val fontScale = readingPreferences.fontSizeScale
-        val lineScale = readingPreferences.lineSpacingScale
-
-        fun TextStyle.scaled(): TextStyle = copy(
-            fontSize = fontSize * fontScale,
-            lineHeight = if (lineHeight.isSp) lineHeight * lineScale else lineHeight,
+        val markdownTypography = buildMarkdownTypography(
+            fontScale = readingPreferences.fontSizeScale,
+            lineScale = readingPreferences.lineSpacingScale,
         )
-
-        val scaledBody = Carbon.typography.body01.scaled()
-        val markdownTypography =
-            markdownTypography(
-                h1 = Carbon.typography.heading04.scaled(),
-                h2 = Carbon.typography.heading03.scaled(),
-                h3 = Carbon.typography.headingCompact01.scaled(),
-                h4 = Carbon.typography.headingCompact01.scaled(),
-                h5 = Carbon.typography.headingCompact01.scaled(),
-                h6 = Carbon.typography.headingCompact01.scaled(),
-                paragraph = scaledBody,
-                text = scaledBody,
-                quote = scaledBody.copy(fontStyle = FontStyle.Italic),
-                code = scaledBody.copy(fontFamily = FontFamily.Monospace),
-                bullet = scaledBody,
-                list = scaledBody,
-                ordered = scaledBody,
-            )
 
         Markdown(
             content = summary.fullContent ?: summary.content,
@@ -310,67 +285,13 @@ private fun SummaryDetailContent(
                     contentPadding = PaddingValues(Spacing.md),
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    // Header items
-                    item(key = "title") {
-                        Text(
-                            text = summary.title,
-                            style = Carbon.typography.heading04,
-                            color = Carbon.theme.textPrimary,
-                            modifier = Modifier.semantics { heading() },
-                        )
-                        Spacer(modifier = Modifier.height(Spacing.xs))
-                    }
-
-                    if (summary.imageUrl != null) {
-                        item(key = "hero_image") {
-                            ProxiedImage(
-                                imageUrl = summary.imageUrl!!,
-                                contentDescription = summary.title,
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .height(200.dp),
-                            )
-                            Spacer(modifier = Modifier.height(Spacing.md))
-                        }
-                    }
-
-                    item(key = "metadata") {
-                        Text(
-                            text = extractDomain(summary.sourceUrl) ?: "Unknown source",
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.textSecondary,
-                        )
-                        Text(
-                            text = buildString {
-                                append(formatDate(summary.createdAt))
-                                summary.readingTimeMin?.let { append(" | $it min read") }
-                            },
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.textSecondary,
-                        )
-                        Spacer(modifier = Modifier.height(Spacing.md))
-                    }
-
-                    if (summary.tags.isNotEmpty()) {
-                        item(key = "tags") {
-                            FlowRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-                                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
-                            ) {
-                                summary.tags.forEach { tag -> TagChip(tag = tag) }
-                            }
-                            Spacer(modifier = Modifier.height(Spacing.md))
-                        }
-                    }
+                    item(key = "header") { ArticleHeader(summary = summary) }
 
                     item(key = "divider_top") {
                         HorizontalDivider(color = Carbon.theme.borderSubtle00)
                         Spacer(modifier = Modifier.height(Spacing.md))
                     }
 
-                    // Lazy markdown content items
                     items(
                         items = nodes,
                         key = { node -> "md_${node.startOffset}" },
@@ -378,33 +299,117 @@ private fun SummaryDetailContent(
                         MarkdownElement(node, components, state.content)
                     }
 
-                    // Footer items
-                    item(key = "footer") {
-                        Spacer(modifier = Modifier.height(Spacing.lg))
-                        HorizontalDivider(color = Carbon.theme.borderSubtle00)
-                        Spacer(modifier = Modifier.height(Spacing.md))
-
-                        Text(
-                            text = "Original Article",
-                            style = Carbon.typography.headingCompact01,
-                            color = Carbon.theme.textPrimary,
-                        )
-                        Spacer(modifier = Modifier.height(Spacing.xs))
-
-                        val uriHandler = LocalUriHandler.current
-                        Text(
-                            text = summary.sourceUrl,
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.linkPrimary,
-                            modifier = Modifier
-                                .semantics { role = Role.Button }
-                                .clickable { uriHandler.openUri(summary.sourceUrl) },
-                        )
-                    }
+                    item(key = "footer") { ArticleFooter(sourceUrl = summary.sourceUrl) }
                 }
             },
         )
     }
+}
+
+@Suppress("FunctionNaming")
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ArticleHeader(summary: Summary) {
+    Column {
+        Text(
+            text = summary.title,
+            style = Carbon.typography.heading04,
+            color = Carbon.theme.textPrimary,
+            modifier = Modifier.semantics { heading() },
+        )
+        Spacer(modifier = Modifier.height(Spacing.xs))
+
+        if (summary.imageUrl != null) {
+            ProxiedImage(
+                imageUrl = summary.imageUrl!!,
+                contentDescription = summary.title,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+            )
+            Spacer(modifier = Modifier.height(Spacing.md))
+        }
+
+        Text(
+            text = extractDomain(summary.sourceUrl) ?: "Unknown source",
+            style = Carbon.typography.label01,
+            color = Carbon.theme.textSecondary,
+        )
+        Text(
+            text = buildString {
+                append(formatDate(summary.createdAt))
+                summary.readingTimeMin?.let { append(" | $it min read") }
+            },
+            style = Carbon.typography.label01,
+            color = Carbon.theme.textSecondary,
+        )
+        Spacer(modifier = Modifier.height(Spacing.md))
+
+        if (summary.tags.isNotEmpty()) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+            ) {
+                summary.tags.forEach { tag -> TagChip(tag = tag) }
+            }
+            Spacer(modifier = Modifier.height(Spacing.md))
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun ArticleFooter(sourceUrl: String) {
+    Column {
+        Spacer(modifier = Modifier.height(Spacing.lg))
+        HorizontalDivider(color = Carbon.theme.borderSubtle00)
+        Spacer(modifier = Modifier.height(Spacing.md))
+
+        Text(
+            text = "Original Article",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+        )
+        Spacer(modifier = Modifier.height(Spacing.xs))
+
+        val uriHandler = LocalUriHandler.current
+        Text(
+            text = sourceUrl,
+            style = Carbon.typography.label01,
+            color = Carbon.theme.linkPrimary,
+            modifier = Modifier
+                .semantics { role = Role.Button }
+                .clickable { uriHandler.openUri(sourceUrl) },
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun buildMarkdownTypography(fontScale: Float, lineScale: Float) = run {
+    fun TextStyle.scaled(): TextStyle = copy(
+        fontSize = fontSize * fontScale,
+        lineHeight = if (lineHeight.isSp) lineHeight * lineScale else lineHeight,
+    )
+
+    val scaledBody = Carbon.typography.body01.scaled()
+    markdownTypography(
+        h1 = Carbon.typography.heading04.scaled(),
+        h2 = Carbon.typography.heading03.scaled(),
+        h3 = Carbon.typography.headingCompact01.scaled(),
+        h4 = Carbon.typography.headingCompact01.scaled(),
+        h5 = Carbon.typography.headingCompact01.scaled(),
+        h6 = Carbon.typography.headingCompact01.scaled(),
+        paragraph = scaledBody,
+        text = scaledBody,
+        quote = scaledBody.copy(fontStyle = FontStyle.Italic),
+        code = scaledBody.copy(fontFamily = FontFamily.Monospace),
+        bullet = scaledBody,
+        list = scaledBody,
+        ordered = scaledBody,
+    )
 }
 
 private fun formatDate(instant: Instant): String {

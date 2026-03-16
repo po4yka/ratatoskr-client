@@ -45,8 +45,13 @@ import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.Loading
 import com.po4yka.bitesizereader.domain.model.CollaboratorRole
 import com.po4yka.bitesizereader.domain.model.Collection
+import com.po4yka.bitesizereader.domain.model.CollectionAcl
+import com.po4yka.bitesizereader.domain.model.CollectionInvite
 import com.po4yka.bitesizereader.presentation.navigation.CollectionViewComponent
-import com.po4yka.bitesizereader.presentation.state.CollectionViewState
+import com.po4yka.bitesizereader.presentation.state.CollectionHeaderState
+import com.po4yka.bitesizereader.presentation.state.CollectionItemsState
+import com.po4yka.bitesizereader.presentation.state.CollectionSettingsState
+import com.po4yka.bitesizereader.presentation.state.CollectionSharingState
 import com.po4yka.bitesizereader.presentation.state.CollectionViewTab
 import com.po4yka.bitesizereader.ui.components.EmptyStateView
 import com.po4yka.bitesizereader.ui.components.ErrorView
@@ -71,7 +76,7 @@ fun CollectionViewScreen(
     ) {
         // Header with back button and collection info
         CollectionViewHeader(
-            state = state,
+            header = state.header,
             onBackClick = component::onBackClicked,
         )
 
@@ -79,7 +84,7 @@ fun CollectionViewScreen(
         CollectionTabBar(
             selectedTab = state.selectedTab,
             onTabSelected = component.viewModel::selectTab,
-            isSystemCollection = state.isSystemCollection,
+            isSystemCollection = state.header.isSystemCollection,
         )
 
         // Tab content
@@ -87,19 +92,21 @@ fun CollectionViewScreen(
             when (state.selectedTab) {
                 CollectionViewTab.Items ->
                     ItemsTabContent(
-                        state = state,
+                        items = state.items,
                         onSummaryClick = component::onSummaryClicked,
                         onLoadMore = component.viewModel::loadMoreItems,
                     )
                 CollectionViewTab.Settings ->
                     SettingsTabContent(
-                        state = state,
+                        header = state.header,
+                        settings = state.settings,
                         onUpdateCollection = component.viewModel::updateCollection,
                         onDeleteCollection = component::onDeleteConfirmed,
                     )
                 CollectionViewTab.Sharing ->
                     SharingTabContent(
-                        state = state,
+                        header = state.header,
+                        sharing = state.sharing,
                         onRemoveCollaborator = component.viewModel::removeCollaborator,
                         onCreateInviteLink = component.viewModel::createInviteLink,
                     )
@@ -111,10 +118,10 @@ fun CollectionViewScreen(
 @Suppress("FunctionNaming")
 @Composable
 private fun CollectionViewHeader(
-    state: CollectionViewState,
+    header: CollectionHeaderState,
     onBackClick: () -> Unit,
 ) {
-    val collection = state.collection
+    val collection = header.collection
 
     Column(
         modifier =
@@ -323,12 +330,12 @@ private fun TabItem(
 @Suppress("FunctionNaming")
 @Composable
 private fun ItemsTabContent(
-    state: CollectionViewState,
+    items: CollectionItemsState,
     onSummaryClick: (String) -> Unit,
     onLoadMore: () -> Unit,
 ) {
     val listState = rememberLazyListState()
-    val itemsError = state.itemsError
+    val itemsError = items.error
 
     // Detect when scrolled to bottom for pagination
     LaunchedEffect(listState) {
@@ -338,20 +345,20 @@ private fun ItemsTabContent(
             val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
             lastVisibleItem >= totalItems - 3
         }.collect { shouldLoadMore ->
-            if (shouldLoadMore && state.hasMoreItems && !state.isLoadingItems) {
+            if (shouldLoadMore && items.hasMore && !items.isLoading) {
                 onLoadMore()
             }
         }
     }
 
     when {
-        itemsError != null && state.items.isEmpty() ->
+        itemsError != null && items.items.isEmpty() ->
             ErrorView(
                 message = itemsError,
                 modifier = Modifier.fillMaxSize(),
             )
 
-        state.items.isEmpty() && !state.isLoadingItems ->
+        items.items.isEmpty() && !items.isLoading ->
             EmptyStateView(
                 title = "No items yet",
                 message = "Add articles to this collection to see them here",
@@ -365,14 +372,14 @@ private fun ItemsTabContent(
                 contentPadding = PaddingValues(Spacing.md),
                 verticalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
-                items(items = state.items, key = { it.id }) { summary ->
+                items(items = items.items, key = { it.id }) { summary ->
                     SummaryCard(
                         summary = summary,
                         onClick = { onSummaryClick(summary.id) },
                     )
                 }
 
-                if (state.isLoadingItems) {
+                if (items.isLoading) {
                     item {
                         Box(
                             modifier =
@@ -390,7 +397,7 @@ private fun ItemsTabContent(
     }
 
     // Initial loading overlay
-    if (state.isLoadingItems && state.items.isEmpty()) {
+    if (items.isLoading && items.items.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
@@ -403,18 +410,16 @@ private fun ItemsTabContent(
 @Suppress("FunctionNaming")
 @Composable
 private fun SettingsTabContent(
-    state: CollectionViewState,
+    header: CollectionHeaderState,
+    settings: CollectionSettingsState,
     onUpdateCollection: (String?, String?) -> Unit,
     onDeleteCollection: () -> Unit,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var editedName by remember(state.collection) { mutableStateOf(state.collection?.name ?: "") }
-    var editedDescription by remember(state.collection) { mutableStateOf(state.collection?.description ?: "") }
+    var editedName by remember(header.collection) { mutableStateOf(header.collection?.name ?: "") }
+    var editedDescription by remember(header.collection) { mutableStateOf(header.collection?.description ?: "") }
 
-    val updateError = state.updateError
-    val deleteError = state.deleteError
-
-    if (!state.canEdit) {
+    if (!header.canEdit) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
@@ -442,155 +447,190 @@ private fun SettingsTabContent(
         }
 
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                Text(
-                    text = "Name",
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
-                )
-                OutlinedTextField(
-                    value = editedName,
-                    onValueChange = { editedName = it },
-                    placeholder = { Text("Collection name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                )
-            }
-        }
-
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                Text(
-                    text = "Description",
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
-                )
-                OutlinedTextField(
-                    value = editedDescription,
-                    onValueChange = { editedDescription = it },
-                    placeholder = { Text("Optional description") },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 2,
-                )
-            }
-        }
-
-        item {
-            Button(
-                label = if (state.isUpdating) "Saving..." else "Save Changes",
-                onClick = {
+            CollectionEditForm(
+                editedName = editedName,
+                onNameChange = { editedName = it },
+                editedDescription = editedDescription,
+                onDescriptionChange = { editedDescription = it },
+                isUpdating = settings.isUpdating,
+                onSave = {
                     onUpdateCollection(
-                        editedName.takeIf { it != state.collection?.name },
-                        editedDescription.takeIf { it != state.collection?.description },
+                        editedName.takeIf { it != header.collection?.name },
+                        editedDescription.takeIf { it != header.collection?.description },
                     )
                 },
-                buttonType = ButtonType.Primary,
-                isEnabled = !state.isUpdating,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        if (updateError != null) {
-            item {
-                Text(
-                    text = updateError,
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.supportError,
-                )
-            }
-        }
-
-        item {
-            HorizontalDivider(
-                color = Carbon.theme.borderSubtle00,
-                modifier = Modifier.padding(vertical = Spacing.xs),
+                updateError = settings.updateError,
             )
         }
 
         item {
-            Text(
-                text = "Danger Zone",
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.supportError,
+            CollectionDangerZone(
+                isDeleting = settings.isDeleting,
+                deleteError = settings.deleteError,
+                onShowDeleteDialog = { showDeleteDialog = true },
             )
-        }
-
-        item {
-            Button(
-                label = if (state.isDeleting) "Deleting..." else "Delete Collection",
-                onClick = { showDeleteDialog = true },
-                buttonType = ButtonType.PrimaryDanger,
-                isEnabled = !state.isDeleting,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        if (deleteError != null) {
-            item {
-                Text(
-                    text = deleteError,
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.supportError,
-                )
-            }
         }
     }
 
     if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = {
-                Text(
-                    text = "Delete Collection?",
-                    style = Carbon.typography.heading03,
-                    color = Carbon.theme.textPrimary,
-                )
+        DeleteCollectionDialog(
+            onConfirm = {
+                showDeleteDialog = false
+                onDeleteCollection()
             },
-            text = {
-                Text(
-                    text = "This action cannot be undone. All items will be removed from this collection.",
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.textSecondary,
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteDialog = false
-                        onDeleteCollection()
-                    },
-                ) {
-                    Text(
-                        text = "Delete",
-                        color = Carbon.theme.supportError,
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(
-                        text = "Cancel",
-                        color = Carbon.theme.textPrimary,
-                    )
-                }
-            },
-            containerColor = Carbon.theme.layer01,
+            onDismiss = { showDeleteDialog = false },
         )
+    }
+}
+
+@Suppress("FunctionNaming", "LongParameterList")
+@Composable
+private fun CollectionEditForm(
+    editedName: String,
+    onNameChange: (String) -> Unit,
+    editedDescription: String,
+    onDescriptionChange: (String) -> Unit,
+    isUpdating: Boolean,
+    onSave: () -> Unit,
+    updateError: String?,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+            Text(
+                text = "Name",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
+            OutlinedTextField(
+                value = editedName,
+                onValueChange = onNameChange,
+                placeholder = { Text("Collection name") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+            Text(
+                text = "Description",
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
+            OutlinedTextField(
+                value = editedDescription,
+                onValueChange = onDescriptionChange,
+                placeholder = { Text("Optional description") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 2,
+            )
+        }
+
+        Button(
+            label = if (isUpdating) "Saving..." else "Save Changes",
+            onClick = onSave,
+            buttonType = ButtonType.Primary,
+            isEnabled = !isUpdating,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        if (updateError != null) {
+            Text(
+                text = updateError,
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.supportError,
+            )
+        }
     }
 }
 
 @Suppress("FunctionNaming")
 @Composable
+private fun CollectionDangerZone(
+    isDeleting: Boolean,
+    deleteError: String?,
+    onShowDeleteDialog: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        HorizontalDivider(
+            color = Carbon.theme.borderSubtle00,
+            modifier = Modifier.padding(vertical = Spacing.xs),
+        )
+
+        Text(
+            text = "Danger Zone",
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.supportError,
+        )
+
+        Button(
+            label = if (isDeleting) "Deleting..." else "Delete Collection",
+            onClick = onShowDeleteDialog,
+            buttonType = ButtonType.PrimaryDanger,
+            isEnabled = !isDeleting,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        if (deleteError != null) {
+            Text(
+                text = deleteError,
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.supportError,
+            )
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun DeleteCollectionDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Delete Collection?",
+                style = Carbon.typography.heading03,
+                color = Carbon.theme.textPrimary,
+            )
+        },
+        text = {
+            Text(
+                text = "This action cannot be undone. All items will be removed from this collection.",
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textSecondary,
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text = "Delete",
+                    color = Carbon.theme.supportError,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "Cancel",
+                    color = Carbon.theme.textPrimary,
+                )
+            }
+        },
+        containerColor = Carbon.theme.layer01,
+    )
+}
+
+@Suppress("FunctionNaming")
+@Composable
 private fun SharingTabContent(
-    state: CollectionViewState,
+    header: CollectionHeaderState,
+    sharing: CollectionSharingState,
     onRemoveCollaborator: (Int) -> Unit,
     onCreateInviteLink: (CollaboratorRole) -> Unit,
 ) {
-    val collaboratorsError = state.collaboratorsError
-    val inviteLink = state.inviteLink
-    val inviteError = state.inviteError
-
-    if (!state.canShare) {
+    if (!header.canShare) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
@@ -610,15 +650,42 @@ private fun SharingTabContent(
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         item {
-            Text(
-                text = "Collaborators",
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.textPrimary,
+            CollaboratorsList(
+                isLoading = sharing.isLoading,
+                collaborators = sharing.collaborators,
+                onRemoveCollaborator = onRemoveCollaborator,
+                error = sharing.error,
             )
         }
 
-        if (state.isLoadingCollaborators) {
-            item {
+        item {
+            InviteLinkSection(
+                isCreatingInvite = sharing.isCreatingInvite,
+                inviteLink = sharing.inviteLink,
+                inviteError = sharing.inviteError,
+                onCreateInviteLink = onCreateInviteLink,
+            )
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun CollaboratorsList(
+    isLoading: Boolean,
+    collaborators: List<CollectionAcl>,
+    onRemoveCollaborator: (Int) -> Unit,
+    error: String?,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        Text(
+            text = "Collaborators",
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
+        )
+
+        when {
+            isLoading -> {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
@@ -626,132 +693,143 @@ private fun SharingTabContent(
                     Loading(modifier = Modifier.size(44.dp))
                 }
             }
-        } else if (state.collaborators.isEmpty()) {
-            item {
+            collaborators.isEmpty() -> {
                 Text(
                     text = "No collaborators yet",
                     style = Carbon.typography.bodyCompact01,
                     color = Carbon.theme.textSecondary,
                 )
             }
-        } else {
-            items(items = state.collaborators, key = { it.userId ?: it.hashCode() }) { collaborator ->
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Carbon.theme.layer01,
-                                RoundedCornerShape(Dimensions.cardCornerRadius),
-                            )
-                            .padding(Spacing.sm),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "User #${collaborator.userId}",
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textPrimary,
-                        )
-                        Text(
-                            text = collaborator.role.name,
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.textSecondary,
-                        )
-                    }
-
-                    if (collaborator.role != CollaboratorRole.Owner && collaborator.userId != null) {
-                        IconButton(onClick = { onRemoveCollaborator(collaborator.userId!!) }) {
-                            Icon(
-                                imageVector = CarbonIcons.Close,
-                                contentDescription = "Remove",
-                                tint = Carbon.theme.iconSecondary,
-                                modifier = Modifier.size(20.dp),
-                            )
-                        }
-                    }
+            else -> {
+                collaborators.forEach { collaborator ->
+                    CollaboratorRow(
+                        collaborator = collaborator,
+                        onRemove = onRemoveCollaborator,
+                    )
                 }
             }
         }
 
-        if (collaboratorsError != null) {
-            item {
-                Text(
-                    text = collaboratorsError,
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.supportError,
+        if (error != null) {
+            Text(
+                text = error,
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.supportError,
+            )
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun CollaboratorRow(
+    collaborator: CollectionAcl,
+    onRemove: (Int) -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    Carbon.theme.layer01,
+                    RoundedCornerShape(Dimensions.cardCornerRadius),
+                )
+                .padding(Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "User #${collaborator.userId}",
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textPrimary,
+            )
+            Text(
+                text = collaborator.role.name,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+            )
+        }
+
+        if (collaborator.role != CollaboratorRole.Owner && collaborator.userId != null) {
+            IconButton(onClick = { onRemove(collaborator.userId!!) }) {
+                Icon(
+                    imageVector = CarbonIcons.Close,
+                    contentDescription = "Remove",
+                    tint = Carbon.theme.iconSecondary,
+                    modifier = Modifier.size(20.dp),
                 )
             }
         }
+    }
+}
 
-        item {
-            HorizontalDivider(
-                color = Carbon.theme.borderSubtle00,
-                modifier = Modifier.padding(vertical = Spacing.xs),
-            )
-        }
+@Suppress("FunctionNaming")
+@Composable
+private fun InviteLinkSection(
+    isCreatingInvite: Boolean,
+    inviteLink: CollectionInvite?,
+    inviteError: String?,
+    onCreateInviteLink: (CollaboratorRole) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        HorizontalDivider(
+            color = Carbon.theme.borderSubtle00,
+            modifier = Modifier.padding(vertical = Spacing.xs),
+        )
 
-        item {
-            Text(
-                text = "Invite Link",
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.textPrimary,
-            )
-        }
+        Text(
+            text = "Invite Link",
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
+        )
 
-        item {
-            Button(
-                label = if (state.isCreatingInvite) "Creating..." else "Create Invite Link (Viewer)",
-                onClick = { onCreateInviteLink(CollaboratorRole.Viewer) },
-                buttonType = ButtonType.Secondary,
-                isEnabled = !state.isCreatingInvite,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+        Button(
+            label = if (isCreatingInvite) "Creating..." else "Create Invite Link (Viewer)",
+            onClick = { onCreateInviteLink(CollaboratorRole.Viewer) },
+            buttonType = ButtonType.Secondary,
+            isEnabled = !isCreatingInvite,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         if (inviteLink != null) {
-            item {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Carbon.theme.layer01,
-                                RoundedCornerShape(Dimensions.cardCornerRadius),
-                            )
-                            .padding(Spacing.sm),
-                    verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
-                ) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Carbon.theme.layer01,
+                            RoundedCornerShape(Dimensions.cardCornerRadius),
+                        )
+                        .padding(Spacing.sm),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
+            ) {
+                Text(
+                    text = "Invite Token:",
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.textSecondary,
+                )
+                Text(
+                    text = inviteLink.token,
+                    style = Carbon.typography.bodyCompact01,
+                    color = Carbon.theme.textPrimary,
+                )
+                val expiresAt = inviteLink.expiresAt
+                if (expiresAt != null) {
                     Text(
-                        text = "Invite Token:",
+                        text = "Expires: $expiresAt",
                         style = Carbon.typography.label01,
                         color = Carbon.theme.textSecondary,
                     )
-                    Text(
-                        text = inviteLink.token,
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textPrimary,
-                    )
-                    val expiresAt = inviteLink.expiresAt
-                    if (expiresAt != null) {
-                        Text(
-                            text = "Expires: $expiresAt",
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.textSecondary,
-                        )
-                    }
                 }
             }
         }
 
         if (inviteError != null) {
-            item {
-                Text(
-                    text = inviteError,
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.supportError,
-                )
-            }
+            Text(
+                text = inviteError,
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.supportError,
+            )
         }
     }
 }

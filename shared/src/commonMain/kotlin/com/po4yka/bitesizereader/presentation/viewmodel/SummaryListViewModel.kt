@@ -136,17 +136,17 @@ class SummaryListViewModel(
 
         val currentState = _state.value
 
-        if (currentState.searchQuery.isNotBlank()) {
-            searchDelegate.performSearch(currentState.searchQuery)
+        if (currentState.search.query.isNotBlank()) {
+            searchDelegate.performSearch(currentState.search.query)
         } else {
             try {
                 val summaries =
                     getFilteredSummariesUseCase(
                         page = currentState.page,
                         pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
-                        readFilter = currentState.readFilter,
-                        sortOrder = currentState.sortOrder,
-                        selectedTag = currentState.selectedTag,
+                        readFilter = currentState.filter.readFilter,
+                        sortOrder = currentState.filter.sortOrder,
+                        selectedTag = currentState.filter.selectedTag,
                     ).first()
 
                 _state.update {
@@ -173,7 +173,9 @@ class SummaryListViewModel(
         viewModelScope.launch {
             try {
                 val tags = getAvailableTagsUseCase()
-                _state.update { it.copy(availableTags = tags) }
+                _state.update {
+                    it.copy(filter = it.filter.copy(availableTags = tags))
+                }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load available tags" }
             }
@@ -230,10 +232,10 @@ class SummaryListViewModel(
                 try {
                     val nextPage = startState.page + 1
 
-                    if (startState.searchQuery.isNotBlank()) {
+                    if (startState.search.query.isNotBlank()) {
                         val results =
                             searchSummariesUseCase(
-                                query = startState.searchQuery,
+                                query = startState.search.query,
                                 page = nextPage,
                                 pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
                             )
@@ -251,17 +253,17 @@ class SummaryListViewModel(
                             getFilteredSummariesUseCase(
                                 page = nextPage,
                                 pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
-                                readFilter = startState.readFilter,
-                                sortOrder = startState.sortOrder,
-                                selectedTag = startState.selectedTag,
+                                readFilter = startState.filter.readFilter,
+                                sortOrder = startState.filter.sortOrder,
+                                selectedTag = startState.filter.selectedTag,
                             ).first()
 
                         _state.update { current ->
                             val stateChanged =
-                                current.readFilter != startState.readFilter ||
-                                    current.sortOrder != startState.sortOrder ||
-                                    current.searchQuery != startState.searchQuery ||
-                                    current.selectedTag != startState.selectedTag
+                                current.filter.readFilter != startState.filter.readFilter ||
+                                    current.filter.sortOrder != startState.filter.sortOrder ||
+                                    current.search.query != startState.search.query ||
+                                    current.filter.selectedTag != startState.filter.selectedTag
 
                             if (stateChanged) {
                                 current.copy(isLoadingMore = false)
@@ -285,20 +287,20 @@ class SummaryListViewModel(
     // Filtering
 
     fun onTagSelected(tag: String?) {
-        _state.update { it.copy(selectedTag = tag) }
+        _state.update { it.copy(filter = it.filter.copy(selectedTag = tag)) }
         resetAndLoad()
     }
 
     fun setReadFilter(filter: ReadFilter) {
-        if (_state.value.readFilter != filter) {
-            _state.update { it.copy(readFilter = filter) }
+        if (_state.value.filter.readFilter != filter) {
+            _state.update { it.copy(filter = it.filter.copy(readFilter = filter)) }
             resetAndLoad()
         }
     }
 
     fun setSortOrder(order: SortOrder) {
-        if (_state.value.sortOrder != order) {
-            _state.update { it.copy(sortOrder = order) }
+        if (_state.value.filter.sortOrder != order) {
+            _state.update { it.copy(filter = it.filter.copy(sortOrder = order)) }
             resetAndLoad()
         }
     }

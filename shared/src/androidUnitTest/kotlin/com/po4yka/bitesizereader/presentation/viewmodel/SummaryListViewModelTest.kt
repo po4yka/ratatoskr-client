@@ -133,7 +133,7 @@ class SummaryListViewModelTest {
         runTest {
             advanceUntilIdle()
             val state = viewModel.state.value
-            assertEquals(listOf("tech", "news"), state.availableTags)
+            assertEquals(listOf("tech", "news"), state.filter.availableTags)
         }
 
     @Test
@@ -143,7 +143,7 @@ class SummaryListViewModelTest {
             viewModel.setReadFilter(ReadFilter.UNREAD)
             advanceUntilIdle()
             val state = viewModel.state.value
-            assertEquals(ReadFilter.UNREAD, state.readFilter)
+            assertEquals(ReadFilter.UNREAD, state.filter.readFilter)
         }
 
     @Test
@@ -153,6 +153,6 @@ class SummaryListViewModelTest {
             viewModel.setSortOrder(SortOrder.OLDEST)
             advanceUntilIdle()
             val state = viewModel.state.value
-            assertEquals(SortOrder.OLDEST, state.sortOrder)
+            assertEquals(SortOrder.OLDEST, state.filter.sortOrder)
         }
 }
