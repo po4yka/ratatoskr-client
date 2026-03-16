@@ -5,7 +5,6 @@ import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
-import org.koin.ksp.generated.module
 
 /**
  * Platform configuration required for dependency injection.
@@ -23,16 +22,13 @@ expect fun platformModules(configuration: PlatformConfiguration): List<Module>
 expect fun KoinApplication.platformExtras(configuration: PlatformConfiguration)
 
 /**
- * Common modules using KSP-generated modules.
+ * Common modules using KSP-generated .module extensions.
+ *
+ * This is expect/actual because KSP generates .module extensions into platform-specific
+ * source sets (androidMain, desktopMain, etc.), not into commonMain. The metadata KSP
+ * (kspCommonMainMetadata) does not produce these extensions when modules use @ComponentScan.
  */
-fun commonModules(): List<Module> =
-    listOf(
-        NetworkModule().module,
-        DatabaseModule().module,
-        RepositoryModule().module,
-        UseCaseModule().module,
-        ViewModelModule().module,
-    )
+expect fun commonModules(): List<Module>
 
 /**
  * Initialize Koin with shared modules and platform-specific bindings.
