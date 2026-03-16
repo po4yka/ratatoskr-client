@@ -246,3 +246,31 @@ DELETE FROM pendingDeleteEntity WHERE id = :id;
 
 deleteAllPendingDeletes:
 DELETE FROM pendingDeleteEntity;
+
+-- Generic offline operations queue
+CREATE TABLE pendingOperationEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    entityId TEXT NOT NULL,
+    entityType TEXT NOT NULL DEFAULT 'summary',
+    action TEXT NOT NULL,
+    payload TEXT,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX pendingOp_entityId ON pendingOperationEntity(entityId);
+
+insertPendingOperation:
+INSERT INTO pendingOperationEntity(entityId, entityType, action, payload, createdAt)
+VALUES (:entityId, :entityType, :action, :payload, :createdAt);
+
+selectAllPendingOperations:
+SELECT * FROM pendingOperationEntity ORDER BY createdAt ASC;
+
+deletePendingOperation:
+DELETE FROM pendingOperationEntity WHERE id = :id;
+
+deleteAllPendingOperations:
+DELETE FROM pendingOperationEntity;
+
+deletePendingOperationsForEntity:
+DELETE FROM pendingOperationEntity WHERE entityId = :entityId AND action = :action;

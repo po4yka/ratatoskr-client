@@ -19,6 +19,11 @@ import com.po4yka.bitesizereader.domain.repository.LocalChange
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.longOrNull
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -192,8 +197,8 @@ class SyncRepositoryImpl(
         coroutineContext.ensureActive()
         val session = createSyncSessionInternal()
 
-        // Flush pending deletes before sync
-        flushPendingDeletes(session.sessionId)
+        // Flush pending operations before sync
+        flushPendingOperations(session.sessionId)
 
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val lastSyncCursor = metadata?.syncToken?.toLongOrNull() ?: 0L
@@ -682,37 +687,85 @@ class SyncRepositoryImpl(
         }
     }
 
-    private suspend fun flushPendingDeletes(sessionId: String) {
-        val pendingDeletes = database.databaseQueries.selectAllPendingDeletes().executeAsList()
-        if (pendingDeletes.isEmpty()) return
+    private suspend fun flushPendingOperations(sessionId: String) {
+        val pendingOps = database.databaseQueries.selectAllPendingOperations().executeAsList()
+        if (pendingOps.isEmpty()) return
 
-        logger.info { "Flushing ${pendingDeletes.size} pending deletes" }
+        logger.info { "Flushing ${pendingOps.size} pending operations" }
 
         val changes =
-            pendingDeletes.mapNotNull { pending ->
-                val remoteId = pending.id.toLongOrNull() ?: return@mapNotNull null
-                LocalChange(
-                    entityType = "summary",
-                    id = remoteId,
-                    action = "delete",
-                    lastSeenVersion = 0,
-                    payload = null,
-                    clientTimestamp = null,
-                )
+            pendingOps.mapNotNull { op ->
+                val remoteId = op.entityId.toLongOrNull() ?: return@mapNotNull null
+                when (op.action) {
+                    "delete" ->
+                        LocalChange(
+                            entityType = op.entityType,
+                            id = remoteId,
+                            action = "delete",
+                            lastSeenVersion = 0,
+                            payload = null,
+                            clientTimestamp = null,
+                        )
+                    "update_read" -> {
+                        val payloadMap = op.payload?.let { parsePayload(it) }
+                        LocalChange(
+                            entityType = op.entityType,
+                            id = remoteId,
+                            action = "update",
+                            lastSeenVersion = 0,
+                            payload = payloadMap,
+                            clientTimestamp = null,
+                        )
+                    }
+                    "toggle_favorite" ->
+                        LocalChange(
+                            entityType = op.entityType,
+                            id = remoteId,
+                            action = "update",
+                            lastSeenVersion = 0,
+                            payload = mapOf("toggle_favorite" to true),
+                            clientTimestamp = null,
+                        )
+                    else -> {
+                        logger.warn { "Unknown pending operation action: ${op.action}" }
+                        null
+                    }
+                }
             }
 
         if (changes.isEmpty()) {
-            // Clean up any non-numeric IDs
-            database.databaseQueries.deleteAllPendingDeletes()
+            database.databaseQueries.deleteAllPendingOperations()
             return
         }
 
         try {
             applyChanges(sessionId, changes)
+            database.databaseQueries.deleteAllPendingOperations()
+            // Also clear legacy pending deletes table
             database.databaseQueries.deleteAllPendingDeletes()
-            logger.info { "Successfully flushed ${changes.size} pending deletes" }
+            logger.info { "Successfully flushed ${changes.size} pending operations" }
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-            logger.warn(e) { "Failed to flush pending deletes, will retry next sync" }
+            logger.warn(e) { "Failed to flush pending operations, will retry next sync" }
+        }
+    }
+
+    private fun parsePayload(json: String): Map<String, Any?> {
+        return try {
+            val jsonObject =
+                kotlinx.serialization.json.Json.parseToJsonElement(json)
+                    .jsonObject
+            jsonObject.mapValues { (_, value) ->
+                when {
+                    value is JsonPrimitive && value.isString -> value.content
+                    value is JsonPrimitive -> {
+                        value.booleanOrNull ?: value.longOrNull ?: value.doubleOrNull ?: value.content
+                    }
+                    else -> value.toString()
+                }
+            }
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            logger.warn(e) { "Failed to parse pending operation payload: $json" }
+            emptyMap()
         }
     }
 }
