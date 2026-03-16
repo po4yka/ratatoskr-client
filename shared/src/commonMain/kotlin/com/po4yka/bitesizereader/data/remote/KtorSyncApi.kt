@@ -1,7 +1,6 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
-import com.po4yka.bitesizereader.data.remote.dto.DeltaSyncResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.FullSyncResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyResponseDto

@@ -6,7 +6,6 @@ import kotlinx.cinterop.usePinned
 import platform.AVFAudio.AVAudioPlayer
 import platform.Foundation.NSData
 import platform.Foundation.create
-import platform.posix.memcpy
 
 @OptIn(ExperimentalForeignApi::class)
 actual class AudioPlayer actual constructor() {
