@@ -1,9 +1,11 @@
 package com.po4yka.bitesizereader.domain.usecase
 
 import com.po4yka.bitesizereader.domain.model.SyncProgress
+import com.po4yka.bitesizereader.domain.model.SyncState
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.annotation.Factory
 
@@ -18,6 +20,11 @@ class SyncDataUseCase(
      * Observable progress of current sync operation (null if no sync in progress).
      */
     val syncProgress: StateFlow<SyncProgress?> = repository.syncProgress
+
+    /**
+     * Observable sync state including last sync time.
+     */
+    val syncState: Flow<SyncState> = repository.getSyncState()
 
     /**
      * Sync data with the backend, then prefetch content for recent unread articles.

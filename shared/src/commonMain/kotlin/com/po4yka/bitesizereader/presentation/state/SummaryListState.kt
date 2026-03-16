@@ -3,6 +3,7 @@ package com.po4yka.bitesizereader.presentation.state
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.domain.model.Summary
+import kotlin.time.Instant
 
 data class SummarySearchState(
     val query: String = "",
@@ -36,4 +37,7 @@ data class SummaryListState(
     val search: SummarySearchState = SummarySearchState(),
     val filter: SummaryFilterState = SummaryFilterState(),
     val layout: SummaryLayoutState = SummaryLayoutState(),
+    // Connectivity and freshness
+    val lastSyncTime: Instant? = null,
+    val isOffline: Boolean = false,
 )

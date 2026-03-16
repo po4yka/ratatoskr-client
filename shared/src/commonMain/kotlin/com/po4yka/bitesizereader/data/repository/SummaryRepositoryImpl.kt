@@ -164,24 +164,33 @@ class SummaryRepositoryImpl(
     }
 
     override suspend fun getFullContent(id: String): String? {
-        // Check cache first
+        val entity = database.databaseQueries.getSummaryById(id).executeAsOneOrNull()
+        // Return any cached content immediately (even stale).
+        // Callers that want fresh content should follow up with refreshFullContentIfStale().
+        if (entity?.fullContent != null) {
+            return entity.fullContent
+        }
+        return fetchAndCacheContent(id, entity?.fullContent)
+    }
+
+    override suspend fun refreshFullContentIfStale(id: String): String? {
         val entity = database.databaseQueries.getSummaryById(id).executeAsOneOrNull()
         if (entity?.fullContent != null) {
             val cachedAt = entity.fullContentCachedAt
-            val isFresh =
-                cachedAt != null &&
-                    (Clock.System.now() - cachedAt) < CONTENT_CACHE_TTL
-            if (isFresh) {
-                return entity.fullContent
-            }
-            // Stale: return cached but trigger background refetch handled by caller
-            // For now, just refetch inline since we don't have a background mechanism yet
+            val isFresh = cachedAt != null && (Clock.System.now() - cachedAt) < CONTENT_CACHE_TTL
+            if (isFresh) return null
         }
+        return fetchAndCacheContent(id, entity?.fullContent)
+    }
 
+    private suspend fun fetchAndCacheContent(
+        id: String,
+        fallback: String?,
+    ): String? {
         val remoteId = id.toLongOrNull()
         if (remoteId == null) {
             logger.warn { "Cannot parse remote ID from '$id', returning cached content" }
-            return entity?.fullContent
+            return fallback
         }
         return try {
             val response = api.getContent(remoteId)
@@ -195,11 +204,11 @@ class SummaryRepositoryImpl(
                 evictContentCacheIfNeeded()
                 articleContent
             } else {
-                entity?.fullContent
+                fallback
             }
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.warn(e) { "Failed to fetch full content for $id" }
-            entity?.fullContent
+            fallback
         }
     }
 

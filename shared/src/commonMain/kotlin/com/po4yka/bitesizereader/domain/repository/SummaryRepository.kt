@@ -24,6 +24,12 @@ interface SummaryRepository {
 
     suspend fun getFullContent(id: String): String?
 
+    /**
+     * Returns fresh content if the cache is stale (or missing), null if already fresh.
+     * Safe to call in the background after [getFullContent] has returned cached content.
+     */
+    suspend fun refreshFullContentIfStale(id: String): String?
+
     suspend fun markAsRead(id: String)
 
     suspend fun deleteSummary(id: String)

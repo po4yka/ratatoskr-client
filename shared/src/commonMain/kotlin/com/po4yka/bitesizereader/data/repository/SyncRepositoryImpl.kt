@@ -42,6 +42,7 @@ import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
+import com.po4yka.bitesizereader.util.network.NetworkMonitor
 import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
@@ -59,6 +60,7 @@ private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,
+    private val networkMonitor: NetworkMonitor,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncRepository {
     // ========================================================================
@@ -119,6 +121,10 @@ class SyncRepositoryImpl(
     // ========================================================================
 
     override suspend fun sync(forceFull: Boolean) {
+        if (!networkMonitor.isConnected()) {
+            logger.info { "Sync skipped: no network connection" }
+            return
+        }
         // tryLock() returns false if already locked -> we return before entering try.
         // This ensures unlock() in finally only runs when we actually acquired the lock.
         if (!syncMutex.tryLock()) {
