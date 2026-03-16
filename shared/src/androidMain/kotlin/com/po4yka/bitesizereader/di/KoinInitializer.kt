@@ -14,3 +14,12 @@ actual fun platformModules(configuration: PlatformConfiguration): List<Module> =
 actual fun KoinApplication.platformExtras(configuration: PlatformConfiguration) {
     // Android context is provided via the appDeclaration lambda (androidContext)
 }
+
+actual fun commonModules(): List<Module> =
+    listOf(
+        NetworkModule().module,
+        DatabaseModule().module,
+        RepositoryModule().module,
+        UseCaseModule().module,
+        ViewModelModule().module,
+    )
