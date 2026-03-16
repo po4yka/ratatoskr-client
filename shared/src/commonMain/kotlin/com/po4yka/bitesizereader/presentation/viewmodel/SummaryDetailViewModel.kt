@@ -11,6 +11,7 @@ import com.po4yka.bitesizereader.domain.usecase.GetAudioUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryByIdUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
+import com.po4yka.bitesizereader.domain.usecase.RefreshFullContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveReadPositionUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.util.audio.AudioPlayer
@@ -32,6 +33,7 @@ private val logger = KotlinLogging.logger {}
 class SummaryDetailViewModel(
     private val getSummaryByIdUseCase: GetSummaryByIdUseCase,
     private val getSummaryContentUseCase: GetSummaryContentUseCase,
+    private val refreshFullContentUseCase: RefreshFullContentUseCase,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
     private val deleteSummaryUseCase: DeleteSummaryUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
@@ -95,6 +97,20 @@ class SummaryDetailViewModel(
                                 ),
                             isLoadingContent = false,
                         )
+                    // Stale-while-revalidate: refresh in background if cache is stale
+                    viewModelScope.launch {
+                        try {
+                            val refreshed = refreshFullContentUseCase(id)
+                            if (refreshed != null) {
+                                _state.value =
+                                    _state.value.copy(
+                                        summary = _state.value.summary?.copy(fullContent = refreshed),
+                                    )
+                            }
+                        } catch (e: Exception) {
+                            logger.debug(e) { "Background content refresh failed for $id" }
+                        }
+                    }
                 } else {
                     _state.value = _state.value.copy(isLoadingContent = false)
                 }

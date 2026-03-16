@@ -18,6 +18,9 @@ import com.po4yka.bitesizereader.presentation.state.ViewDensity
 import com.po4yka.bitesizereader.util.error.AppError
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
+import com.po4yka.bitesizereader.util.network.NetworkMonitor
+import com.po4yka.bitesizereader.util.network.NetworkStatus
+import com.po4yka.bitesizereader.util.network.isConnected
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +49,7 @@ class SummaryListViewModel(
     private val syncDataUseCase: SyncDataUseCase,
     toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val networkMonitor: NetworkMonitor,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : BaseViewModel(dispatcher) {
     private val _state = MutableStateFlow(SummaryListState())
@@ -82,6 +86,35 @@ class SummaryListViewModel(
         loadAvailableTags()
         searchDelegate.loadTrendingTopics()
         searchDelegate.loadRecentSearches()
+        observeNetworkStatus()
+        observeLastSyncTime()
+    }
+
+    private fun observeNetworkStatus() {
+        viewModelScope.launch {
+            var previousStatus: NetworkStatus? = null
+            networkMonitor.networkStatus.collect { status ->
+                _state.update { it.copy(isOffline = !status.isConnected()) }
+                if (previousStatus?.isConnected() == false && status.isConnected()) {
+                    logger.info { "Network reconnected, triggering delta sync" }
+                    try {
+                        syncDataUseCase()
+                        loadSummariesFromDatabase()
+                    } catch (e: Exception) {
+                        logger.warn(e) { "Auto-sync on reconnect failed" }
+                    }
+                }
+                previousStatus = status
+            }
+        }
+    }
+
+    private fun observeLastSyncTime() {
+        viewModelScope.launch {
+            syncDataUseCase.syncState.collect { syncState ->
+                _state.update { it.copy(lastSyncTime = syncState.lastSyncTime) }
+            }
+        }
     }
 
     @Suppress("TooGenericExceptionCaught")
