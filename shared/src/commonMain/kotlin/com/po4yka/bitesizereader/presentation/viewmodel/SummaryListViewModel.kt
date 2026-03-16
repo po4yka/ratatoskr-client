@@ -22,7 +22,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,34 +38,50 @@ private const val LOAD_MORE_THRESHOLD = 5
 class SummaryListViewModel(
     private val getFilteredSummariesUseCase: GetFilteredSummariesUseCase,
     private val searchSummariesUseCase: SearchSummariesUseCase,
-    private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
-    private val deleteSummaryUseCase: DeleteSummaryUseCase,
-    private val archiveSummaryUseCase: ArchiveSummaryUseCase,
+    markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
+    deleteSummaryUseCase: DeleteSummaryUseCase,
+    archiveSummaryUseCase: ArchiveSummaryUseCase,
     private val getAvailableTagsUseCase: GetAvailableTagsUseCase,
-    private val searchHistoryManager: SearchHistoryManager,
+    searchHistoryManager: SearchHistoryManager,
     private val syncDataUseCase: SyncDataUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val logoutUseCase: LogoutUseCase,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : BaseViewModel(dispatcher) {
     private val _state = MutableStateFlow(SummaryListState())
     val state = _state.asStateFlow()
 
-    private var searchJob: Job? = null
+    private val stateAccessor = MutableStateFlowAccessor(_state)
+
+    val searchDelegate = SummarySearchDelegate(
+        scope = viewModelScope,
+        stateAccessor = stateAccessor,
+        searchSummariesUseCase = searchSummariesUseCase,
+        searchHistoryManager = searchHistoryManager,
+        onResetAndLoad = ::resetAndLoad,
+    )
+
+    val actionHandler = SummaryActionHandler(
+        scope = viewModelScope,
+        stateAccessor = stateAccessor,
+        markSummaryAsReadUseCase = markSummaryAsReadUseCase,
+        deleteSummaryUseCase = deleteSummaryUseCase,
+        toggleFavoriteUseCase = toggleFavoriteUseCase,
+        archiveSummaryUseCase = archiveSummaryUseCase,
+    )
+
+    val layoutPreferences = LayoutPreferencesManager(stateAccessor)
+
     private var loadJob: Job? = null
     private var loadMoreJob: Job? = null
 
     init {
         syncAndLoad()
         loadAvailableTags()
-        loadTrendingTopics()
-        loadRecentSearches()
+        searchDelegate.loadTrendingTopics()
+        searchDelegate.loadRecentSearches()
     }
 
-    /**
-     * Syncs data from server and then loads summaries from local database.
-     * Called on init and when user triggers refresh.
-     */
     @Suppress("TooGenericExceptionCaught")
     fun syncAndLoad() {
         loadMoreJob?.cancel()
@@ -78,7 +93,6 @@ class SummaryListViewModel(
             } catch (_: AppError.SessionExpiredError) {
                 logger.warn { "Session expired, triggering re-authentication" }
                 logoutUseCase()
-                // Continue to load local data despite auth error
             } catch (e: Exception) {
                 logger.warn(e) { "Sync failed, loading from local cache" }
             }
@@ -86,9 +100,6 @@ class SummaryListViewModel(
         }
     }
 
-    /**
-     * Pull-to-refresh action. Syncs with server and reloads from page 1.
-     */
     fun refresh() {
         loadMoreJob?.cancel()
         viewModelScope.launch {
@@ -111,9 +122,6 @@ class SummaryListViewModel(
         }
     }
 
-    /**
-     * Loads summaries from local database without syncing.
-     */
     fun loadSummaries() {
         loadJob?.cancel()
         loadJob =
@@ -124,20 +132,13 @@ class SummaryListViewModel(
     }
 
     private suspend fun loadSummariesFromDatabase() {
-        // Early cancellation check before starting work
         kotlin.coroutines.coroutineContext.ensureActive()
 
         val currentState = _state.value
 
         if (currentState.searchQuery.isNotBlank()) {
-            // Use search when there's a query
-            performSearch(currentState.searchQuery)
+            searchDelegate.performSearch(currentState.searchQuery)
         } else {
-            // Use filtered query.
-            //
-            // IMPORTANT: We only take a single snapshot (first()).
-            // Collecting a DB-backed Flow indefinitely breaks paging because later DB emissions for
-            // page=1 would overwrite/replace the currently appended pages.
             try {
                 val summaries =
                     getFilteredSummariesUseCase(
@@ -179,129 +180,28 @@ class SummaryListViewModel(
         }
     }
 
-    private fun loadTrendingTopics() {
-        searchHistoryManager.loadTrendingTopics(viewModelScope) { topics ->
-            _state.update { it.copy(trendingTopics = topics) }
-        }
-    }
+    // Search delegation
 
-    /**
-     * Called when user taps on a trending topic to search for it.
-     */
-    fun selectTrendingTopic(topic: String) {
-        _state.update { it.copy(searchQuery = topic) }
-        searchJob?.cancel()
-        searchJob =
-            viewModelScope.launch {
-                searchHistoryManager.saveSearch(topic)
-                performSearch(topic)
-                loadRecentSearches()
-            }
-    }
+    fun toggleSearch() = searchDelegate.toggleSearch()
+    fun onSearchQueryChanged(query: String) = searchDelegate.onSearchQueryChanged(query)
+    fun selectTrendingTopic(topic: String) = searchDelegate.selectTrendingTopic(topic)
+    fun selectRecentSearch(query: String) = searchDelegate.selectRecentSearch(query)
+    fun deleteRecentSearch(query: String) = searchDelegate.deleteRecentSearch(query)
+    fun clearSearchHistory() = searchDelegate.clearSearchHistory()
 
-    // Recent searches
+    // Action delegation
 
-    private fun loadRecentSearches() {
-        searchHistoryManager.loadRecentSearches(viewModelScope) { searches ->
-            _state.update { it.copy(recentSearches = searches) }
-        }
-    }
+    fun markAsRead(id: String) = actionHandler.markAsRead(id)
+    fun deleteSummary(id: String) = actionHandler.deleteSummary(id)
+    fun toggleFavorite(id: String) = actionHandler.toggleFavorite(id)
+    fun archiveSummary(id: String) = actionHandler.archiveSummary(id)
 
-    /**
-     * Called when user selects a recent search to perform that search.
-     */
-    fun selectRecentSearch(query: String) {
-        _state.update { it.copy(searchQuery = query) }
-        searchJob?.cancel()
-        searchJob =
-            viewModelScope.launch {
-                searchHistoryManager.saveSearch(query)
-                performSearch(query)
-                loadRecentSearches()
-            }
-    }
+    // Layout delegation
 
-    /**
-     * Deletes a single search query from history.
-     */
-    fun deleteRecentSearch(query: String) {
-        searchHistoryManager.deleteSearch(viewModelScope, query) {
-            loadRecentSearches()
-        }
-    }
+    fun setLayoutMode(mode: LayoutMode) = layoutPreferences.setLayoutMode(mode)
+    fun setViewDensity(density: ViewDensity) = layoutPreferences.setViewDensity(density)
 
-    /**
-     * Clears all search history.
-     */
-    fun clearSearchHistory() {
-        searchHistoryManager.clearHistory(viewModelScope) {
-            _state.update { it.copy(recentSearches = emptyList()) }
-        }
-    }
-
-    // Search functionality
-
-    fun toggleSearch() {
-        var wasSearchActive = false
-        _state.update {
-            wasSearchActive = it.isSearchActive
-            it.copy(
-                isSearchActive = !it.isSearchActive,
-                searchQuery = if (it.isSearchActive) "" else it.searchQuery,
-            )
-        }
-        if (wasSearchActive) {
-            // Reload summaries when search is closed
-            resetAndLoad()
-        }
-    }
-
-    fun onSearchQueryChanged(query: String) {
-        _state.update { it.copy(searchQuery = query) }
-        searchJob?.cancel()
-
-        if (query.isBlank()) {
-            resetAndLoad()
-            return
-        }
-
-        searchJob =
-            viewModelScope.launch {
-                delay(PresentationConstants.SEARCH_DEBOUNCE_MS)
-                performSearch(query)
-            }
-    }
-
-    @Suppress("TooGenericExceptionCaught")
-    private suspend fun performSearch(query: String) {
-        _state.update { it.copy(isLoading = true, error = null) }
-        try {
-            val page = _state.value.page
-            val results =
-                searchSummariesUseCase(
-                    query = query,
-                    page = page,
-                    pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
-                )
-            _state.update {
-                it.copy(
-                    summaries = results,
-                    isLoading = false,
-                    hasMore = results.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
-                )
-            }
-        } catch (e: Exception) {
-            logger.error(e) { "Search failed" }
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = e.toAppError().userMessage(),
-                )
-            }
-        }
-    }
-
-    // Pagination / Infinite scroll
+    // Pagination
 
     fun loadMoreIfNeeded(lastVisibleIndex: Int) {
         val currentState = _state.value
@@ -321,7 +221,6 @@ class SummaryListViewModel(
         loadMoreJob?.cancel()
         loadMoreJob =
             viewModelScope.launch {
-                // Capture start state atomically and set loading flag
                 var startState = _state.value
                 _state.update {
                     startState = it
@@ -357,7 +256,6 @@ class SummaryListViewModel(
                                 selectedTag = startState.selectedTag,
                             ).first()
 
-                        // If filters/search changed while loading, don't merge incompatible pages.
                         _state.update { current ->
                             val stateChanged =
                                 current.readFilter != startState.readFilter ||
@@ -402,78 +300,6 @@ class SummaryListViewModel(
         if (_state.value.sortOrder != order) {
             _state.update { it.copy(sortOrder = order) }
             resetAndLoad()
-        }
-    }
-
-    // Layout
-
-    fun setLayoutMode(mode: LayoutMode) {
-        _state.update { it.copy(layoutMode = mode) }
-    }
-
-    fun setViewDensity(density: ViewDensity) {
-        _state.update { it.copy(viewDensity = density) }
-    }
-
-    // Actions
-
-    fun markAsRead(id: String) {
-        viewModelScope.launch {
-            try {
-                markSummaryAsReadUseCase(id)
-                logger.debug { "Marked summary $id as read" }
-            } catch (e: Exception) {
-                logger.error(e) { "Failed to mark summary as read: $id" }
-            }
-        }
-    }
-
-    fun deleteSummary(id: String) {
-        viewModelScope.launch {
-            try {
-                deleteSummaryUseCase(id)
-                // Remove from local list immediately for responsiveness
-                _state.update { it.copy(summaries = it.summaries.filter { s -> s.id != id }) }
-                logger.info { "Deleted summary $id" }
-            } catch (e: Exception) {
-                logger.error(e) { "Failed to delete summary: $id" }
-                _state.update { it.copy(error = e.toAppError().userMessage()) }
-            }
-        }
-    }
-
-    fun toggleFavorite(id: String) {
-        viewModelScope.launch {
-            try {
-                toggleFavoriteUseCase(id)
-                // Update local list immediately for responsiveness
-                _state.update { current ->
-                    current.copy(
-                        summaries =
-                            current.summaries.map {
-                                if (it.id == id) it.copy(isFavorited = !it.isFavorited) else it
-                            },
-                    )
-                }
-                logger.debug { "Toggled favorite for summary $id" }
-            } catch (e: Exception) {
-                logger.error(e) { "Failed to toggle favorite: $id" }
-                _state.update { it.copy(error = e.toAppError().userMessage()) }
-            }
-        }
-    }
-
-    fun archiveSummary(id: String) {
-        viewModelScope.launch {
-            try {
-                archiveSummaryUseCase(id)
-                // Remove from local list immediately for responsiveness
-                _state.update { it.copy(summaries = it.summaries.filter { s -> s.id != id }) }
-                logger.info { "Archived summary $id" }
-            } catch (e: Exception) {
-                logger.error(e) { "Failed to archive summary: $id" }
-                _state.update { it.copy(error = e.toAppError().userMessage()) }
-            }
         }
     }
 
