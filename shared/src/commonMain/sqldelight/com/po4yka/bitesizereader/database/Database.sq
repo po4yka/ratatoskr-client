@@ -145,6 +145,14 @@ unarchiveSummary:
 UPDATE summaryEntity SET isArchived = 0 WHERE id = :id;
 
 -- Cache management
+getUncachedUnreadSummaryIds:
+SELECT id FROM summaryEntity
+WHERE isRead = 0
+  AND isArchived = 0
+  AND (fullContent IS NULL OR fullContentCachedAt IS NULL)
+ORDER BY createdAt DESC
+LIMIT :count;
+
 getCacheSize:
 SELECT COALESCE(SUM(LENGTH(fullContent)), 0) FROM summaryEntity WHERE fullContent IS NOT NULL;
 
