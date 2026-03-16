@@ -70,6 +70,11 @@ fun SummaryListScreen(
     val viewModel: SummaryListViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
 
+    val onRefresh = remember<() -> Unit>(viewModel) { { viewModel.syncAndLoad() } }
+    val onToggleSearch = remember<() -> Unit>(viewModel) { { viewModel.toggleSearch() } }
+    val onSortOrderChanged = remember<(SortOrder) -> Unit>(viewModel) { { viewModel.setSortOrder(it) } }
+    val onSubmitUrlClicked = remember<() -> Unit>(component) { { component.onSubmitUrlClicked() } }
+
     Column(
         modifier =
             modifier
@@ -82,15 +87,15 @@ fun SummaryListScreen(
             isSearchActive = state.search.isActive,
             layoutMode = state.layout.layoutMode,
             sortOrder = state.filter.sortOrder,
-            onRefresh = { viewModel.syncAndLoad() },
-            onToggleSearch = { viewModel.toggleSearch() },
+            onRefresh = onRefresh,
+            onToggleSearch = onToggleSearch,
             onToggleLayout = {
                 viewModel.setLayoutMode(
                     if (state.layout.layoutMode == LayoutMode.LIST) LayoutMode.GRID else LayoutMode.LIST,
                 )
             },
-            onSortOrderChanged = { viewModel.setSortOrder(it) },
-            onSubmitUrlClicked = { component.onSubmitUrlClicked() },
+            onSortOrderChanged = onSortOrderChanged,
+            onSubmitUrlClicked = onSubmitUrlClicked,
         )
 
         // Search bar (collapsible)
@@ -284,7 +289,7 @@ private fun SummaryListContent(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(5) {
+                items(count = 5, contentType = { "skeleton" }) {
                     SummaryCardSkeleton()
                 }
             }
@@ -391,6 +396,7 @@ private fun SummaryListView(
         items(
             items = state.summaries,
             key = { it.id },
+            contentType = { "summary_card" },
         ) { summary ->
             SwipeableSummaryCard(
                 summary = summary,
@@ -454,6 +460,7 @@ private fun SummaryGridView(
         items(
             items = state.summaries,
             key = { it.id },
+            contentType = { "summary_grid_card" },
         ) { summary ->
             SummaryGridCard(
                 summary = summary,

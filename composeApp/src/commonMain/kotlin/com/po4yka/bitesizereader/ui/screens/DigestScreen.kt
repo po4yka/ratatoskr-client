@@ -142,31 +142,29 @@ private fun DigestTabBar(
                     DigestTab.PREFERENCES -> "Preferences"
                     DigestTab.HISTORY -> "History"
                 }
-            Box(
+            Column(
                 modifier =
                     Modifier
                         .weight(1f)
                         .semantics { role = Role.Tab }
                         .clickable { onTabSelected(tab) }
                         .padding(vertical = Spacing.sm),
-                contentAlignment = Alignment.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = label,
-                        style = Carbon.typography.bodyCompact01,
-                        color = if (isSelected) Carbon.theme.textPrimary else Carbon.theme.textSecondary,
+                Text(
+                    text = label,
+                    style = Carbon.typography.bodyCompact01,
+                    color = if (isSelected) Carbon.theme.textPrimary else Carbon.theme.textSecondary,
+                )
+                if (isSelected) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Box(
+                        modifier =
+                            Modifier
+                                .width(48.dp)
+                                .height(2.dp)
+                                .background(Carbon.theme.borderInteractive),
                     )
-                    if (isSelected) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Box(
-                            modifier =
-                                Modifier
-                                    .width(48.dp)
-                                    .height(2.dp)
-                                    .background(Carbon.theme.borderInteractive),
-                        )
-                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.po4yka.bitesizereader.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
@@ -18,7 +19,7 @@ fun ProxiedImage(
     contentScale: ContentScale = ContentScale.Crop,
 ) {
     val getProxiedImageUrlUseCase = koinInject<GetProxiedImageUrlUseCase>()
-    val proxiedUrl = getProxiedImageUrlUseCase(imageUrl)
+    val proxiedUrl = remember(imageUrl) { getProxiedImageUrlUseCase(imageUrl) }
 
     AsyncImage(
         model = proxiedUrl,

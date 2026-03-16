@@ -36,6 +36,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -45,8 +46,8 @@ import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.Loading
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.MarkdownElement
-import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.DefaultMarkdownColors
+import com.mikepenz.markdown.model.DefaultMarkdownTypography
 import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
@@ -263,20 +264,40 @@ private fun SummaryDetailContent(
             trackColor = Carbon.theme.borderSubtle00,
         )
 
+        val textPrimary = Carbon.theme.textPrimary
+        val layer01 = Carbon.theme.layer01
+        val borderSubtle00 = Carbon.theme.borderSubtle00
         val markdownColors =
-            DefaultMarkdownColors(
-                text = Carbon.theme.textPrimary,
-                codeBackground = Carbon.theme.layer01,
-                inlineCodeBackground = Carbon.theme.layer01,
-                dividerColor = Carbon.theme.borderSubtle00,
-                tableBackground = Carbon.theme.layer01,
-            )
+            remember(textPrimary, layer01, borderSubtle00) {
+                DefaultMarkdownColors(
+                    text = textPrimary,
+                    codeBackground = layer01,
+                    inlineCodeBackground = layer01,
+                    dividerColor = borderSubtle00,
+                    tableBackground = layer01,
+                )
+            }
 
+        val heading04 = Carbon.typography.heading04
+        val heading03 = Carbon.typography.heading03
+        val headingCompact01 = Carbon.typography.headingCompact01
+        val bodyCompact01 = Carbon.typography.bodyCompact01
+        val body01 = Carbon.typography.body01
         val markdownTypography =
-            buildMarkdownTypography(
-                fontScale = readingPreferences.fontSizeScale,
-                lineScale = readingPreferences.lineSpacingScale,
-            )
+            remember(
+                readingPreferences.fontSizeScale, readingPreferences.lineSpacingScale,
+                heading04, heading03, headingCompact01, bodyCompact01, body01,
+            ) {
+                buildMarkdownTypography(
+                    fontScale = readingPreferences.fontSizeScale,
+                    lineScale = readingPreferences.lineSpacingScale,
+                    heading04 = heading04,
+                    heading03 = heading03,
+                    headingCompact01 = headingCompact01,
+                    bodyCompact01 = bodyCompact01,
+                    body01 = body01,
+                )
+            }
 
         val markdownContent = summary.fullContent ?: summary.content
         if (markdownContent.isBlank()) {
@@ -305,7 +326,7 @@ private fun SummaryDetailContent(
                         Loading(modifier = Modifier.size(48.dp))
                     }
                 },
-                error = { content ->
+                error = { _ ->
                     LazyColumn(
                         state = lazyListState,
                         contentPadding = PaddingValues(Spacing.md),
@@ -318,7 +339,7 @@ private fun SummaryDetailContent(
                         }
                         item(key = "fallback_text") {
                             Text(
-                                text = content,
+                                text = markdownContent,
                                 style = Carbon.typography.body01,
                                 color = Carbon.theme.textPrimary,
                             )
@@ -344,6 +365,7 @@ private fun SummaryDetailContent(
                         items(
                             items = nodes,
                             key = { node -> "md_${node.startOffset}" },
+                            contentType = { "markdown_node" },
                         ) { node ->
                             MarkdownElement(node, components, state.content)
                         }
@@ -438,33 +460,39 @@ private fun ArticleFooter(sourceUrl: String) {
     }
 }
 
-@Suppress("FunctionNaming")
-@Composable
 private fun buildMarkdownTypography(
     fontScale: Float,
     lineScale: Float,
-) = run {
+    heading04: TextStyle,
+    heading03: TextStyle,
+    headingCompact01: TextStyle,
+    bodyCompact01: TextStyle,
+    body01: TextStyle,
+): DefaultMarkdownTypography {
     fun TextStyle.scaled(): TextStyle =
         copy(
             fontSize = fontSize * fontScale,
             lineHeight = if (lineHeight.isSp) lineHeight * lineScale else lineHeight,
         )
 
-    val scaledBody = Carbon.typography.body01.scaled()
-    markdownTypography(
-        h1 = Carbon.typography.heading04.scaled(),
-        h2 = Carbon.typography.heading03.scaled(),
-        h3 = Carbon.typography.headingCompact01.scaled(),
-        h4 = Carbon.typography.bodyCompact01.copy(fontWeight = FontWeight.Bold).scaled(),
-        h5 = Carbon.typography.bodyCompact01.copy(fontWeight = FontWeight.Medium).scaled(),
-        h6 = Carbon.typography.bodyCompact01.scaled(),
+    val scaledBody = body01.scaled()
+    return DefaultMarkdownTypography(
+        h1 = heading04.scaled(),
+        h2 = heading03.scaled(),
+        h3 = headingCompact01.scaled(),
+        h4 = bodyCompact01.copy(fontWeight = FontWeight.Bold).scaled(),
+        h5 = bodyCompact01.copy(fontWeight = FontWeight.Medium).scaled(),
+        h6 = bodyCompact01.scaled(),
         paragraph = scaledBody,
         text = scaledBody,
         quote = scaledBody.copy(fontStyle = FontStyle.Italic),
         code = scaledBody.copy(fontFamily = FontFamily.Monospace),
+        inlineCode = scaledBody.copy(fontFamily = FontFamily.Monospace),
         bullet = scaledBody,
         list = scaledBody,
         ordered = scaledBody,
+        textLink = TextLinkStyles(),
+        table = scaledBody,
     )
 }
 
