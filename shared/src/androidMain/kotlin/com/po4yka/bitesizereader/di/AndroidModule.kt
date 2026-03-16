@@ -44,4 +44,8 @@ class AndroidModule {
 
     @Single
     fun providePlatform(): com.po4yka.bitesizereader.Platform = com.po4yka.bitesizereader.AndroidPlatform()
+
+    @Single
+    fun provideAudioPlayer(): com.po4yka.bitesizereader.util.audio.AudioPlayer =
+        com.po4yka.bitesizereader.util.audio.AudioPlayer()
 }

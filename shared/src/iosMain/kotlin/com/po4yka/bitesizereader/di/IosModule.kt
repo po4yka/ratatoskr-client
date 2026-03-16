@@ -36,4 +36,5 @@ val iosPlatformModule =
         }
         single<ShareManager> { IosShareManager() }
         single<ObservableSettings> { NSUserDefaultsSettings.Factory().create("reading_preferences") }
+        single { com.po4yka.bitesizereader.util.audio.AudioPlayer() }
     }

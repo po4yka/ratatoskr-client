@@ -5,10 +5,14 @@ import com.po4yka.bitesizereader.data.remote.dto.RequestDetailDto
 import com.po4yka.bitesizereader.data.remote.dto.RequestStatusResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.RetryRequestResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.SubmitRequestResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.SubmitForwardRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SubmitURLRequestDto
 
 interface RequestsApi {
     suspend fun submitUrl(request: SubmitURLRequestDto): ApiResponseDto<SubmitRequestResponseDto>
+
+    /** Submit a forwarded message for summarization. */
+    suspend fun submitForward(request: SubmitForwardRequestDto): ApiResponseDto<SubmitRequestResponseDto>
 
     suspend fun getRequest(id: Long): ApiResponseDto<RequestDetailDto>
 

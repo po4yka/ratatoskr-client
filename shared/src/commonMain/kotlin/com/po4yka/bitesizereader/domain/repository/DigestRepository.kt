@@ -1,9 +1,9 @@
 package com.po4yka.bitesizereader.domain.repository
 
+import com.po4yka.bitesizereader.data.remote.dto.ResolveChannelResponseDto
 import com.po4yka.bitesizereader.domain.model.DigestHistoryItem
 import com.po4yka.bitesizereader.domain.model.DigestPreferences
 import com.po4yka.bitesizereader.domain.model.DigestSubscriptionInfo
-import kotlinx.serialization.json.JsonObject
 
 /**
  * Repository for digest operations: channel subscriptions, preferences, history, triggers.
@@ -14,6 +14,9 @@ interface DigestRepository {
     suspend fun subscribe(channelUsername: String): DigestSubscriptionInfo
 
     suspend fun unsubscribe(channelUsername: String): DigestSubscriptionInfo
+
+    /** Resolve channel details before subscribing. */
+    suspend fun resolveChannel(channelUsername: String): ResolveChannelResponseDto
 
     suspend fun getPreferences(): DigestPreferences
 
@@ -30,5 +33,14 @@ interface DigestRepository {
         pageSize: Int = 20,
     ): List<DigestHistoryItem>
 
-    suspend fun triggerDigest(): JsonObject
+    suspend fun triggerDigest(): String
+
+    /** Trigger digest for a specific channel. */
+    suspend fun triggerChannel(channelUsername: String): String
+
+    /** Create a category for organizing channels. */
+    suspend fun createCategory(name: String): String
+
+    /** Bulk unsubscribe from multiple channels. */
+    suspend fun bulkUnsubscribe(channelUsernames: List<String>)
 }

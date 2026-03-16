@@ -34,4 +34,5 @@ val desktopPlatformModule =
         single<NetworkMonitor> { DesktopNetworkMonitor() }
         single<ShareManager> { DesktopShareManager() }
         single<ObservableSettings> { MapSettings() }
+        single { com.po4yka.bitesizereader.util.audio.AudioPlayer() }
     }
