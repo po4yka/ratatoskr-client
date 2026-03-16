@@ -1,8 +1,8 @@
 [versions]
 # Build & Gradle
-agp = "9.0.0"
-kotlin = "2.3.0"
-composeMultiplatform = "1.9.3"
+agp = "9.0.1"
+kotlin = "2.3.10"
+composeMultiplatform = "1.10.2"
 composeHotReload = "1.0.0"
 
 # Android SDK
@@ -11,46 +11,46 @@ android-minSdk = "24"
 android-targetSdk = "36"
 
 # AndroidX
-androidx-activity = "1.12.1"
+androidx-activity = "1.13.0"
 androidx-lifecycle = "2.9.6"
-androidx-work = "2.11.0"
+androidx-work = "2.11.1"
 androidx-glance = "1.1.1"
 
 # Android Secure Storage
 tink = "1.20.0"
-datastore = "1.2.0"
+datastore = "1.2.1"
 
 # KMP Core Libraries
-ktor = "3.3.3"
+ktor = "3.4.1"
 sqldelight = "2.2.1"
 decompose = "3.4.0"
 essenty = "2.5.0"
 koin = "4.1.1"
 koin-annotations = "2.3.1"
-ksp = "2.3.3"
+ksp = "2.3.5"
 kotlinx-serialization = "1.10.0"
 kotlinx-coroutines = "1.10.2"
 kotlin-logging = "7.0.13"
 slf4j = "2.0.17"
 logback-android = "3.0.0"
-logback-classic = "1.5.22"
+logback-classic = "1.5.32"
 
 # Android Specific
-coil = "3.3.0"
+coil = "3.4.0"
 
 # iOS Specific
-skie = "0.10.8"
+skie = "0.10.10"
 
 # gRPC / Wire
 wire = "5.4.0"
 
 # Testing
 turbine = "1.2.1"
-mockk = "1.14.7"
-kover = "0.9.3"
+mockk = "1.14.9"
+kover = "0.9.7"
 
 # Code Quality
-ktlint = "14.0.1"
+ktlint = "14.2.0"
 detekt = "1.23.8"
 
 # Multiplatform Settings
@@ -60,7 +60,7 @@ multiplatform-settings = "1.3.0"
 carbon = "0.6.2"
 
 # Markdown
-markdown-renderer = "0.38.1"
+markdown-renderer = "0.39.2"
 
 [libraries]
 # Kotlin
