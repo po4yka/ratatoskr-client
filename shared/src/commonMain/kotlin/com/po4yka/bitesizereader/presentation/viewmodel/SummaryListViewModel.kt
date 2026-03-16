@@ -27,6 +27,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
@@ -70,7 +71,7 @@ class SummaryListViewModel(
     fun syncAndLoad() {
         loadMoreJob?.cancel()
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
+            _state.update { it.copy(isLoading = true, error = null) }
             try {
                 syncDataUseCase()
                 logger.info { "Sync completed successfully" }
@@ -91,13 +92,14 @@ class SummaryListViewModel(
     fun refresh() {
         loadMoreJob?.cancel()
         viewModelScope.launch {
-            _state.value =
-                _state.value.copy(
+            _state.update {
+                it.copy(
                     isRefreshing = true,
                     error = null,
                     page = 1,
                     summaries = emptyList(),
                 )
+            }
             try {
                 syncDataUseCase()
                 logger.info { "Refresh sync completed" }
@@ -105,7 +107,7 @@ class SummaryListViewModel(
                 logger.warn(e) { "Refresh sync failed, loading from local cache" }
             }
             loadSummariesFromDatabase()
-            _state.value = _state.value.copy(isRefreshing = false)
+            _state.update { it.copy(isRefreshing = false) }
         }
     }
 
@@ -116,7 +118,7 @@ class SummaryListViewModel(
         loadJob?.cancel()
         loadJob =
             viewModelScope.launch {
-                _state.value = _state.value.copy(isLoading = true, error = null)
+                _state.update { it.copy(isLoading = true, error = null) }
                 loadSummariesFromDatabase()
             }
     }
@@ -146,20 +148,22 @@ class SummaryListViewModel(
                         selectedTag = currentState.selectedTag,
                     ).first()
 
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         summaries = summaries,
                         isLoading = false,
                         hasMore = summaries.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
                         error = null,
                     )
+                }
             } catch (e: Exception) {
                 logger.error(e) { "Failed to load summaries" }
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         isLoading = false,
                         error = e.toAppError().userMessage(),
                     )
+                }
             }
         }
     }
@@ -168,7 +172,7 @@ class SummaryListViewModel(
         viewModelScope.launch {
             try {
                 val tags = getAvailableTagsUseCase()
-                _state.value = _state.value.copy(availableTags = tags)
+                _state.update { it.copy(availableTags = tags) }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load available tags" }
             }
@@ -177,7 +181,7 @@ class SummaryListViewModel(
 
     private fun loadTrendingTopics() {
         searchHistoryManager.loadTrendingTopics(viewModelScope) { topics ->
-            _state.value = _state.value.copy(trendingTopics = topics)
+            _state.update { it.copy(trendingTopics = topics) }
         }
     }
 
@@ -185,7 +189,7 @@ class SummaryListViewModel(
      * Called when user taps on a trending topic to search for it.
      */
     fun selectTrendingTopic(topic: String) {
-        _state.value = _state.value.copy(searchQuery = topic)
+        _state.update { it.copy(searchQuery = topic) }
         searchJob?.cancel()
         searchJob =
             viewModelScope.launch {
@@ -199,7 +203,7 @@ class SummaryListViewModel(
 
     private fun loadRecentSearches() {
         searchHistoryManager.loadRecentSearches(viewModelScope) { searches ->
-            _state.value = _state.value.copy(recentSearches = searches)
+            _state.update { it.copy(recentSearches = searches) }
         }
     }
 
@@ -207,7 +211,7 @@ class SummaryListViewModel(
      * Called when user selects a recent search to perform that search.
      */
     fun selectRecentSearch(query: String) {
-        _state.value = _state.value.copy(searchQuery = query)
+        _state.update { it.copy(searchQuery = query) }
         searchJob?.cancel()
         searchJob =
             viewModelScope.launch {
@@ -231,27 +235,29 @@ class SummaryListViewModel(
      */
     fun clearSearchHistory() {
         searchHistoryManager.clearHistory(viewModelScope) {
-            _state.value = _state.value.copy(recentSearches = emptyList())
+            _state.update { it.copy(recentSearches = emptyList()) }
         }
     }
 
     // Search functionality
 
     fun toggleSearch() {
-        val newSearchActive = !_state.value.isSearchActive
-        _state.value =
-            _state.value.copy(
-                isSearchActive = newSearchActive,
-                searchQuery = if (!newSearchActive) "" else _state.value.searchQuery,
+        var wasSearchActive = false
+        _state.update {
+            wasSearchActive = it.isSearchActive
+            it.copy(
+                isSearchActive = !it.isSearchActive,
+                searchQuery = if (it.isSearchActive) "" else it.searchQuery,
             )
-        if (!newSearchActive) {
+        }
+        if (wasSearchActive) {
             // Reload summaries when search is closed
             resetAndLoad()
         }
     }
 
     fun onSearchQueryChanged(query: String) {
-        _state.value = _state.value.copy(searchQuery = query)
+        _state.update { it.copy(searchQuery = query) }
         searchJob?.cancel()
 
         if (query.isBlank()) {
@@ -268,27 +274,30 @@ class SummaryListViewModel(
 
     @Suppress("TooGenericExceptionCaught")
     private suspend fun performSearch(query: String) {
-        _state.value = _state.value.copy(isLoading = true, error = null)
+        _state.update { it.copy(isLoading = true, error = null) }
         try {
+            val page = _state.value.page
             val results =
                 searchSummariesUseCase(
                     query = query,
-                    page = _state.value.page,
+                    page = page,
                     pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
                 )
-            _state.value =
-                _state.value.copy(
+            _state.update {
+                it.copy(
                     summaries = results,
                     isLoading = false,
                     hasMore = results.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
                 )
+            }
         } catch (e: Exception) {
             logger.error(e) { "Search failed" }
-            _state.value =
-                _state.value.copy(
+            _state.update {
+                it.copy(
                     isLoading = false,
                     error = e.toAppError().userMessage(),
                 )
+            }
         }
     }
 
@@ -312,8 +321,12 @@ class SummaryListViewModel(
         loadMoreJob?.cancel()
         loadMoreJob =
             viewModelScope.launch {
-                val startState = _state.value
-                _state.value = startState.copy(isLoadingMore = true)
+                // Capture start state atomically and set loading flag
+                var startState = _state.value
+                _state.update {
+                    startState = it
+                    it.copy(isLoadingMore = true)
+                }
 
                 try {
                     val nextPage = startState.page + 1
@@ -326,14 +339,14 @@ class SummaryListViewModel(
                                 pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
                             )
 
-                        val current = _state.value
-                        _state.value =
+                        _state.update { current ->
                             current.copy(
                                 summaries = current.summaries + results,
                                 page = nextPage,
                                 isLoadingMore = false,
                                 hasMore = results.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
                             )
+                        }
                     } else {
                         val nextPageItems =
                             getFilteredSummariesUseCase(
@@ -345,29 +358,28 @@ class SummaryListViewModel(
                             ).first()
 
                         // If filters/search changed while loading, don't merge incompatible pages.
-                        val current = _state.value
-                        val stateChanged =
-                            current.readFilter != startState.readFilter ||
-                                current.sortOrder != startState.sortOrder ||
-                                current.searchQuery != startState.searchQuery ||
-                                current.selectedTag != startState.selectedTag
+                        _state.update { current ->
+                            val stateChanged =
+                                current.readFilter != startState.readFilter ||
+                                    current.sortOrder != startState.sortOrder ||
+                                    current.searchQuery != startState.searchQuery ||
+                                    current.selectedTag != startState.selectedTag
 
-                        if (stateChanged) {
-                            _state.value = current.copy(isLoadingMore = false)
-                            return@launch
+                            if (stateChanged) {
+                                current.copy(isLoadingMore = false)
+                            } else {
+                                current.copy(
+                                    summaries = current.summaries + nextPageItems,
+                                    page = nextPage,
+                                    isLoadingMore = false,
+                                    hasMore = nextPageItems.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
+                                )
+                            }
                         }
-
-                        _state.value =
-                            current.copy(
-                                summaries = current.summaries + nextPageItems,
-                                page = nextPage,
-                                isLoadingMore = false,
-                                hasMore = nextPageItems.size >= PresentationConstants.DEFAULT_PAGE_SIZE,
-                            )
                     }
                 } catch (e: Exception) {
                     logger.error(e) { "Failed to load more summaries" }
-                    _state.value = _state.value.copy(isLoadingMore = false)
+                    _state.update { it.copy(isLoadingMore = false) }
                 }
             }
     }
@@ -375,20 +387,20 @@ class SummaryListViewModel(
     // Filtering
 
     fun onTagSelected(tag: String?) {
-        _state.value = _state.value.copy(selectedTag = tag)
+        _state.update { it.copy(selectedTag = tag) }
         resetAndLoad()
     }
 
     fun setReadFilter(filter: ReadFilter) {
         if (_state.value.readFilter != filter) {
-            _state.value = _state.value.copy(readFilter = filter)
+            _state.update { it.copy(readFilter = filter) }
             resetAndLoad()
         }
     }
 
     fun setSortOrder(order: SortOrder) {
         if (_state.value.sortOrder != order) {
-            _state.value = _state.value.copy(sortOrder = order)
+            _state.update { it.copy(sortOrder = order) }
             resetAndLoad()
         }
     }
@@ -396,11 +408,11 @@ class SummaryListViewModel(
     // Layout
 
     fun setLayoutMode(mode: LayoutMode) {
-        _state.value = _state.value.copy(layoutMode = mode)
+        _state.update { it.copy(layoutMode = mode) }
     }
 
     fun setViewDensity(density: ViewDensity) {
-        _state.value = _state.value.copy(viewDensity = density)
+        _state.update { it.copy(viewDensity = density) }
     }
 
     // Actions
@@ -421,17 +433,11 @@ class SummaryListViewModel(
             try {
                 deleteSummaryUseCase(id)
                 // Remove from local list immediately for responsiveness
-                _state.value =
-                    _state.value.copy(
-                        summaries = _state.value.summaries.filter { it.id != id },
-                    )
+                _state.update { it.copy(summaries = it.summaries.filter { s -> s.id != id }) }
                 logger.info { "Deleted summary $id" }
             } catch (e: Exception) {
                 logger.error(e) { "Failed to delete summary: $id" }
-                _state.value =
-                    _state.value.copy(
-                        error = e.toAppError().userMessage(),
-                    )
+                _state.update { it.copy(error = e.toAppError().userMessage()) }
             }
         }
     }
@@ -441,20 +447,18 @@ class SummaryListViewModel(
             try {
                 toggleFavoriteUseCase(id)
                 // Update local list immediately for responsiveness
-                _state.value =
-                    _state.value.copy(
+                _state.update { current ->
+                    current.copy(
                         summaries =
-                            _state.value.summaries.map {
+                            current.summaries.map {
                                 if (it.id == id) it.copy(isFavorited = !it.isFavorited) else it
                             },
                     )
+                }
                 logger.debug { "Toggled favorite for summary $id" }
             } catch (e: Exception) {
                 logger.error(e) { "Failed to toggle favorite: $id" }
-                _state.value =
-                    _state.value.copy(
-                        error = e.toAppError().userMessage(),
-                    )
+                _state.update { it.copy(error = e.toAppError().userMessage()) }
             }
         }
     }
@@ -464,17 +468,11 @@ class SummaryListViewModel(
             try {
                 archiveSummaryUseCase(id)
                 // Remove from local list immediately for responsiveness
-                _state.value =
-                    _state.value.copy(
-                        summaries = _state.value.summaries.filter { it.id != id },
-                    )
+                _state.update { it.copy(summaries = it.summaries.filter { s -> s.id != id }) }
                 logger.info { "Archived summary $id" }
             } catch (e: Exception) {
                 logger.error(e) { "Failed to archive summary: $id" }
-                _state.value =
-                    _state.value.copy(
-                        error = e.toAppError().userMessage(),
-                    )
+                _state.update { it.copy(error = e.toAppError().userMessage()) }
             }
         }
     }
@@ -483,12 +481,13 @@ class SummaryListViewModel(
 
     private fun resetAndLoad() {
         loadMoreJob?.cancel()
-        _state.value =
-            _state.value.copy(
+        _state.update {
+            it.copy(
                 page = 1,
                 summaries = emptyList(),
                 hasMore = true,
             )
+        }
         loadSummaries()
     }
 }

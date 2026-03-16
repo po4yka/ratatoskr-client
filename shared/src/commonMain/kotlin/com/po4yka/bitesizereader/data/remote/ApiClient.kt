@@ -45,8 +45,8 @@ class ApiClient(
             install(ContentNegotiation) {
                 json(
                     Json {
-                        prettyPrint = true
-                        isLenient = true
+                        prettyPrint = false
+                        isLenient = false
                         ignoreUnknownKeys = true
                     },
                 )
@@ -69,7 +69,14 @@ class ApiClient(
                     logger = Logger.DEFAULT
                     level = LogLevel.ALL
                     sanitizeHeader { header -> header == HttpHeaders.Authorization }
-                    filter { request -> !request.url.encodedPath.contains("db-dump") }
+                    filter { request ->
+                        val path = request.url.encodedPath
+                        !path.contains("db-dump") &&
+                            !path.contains("secret-login") &&
+                            !path.contains("auth/refresh") &&
+                            !path.contains("auth/apple-login") &&
+                            !path.contains("auth/google-login")
+                    }
                 }
             }
 
@@ -149,8 +156,7 @@ class ApiClient(
                                     BearerTokens(tokens.accessToken, tokens.refreshToken)
                                 } else {
                                     logger.error {
-                                        "Failed to refresh tokens: " +
-                                            "success=${parsed.success}, error=${parsed.error}"
+                                        "Token refresh failed (success=${parsed.success})"
                                     }
                                     secureStorage.clearTokens()
                                     null

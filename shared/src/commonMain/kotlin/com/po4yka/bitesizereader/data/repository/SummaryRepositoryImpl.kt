@@ -118,17 +118,27 @@ class SummaryRepositoryImpl(
     }
 
     override suspend fun deleteSummary(id: String) {
-        database.databaseQueries.deleteSummary(id)
         val remoteId = id.toLongOrNull()
-        if (remoteId != null) {
-            try {
-                api.deleteSummary(remoteId)
-            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                logger.warn(e) { "Failed to delete summary $remoteId from API, queuing for retry" }
+
+        // 1. Atomically delete locally and queue for remote delete
+        database.transaction {
+            database.databaseQueries.deleteSummary(id)
+            if (remoteId != null) {
                 database.databaseQueries.insertPendingDelete(
                     id = id,
                     createdAt = Clock.System.now().toEpochMilliseconds(),
                 )
+            }
+        }
+
+        // 2. Attempt remote delete, then clear pending queue on success
+        if (remoteId != null) {
+            try {
+                api.deleteSummary(remoteId)
+                database.databaseQueries.deletePendingDelete(id)
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                // Already in pending queue, will retry later
+                logger.warn(e) { "Remote delete failed for $remoteId, queued for retry" }
             }
         }
     }
@@ -147,7 +157,11 @@ class SummaryRepositoryImpl(
             // For now, just refetch inline since we don't have a background mechanism yet
         }
 
-        val remoteId = id.toLongOrNull() ?: return entity?.fullContent
+        val remoteId = id.toLongOrNull()
+        if (remoteId == null) {
+            logger.warn { "Cannot parse remote ID from '$id', returning cached content" }
+            return entity?.fullContent
+        }
         return try {
             val response = api.getContent(remoteId)
             if (response.success && response.data != null) {

@@ -258,6 +258,7 @@ class SearchViewModel(
                 }
             val hasMore = results.size >= PresentationConstants.DEFAULT_PAGE_SIZE
 
+            var shouldSaveHistory = false
             _state.update { currentState ->
                 val newResults =
                     if (isNewSearch) {
@@ -265,6 +266,7 @@ class SearchViewModel(
                     } else {
                         currentState.results + results
                     }
+                shouldSaveHistory = isNewSearch && results.isNotEmpty()
 
                 currentState.copy(
                     results = newResults,
@@ -276,7 +278,7 @@ class SearchViewModel(
             }
 
             // Save successful search to history
-            if (isNewSearch && results.isNotEmpty()) {
+            if (shouldSaveHistory) {
                 searchHistoryManager.saveSearch(query)
                 loadRecentSearches()
             }
