@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -56,6 +58,9 @@ import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlin.time.Duration.Companion.hours
 
 /**
  * Summary list screen with search, filtering, sorting, swipe actions,
@@ -154,6 +159,12 @@ fun SummaryListScreen(
             selectedTag = state.filter.selectedTag,
             onTagSelected = { viewModel.onTagSelected(it) },
             modifier = Modifier.fillMaxWidth(),
+        )
+
+        // Offline / stale sync banner
+        SyncStatusBanner(
+            isOffline = state.isOffline,
+            lastSyncTime = state.lastSyncTime,
         )
 
         // Content with pull-to-refresh
@@ -422,6 +433,61 @@ private fun SummaryListView(
                 }
             }
         }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun SyncStatusBanner(
+    isOffline: Boolean,
+    lastSyncTime: Instant?,
+    modifier: Modifier = Modifier,
+) {
+    val now = remember { Clock.System.now() }
+    val isStale = !isOffline && lastSyncTime != null && (now - lastSyncTime) > 24.hours
+    val showBanner = isOffline || isStale
+    AnimatedVisibility(
+        visible = showBanner,
+        enter = expandVertically(),
+        exit = shrinkVertically(),
+        modifier = modifier,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(Carbon.theme.supportWarning)
+                    .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+        ) {
+            Icon(
+                imageVector = CarbonIcons.WarningAlt,
+                contentDescription = null,
+                tint = Carbon.theme.textPrimary,
+                modifier = Modifier.size(IconSizes.sm),
+            )
+            Spacer(modifier = Modifier.width(Spacing.xs))
+            Text(
+                text =
+                    if (isOffline) {
+                        "No internet connection"
+                    } else {
+                        "Last synced: ${formatTimeSince(lastSyncTime!!)} — may be outdated"
+                    },
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textPrimary,
+            )
+        }
+    }
+}
+
+private fun formatTimeSince(instant: Instant): String {
+    val elapsed = Clock.System.now() - instant
+    return when {
+        elapsed.inWholeMinutes < 1 -> "just now"
+        elapsed.inWholeMinutes < 60 -> "${elapsed.inWholeMinutes}m ago"
+        elapsed.inWholeHours < 24 -> "${elapsed.inWholeHours}h ago"
+        else -> "${elapsed.inWholeDays}d ago"
     }
 }
 
