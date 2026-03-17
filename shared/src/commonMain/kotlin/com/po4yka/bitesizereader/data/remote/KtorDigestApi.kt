@@ -107,7 +107,7 @@ class KtorDigestApi(private val client: HttpClient) : DigestApi {
     }
 
     override suspend fun bulkUnsubscribe(channelUsernames: List<String>): ApiResponseDto<SuccessResponse> {
-        return client.post("v1/digest/bulk-unsubscribe") {
+        return client.post("v1/digest/channels/bulk-unsubscribe") {
             contentType(ContentType.Application.Json)
             setBody(BulkUnsubscribeRequestDto(channelUsernames))
         }.body()

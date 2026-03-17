@@ -10,11 +10,17 @@ import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.TokensDto
 import com.po4yka.bitesizereader.data.remote.dto.TopicStatDto
 import com.po4yka.bitesizereader.data.remote.dto.UserDto
+import com.po4yka.bitesizereader.data.remote.dto.GoalDto
+import com.po4yka.bitesizereader.data.remote.dto.GoalProgressDto
+import com.po4yka.bitesizereader.data.remote.dto.StreakDto
 import com.po4yka.bitesizereader.data.remote.dto.UserPreferencesDto
 import com.po4yka.bitesizereader.data.remote.dto.UserStatsDto
 import com.po4yka.bitesizereader.domain.model.AuthTokens
 import com.po4yka.bitesizereader.domain.model.DomainStat
+import com.po4yka.bitesizereader.domain.model.Goal
+import com.po4yka.bitesizereader.domain.model.GoalProgress
 import com.po4yka.bitesizereader.domain.model.Session
+import com.po4yka.bitesizereader.domain.model.Streak
 import com.po4yka.bitesizereader.domain.model.TopicStat
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.model.UserPreferences
@@ -97,6 +103,35 @@ fun UserStatsDto.toDomain(): UserStats {
         languageDistribution = languageDistribution,
         joinedAt = joinedAt,
         lastSummaryAt = lastSummaryAt,
+    )
+}
+
+fun StreakDto.toDomain(): Streak {
+    return Streak(
+        currentStreak = currentStreak,
+        longestStreak = longestStreak,
+        lastActivityDate = lastActivityDate,
+        todayCount = todayCount,
+        weekCount = weekCount,
+        monthCount = monthCount,
+    )
+}
+
+fun GoalDto.toDomain(): Goal {
+    return Goal(
+        id = id,
+        goalType = goalType,
+        targetCount = targetCount,
+        createdAt = createdAt,
+    )
+}
+
+fun GoalProgressDto.toDomain(): GoalProgress {
+    return GoalProgress(
+        goalType = goalType,
+        targetCount = targetCount,
+        currentCount = currentCount,
+        achieved = achieved,
     )
 }
 

@@ -1,6 +1,10 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.CreateGoalRequestDto
+import com.po4yka.bitesizereader.data.remote.dto.GoalDto
+import com.po4yka.bitesizereader.data.remote.dto.GoalProgressDto
+import com.po4yka.bitesizereader.data.remote.dto.StreakDto
 import com.po4yka.bitesizereader.data.remote.dto.UpdatePreferencesRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.UserPreferencesDto
 import com.po4yka.bitesizereader.data.remote.dto.UserStatsDto
@@ -17,4 +21,16 @@ interface UserPreferencesApi {
 
     /** Get user statistics */
     suspend fun getStats(): ApiResponseDto<UserStatsDto>
+
+    /** Get user reading streak */
+    suspend fun getStreak(): ApiResponseDto<StreakDto>
+
+    /** Get all user reading goals */
+    suspend fun getGoals(): ApiResponseDto<List<GoalDto>>
+
+    /** Get progress for all reading goals */
+    suspend fun getGoalsProgress(): ApiResponseDto<List<GoalProgressDto>>
+
+    /** Create a new reading goal */
+    suspend fun createGoal(request: CreateGoalRequestDto): ApiResponseDto<GoalDto>
 }

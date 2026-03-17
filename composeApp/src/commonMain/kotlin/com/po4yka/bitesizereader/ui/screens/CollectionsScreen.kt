@@ -40,6 +40,23 @@ import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.collections_cancel
+import bitesizereader.composeapp.generated.resources.collections_create
+import bitesizereader.composeapp.generated.resources.collections_create_dialog_title
+import bitesizereader.composeapp.generated.resources.collections_creating
+import bitesizereader.composeapp.generated.resources.collections_description_label
+import bitesizereader.composeapp.generated.resources.collections_description_placeholder
+import bitesizereader.composeapp.generated.resources.collections_empty_message
+import bitesizereader.composeapp.generated.resources.collections_empty_title
+import bitesizereader.composeapp.generated.resources.collections_loading
+import bitesizereader.composeapp.generated.resources.collections_name_label
+import bitesizereader.composeapp.generated.resources.collections_name_placeholder
+import bitesizereader.composeapp.generated.resources.collections_new
+import bitesizereader.composeapp.generated.resources.collections_section_other
+import bitesizereader.composeapp.generated.resources.collections_section_work
+import bitesizereader.composeapp.generated.resources.collections_title
+import org.jetbrains.compose.resources.stringResource
 
 private const val USER_COLLECTIONS_SPLIT_INDEX = 5
 
@@ -66,15 +83,15 @@ fun CollectionsScreen(
 
         if (state.isLoading && state.collections.isEmpty()) {
             EmptyStateView(
-                title = "Loading collections...",
+                title = stringResource(Res.string.collections_loading),
                 message = "",
                 icon = CarbonIcons.Folder,
                 modifier = Modifier.fillMaxSize(),
             )
         } else if (state.collections.isEmpty()) {
             EmptyStateView(
-                title = "No collections yet",
-                message = "Create collections to organize your articles",
+                title = stringResource(Res.string.collections_empty_title),
+                message = stringResource(Res.string.collections_empty_message),
                 icon = CarbonIcons.Folder,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -96,7 +113,7 @@ fun CollectionsScreen(
 
                 if (userCollections.isNotEmpty()) {
                     stickyHeader {
-                        SectionHeader("Work")
+                        SectionHeader(stringResource(Res.string.collections_section_work))
                     }
                     items(userCollections.take(USER_COLLECTIONS_SPLIT_INDEX)) { collection ->
                         CollectionItem(
@@ -107,7 +124,7 @@ fun CollectionsScreen(
 
                     if (userCollections.size > USER_COLLECTIONS_SPLIT_INDEX) {
                         stickyHeader {
-                            SectionHeader("Other")
+                            SectionHeader(stringResource(Res.string.collections_section_other))
                         }
                         items(userCollections.drop(USER_COLLECTIONS_SPLIT_INDEX)) { collection ->
                             CollectionItem(
@@ -155,7 +172,7 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Collections",
+            text = stringResource(Res.string.collections_title),
             style = Carbon.typography.heading04,
             color = Carbon.theme.textPrimary,
             modifier = Modifier.weight(1f),
@@ -164,7 +181,7 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
         IconButton(onClick = onCreateClick) {
             Icon(
                 imageVector = CarbonIcons.Add,
-                contentDescription = "New Collection",
+                contentDescription = stringResource(Res.string.collections_new),
                 tint = Carbon.theme.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),
             )
@@ -203,7 +220,7 @@ private fun CreateCollectionDialog(
         containerColor = Carbon.theme.layer01,
         title = {
             Text(
-                text = "New Collection",
+                text = stringResource(Res.string.collections_create_dialog_title),
                 style = Carbon.typography.heading03,
                 color = Carbon.theme.textPrimary,
             )
@@ -213,19 +230,19 @@ private fun CreateCollectionDialog(
                 verticalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
                 TextInput(
-                    label = "Name",
+                    label = stringResource(Res.string.collections_name_label),
                     value = name,
                     onValueChange = { name = it },
-                    placeholderText = "Collection name",
+                    placeholderText = stringResource(Res.string.collections_name_placeholder),
                     state = if (isCreating) TextInputState.Disabled else TextInputState.Enabled,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
                 TextInput(
-                    label = "Description",
+                    label = stringResource(Res.string.collections_description_label),
                     value = description,
                     onValueChange = { description = it },
-                    placeholderText = "Optional description",
+                    placeholderText = stringResource(Res.string.collections_description_placeholder),
                     state = if (isCreating) TextInputState.Disabled else TextInputState.Enabled,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -245,7 +262,7 @@ private fun CreateCollectionDialog(
                     ) {
                         SmallLoading()
                         Text(
-                            text = "Creating...",
+                            text = stringResource(Res.string.collections_creating),
                             style = Carbon.typography.bodyCompact01,
                             color = Carbon.theme.textSecondary,
                         )
@@ -255,7 +272,7 @@ private fun CreateCollectionDialog(
         },
         confirmButton = {
             Button(
-                label = "Create",
+                label = stringResource(Res.string.collections_create),
                 onClick = { onConfirm(name, description) },
                 isEnabled = name.isNotBlank() && !isCreating,
                 buttonType = ButtonType.Primary,
@@ -263,7 +280,7 @@ private fun CreateCollectionDialog(
         },
         dismissButton = {
             Button(
-                label = "Cancel",
+                label = stringResource(Res.string.collections_cancel),
                 onClick = onDismiss,
                 isEnabled = !isCreating,
                 buttonType = ButtonType.Ghost,

@@ -57,6 +57,22 @@ import com.po4yka.bitesizereader.ui.components.TrendingTopicsSection
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.search_clear
+import bitesizereader.composeapp.generated.resources.search_filter_all
+import bitesizereader.composeapp.generated.resources.search_filter_read
+import bitesizereader.composeapp.generated.resources.search_filter_unread
+import bitesizereader.composeapp.generated.resources.search_filters
+import bitesizereader.composeapp.generated.resources.search_language
+import bitesizereader.composeapp.generated.resources.search_language_all
+import bitesizereader.composeapp.generated.resources.search_language_english
+import bitesizereader.composeapp.generated.resources.search_language_russian
+import bitesizereader.composeapp.generated.resources.search_mode_ai
+import bitesizereader.composeapp.generated.resources.search_mode_text
+import bitesizereader.composeapp.generated.resources.search_placeholder
+import bitesizereader.composeapp.generated.resources.search_title
+import bitesizereader.composeapp.generated.resources.search_toggle_filters
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Full-screen search destination with search bar, filters, trending topics,
@@ -140,7 +156,7 @@ private fun SearchScreenHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Search",
+                text = stringResource(Res.string.search_title),
                 style = Carbon.typography.heading03,
                 color = Carbon.theme.textPrimary,
                 modifier = Modifier.weight(1f),
@@ -149,7 +165,7 @@ private fun SearchScreenHeader(
             IconButton(onClick = onFilterClick) {
                 Icon(
                     imageVector = CarbonIcons.Filter,
-                    contentDescription = "Toggle filters",
+                    contentDescription = stringResource(Res.string.search_toggle_filters),
                     tint = Carbon.theme.iconPrimary,
                     modifier = Modifier.size(20.dp),
                 )
@@ -220,7 +236,7 @@ private fun SearchInputRow(
                 decorationBox = { innerTextField ->
                     if (query.isEmpty()) {
                         Text(
-                            text = "Search summaries...",
+                            text = stringResource(Res.string.search_placeholder),
                             style = Carbon.typography.bodyCompact01,
                             color = Carbon.theme.textPlaceholder,
                         )
@@ -236,7 +252,7 @@ private fun SearchInputRow(
                 ) {
                     Icon(
                         imageVector = CarbonIcons.Close,
-                        contentDescription = "Clear search",
+                        contentDescription = stringResource(Res.string.search_clear),
                         tint = Carbon.theme.iconSecondary,
                         modifier = Modifier.size(16.dp),
                     )
@@ -262,8 +278,8 @@ private fun SearchModeChip(
 ) {
     val label =
         when (mode) {
-            SearchMode.FULLTEXT -> "Text"
-            SearchMode.SEMANTIC -> "AI"
+            SearchMode.FULLTEXT -> stringResource(Res.string.search_mode_text)
+            SearchMode.SEMANTIC -> stringResource(Res.string.search_mode_ai)
         }
 
     Text(
@@ -294,7 +310,7 @@ private fun SearchFiltersPanel(
                 .padding(Spacing.md),
     ) {
         Text(
-            text = "Filters",
+            text = stringResource(Res.string.search_filters),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
             modifier = Modifier.padding(bottom = Spacing.sm),
@@ -306,7 +322,7 @@ private fun SearchFiltersPanel(
             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             ReadFilterChip(
-                label = "All",
+                label = stringResource(Res.string.search_filter_all),
                 isSelected =
                     state.filters.readFilter ==
                         com.po4yka.bitesizereader.domain.model.ReadFilter.ALL,
@@ -320,7 +336,7 @@ private fun SearchFiltersPanel(
                 },
             )
             ReadFilterChip(
-                label = "Read",
+                label = stringResource(Res.string.search_filter_read),
                 isSelected =
                     state.filters.readFilter ==
                         com.po4yka.bitesizereader.domain.model.ReadFilter.READ,
@@ -334,7 +350,7 @@ private fun SearchFiltersPanel(
                 },
             )
             ReadFilterChip(
-                label = "Unread",
+                label = stringResource(Res.string.search_filter_unread),
                 isSelected =
                     state.filters.readFilter ==
                         com.po4yka.bitesizereader.domain.model.ReadFilter.UNREAD,
@@ -353,7 +369,7 @@ private fun SearchFiltersPanel(
         if (state.searchMode == SearchMode.SEMANTIC) {
             Spacer(modifier = Modifier.height(Spacing.sm))
             Text(
-                text = "Language",
+                text = stringResource(Res.string.search_language),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
                 modifier = Modifier.padding(bottom = Spacing.xs),
@@ -363,17 +379,17 @@ private fun SearchFiltersPanel(
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
                 ReadFilterChip(
-                    label = "All",
+                    label = stringResource(Res.string.search_language_all),
                     isSelected = state.filters.language == null,
                     onClick = { onFiltersChanged(state.filters.copy(language = null)) },
                 )
                 ReadFilterChip(
-                    label = "English",
+                    label = stringResource(Res.string.search_language_english),
                     isSelected = state.filters.language == "en",
                     onClick = { onFiltersChanged(state.filters.copy(language = "en")) },
                 )
                 ReadFilterChip(
-                    label = "Russian",
+                    label = stringResource(Res.string.search_language_russian),
                     isSelected = state.filters.language == "ru",
                     onClick = { onFiltersChanged(state.filters.copy(language = "ru")) },
                 )

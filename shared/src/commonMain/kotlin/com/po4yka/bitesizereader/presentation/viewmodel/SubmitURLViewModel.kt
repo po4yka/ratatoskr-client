@@ -10,6 +10,8 @@ import com.po4yka.bitesizereader.domain.usecase.CheckDuplicateUrlUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetRequestsUseCase
 import com.po4yka.bitesizereader.domain.usecase.RetryRequestUseCase
 import com.po4yka.bitesizereader.presentation.state.SubmitURLState
+import com.po4yka.bitesizereader.presentation.state.SubmitUrlError
+import com.po4yka.bitesizereader.util.error.AppError
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -25,6 +27,10 @@ import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
+
+private val urlRegex = Regex("^https?://[\\w\\-]+(\\.[\\w\\-]+)+(:\\d+)?(/.*)?$")
+
+private fun isValidUrl(url: String): Boolean = urlRegex.matches(url.trim())
 
 @Factory
 class SubmitURLViewModel(
@@ -75,6 +81,7 @@ class SubmitURLViewModel(
             _state.value.copy(
                 url = url,
                 error = null,
+                submitError = null,
                 isDuplicate = false,
                 duplicateSummaryId = null,
             )
@@ -82,13 +89,13 @@ class SubmitURLViewModel(
 
     fun checkDuplicate() {
         val url = _state.value.url
-        if (url.isBlank()) {
-            _state.value = _state.value.copy(error = "URL cannot be empty")
+        if (url.isBlank() || !isValidUrl(url)) {
+            _state.value = _state.value.copy(submitError = SubmitUrlError.InvalidUrl)
             return
         }
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isCheckingDuplicate = true, error = null)
+            _state.value = _state.value.copy(isCheckingDuplicate = true, error = null, submitError = null)
             try {
                 val result = checkDuplicateUrlUseCase(url)
                 if (result.isDuplicate) {
@@ -346,8 +353,8 @@ class SubmitURLViewModel(
     fun submitUrl() {
         viewModelScope.launch {
             val url = _state.value.url
-            if (url.isBlank()) {
-                _state.value = _state.value.copy(error = "URL cannot be empty")
+            if (url.isBlank() || !isValidUrl(url)) {
+                _state.value = _state.value.copy(submitError = SubmitUrlError.InvalidUrl)
                 return@launch
             }
 
@@ -357,6 +364,7 @@ class SubmitURLViewModel(
                         _state.value.copy(
                             isLoading = true,
                             error = null,
+                            submitError = null,
                             status = RequestStatus.PENDING,
                             stage = ProcessingStage.QUEUED,
                             progress = 0f,
@@ -364,12 +372,14 @@ class SubmitURLViewModel(
                         )
                 }
                 .catch { e ->
-                    // Handle error
+                    val appError = e.toAppError()
+                    val submitError = appError.toSubmitUrlError()
                     _state.value =
                         _state.value.copy(
                             isLoading = false,
                             status = RequestStatus.FAILED,
-                            error = e.toAppError().userMessage(),
+                            error = appError.userMessage(),
+                            submitError = submitError,
                         )
                 }
                 .collect { update ->
@@ -390,4 +400,13 @@ class SubmitURLViewModel(
                 }
         }
     }
+
+    private fun AppError.toSubmitUrlError(): SubmitUrlError =
+        when (this) {
+            is AppError.NetworkError, is AppError.TimeoutError -> SubmitUrlError.NetworkError
+            is AppError.ConflictError -> SubmitUrlError.DuplicateUrl
+            is AppError.ServerError -> SubmitUrlError.ServerError
+            is AppError.ValidationError -> SubmitUrlError.InvalidUrl
+            else -> SubmitUrlError.Unknown(userMessage())
+        }
 }

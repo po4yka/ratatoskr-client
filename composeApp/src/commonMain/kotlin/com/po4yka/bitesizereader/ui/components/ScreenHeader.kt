@@ -13,11 +13,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.a11y_navigate_back
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Standardized screen header component for consistent header styling across the app.
@@ -59,7 +64,7 @@ fun ScreenHeader(
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = CarbonIcons.ArrowLeft,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(Res.string.a11y_navigate_back),
                     tint = Carbon.theme.iconPrimary,
                     modifier = Modifier.size(IconSizes.md),
                 )
@@ -71,7 +76,7 @@ fun ScreenHeader(
             text = title,
             style = Carbon.typography.heading04,
             color = Carbon.theme.textPrimary,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).semantics { heading() },
         )
 
         // Action buttons (optional)

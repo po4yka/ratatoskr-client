@@ -1658,4 +1658,129 @@ object CarbonIcons {
             }
         }.build()
     }
+
+    val PlayFilled: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "PlayFilled",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                moveTo(7f, 28f)
+                lineTo(7f, 4f)
+                lineTo(27f, 16f)
+                close()
+            }
+        }.build()
+    }
+
+    val PauseFilled: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "PauseFilled",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Left bar
+                moveTo(6f, 4f)
+                horizontalLineTo(13f)
+                verticalLineTo(28f)
+                horizontalLineTo(6f)
+                close()
+                // Right bar
+                moveTo(19f, 4f)
+                horizontalLineTo(26f)
+                verticalLineTo(28f)
+                horizontalLineTo(19f)
+                close()
+            }
+        }.build()
+    }
+
+    val Star: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Star",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Carbon star (5-pointed) path
+                moveTo(16f, 2f)
+                lineTo(20.12f, 11.16f)
+                lineTo(30f, 12.26f)
+                lineTo(23f, 18.74f)
+                lineTo(24.94f, 28.56f)
+                lineTo(16f, 23.54f)
+                lineTo(7.06f, 28.56f)
+                lineTo(9f, 18.74f)
+                lineTo(2f, 12.26f)
+                lineTo(11.88f, 11.16f)
+                close()
+            }
+        }.build()
+    }
+
+    val WifiOff: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "WifiOff",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Diagonal slash
+                moveTo(5f, 3.59f)
+                lineTo(3.59f, 5f)
+                lineTo(27f, 28.41f)
+                lineTo(28.41f, 27f)
+                close()
+                // Dot at center bottom
+                moveTo(16f, 23f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 18f, 25f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 16f, 27f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 14f, 25f)
+                arcTo(Radius.SMALL, Radius.SMALL, Arc.NO_ROTATION, false, true, 16f, 23f)
+                close()
+                // Small arc (ring 1)
+                moveTo(10.76f, 19.83f)
+                lineTo(12.18f, 21.24f)
+                arcTo(5.5f, 5.5f, Arc.NO_ROTATION, false, true, 19.83f, 21.24f)
+                lineTo(21.24f, 19.83f)
+                arcTo(7.53f, 7.53f, Arc.NO_ROTATION, false, false, 10.76f, 19.83f)
+                close()
+                // Medium arc (ring 2) — only right portion visible after slash
+                moveTo(22.64f, 18.43f)
+                lineTo(24.06f, 17.02f)
+                arcTo(11.5f, 11.5f, Arc.NO_ROTATION, false, false, 21.68f, 13.42f)
+                lineTo(20.22f, 14.88f)
+                arcTo(9.47f, 9.47f, Arc.NO_ROTATION, false, true, 22.64f, 18.43f)
+                close()
+                // Large arc (ring 3) — right portion
+                moveTo(26.85f, 14.21f)
+                lineTo(28.27f, 12.79f)
+                arcTo(17.5f, 17.5f, Arc.NO_ROTATION, false, false, 22.31f, 8.43f)
+                lineTo(20.87f, 9.87f)
+                arcTo(15.5f, 15.5f, Arc.NO_ROTATION, false, true, 26.85f, 14.21f)
+                close()
+                // Large arc left portion
+                moveTo(7.55f, 18.43f)
+                arcTo(9.44f, 9.44f, Arc.NO_ROTATION, false, true, 9.97f, 14.88f)
+                lineTo(8.52f, 13.42f)
+                arcTo(11.47f, 11.47f, Arc.NO_ROTATION, false, false, 5.74f, 17.02f)
+                close()
+                moveTo(5.14f, 14.21f)
+                arcTo(15.48f, 15.48f, Arc.NO_ROTATION, false, true, 11.13f, 9.87f)
+                lineTo(9.69f, 8.43f)
+                arcTo(17.47f, 17.47f, Arc.NO_ROTATION, false, false, 3.73f, 12.79f)
+                close()
+            }
+        }.build()
+    }
 }

@@ -1,5 +1,8 @@
 package com.po4yka.bitesizereader.domain.repository
 
+import com.po4yka.bitesizereader.domain.model.Goal
+import com.po4yka.bitesizereader.domain.model.GoalProgress
+import com.po4yka.bitesizereader.domain.model.Streak
 import com.po4yka.bitesizereader.domain.model.UserPreferences
 import com.po4yka.bitesizereader.domain.model.UserStats
 
@@ -15,4 +18,19 @@ interface UserPreferencesRepository {
 
     /** Get user statistics */
     suspend fun getStats(): UserStats
+
+    /** Get user reading streak from backend */
+    suspend fun getStreak(): Streak
+
+    /** Get all user reading goals from backend */
+    suspend fun getGoals(): List<Goal>
+
+    /** Get progress for all reading goals from backend */
+    suspend fun getGoalsProgress(): List<GoalProgress>
+
+    /** Create a new reading goal */
+    suspend fun createGoal(
+        goalType: String,
+        targetCount: Int,
+    ): Goal
 }

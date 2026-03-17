@@ -369,6 +369,35 @@ UPDATE highlightEntity SET syncStatus = ? WHERE id = ?;
 updateHighlightColor:
 UPDATE highlightEntity SET color = ? WHERE id = ?;
 
+-- Server-Synced Highlights Table
+-- Stores highlights received from the server during sync. Keyed by server UUID.
+CREATE TABLE IF NOT EXISTS highlights (
+    id TEXT NOT NULL PRIMARY KEY,
+    summary_id TEXT NOT NULL,
+    text TEXT NOT NULL,
+    start_offset INTEGER,
+    end_offset INTEGER,
+    color TEXT,
+    note TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS highlights_summary_id ON highlights(summary_id);
+
+upsertHighlight:
+INSERT OR REPLACE INTO highlights (id, summary_id, text, start_offset, end_offset, color, note, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+selectHighlightsBySummaryId:
+SELECT * FROM highlights WHERE summary_id = ?;
+
+deleteHighlightById:
+DELETE FROM highlights WHERE id = ?;
+
+deleteHighlightsBySummaryId:
+DELETE FROM highlights WHERE summary_id = ?;
+
 -- Recommendation Table
 CREATE TABLE recommendationEntity (
     id TEXT NOT NULL PRIMARY KEY,

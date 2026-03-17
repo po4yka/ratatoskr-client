@@ -4,6 +4,7 @@ import com.po4yka.bitesizereader.domain.model.FeedbackIssue
 import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.domain.repository.ReadingPreferencesRepository
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
+import com.po4yka.bitesizereader.domain.usecase.ExportSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryByIdUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.RefreshFullContentUseCase
@@ -11,6 +12,9 @@ import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.presentation.state.SummaryDetailState
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
+import com.po4yka.bitesizereader.util.network.NetworkMonitor
+import com.po4yka.bitesizereader.util.network.isConnected
+import com.po4yka.bitesizereader.util.share.ShareManager
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +40,9 @@ class SummaryDetailViewModel(
     private val deleteSummaryUseCase: DeleteSummaryUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val readingPreferencesRepository: ReadingPreferencesRepository,
+    private val networkMonitor: NetworkMonitor,
+    private val exportSummaryUseCase: ExportSummaryUseCase,
+    private val shareManager: ShareManager,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state = _state.asStateFlow()
@@ -44,6 +51,12 @@ class SummaryDetailViewModel(
         readingPreferencesRepository.getPreferences()
             .onEach { prefs ->
                 _state.value = _state.value.copy(readingPreferences = prefs)
+            }
+            .launchIn(viewModelScope)
+
+        networkMonitor.networkStatus
+            .onEach { status ->
+                _state.update { it.copy(isOffline = !status.isConnected()) }
             }
             .launchIn(viewModelScope)
 
@@ -350,6 +363,23 @@ class SummaryDetailViewModel(
             scope = viewModelScope,
             currentState = { _state.value.collection },
         ) { sub -> _state.update { it.copy(collection = sub) } }
+    }
+
+    // Export / Share
+
+    @Suppress("TooGenericExceptionCaught")
+    fun exportSummary() {
+        val summaryId = _state.value.summary?.id ?: return
+        _state.update { it.copy(isExporting = true, exportError = null) }
+        viewModelScope.launch {
+            try {
+                val markdown = exportSummaryUseCase(summaryId).getOrThrow()
+                shareManager.shareText(markdown, "Export Summary")
+                _state.update { it.copy(isExporting = false) }
+            } catch (e: Exception) {
+                _state.update { it.copy(isExporting = false, exportError = e.toAppError().userMessage()) }
+            }
+        }
     }
 
     override fun onDestroy() {

@@ -4,6 +4,7 @@ package com.po4yka.bitesizereader.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -51,6 +54,52 @@ import com.po4yka.bitesizereader.ui.components.SessionsSection
 import com.po4yka.bitesizereader.ui.components.UserStatsCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.a11y_sync_progress
+import bitesizereader.composeapp.generated.resources.settings_account_binding
+import bitesizereader.composeapp.generated.resources.settings_goal_target
+import bitesizereader.composeapp.generated.resources.settings_linked_to
+import bitesizereader.composeapp.generated.resources.settings_begin_linking
+import bitesizereader.composeapp.generated.resources.settings_cache_prompt
+import bitesizereader.composeapp.generated.resources.settings_cached_content
+import bitesizereader.composeapp.generated.resources.settings_cancel
+import bitesizereader.composeapp.generated.resources.settings_cancel_sync
+import bitesizereader.composeapp.generated.resources.settings_check_status
+import bitesizereader.composeapp.generated.resources.settings_check_status_prompt
+import bitesizereader.composeapp.generated.resources.settings_clear_cache
+import bitesizereader.composeapp.generated.resources.settings_current_streak
+import bitesizereader.composeapp.generated.resources.settings_daily_reading_goal
+import bitesizereader.composeapp.generated.resources.settings_danger_zone
+import bitesizereader.composeapp.generated.resources.settings_data_management
+import bitesizereader.composeapp.generated.resources.settings_delete_account
+import bitesizereader.composeapp.generated.resources.settings_delete_account_description
+import bitesizereader.composeapp.generated.resources.settings_digest_channels
+import bitesizereader.composeapp.generated.resources.settings_digest_channels_description
+import bitesizereader.composeapp.generated.resources.settings_goal_disabled
+import bitesizereader.composeapp.generated.resources.settings_goal_enable_prompt
+import bitesizereader.composeapp.generated.resources.settings_goal_enabled
+import bitesizereader.composeapp.generated.resources.settings_import_from_backend
+import bitesizereader.composeapp.generated.resources.settings_language
+import bitesizereader.composeapp.generated.resources.settings_language_auto
+import bitesizereader.composeapp.generated.resources.settings_language_english
+import bitesizereader.composeapp.generated.resources.settings_language_prompt
+import bitesizereader.composeapp.generated.resources.settings_language_russian
+import bitesizereader.composeapp.generated.resources.settings_link_telegram_prompt
+import bitesizereader.composeapp.generated.resources.settings_linking_code
+import bitesizereader.composeapp.generated.resources.settings_linking_code_prompt
+import bitesizereader.composeapp.generated.resources.settings_loading
+import bitesizereader.composeapp.generated.resources.settings_longest_streak
+import bitesizereader.composeapp.generated.resources.settings_reading_goals
+import bitesizereader.composeapp.generated.resources.settings_retry
+import bitesizereader.composeapp.generated.resources.settings_security
+import bitesizereader.composeapp.generated.resources.settings_synchronization
+import bitesizereader.composeapp.generated.resources.settings_sync_prompt
+import bitesizereader.composeapp.generated.resources.settings_telegram_account
+import bitesizereader.composeapp.generated.resources.settings_title
+import bitesizereader.composeapp.generated.resources.settings_unlink_telegram
+import bitesizereader.composeapp.generated.resources.privacy_policy
+import bitesizereader.composeapp.generated.resources.terms_of_service
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 /**
@@ -125,7 +174,7 @@ fun SettingsScreen(component: SettingsComponent) {
 @Suppress("FunctionNaming")
 @Composable
 private fun SettingsHeader() {
-    ScreenHeader(title = "Settings")
+    ScreenHeader(title = stringResource(Res.string.settings_title))
 }
 
 @Suppress("FunctionNaming", "LongParameterList", "LongMethod")
@@ -164,9 +213,10 @@ private fun SettingsContent(
         )
 
         Text(
-            text = "Account Binding",
+            text = stringResource(Res.string.settings_account_binding),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
+            modifier = Modifier.semantics { heading() },
         )
 
         AccountBindingCard(
@@ -199,9 +249,10 @@ private fun SettingsContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Reading Goals",
+            text = stringResource(Res.string.settings_reading_goals),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
+            modifier = Modifier.semantics { heading() },
         )
 
         ReadingGoalsCard(
@@ -213,9 +264,10 @@ private fun SettingsContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Data Management",
+            text = stringResource(Res.string.settings_data_management),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
+            modifier = Modifier.semantics { heading() },
         )
 
         SyncCard(
@@ -242,9 +294,10 @@ private fun SettingsContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Security",
+            text = stringResource(Res.string.settings_security),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
+            modifier = Modifier.semantics { heading() },
         )
 
         SessionsSection(
@@ -256,8 +309,87 @@ private fun SettingsContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        LegalSection()
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         DangerZoneSection(
             onDeleteAccount = onShowDeleteConfirmation,
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun LegalSection() {
+    val uriHandler = LocalUriHandler.current
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = "Legal",
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
+            modifier = Modifier.semantics { heading() },
+        )
+
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Carbon.theme.layer01),
+        ) {
+            LegalRow(
+                label = stringResource(Res.string.privacy_policy),
+                onClick = { uriHandler.openUri("https://bitsizereaderapi.po4yka.com/web/privacy.html") },
+            )
+
+            androidx.compose.foundation.layout.Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .height(1.dp)
+                        .background(Carbon.theme.borderSubtle00),
+            )
+
+            LegalRow(
+                label = stringResource(Res.string.terms_of_service),
+                onClick = { uriHandler.openUri("https://bitsizereaderapi.po4yka.com/web/terms.html") },
+            )
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun LegalRow(
+    label: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .semantics { role = Role.Button }
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Icon(
+            imageVector = CarbonIcons.Document,
+            contentDescription = null,
+            tint = Carbon.theme.iconSecondary,
+            modifier = Modifier.size(20.dp),
+        )
+        Text(
+            text = label,
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textPrimary,
+            modifier = Modifier.weight(1f),
         )
     }
 }
@@ -269,9 +401,10 @@ private fun DangerZoneSection(onDeleteAccount: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Danger Zone",
+            text = stringResource(Res.string.settings_danger_zone),
             style = Carbon.typography.heading03,
             color = Carbon.theme.supportError,
+            modifier = Modifier.semantics { heading() },
         )
 
         Column(
@@ -284,17 +417,17 @@ private fun DangerZoneSection(onDeleteAccount: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                text = "Delete Account",
+                text = stringResource(Res.string.settings_delete_account),
                 style = Carbon.typography.headingCompact01,
                 color = Carbon.theme.textPrimary,
             )
             Text(
-                text = "Permanently delete your account and all associated data. This action cannot be undone.",
+                text = stringResource(Res.string.settings_delete_account_description),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
             )
             Button(
-                label = "Delete Account",
+                label = stringResource(Res.string.settings_delete_account),
                 onClick = onDeleteAccount,
                 buttonType = ButtonType.PrimaryDanger,
                 modifier = Modifier.fillMaxWidth(),
@@ -321,7 +454,7 @@ private fun AccountBindingCard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Telegram Account",
+            text = stringResource(Res.string.settings_telegram_account),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
@@ -330,7 +463,7 @@ private fun AccountBindingCard(
             telegramState.isLoading -> {
                 SmallLoading()
                 Text(
-                    text = "Loading...",
+                    text = stringResource(Res.string.settings_loading),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                 )
@@ -342,7 +475,7 @@ private fun AccountBindingCard(
                     color = Carbon.theme.supportError,
                 )
                 Button(
-                    label = "Retry",
+                    label = stringResource(Res.string.settings_retry),
                     onClick = onRetryLinkStatus,
                     buttonType = ButtonType.Secondary,
                     modifier = Modifier.fillMaxWidth(),
@@ -351,12 +484,12 @@ private fun AccountBindingCard(
             telegramState.linkStatus?.linked == true -> {
                 val linkStatus = telegramState.linkStatus
                 Text(
-                    text = "Linked to: ${linkStatus?.username ?: "Unknown"}",
+                    text = stringResource(Res.string.settings_linked_to, linkStatus?.username ?: "Unknown"),
                     style = Carbon.typography.bodyCompact01,
                     color = Carbon.theme.textSecondary,
                 )
                 Button(
-                    label = "Unlink Telegram",
+                    label = stringResource(Res.string.settings_unlink_telegram),
                     onClick = onUnlink,
                     buttonType = ButtonType.TertiaryDanger,
                     modifier = Modifier.fillMaxWidth(),
@@ -364,12 +497,12 @@ private fun AccountBindingCard(
             }
             else -> {
                 Text(
-                    text = "Link your Telegram account to sync your data.",
+                    text = stringResource(Res.string.settings_link_telegram_prompt),
                     style = Carbon.typography.bodyCompact01,
                     color = Carbon.theme.textSecondary,
                 )
                 Button(
-                    label = "Begin Linking",
+                    label = stringResource(Res.string.settings_begin_linking),
                     onClick = onBeginLink,
                     buttonType = ButtonType.Primary,
                     modifier = Modifier.fillMaxWidth(),
@@ -397,12 +530,12 @@ private fun LinkNonceCard(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = "Linking Code",
+            text = stringResource(Res.string.settings_linking_code),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
         Text(
-            text = "Send this code to the Telegram bot to complete the linking process:",
+            text = stringResource(Res.string.settings_linking_code_prompt),
             style = Carbon.typography.bodyCompact01,
             color = Carbon.theme.textSecondary,
         )
@@ -415,7 +548,7 @@ private fun LinkNonceCard(
             )
         }
         Text(
-            text = "After sending the code to the bot, tap \"Check Status\" to verify the link.",
+            text = stringResource(Res.string.settings_check_status_prompt),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )
@@ -424,14 +557,14 @@ private fun LinkNonceCard(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Button(
-                label = "Check Status",
+                label = stringResource(Res.string.settings_check_status),
                 onClick = onCheckStatus,
                 isEnabled = !isLoading,
                 buttonType = ButtonType.Primary,
                 modifier = Modifier.weight(1f),
             )
             Button(
-                label = "Cancel",
+                label = stringResource(Res.string.settings_cancel),
                 onClick = onCancel,
                 isEnabled = !isLoading,
                 buttonType = ButtonType.Secondary,
@@ -459,12 +592,12 @@ private fun SyncCard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Synchronization",
+            text = stringResource(Res.string.settings_synchronization),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
         Text(
-            text = "Import the latest data from the backend to synchronize your local database.",
+            text = stringResource(Res.string.settings_sync_prompt),
             style = Carbon.typography.bodyCompact01,
             color = Carbon.theme.textSecondary,
         )
@@ -476,7 +609,7 @@ private fun SyncCard(
             )
         } else {
             Button(
-                label = "Import from Backend",
+                label = stringResource(Res.string.settings_import_from_backend),
                 onClick = onImport,
                 isEnabled = !isTelegramLoading,
                 buttonType = ButtonType.Primary,
@@ -511,12 +644,12 @@ private fun CacheManagementCard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Cached Content",
+            text = stringResource(Res.string.settings_cached_content),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
         Text(
-            text = "Full article content cached for offline reading.",
+            text = stringResource(Res.string.settings_cache_prompt),
             style = Carbon.typography.bodyCompact01,
             color = Carbon.theme.textSecondary,
         )
@@ -529,7 +662,7 @@ private fun CacheManagementCard(
             SmallLoading()
         } else {
             Button(
-                label = "Clear Cache",
+                label = stringResource(Res.string.settings_clear_cache),
                 onClick = onClearCache,
                 isEnabled = cacheSize > 0,
                 buttonType = ButtonType.Secondary,
@@ -561,14 +694,21 @@ private fun SyncProgressSection(
             onCancelSync = onCancelSync,
         )
 
+        val syncProgressDesc =
+            stringResource(
+                Res.string.a11y_sync_progress,
+                getSyncPhaseText(progress?.phase),
+            )
         progress?.progressFraction?.let { fraction ->
             LinearProgressIndicator(
-                progress = { fraction },
+                progress =
+                    { fraction },
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp)),
+                        .clip(RoundedCornerShape(2.dp))
+                        .semantics { contentDescription = syncProgressDesc },
                 color = Carbon.theme.linkPrimary,
                 trackColor = Carbon.theme.borderSubtle00,
             )
@@ -577,7 +717,8 @@ private fun SyncProgressSection(
                 Modifier
                     .fillMaxWidth()
                     .height(4.dp)
-                    .clip(RoundedCornerShape(2.dp)),
+                    .clip(RoundedCornerShape(2.dp))
+                    .semantics { contentDescription = syncProgressDesc },
             color = Carbon.theme.linkPrimary,
             trackColor = Carbon.theme.borderSubtle00,
         )
@@ -616,7 +757,7 @@ private fun SyncProgressHeader(
         ) {
             Icon(
                 imageVector = CarbonIcons.Close,
-                contentDescription = "Cancel sync",
+                contentDescription = stringResource(Res.string.settings_cancel_sync),
                 tint = Carbon.theme.iconSecondary,
                 modifier = Modifier.size(16.dp),
             )
@@ -684,12 +825,12 @@ private fun LanguagePreferenceCard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Language",
+            text = stringResource(Res.string.settings_language),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
         Text(
-            text = "Select your preferred language for summaries.",
+            text = stringResource(Res.string.settings_language_prompt),
             style = Carbon.typography.bodyCompact01,
             color = Carbon.theme.textSecondary,
         )
@@ -702,19 +843,19 @@ private fun LanguagePreferenceCard(
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
                 LanguageChip(
-                    label = "Auto",
+                    label = stringResource(Res.string.settings_language_auto),
                     isSelected = currentLanguage == "auto",
                     isEnabled = !isSaving,
                     onClick = { onLanguageChanged("auto") },
                 )
                 LanguageChip(
-                    label = "English",
+                    label = stringResource(Res.string.settings_language_english),
                     isSelected = currentLanguage == "en",
                     isEnabled = !isSaving,
                     onClick = { onLanguageChanged("en") },
                 )
                 LanguageChip(
-                    label = "Russian",
+                    label = stringResource(Res.string.settings_language_russian),
                     isSelected = currentLanguage == "ru",
                     isEnabled = !isSaving,
                     onClick = { onLanguageChanged("ru") },
@@ -772,12 +913,12 @@ private fun DigestNavigationRow(onClick: () -> Unit) {
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Digest Channels",
+                text = stringResource(Res.string.settings_digest_channels),
                 style = Carbon.typography.headingCompact01,
                 color = Carbon.theme.textPrimary,
             )
             Text(
-                text = "Manage channel subscriptions and preferences",
+                text = stringResource(Res.string.settings_digest_channels_description),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
             )
@@ -818,22 +959,28 @@ private fun ReadingGoalsCard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Daily Reading Goal",
+                text = stringResource(Res.string.settings_daily_reading_goal),
                 style = Carbon.typography.headingCompact01,
                 color = Carbon.theme.textPrimary,
             )
-            val toggleText = if (isEnabled) "Enabled" else "Disabled"
+            val toggleText =
+                if (isEnabled) {
+                    stringResource(Res.string.settings_goal_enabled)
+                } else {
+                    stringResource(Res.string.settings_goal_disabled)
+                }
             Text(
                 text = toggleText,
                 style = Carbon.typography.label01,
                 color = if (isEnabled) Carbon.theme.supportSuccess else Carbon.theme.textSecondary,
                 modifier =
                     Modifier
+                        .semantics { role = Role.Button }
                         .clickable(onClick = onToggleEnabled)
                         .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
             )
@@ -841,7 +988,7 @@ private fun ReadingGoalsCard(
 
         if (goal != null) {
             Text(
-                text = "Target: ${goal.dailyTargetMin} minutes per day",
+                text = stringResource(Res.string.settings_goal_target, goal.dailyTargetMin),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
             )
@@ -880,7 +1027,7 @@ private fun ReadingGoalsCard(
                             color = Carbon.theme.textPrimary,
                         )
                         Text(
-                            text = "Current streak",
+                            text = stringResource(Res.string.settings_current_streak),
                             style = Carbon.typography.label01,
                             color = Carbon.theme.textSecondary,
                         )
@@ -892,7 +1039,7 @@ private fun ReadingGoalsCard(
                             color = Carbon.theme.textPrimary,
                         )
                         Text(
-                            text = "Longest streak",
+                            text = stringResource(Res.string.settings_longest_streak),
                             style = Carbon.typography.label01,
                             color = Carbon.theme.textSecondary,
                         )
@@ -901,7 +1048,7 @@ private fun ReadingGoalsCard(
             }
         } else {
             Text(
-                text = "Enable to set a daily reading target and track your streak.",
+                text = stringResource(Res.string.settings_goal_enable_prompt),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
             )

@@ -17,6 +17,11 @@ data class SummaryDetailState(
     val showReadingSettings: Boolean = false,
     // Audio playback
     val audioState: AudioPlaybackState? = null,
+    // Offline mode
+    val isOffline: Boolean = false,
+    // Export/share
+    val isExporting: Boolean = false,
+    val exportError: String? = null,
     // Nested sub-states
     val session: ReadingSessionState = ReadingSessionState(),
     val highlights: HighlightState = HighlightState(),
