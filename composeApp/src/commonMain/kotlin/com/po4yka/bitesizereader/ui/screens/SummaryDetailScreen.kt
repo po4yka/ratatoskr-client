@@ -350,7 +350,7 @@ private fun SummaryDetailHeader(
                 HeaderIconButton(
                     icon = CarbonIcons.Renew,
                     contentDescription = "Re-summarize",
-                    onClick = onResummarizeClick,
+                    onClick = { if (!isResummarizing) onResummarizeClick() },
                     tint = Carbon.theme.iconSecondary,
                     modifier = Modifier.alpha(if (isResummarizing) 0.4f else 1f),
                 )
