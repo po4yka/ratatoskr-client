@@ -88,6 +88,7 @@ fun SummaryListScreen(
     val onToggleSearch = remember<() -> Unit>(viewModel) { { viewModel.toggleSearch() } }
     val onSortOrderChanged = remember<(SortOrder) -> Unit>(viewModel) { { viewModel.setSortOrder(it) } }
     val onSubmitUrlClicked = remember<() -> Unit>(component) { { component.onSubmitUrlClicked() } }
+    val onCreateDigestClicked = remember<() -> Unit>(component) { { component.onCreateDigestClicked() } }
 
     Column(
         modifier =
@@ -110,6 +111,7 @@ fun SummaryListScreen(
             },
             onSortOrderChanged = onSortOrderChanged,
             onSubmitUrlClicked = onSubmitUrlClicked,
+            onCreateDigestClicked = onCreateDigestClicked,
         )
 
         // Search bar (collapsible)
@@ -231,6 +233,7 @@ private fun SummaryListHeader(
     onToggleLayout: () -> Unit,
     onSortOrderChanged: (SortOrder) -> Unit,
     onSubmitUrlClicked: () -> Unit,
+    onCreateDigestClicked: () -> Unit,
 ) {
     Row(
         modifier =
@@ -253,6 +256,16 @@ private fun SummaryListHeader(
             Icon(
                 imageVector = CarbonIcons.Add,
                 contentDescription = "Submit URL",
+                tint = Carbon.theme.iconPrimary,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
+
+        // Create Digest button
+        IconButton(onClick = onCreateDigestClicked) {
+            Icon(
+                imageVector = CarbonIcons.Document,
+                contentDescription = "Create Digest",
                 tint = Carbon.theme.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),
             )
