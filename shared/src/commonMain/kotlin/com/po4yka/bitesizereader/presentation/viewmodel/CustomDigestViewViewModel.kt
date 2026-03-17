@@ -5,6 +5,8 @@ import com.po4yka.bitesizereader.domain.repository.CustomDigestRepository
 import com.po4yka.bitesizereader.domain.usecase.DeleteCustomDigestUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetCustomDigestByIdUseCase
 import com.po4yka.bitesizereader.presentation.state.CustomDigestViewState
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -19,6 +21,8 @@ class CustomDigestViewViewModel(
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(CustomDigestViewState())
     val state = _state.asStateFlow()
+
+    private var pollingJob: Job? = null
 
     @Suppress("TooGenericExceptionCaught")
     fun loadDigest(digestId: String) {
@@ -36,14 +40,18 @@ class CustomDigestViewViewModel(
 
     @Suppress("TooGenericExceptionCaught")
     private fun pollStatus(digestId: String) {
-        viewModelScope.launch {
-            try {
-                val completed = repository.pollDigestStatus(digestId)
-                _state.update { it.copy(digest = completed) }
-            } catch (e: Exception) {
-                _state.update { it.copy(error = e.message) }
+        pollingJob?.cancel()
+        pollingJob =
+            viewModelScope.launch {
+                try {
+                    val completed = repository.pollDigestStatus(digestId)
+                    _state.update { it.copy(digest = completed) }
+                } catch (e: Exception) {
+                    if (e !is CancellationException) {
+                        _state.update { it.copy(error = e.message) }
+                    }
+                }
             }
-        }
     }
 
     @Suppress("TooGenericExceptionCaught")

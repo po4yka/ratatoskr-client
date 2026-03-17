@@ -1,7 +1,6 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.model.DigestFormat
-import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.usecase.CreateCustomDigestUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
 import com.po4yka.bitesizereader.presentation.state.CustomDigestCreateState
@@ -28,6 +27,7 @@ class CustomDigestCreateViewModel(
             _state.update { it.copy(isLoadingSummaries = true) }
             getSummariesUseCase(page = 1, pageSize = 100).collect { summaries ->
                 _state.update { it.copy(summaries = summaries, isLoadingSummaries = false) }
+                updateFiltered()
             }
         }
     }
@@ -50,17 +50,20 @@ class CustomDigestCreateViewModel(
 
     fun onSearchChanged(query: String) {
         _state.update { it.copy(searchQuery = query) }
+        updateFiltered()
     }
 
-    val filteredSummaries: List<Summary>
-        get() =
-            _state.value.let { s ->
-                if (s.searchQuery.isBlank()) {
-                    s.summaries
+    private fun updateFiltered() {
+        _state.update { state ->
+            val filtered =
+                if (state.searchQuery.isBlank()) {
+                    state.summaries
                 } else {
-                    s.summaries.filter { it.title.contains(s.searchQuery, ignoreCase = true) }
+                    state.summaries.filter { it.title.contains(state.searchQuery, ignoreCase = true) }
                 }
-            }
+            state.copy(filteredSummaries = filtered)
+        }
+    }
 
     @Suppress("TooGenericExceptionCaught")
     fun createDigest() {

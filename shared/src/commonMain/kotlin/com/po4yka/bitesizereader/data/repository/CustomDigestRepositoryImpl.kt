@@ -25,6 +25,7 @@ import org.koin.core.annotation.Single
 
 private const val DIGEST_LIST_LIMIT = 50L
 private const val POLL_INTERVAL_SECONDS = 5L
+private const val MAX_POLL_ITERATIONS = 60
 
 @OptIn(ExperimentalUuidApi::class)
 @Single(binds = [CustomDigestRepository::class])
@@ -43,27 +44,32 @@ class CustomDigestRepositoryImpl(
             val now = Clock.System.now()
             val formatStr = format.name.lowercase()
 
-            database.databaseQueries.insertCustomDigest(
-                id = localId,
-                title = title,
-                summaryIds = summaryIds.joinToString(","),
-                format = formatStr,
-                content = null,
-                status = CustomDigestStatus.PENDING.name.lowercase(),
-                createdAt = now,
-            )
-
-            val response =
-                api.createCustomDigest(
-                    CreateCustomDigestRequestDto(
-                        summaryIds = summaryIds,
-                        format = formatStr,
-                        title = title,
-                    ),
+            try {
+                database.databaseQueries.insertCustomDigest(
+                    id = localId,
+                    title = title,
+                    summaryIds = summaryIds.joinToString(","),
+                    format = formatStr,
+                    content = null,
+                    status = CustomDigestStatus.PENDING.name.lowercase(),
+                    createdAt = now,
                 )
 
-            val dto = response.data
-            if (dto != null) {
+                val response =
+                    api.createCustomDigest(
+                        CreateCustomDigestRequestDto(
+                            summaryIds = summaryIds,
+                            format = formatStr,
+                            title = title,
+                        ),
+                    )
+
+                if (!response.success || response.data == null) {
+                    database.databaseQueries.deleteCustomDigest(localId)
+                    throw Exception("Failed to create digest: ${response.error?.message}")
+                }
+
+                val dto = response.data
                 val serverCreatedAt = parseInstant(dto.createdAt, now)
                 val serverStatus = dto.status
                 database.databaseQueries.insertCustomDigest(
@@ -88,16 +94,9 @@ class CustomDigestRepositoryImpl(
                     status = parseStatus(dto.status),
                     createdAt = serverCreatedAt,
                 )
-            } else {
-                CustomDigest(
-                    id = localId,
-                    title = title,
-                    summaryIds = summaryIds,
-                    format = format,
-                    content = null,
-                    status = CustomDigestStatus.PENDING,
-                    createdAt = now,
-                )
+            } catch (e: Exception) {
+                runCatching { database.databaseQueries.deleteCustomDigest(localId) }
+                throw e
             }
         }
 
@@ -114,7 +113,9 @@ class CustomDigestRepositoryImpl(
 
     override suspend fun pollDigestStatus(id: String): CustomDigest =
         withContext(ioDispatcher) {
-            while (true) {
+            var iterations = 0
+            while (iterations < MAX_POLL_ITERATIONS) {
+                iterations++
                 delay(POLL_INTERVAL_SECONDS.seconds)
                 val response = api.getCustomDigest(id)
                 val dto = response.data ?: continue
@@ -139,8 +140,9 @@ class CustomDigestRepositoryImpl(
                         )
                 }
             }
-            @Suppress("UNREACHABLE_CODE")
-            error("Unreachable")
+            // Timed out: mark as failed locally
+            database.databaseQueries.updateCustomDigestContent(content = null, status = "failed", id = id)
+            throw Exception("Digest generation timed out")
         }
 
     override suspend fun deleteDigest(id: String): Unit =
