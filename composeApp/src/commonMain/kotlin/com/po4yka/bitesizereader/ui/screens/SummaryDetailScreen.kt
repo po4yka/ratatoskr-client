@@ -48,6 +48,7 @@ import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.MarkdownElement
 import com.mikepenz.markdown.model.DefaultMarkdownColors
 import com.mikepenz.markdown.model.DefaultMarkdownTypography
+import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.domain.model.Highlight
 import com.po4yka.bitesizereader.domain.model.HighlightColor
 import com.po4yka.bitesizereader.domain.model.ReadingPreferences
@@ -55,6 +56,7 @@ import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.AddToCollectionDialog
 import com.po4yka.bitesizereader.ui.components.AnnotationDialog
+import com.po4yka.bitesizereader.ui.components.FeedbackDialog
 import com.po4yka.bitesizereader.domain.usecase.GetProxiedImageUrlUseCase
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
@@ -105,6 +107,9 @@ fun SummaryDetailScreen(
             onReadingSettingsClick = { viewModel.toggleReadingSettings() },
             onHighlightModeClick = { viewModel.toggleHighlightMode() },
             isHighlightModeActive = state.isHighlightModeActive,
+            onThumbsUpClick = { viewModel.rateSummary(FeedbackRating.UP) },
+            onThumbsDownClick = { viewModel.rateSummary(FeedbackRating.DOWN) },
+            feedbackRating = state.feedback?.rating,
         )
 
         // Reading settings panel
@@ -182,6 +187,17 @@ fun SummaryDetailScreen(
             onCancel = { viewModel.closeAnnotationEditor() },
         )
     }
+
+    // Feedback Dialog
+    if (state.showFeedbackDialog) {
+        FeedbackDialog(
+            isSubmitting = state.isSubmittingFeedback,
+            onSubmit = { issues, comment ->
+                viewModel.submitDetailedFeedback(FeedbackRating.DOWN, issues, comment)
+            },
+            onDismiss = { viewModel.dismissFeedbackDialog() },
+        )
+    }
 }
 
 @Suppress("FunctionNaming")
@@ -195,6 +211,9 @@ private fun SummaryDetailHeader(
     onReadingSettingsClick: () -> Unit = {},
     onHighlightModeClick: () -> Unit = {},
     isHighlightModeActive: Boolean = false,
+    onThumbsUpClick: () -> Unit = {},
+    onThumbsDownClick: () -> Unit = {},
+    feedbackRating: FeedbackRating? = null,
 ) {
     ScreenHeader(
         title = summary?.let { extractDomain(it.sourceUrl) ?: "Summary" } ?: "Summary",
@@ -213,6 +232,30 @@ private fun SummaryDetailHeader(
                     onClick = onFavoriteClick,
                     tint =
                         if (s.isFavorited) {
+                            Carbon.theme.supportError
+                        } else {
+                            Carbon.theme.iconSecondary
+                        },
+                )
+
+                HeaderIconButton(
+                    icon = CarbonIcons.ThumbsUp,
+                    contentDescription = "Thumbs up",
+                    onClick = onThumbsUpClick,
+                    tint =
+                        if (feedbackRating == FeedbackRating.UP) {
+                            Carbon.theme.supportSuccess
+                        } else {
+                            Carbon.theme.iconSecondary
+                        },
+                )
+
+                HeaderIconButton(
+                    icon = CarbonIcons.ThumbsDown,
+                    contentDescription = "Thumbs down",
+                    onClick = onThumbsDownClick,
+                    tint =
+                        if (feedbackRating == FeedbackRating.DOWN) {
                             Carbon.theme.supportError
                         } else {
                             Carbon.theme.iconSecondary

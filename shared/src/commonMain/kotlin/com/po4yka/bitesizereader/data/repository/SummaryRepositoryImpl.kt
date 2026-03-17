@@ -2,22 +2,26 @@ package com.po4yka.bitesizereader.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.database.Database
-import com.po4yka.bitesizereader.domain.model.Summary
-import com.po4yka.bitesizereader.util.MarkdownSanitizer
-import com.po4yka.bitesizereader.domain.repository.SummaryRepository
+import com.po4yka.bitesizereader.domain.model.FeedbackIssue
+import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
+import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.domain.model.SummaryFeedback
+import com.po4yka.bitesizereader.domain.repository.SummaryRepository
+import com.po4yka.bitesizereader.util.MarkdownSanitizer
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.ensureActive
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
@@ -285,5 +289,71 @@ class SummaryRepositoryImpl(
             .flatMap { it }
             .distinct()
             .sorted()
+    }
+
+    override suspend fun submitFeedback(
+        summaryId: String,
+        rating: FeedbackRating,
+        issues: List<FeedbackIssue>,
+        comment: String?,
+    ) {
+        val issuesStr = issues.joinToString(",") { it.name }
+        database.databaseQueries.insertOrReplaceFeedback(
+            summaryId = summaryId,
+            rating = rating.name,
+            issues = issuesStr.ifEmpty { null },
+            comment = comment,
+            createdAt = Clock.System.now(),
+            syncStatus = "pending",
+        )
+        database.databaseQueries.insertPendingOperation(
+            entityId = summaryId,
+            entityType = "summary",
+            action = "submit_feedback",
+            payload = buildFeedbackPayload(rating, issues, comment),
+            createdAt = Clock.System.now().toEpochMilliseconds(),
+        )
+    }
+
+    private fun buildFeedbackPayload(
+        rating: FeedbackRating,
+        issues: List<FeedbackIssue>,
+        comment: String?,
+    ): String {
+        val issuesStr = issues.joinToString(",") { it.name }
+        val commentJson =
+            if (comment != null) {
+                "\"comment\":\"${comment.replace(
+                    "\"",
+                    "\\\"",
+                )}\""
+            } else {
+                "\"comment\":null"
+            }
+        return "{\"rating\":\"${rating.name}\",\"issues\":\"$issuesStr\",$commentJson}"
+    }
+
+    override fun getFeedback(summaryId: String): Flow<SummaryFeedback?> {
+        return database.databaseQueries.getFeedbackForSummary(summaryId)
+            .asFlow()
+            .mapToOneOrNull(ioDispatcher)
+            .map { entity ->
+                entity?.let {
+                    SummaryFeedback(
+                        summaryId = it.summaryId,
+                        rating = FeedbackRating.valueOf(it.rating),
+                        issues =
+                            it.issues
+                                ?.split(",")
+                                ?.filter { part -> part.isNotBlank() }
+                                ?.mapNotNull { part ->
+                                    runCatching { FeedbackIssue.valueOf(part) }.getOrNull()
+                                }
+                                ?: emptyList(),
+                        comment = it.comment,
+                        createdAt = it.createdAt,
+                    )
+                }
+            }
     }
 }

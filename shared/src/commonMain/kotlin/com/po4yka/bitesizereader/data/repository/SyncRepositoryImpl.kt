@@ -4,7 +4,9 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.po4yka.bitesizereader.data.mappers.toDto
 import com.po4yka.bitesizereader.data.mappers.toSummaryEntity
+import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.data.remote.SyncApi
+import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto
@@ -60,6 +62,7 @@ private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,
+    private val summariesApi: SummariesApi,
     private val networkMonitor: NetworkMonitor,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncRepository {
@@ -741,6 +744,10 @@ class SyncRepositoryImpl(
                             payload = mapOf("toggle_favorite" to true),
                             clientTimestamp = null,
                         )
+                    "submit_feedback" -> {
+                        // Handle feedback separately - direct API call, not via applyChanges
+                        null
+                    }
                     else -> {
                         logger.warn { "Unknown pending operation action: ${op.action}" }
                         null
@@ -748,8 +755,38 @@ class SyncRepositoryImpl(
                 }
             }
 
+        // Flush feedback operations separately
+        val feedbackOps = pendingOps.filter { it.action == "submit_feedback" }
+        for (feedbackOp in feedbackOps) {
+            try {
+                val payloadMap = feedbackOp.payload?.let { parsePayload(it) } ?: continue
+                val remoteId = feedbackOp.entityId.toLongOrNull() ?: continue
+                val rating = (payloadMap["rating"] as? String) ?: continue
+                val issuesList =
+                    (payloadMap["issues"] as? String)
+                        ?.split(",")
+                        ?.filter { it.isNotBlank() }
+                        ?: emptyList()
+                val comment = payloadMap["comment"] as? String
+                summariesApi.submitFeedback(
+                    remoteId,
+                    SubmitFeedbackRequestDto(
+                        rating = rating,
+                        issues = issuesList,
+                        comment = comment,
+                    ),
+                )
+                database.databaseQueries.updateFeedbackSyncStatus(
+                    syncStatus = "synced",
+                    summaryId = feedbackOp.entityId,
+                )
+                database.databaseQueries.deletePendingOperation(feedbackOp.id)
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                logger.warn { "Failed to sync feedback for ${feedbackOp.entityId}: ${e.message}" }
+            }
+        }
+
         if (changes.isEmpty()) {
-            database.databaseQueries.deleteAllPendingOperations()
             return
         }
 

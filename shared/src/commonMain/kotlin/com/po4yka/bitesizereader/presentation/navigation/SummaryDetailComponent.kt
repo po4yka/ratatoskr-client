@@ -2,6 +2,8 @@ package com.po4yka.bitesizereader.presentation.navigation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.po4yka.bitesizereader.domain.model.FeedbackIssue
+import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -11,6 +13,16 @@ interface SummaryDetailComponent {
     val summaryId: String
 
     fun onBackClicked()
+
+    fun rateSummary(rating: FeedbackRating)
+
+    fun submitDetailedFeedback(
+        rating: FeedbackRating,
+        issues: List<FeedbackIssue>,
+        comment: String?,
+    )
+
+    fun dismissFeedbackDialog()
 }
 
 class DefaultSummaryDetailComponent(
@@ -25,5 +37,21 @@ class DefaultSummaryDetailComponent(
 
     override fun onBackClicked() {
         onBack()
+    }
+
+    override fun rateSummary(rating: FeedbackRating) {
+        viewModel.rateSummary(rating)
+    }
+
+    override fun submitDetailedFeedback(
+        rating: FeedbackRating,
+        issues: List<FeedbackIssue>,
+        comment: String?,
+    ) {
+        viewModel.submitDetailedFeedback(rating, issues, comment)
+    }
+
+    override fun dismissFeedbackDialog() {
+        viewModel.dismissFeedbackDialog()
     }
 }
