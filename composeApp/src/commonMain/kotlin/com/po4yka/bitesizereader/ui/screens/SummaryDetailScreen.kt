@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
@@ -48,13 +50,17 @@ import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.MarkdownElement
 import com.mikepenz.markdown.model.DefaultMarkdownColors
 import com.mikepenz.markdown.model.DefaultMarkdownTypography
+import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.domain.model.Highlight
 import com.po4yka.bitesizereader.domain.model.HighlightColor
+import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.AddToCollectionDialog
 import com.po4yka.bitesizereader.ui.components.AnnotationDialog
+import com.po4yka.bitesizereader.ui.components.FeedbackDialog
+import com.po4yka.bitesizereader.ui.components.ResummarizeConfirmDialog
 import com.po4yka.bitesizereader.domain.usecase.GetProxiedImageUrlUseCase
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
@@ -105,7 +111,54 @@ fun SummaryDetailScreen(
             onReadingSettingsClick = { viewModel.toggleReadingSettings() },
             onHighlightModeClick = { viewModel.toggleHighlightMode() },
             isHighlightModeActive = state.isHighlightModeActive,
+            onThumbsUpClick = { viewModel.rateSummary(FeedbackRating.UP) },
+            onThumbsDownClick = { viewModel.rateSummary(FeedbackRating.DOWN) },
+            feedbackRating = state.feedback?.rating,
+            onResummarizeClick = { viewModel.openResummarizeConfirmDialog() },
+            isResummarizing = state.isResummarizing,
         )
+
+        // Re-summarize progress indicator
+        if (state.isResummarizing) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+            ) {
+                LinearProgressIndicator(
+                    progress = { state.resummarizeProgress },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Carbon.theme.interactive,
+                    trackColor = Carbon.theme.layer02,
+                )
+                Text(
+                    text =
+                        if (state.resummarizeStage == ProcessingStage.UNSPECIFIED) {
+                            "Re-summarizing..."
+                        } else {
+                            state.resummarizeStage.name.replace('_', ' ').lowercase()
+                                .replaceFirstChar { it.uppercase() }
+                        },
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.textSecondary,
+                    modifier = Modifier.padding(top = Spacing.xs),
+                )
+            }
+        }
+
+        // Re-summarize error
+        state.resummarizeError?.let { errorMessage ->
+            Text(
+                text = errorMessage,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.supportError,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+            )
+        }
 
         // Reading settings panel
         ReadingSettingsPanel(
@@ -182,9 +235,29 @@ fun SummaryDetailScreen(
             onCancel = { viewModel.closeAnnotationEditor() },
         )
     }
+
+    // Feedback Dialog
+    if (state.showFeedbackDialog) {
+        FeedbackDialog(
+            rating = FeedbackRating.DOWN,  // explicit, will be easy to update later
+            isSubmitting = state.isSubmittingFeedback,
+            onSubmit = { rating, issues, comment ->
+                viewModel.submitDetailedFeedback(rating, issues, comment)
+            },
+            onDismiss = { viewModel.dismissFeedbackDialog() },
+        )
+    }
+
+    // Re-summarize Confirm Dialog
+    if (state.showResummarizeConfirmDialog) {
+        ResummarizeConfirmDialog(
+            onConfirm = { viewModel.resummarize() },
+            onDismiss = { viewModel.dismissResummarizeConfirmDialog() },
+        )
+    }
 }
 
-@Suppress("FunctionNaming")
+@Suppress("FunctionNaming", "LongParameterList")
 @Composable
 private fun SummaryDetailHeader(
     summary: Summary?,
@@ -195,6 +268,11 @@ private fun SummaryDetailHeader(
     onReadingSettingsClick: () -> Unit = {},
     onHighlightModeClick: () -> Unit = {},
     isHighlightModeActive: Boolean = false,
+    onThumbsUpClick: () -> Unit = {},
+    onThumbsDownClick: () -> Unit = {},
+    feedbackRating: FeedbackRating? = null,
+    onResummarizeClick: () -> Unit = {},
+    isResummarizing: Boolean = false,
 ) {
     ScreenHeader(
         title = summary?.let { extractDomain(it.sourceUrl) ?: "Summary" } ?: "Summary",
@@ -213,6 +291,30 @@ private fun SummaryDetailHeader(
                     onClick = onFavoriteClick,
                     tint =
                         if (s.isFavorited) {
+                            Carbon.theme.supportError
+                        } else {
+                            Carbon.theme.iconSecondary
+                        },
+                )
+
+                HeaderIconButton(
+                    icon = CarbonIcons.ThumbsUp,
+                    contentDescription = "Thumbs up",
+                    onClick = onThumbsUpClick,
+                    tint =
+                        if (feedbackRating == FeedbackRating.UP) {
+                            Carbon.theme.supportSuccess
+                        } else {
+                            Carbon.theme.iconSecondary
+                        },
+                )
+
+                HeaderIconButton(
+                    icon = CarbonIcons.ThumbsDown,
+                    contentDescription = "Thumbs down",
+                    onClick = onThumbsDownClick,
+                    tint =
+                        if (feedbackRating == FeedbackRating.DOWN) {
                             Carbon.theme.supportError
                         } else {
                             Carbon.theme.iconSecondary
@@ -243,6 +345,14 @@ private fun SummaryDetailHeader(
                     icon = CarbonIcons.Settings,
                     contentDescription = "Reading settings",
                     onClick = onReadingSettingsClick,
+                )
+
+                HeaderIconButton(
+                    icon = CarbonIcons.Renew,
+                    contentDescription = "Re-summarize",
+                    onClick = { if (!isResummarizing) onResummarizeClick() },
+                    tint = Carbon.theme.iconSecondary,
+                    modifier = Modifier.alpha(if (isResummarizing) 0.4f else 1f),
                 )
 
                 HeaderIconButton(

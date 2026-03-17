@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.presentation.state
 
+import com.po4yka.bitesizereader.domain.model.BatchUrlEntry
 import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
@@ -20,4 +21,10 @@ data class SubmitURLState(
     val isDuplicate: Boolean = false,
     val duplicateSummaryId: String? = null,
     val isCheckingDuplicate: Boolean = false,
+    // Batch submission
+    val isBatchMode: Boolean = false,
+    val batchInput: String = "",
+    val batchEntries: List<BatchUrlEntry> = emptyList(),
+    val batchCompletedCount: Int = 0,
+    val isBatchSubmitting: Boolean = false,
 )

@@ -19,6 +19,10 @@ interface MainComponent {
 
     fun navigateToTab(tab: Tab)
 
+    fun navigateToCustomDigestCreate()
+
+    fun navigateToCustomDigestView(digestId: String)
+
     enum class Tab {
         SUMMARY_LIST,
         SEARCH,
@@ -42,6 +46,10 @@ interface MainComponent {
         data class SubmitURL(val component: SubmitURLComponent) : Child()
 
         data class Digest(val component: DigestComponent) : Child()
+
+        data class CustomDigestCreate(val component: CustomDigestCreateComponent) : Child()
+
+        data class CustomDigestView(val component: CustomDigestViewComponent) : Child()
     }
 }
 
@@ -70,6 +78,7 @@ class DefaultMainComponent(
                         componentContext = componentContext,
                         onSummarySelected = { id -> navigateToSummaryDetail(id) },
                         onSubmitUrl = { navigateToSubmitUrl() },
+                        onCreateDigest = { navigateToCustomDigestCreate() },
                     ),
                 )
             is Config.SummaryDetail ->
@@ -129,6 +138,25 @@ class DefaultMainComponent(
                         onBack = { navigation.pop() },
                     ),
                 )
+            is Config.CustomDigestCreate ->
+                MainComponent.Child.CustomDigestCreate(
+                    DefaultCustomDigestCreateComponent(
+                        componentContext = componentContext,
+                        onBack = { navigation.pop() },
+                        onDigestCreated = { digestId ->
+                            navigation.pop()
+                            navigation.push(Config.CustomDigestView(digestId))
+                        },
+                    ),
+                )
+            is Config.CustomDigestView ->
+                MainComponent.Child.CustomDigestView(
+                    DefaultCustomDigestViewComponent(
+                        componentContext = componentContext,
+                        digestId = config.digestId,
+                        onBack = { navigation.pop() },
+                    ),
+                )
         }
 
     private fun navigateToSubmitUrl() {
@@ -137,6 +165,14 @@ class DefaultMainComponent(
 
     private fun navigateToDigest() {
         navigation.push(Config.Digest)
+    }
+
+    override fun navigateToCustomDigestCreate() {
+        navigation.push(Config.CustomDigestCreate)
+    }
+
+    override fun navigateToCustomDigestView(digestId: String) {
+        navigation.push(Config.CustomDigestView(digestId))
     }
 
     private fun navigateToSummaryDetail(summaryId: String) {
@@ -184,5 +220,11 @@ class DefaultMainComponent(
 
         @kotlinx.serialization.Serializable
         data object Digest : Config
+
+        @kotlinx.serialization.Serializable
+        data object CustomDigestCreate : Config
+
+        @kotlinx.serialization.Serializable
+        data class CustomDigestView(val digestId: String) : Config
     }
 }

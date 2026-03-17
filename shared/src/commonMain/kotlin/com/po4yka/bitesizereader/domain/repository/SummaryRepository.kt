@@ -1,8 +1,11 @@
 package com.po4yka.bitesizereader.domain.repository
 
-import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.domain.model.FeedbackIssue
+import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
+import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.domain.model.SummaryFeedback
 import kotlinx.coroutines.flow.Flow
 
 interface SummaryRepository {
@@ -63,4 +66,13 @@ interface SummaryRepository {
     suspend fun clearContentCache()
 
     suspend fun evictContentCacheIfNeeded()
+
+    suspend fun submitFeedback(
+        summaryId: String,
+        rating: FeedbackRating,
+        issues: List<FeedbackIssue>,
+        comment: String?,
+    )
+
+    fun getFeedback(summaryId: String): Flow<SummaryFeedback?>
 }
