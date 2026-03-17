@@ -706,14 +706,15 @@ class SyncRepositoryImpl(
 
         logger.info { "Flushing ${pendingOps.size} pending operations" }
 
-        val changes =
-            pendingOps.mapNotNull { op ->
-                // Highlight operations cannot be synced yet (no backend API), skip them
-                if (op.entityType == "highlight") {
-                    logger.debug { "Skipping highlight pending operation: ${op.action} for ${op.entityId}" }
-                    return@mapNotNull null
-                }
-                val remoteId = op.entityId.toLongOrNull() ?: return@mapNotNull null
+        val nonFeedbackOps = mutableListOf<Pair<Long, LocalChange>>()
+        for (op in pendingOps) {
+            // Highlight operations cannot be synced yet (no backend API), skip them
+            if (op.entityType == "highlight") {
+                logger.debug { "Skipping highlight pending operation: ${op.action} for ${op.entityId}" }
+                continue
+            }
+            val remoteId = op.entityId.toLongOrNull() ?: continue
+            val change =
                 when (op.action) {
                     "delete" ->
                         LocalChange(
@@ -753,7 +754,11 @@ class SyncRepositoryImpl(
                         null
                     }
                 }
+            if (change != null) {
+                nonFeedbackOps.add(op.id to change)
             }
+        }
+        val changes = nonFeedbackOps.map { it.second }
 
         // Flush feedback operations separately
         val feedbackOps = pendingOps.filter { it.action == "submit_feedback" }
@@ -768,14 +773,19 @@ class SyncRepositoryImpl(
                         ?.filter { it.isNotBlank() }
                         ?: emptyList()
                 val comment = payloadMap["comment"] as? String
-                summariesApi.submitFeedback(
-                    remoteId,
-                    SubmitFeedbackRequestDto(
-                        rating = rating,
-                        issues = issuesList,
-                        comment = comment,
-                    ),
-                )
+                val response =
+                    summariesApi.submitFeedback(
+                        remoteId,
+                        SubmitFeedbackRequestDto(
+                            rating = rating,
+                            issues = issuesList,
+                            comment = comment,
+                        ),
+                    )
+                if (!response.success) {
+                    logger.warn { "Server rejected feedback for ${feedbackOp.entityId}: ${response.error}" }
+                    continue
+                }
                 database.databaseQueries.updateFeedbackSyncStatus(
                     syncStatus = "synced",
                     summaryId = feedbackOp.entityId,
@@ -792,7 +802,11 @@ class SyncRepositoryImpl(
 
         try {
             val result = applyChanges(sessionId, changes)
-            database.databaseQueries.deleteAllPendingOperations()
+            // Only delete the non-feedback ops that were processed by applyChanges.
+            // Feedback ops are handled separately above and deleted individually on success.
+            nonFeedbackOps.forEach { (id, _) ->
+                database.databaseQueries.deletePendingOperation(id)
+            }
             // Also clear legacy pending deletes table
             database.databaseQueries.deleteAllPendingDeletes()
             if (result.conflicts.isNotEmpty()) {

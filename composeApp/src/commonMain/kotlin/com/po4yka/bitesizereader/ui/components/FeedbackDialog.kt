@@ -21,6 +21,7 @@ import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.FeedbackIssue
+import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.ui.theme.Spacing
 
 private fun FeedbackIssue.displayName(): String =
@@ -36,8 +37,9 @@ private fun FeedbackIssue.displayName(): String =
 @Suppress("FunctionNaming")
 @Composable
 fun FeedbackDialog(
+    rating: FeedbackRating,
     isSubmitting: Boolean,
-    onSubmit: (issues: List<FeedbackIssue>, comment: String?) -> Unit,
+    onSubmit: (rating: FeedbackRating, issues: List<FeedbackIssue>, comment: String?) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var checkedIssues by remember { mutableStateOf(setOf<FeedbackIssue>()) }
@@ -118,7 +120,7 @@ fun FeedbackDialog(
                 label = "Submit",
                 onClick = {
                     val commentValue = comment.trim().ifEmpty { null }
-                    onSubmit(checkedIssues.toList(), commentValue)
+                    onSubmit(rating, checkedIssues.toList(), commentValue)
                 },
                 isEnabled = !isSubmitting,
                 buttonType = ButtonType.Primary,

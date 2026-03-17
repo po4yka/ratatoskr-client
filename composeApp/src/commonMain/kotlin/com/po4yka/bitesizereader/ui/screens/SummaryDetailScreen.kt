@@ -191,9 +191,10 @@ fun SummaryDetailScreen(
     // Feedback Dialog
     if (state.showFeedbackDialog) {
         FeedbackDialog(
+            rating = FeedbackRating.DOWN,  // explicit, will be easy to update later
             isSubmitting = state.isSubmittingFeedback,
-            onSubmit = { issues, comment ->
-                viewModel.submitDetailedFeedback(FeedbackRating.DOWN, issues, comment)
+            onSubmit = { rating, issues, comment ->
+                viewModel.submitDetailedFeedback(rating, issues, comment)
             },
             onDismiss = { viewModel.dismissFeedbackDialog() },
         )
