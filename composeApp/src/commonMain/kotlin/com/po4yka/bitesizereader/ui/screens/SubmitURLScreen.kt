@@ -152,8 +152,8 @@ fun SubmitURLScreen(
                     }
                 }
             } else {
-                // Batch input section (when not submitting)
-                if (!state.isBatchSubmitting) {
+                // Batch input section (shown when no entries yet)
+                if (state.batchEntries.isEmpty()) {
                     item {
                         BatchInputSection(
                             batchInput = state.batchInput,
@@ -161,15 +161,15 @@ fun SubmitURLScreen(
                             onSubmitBatch = { viewModel.submitBatch() },
                         )
                     }
-                }
-
-                // Batch progress section (when submitting)
-                if (state.isBatchSubmitting) {
+                } else {
+                    // Batch results section (shown during and after submission)
                     item {
                         BatchProgressHeader(
                             completedCount = state.batchCompletedCount,
                             totalCount = state.batchEntries.size,
+                            isBatchSubmitting = state.isBatchSubmitting,
                             onCancel = { viewModel.cancelBatch() },
+                            onReset = { viewModel.toggleBatchMode() },
                         )
                     }
 
@@ -303,7 +303,10 @@ private fun BatchInputSection(
     onBatchInputChanged: (String) -> Unit,
     onSubmitBatch: () -> Unit,
 ) {
-    val urlCount = batchInput.lines().count { it.trim().isNotBlank() }
+    val urlCount =
+        batchInput.lines()
+            .map { it.trim() }
+            .count { it.startsWith("http://") || it.startsWith("https://") }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
@@ -359,7 +362,9 @@ private fun BatchInputSection(
 private fun BatchProgressHeader(
     completedCount: Int,
     totalCount: Int,
+    isBatchSubmitting: Boolean,
     onCancel: () -> Unit,
+    onReset: () -> Unit,
 ) {
     Row(
         modifier =
@@ -375,11 +380,19 @@ private fun BatchProgressHeader(
             color = Carbon.theme.textPrimary,
             modifier = Modifier.weight(1f),
         )
-        Button(
-            label = "Cancel",
-            onClick = onCancel,
-            buttonType = ButtonType.Ghost,
-        )
+        if (isBatchSubmitting) {
+            Button(
+                label = "Cancel",
+                onClick = onCancel,
+                buttonType = ButtonType.Ghost,
+            )
+        } else {
+            Button(
+                label = "Submit More",
+                onClick = onReset,
+                buttonType = ButtonType.Ghost,
+            )
+        }
     }
 }
 
