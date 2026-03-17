@@ -122,9 +122,7 @@ typealias CollectionListResponseEnvelope = CollectionListResponse
 @Serializable
 data class CollectionItemsResponse(
     @SerialName("items") val items: List<CollectionItemDto>,
-    // Meta is usually top-level in ApiResponseDto, but if it's inside data, keep it.
-    // However, ApiResponseDto has its own meta. Checking log... log has meta at top level.
-    // So 'data' just has 'items'.
+    @SerialName("pagination") val pagination: PaginationDto? = null,
 )
 
 @Serializable

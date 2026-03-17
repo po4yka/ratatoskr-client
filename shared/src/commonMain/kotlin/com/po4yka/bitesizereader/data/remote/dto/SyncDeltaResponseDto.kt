@@ -103,6 +103,23 @@ data class HighlightDto(
 // ============================================================================
 
 /**
+ * Valid actions for sync apply items. Backend only accepts "update" and "delete" —
+ * new entities are created server-side only.
+ */
+@Serializable
+enum class SyncApplyAction {
+    @SerialName("update") UPDATE,
+    @SerialName("delete") DELETE,
+    ;
+
+    companion object {
+        fun fromString(value: String): SyncApplyAction =
+            entries.find { it.name.equals(value, ignoreCase = true) }
+                ?: throw IllegalArgumentException("Invalid sync apply action: $value")
+    }
+}
+
+/**
  * Request to apply local changes to server.
  */
 @Serializable
@@ -122,8 +139,7 @@ data class SyncApplyItemDto(
     @SerialName("entity_type") val entityType: String,
     /** Entity ID */
     @SerialName("id") val id: Long,
-    /** Action to perform: "create", "update", "delete" */
-    @SerialName("action") val action: String,
+    @SerialName("action") val action: SyncApplyAction,
     /** Last seen server version for conflict detection */
     @SerialName("last_seen_version") val lastSeenVersion: Long,
     /** Entity payload for create/update (not needed for delete) */

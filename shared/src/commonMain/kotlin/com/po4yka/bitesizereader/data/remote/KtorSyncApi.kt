@@ -10,7 +10,7 @@ import com.po4yka.bitesizereader.util.retry.RetryPolicy
 import com.po4yka.bitesizereader.util.retry.retryWithBackoff
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.RedirectResponseException
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -36,13 +36,11 @@ class KtorSyncApi(private val client: HttpClient) : SyncApi {
     override suspend fun fullSync(
         sessionId: String,
         limit: Int?,
-        cursor: Long?,
     ): ApiResponseDto<FullSyncResponseDto> =
         retryWithBackoff(RetryPolicy.DEFAULT) {
             client.get("v1/sync/full") {
                 parameter("session_id", sessionId)
                 limit?.let { parameter("limit", it) }
-                cursor?.let { parameter("cursor", it) }
             }.body()
         }
 
@@ -63,7 +61,7 @@ class KtorSyncApi(private val client: HttpClient) : SyncApi {
                     }
                 val responseEtag = response.headers[HttpHeaders.ETag]
                 DeltaSyncResult(response = response.body(), etag = responseEtag)
-            } catch (e: RedirectResponseException) {
+            } catch (e: ResponseException) {
                 if (e.response.status == HttpStatusCode.NotModified) {
                     val responseEtag = e.response.headers[HttpHeaders.ETag]
                     DeltaSyncResult(response = null, etag = responseEtag)

@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.data.mappers
 
+import com.po4yka.bitesizereader.data.remote.dto.SyncApplyAction
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyItemDto
 import com.po4yka.bitesizereader.database.SummaryEntity
 import com.po4yka.bitesizereader.domain.repository.LocalChange
@@ -150,7 +151,7 @@ fun LocalChange.toDto(): SyncApplyItemDto {
     return SyncApplyItemDto(
         entityType = entityType,
         id = id,
-        action = action,
+        action = SyncApplyAction.fromString(action),
         lastSeenVersion = lastSeenVersion,
         payload = jsonPayload,
         clientTimestamp = clientTimestamp,

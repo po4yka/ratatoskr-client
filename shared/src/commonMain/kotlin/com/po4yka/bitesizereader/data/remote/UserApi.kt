@@ -5,7 +5,7 @@ import com.po4yka.bitesizereader.data.remote.dto.TelegramLinkBeginResponseDto
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLinkCompleteRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLinkStatusDto
 
-interface UserApi {
+interface TelegramLinkApi {
     suspend fun getTelegramLinkStatus(): ApiResponseDto<TelegramLinkStatusDto>
 
     suspend fun unlinkTelegram(): ApiResponseDto<TelegramLinkStatusDto>

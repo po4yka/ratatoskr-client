@@ -86,7 +86,7 @@ data class RequestDetailDto(
     @SerialName("request") val request: RequestInfoDto,
     @SerialName("crawl_result") val crawlResult: CrawlResultDto? = null,
     @SerialName("llm_calls") val llmCalls: List<LlmCallDto> = emptyList(),
-    @SerialName("summary") val summary: SummaryCompactDto? = null,
+    @SerialName("summary") val summary: SummarySimpleDto? = null,
 )
 
 /**
@@ -102,8 +102,8 @@ data class SubmitForwardRequestDto(
 
 @Serializable
 data class ForwardMetadataDto(
-    @SerialName("from_chat_id") val fromChatId: Long? = null,
-    @SerialName("from_message_id") val fromMessageId: Long? = null,
+    @SerialName("from_chat_id") val fromChatId: Long,
+    @SerialName("from_message_id") val fromMessageId: Long,
     @SerialName("from_chat_title") val fromChatTitle: String? = null,
     @SerialName("forwarded_at") val forwardedAt: String? = null,
 )

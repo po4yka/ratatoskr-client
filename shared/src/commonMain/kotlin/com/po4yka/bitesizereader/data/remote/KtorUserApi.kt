@@ -12,10 +12,10 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import org.koin.core.annotation.Single
 
-@Single(binds = [UserApi::class])
-class KtorUserApi(
+@Single(binds = [TelegramLinkApi::class])
+class KtorTelegramLinkApi(
     private val client: HttpClient,
-) : UserApi {
+) : TelegramLinkApi {
     override suspend fun getTelegramLinkStatus(): ApiResponseDto<TelegramLinkStatusDto> {
         return client.get("v1/auth/me/telegram").body()
     }
