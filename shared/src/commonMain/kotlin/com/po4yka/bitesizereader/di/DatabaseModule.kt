@@ -10,6 +10,7 @@ import com.po4yka.bitesizereader.database.ReadingSessionEntity
 import com.po4yka.bitesizereader.database.RequestEntity
 import com.po4yka.bitesizereader.database.SearchHistoryEntity
 import com.po4yka.bitesizereader.database.SummaryEntity
+import com.po4yka.bitesizereader.database.CustomDigestEntity
 import com.po4yka.bitesizereader.database.SummaryFeedbackEntity
 import com.po4yka.bitesizereader.database.SyncMetadataEntity
 import kotlin.time.Instant
@@ -96,6 +97,10 @@ class DatabaseModule {
                 ),
             summaryFeedbackEntityAdapter =
                 SummaryFeedbackEntity.Adapter(
+                    createdAtAdapter = instantColumnAdapter,
+                ),
+            customDigestEntityAdapter =
+                CustomDigestEntity.Adapter(
                     createdAtAdapter = instantColumnAdapter,
                 ),
         )
