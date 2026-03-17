@@ -3,8 +3,10 @@ package com.po4yka.bitesizereader.presentation.state
 import com.po4yka.bitesizereader.domain.model.AudioPlaybackState
 import com.po4yka.bitesizereader.domain.model.Collection
 import com.po4yka.bitesizereader.domain.model.Highlight
+import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.domain.model.SummaryFeedback
 
 data class SummaryDetailState(
     val summary: Summary? = null,
@@ -31,4 +33,14 @@ data class SummaryDetailState(
     val isHighlightModeActive: Boolean = false,
     val editingAnnotationHighlightId: String? = null,
     val annotationDraft: String = "",
+    // Feedback
+    val feedback: SummaryFeedback? = null,
+    val showFeedbackDialog: Boolean = false,
+    val isSubmittingFeedback: Boolean = false,
+    // Re-summarize
+    val isResummarizing: Boolean = false,
+    val resummarizeProgress: Float = 0f,
+    val resummarizeStage: ProcessingStage = ProcessingStage.UNSPECIFIED,
+    val resummarizeError: String? = null,
+    val showResummarizeConfirmDialog: Boolean = false,
 )

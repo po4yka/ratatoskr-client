@@ -4,7 +4,9 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.po4yka.bitesizereader.data.mappers.toDto
 import com.po4yka.bitesizereader.data.mappers.toSummaryEntity
+import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.data.remote.SyncApi
+import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto
@@ -60,6 +62,7 @@ private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,
+    private val summariesApi: SummariesApi,
     private val networkMonitor: NetworkMonitor,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncRepository {
@@ -703,14 +706,15 @@ class SyncRepositoryImpl(
 
         logger.info { "Flushing ${pendingOps.size} pending operations" }
 
-        val changes =
-            pendingOps.mapNotNull { op ->
-                // Highlight operations cannot be synced yet (no backend API), skip them
-                if (op.entityType == "highlight") {
-                    logger.debug { "Skipping highlight pending operation: ${op.action} for ${op.entityId}" }
-                    return@mapNotNull null
-                }
-                val remoteId = op.entityId.toLongOrNull() ?: return@mapNotNull null
+        val nonFeedbackOps = mutableListOf<Pair<Long, LocalChange>>()
+        for (op in pendingOps) {
+            // Highlight operations cannot be synced yet (no backend API), skip them
+            if (op.entityType == "highlight") {
+                logger.debug { "Skipping highlight pending operation: ${op.action} for ${op.entityId}" }
+                continue
+            }
+            val remoteId = op.entityId.toLongOrNull() ?: continue
+            val change =
                 when (op.action) {
                     "delete" ->
                         LocalChange(
@@ -741,21 +745,68 @@ class SyncRepositoryImpl(
                             payload = mapOf("toggle_favorite" to true),
                             clientTimestamp = null,
                         )
+                    "submit_feedback" -> {
+                        // Handle feedback separately - direct API call, not via applyChanges
+                        null
+                    }
                     else -> {
                         logger.warn { "Unknown pending operation action: ${op.action}" }
                         null
                     }
                 }
+            if (change != null) {
+                nonFeedbackOps.add(op.id to change)
             }
+        }
+        val changes = nonFeedbackOps.map { it.second }
+
+        // Flush feedback operations separately
+        val feedbackOps = pendingOps.filter { it.action == "submit_feedback" }
+        for (feedbackOp in feedbackOps) {
+            try {
+                val payloadMap = feedbackOp.payload?.let { parsePayload(it) } ?: continue
+                val remoteId = feedbackOp.entityId.toLongOrNull() ?: continue
+                val rating = (payloadMap["rating"] as? String) ?: continue
+                val issuesList =
+                    (payloadMap["issues"] as? String)
+                        ?.split(",")
+                        ?.filter { it.isNotBlank() }
+                        ?: emptyList()
+                val comment = payloadMap["comment"] as? String
+                val response =
+                    summariesApi.submitFeedback(
+                        remoteId,
+                        SubmitFeedbackRequestDto(
+                            rating = rating,
+                            issues = issuesList,
+                            comment = comment,
+                        ),
+                    )
+                if (!response.success) {
+                    logger.warn { "Server rejected feedback for ${feedbackOp.entityId}: ${response.error}" }
+                    continue
+                }
+                database.databaseQueries.updateFeedbackSyncStatus(
+                    syncStatus = "synced",
+                    summaryId = feedbackOp.entityId,
+                )
+                database.databaseQueries.deletePendingOperation(feedbackOp.id)
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                logger.warn { "Failed to sync feedback for ${feedbackOp.entityId}: ${e.message}" }
+            }
+        }
 
         if (changes.isEmpty()) {
-            database.databaseQueries.deleteAllPendingOperations()
             return
         }
 
         try {
             val result = applyChanges(sessionId, changes)
-            database.databaseQueries.deleteAllPendingOperations()
+            // Only delete the non-feedback ops that were processed by applyChanges.
+            // Feedback ops are handled separately above and deleted individually on success.
+            nonFeedbackOps.forEach { (id, _) ->
+                database.databaseQueries.deletePendingOperation(id)
+            }
             // Also clear legacy pending deletes table
             database.databaseQueries.deleteAllPendingDeletes()
             if (result.conflicts.isNotEmpty()) {

@@ -12,12 +12,15 @@ interface SummaryListComponent {
     fun onSummaryClicked(id: String)
 
     fun onSubmitUrlClicked()
+
+    fun onCreateDigestClicked()
 }
 
 class DefaultSummaryListComponent(
     componentContext: ComponentContext,
     private val onSummarySelected: (String) -> Unit,
     private val onSubmitUrl: () -> Unit,
+    private val onCreateDigest: () -> Unit,
 ) : SummaryListComponent, ComponentContext by componentContext, KoinComponent {
     override val viewModel: SummaryListViewModel = retainedInstance { get() }
 
@@ -27,5 +30,9 @@ class DefaultSummaryListComponent(
 
     override fun onSubmitUrlClicked() {
         onSubmitUrl()
+    }
+
+    override fun onCreateDigestClicked() {
+        onCreateDigest()
     }
 }

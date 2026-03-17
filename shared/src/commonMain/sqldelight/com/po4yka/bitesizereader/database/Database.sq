@@ -393,3 +393,57 @@ DELETE FROM recommendationEntity WHERE fetchedAt < ?;
 
 deleteRecommendation:
 DELETE FROM recommendationEntity WHERE id = ?;
+
+-- Summary Feedback Table
+CREATE TABLE summaryFeedbackEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    summaryId TEXT NOT NULL UNIQUE,
+    rating TEXT NOT NULL,
+    issues TEXT,
+    comment TEXT,
+    createdAt INTEGER AS kotlin.time.Instant NOT NULL,
+    syncStatus TEXT NOT NULL DEFAULT 'pending',
+    FOREIGN KEY (summaryId) REFERENCES summaryEntity(id) ON DELETE CASCADE
+);
+CREATE INDEX summaryFeedback_summaryId ON summaryFeedbackEntity(summaryId);
+
+getFeedbackForSummary:
+SELECT * FROM summaryFeedbackEntity WHERE summaryId = :summaryId;
+
+insertOrReplaceFeedback:
+INSERT OR REPLACE INTO summaryFeedbackEntity(summaryId, rating, issues, comment, createdAt, syncStatus)
+VALUES (:summaryId, :rating, :issues, :comment, :createdAt, :syncStatus);
+
+deleteFeedback:
+DELETE FROM summaryFeedbackEntity WHERE summaryId = :summaryId;
+
+updateFeedbackSyncStatus:
+UPDATE summaryFeedbackEntity SET syncStatus = :syncStatus WHERE summaryId = :summaryId;
+
+-- Custom Digest Table
+CREATE TABLE customDigestEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    summaryIds TEXT NOT NULL,
+    format TEXT NOT NULL DEFAULT 'brief',
+    content TEXT,
+    status TEXT NOT NULL DEFAULT 'pending',
+    createdAt INTEGER AS kotlin.time.Instant NOT NULL
+);
+CREATE INDEX customDigest_createdAt ON customDigestEntity(createdAt);
+
+getAllCustomDigests:
+SELECT * FROM customDigestEntity ORDER BY createdAt DESC LIMIT :limit;
+
+getCustomDigestById:
+SELECT * FROM customDigestEntity WHERE id = :id;
+
+insertCustomDigest:
+INSERT OR REPLACE INTO customDigestEntity(id, title, summaryIds, format, content, status, createdAt)
+VALUES (:id, :title, :summaryIds, :format, :content, :status, :createdAt);
+
+updateCustomDigestContent:
+UPDATE customDigestEntity SET content = :content, status = :status WHERE id = :id;
+
+deleteCustomDigest:
+DELETE FROM customDigestEntity WHERE id = :id;

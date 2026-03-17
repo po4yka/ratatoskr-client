@@ -10,6 +10,8 @@ import com.po4yka.bitesizereader.database.ReadingSessionEntity
 import com.po4yka.bitesizereader.database.RequestEntity
 import com.po4yka.bitesizereader.database.SearchHistoryEntity
 import com.po4yka.bitesizereader.database.SummaryEntity
+import com.po4yka.bitesizereader.database.CustomDigestEntity
+import com.po4yka.bitesizereader.database.SummaryFeedbackEntity
 import com.po4yka.bitesizereader.database.SyncMetadataEntity
 import kotlin.time.Instant
 import kotlinx.serialization.encodeToString
@@ -92,6 +94,14 @@ class DatabaseModule {
             recommendationEntityAdapter =
                 RecommendationEntity.Adapter(
                     fetchedAtAdapter = instantColumnAdapter,
+                ),
+            summaryFeedbackEntityAdapter =
+                SummaryFeedbackEntity.Adapter(
+                    createdAtAdapter = instantColumnAdapter,
+                ),
+            customDigestEntityAdapter =
+                CustomDigestEntity.Adapter(
+                    createdAtAdapter = instantColumnAdapter,
                 ),
         )
     }
