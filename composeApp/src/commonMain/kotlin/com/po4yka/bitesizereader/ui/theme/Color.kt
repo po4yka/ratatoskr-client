@@ -61,3 +61,9 @@ val DarkSurfaceVariant = Color(0xFF43474E)
 val DarkOnSurfaceVariant = Color(0xFFC3C7CF)
 val DarkOutline = Color(0xFF8D9199)
 val DarkOutlineVariant = Color(0xFF43474E)
+
+// Highlight palette — base colors at full opacity; apply alpha at use site
+val HighlightYellow = Color(0xFFFFD000)
+val HighlightGreen = Color(0xFF198038)
+val HighlightBlue = Color(0xFF0043CE)
+val HighlightPink = Color(0xFFEE5396)

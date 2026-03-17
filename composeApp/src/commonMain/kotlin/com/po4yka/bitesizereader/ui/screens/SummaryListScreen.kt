@@ -43,17 +43,22 @@ import com.po4yka.bitesizereader.presentation.navigation.SummaryListComponent
 import com.po4yka.bitesizereader.presentation.state.LayoutMode
 import com.po4yka.bitesizereader.presentation.state.SummaryListState
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryListViewModel
+import com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalViewModel
 import com.po4yka.bitesizereader.ui.components.ContextualEmptyState
 import com.po4yka.bitesizereader.ui.components.EmptyStateType
 import com.po4yka.bitesizereader.ui.components.FilterChipsRow
 import com.po4yka.bitesizereader.ui.components.PullToRefreshContainer
+import com.po4yka.bitesizereader.ui.components.ReadingGoalCard
 import com.po4yka.bitesizereader.ui.components.RecentSearchesSection
 import com.po4yka.bitesizereader.ui.components.SortOptionsMenu
 import com.po4yka.bitesizereader.ui.components.SummaryCardSkeleton
 import com.po4yka.bitesizereader.ui.components.SummaryGridCard
 import com.po4yka.bitesizereader.ui.components.SummarySearchBar
 import com.po4yka.bitesizereader.ui.components.SwipeableSummaryCard
+import com.po4yka.bitesizereader.ui.components.RecommendationsSection
 import com.po4yka.bitesizereader.ui.components.TrendingTopicsSection
+import com.po4yka.bitesizereader.presentation.viewmodel.RecommendationsViewModel
+import org.koin.compose.koinInject
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
@@ -74,6 +79,10 @@ fun SummaryListScreen(
 ) {
     val viewModel: SummaryListViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
+    val readingGoalViewModel: ReadingGoalViewModel = koinInject()
+    val readingGoalState by readingGoalViewModel.state.collectAsState()
+    val recommendationsViewModel: RecommendationsViewModel = koinInject()
+    val recommendationsState by recommendationsViewModel.state.collectAsState()
 
     val onRefresh = remember<() -> Unit>(viewModel) { { viewModel.syncAndLoad() } }
     val onToggleSearch = remember<() -> Unit>(viewModel) { { viewModel.toggleSearch() } }
@@ -160,6 +169,25 @@ fun SummaryListScreen(
             onTagSelected = { viewModel.onTagSelected(it) },
             modifier = Modifier.fillMaxWidth(),
         )
+
+        // Reading goal progress card
+        val goalProgress = readingGoalState.goalProgress
+        if (goalProgress != null && goalProgress.goal.isEnabled) {
+            ReadingGoalCard(
+                goalProgress = goalProgress,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            )
+        }
+
+        // Recommendations strip
+        if (recommendationsState.recommendations.isNotEmpty()) {
+            RecommendationsSection(
+                recommendations = recommendationsState.recommendations,
+                onRecommendationClick = { id -> component.onSummaryClicked(id) },
+                onDismiss = { id -> recommendationsViewModel.dismiss(id) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
         // Offline / stale sync / error banner
         SyncStatusBanner(

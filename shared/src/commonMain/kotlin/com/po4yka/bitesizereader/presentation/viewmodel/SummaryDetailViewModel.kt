@@ -6,24 +6,33 @@ import com.po4yka.bitesizereader.domain.repository.CollectionRepository
 import com.po4yka.bitesizereader.domain.repository.ReadingPreferencesRepository
 import com.po4yka.bitesizereader.domain.usecase.AddToCollectionUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
+import com.po4yka.bitesizereader.domain.usecase.EndReadingSessionUseCase
 import com.po4yka.bitesizereader.domain.usecase.GenerateAudioUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetAudioUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetHighlightsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryByIdUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.RefreshFullContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveReadPositionUseCase
+import com.po4yka.bitesizereader.domain.usecase.StartReadingSessionUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
+import com.po4yka.bitesizereader.domain.usecase.ToggleHighlightUseCase
+import com.po4yka.bitesizereader.domain.usecase.UpdateAnnotationUseCase
 import com.po4yka.bitesizereader.util.audio.AudioPlayer
 import com.po4yka.bitesizereader.presentation.state.SummaryDetailState
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
@@ -44,9 +53,23 @@ class SummaryDetailViewModel(
     private val generateAudioUseCase: GenerateAudioUseCase,
     private val getAudioUseCase: GetAudioUseCase,
     private val audioPlayer: AudioPlayer,
+    private val startReadingSessionUseCase: StartReadingSessionUseCase,
+    private val endReadingSessionUseCase: EndReadingSessionUseCase,
+    private val getHighlightsUseCase: GetHighlightsUseCase,
+    private val toggleHighlightUseCase: ToggleHighlightUseCase,
+    private val updateAnnotationUseCase: UpdateAnnotationUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state = _state.asStateFlow()
+
+    private var activeSessionId: Long? = null
+    private var sessionStartTime: Instant = Clock.System.now()
+    private var lastScrollTime: Instant = Clock.System.now()
+    private var isSessionPaused: Boolean = false
+
+    companion object {
+        private val INACTIVITY_THRESHOLD_MS = 5 * 60 * 1000L
+    }
 
     init {
         readingPreferencesRepository.getPreferences()
@@ -54,6 +77,13 @@ class SummaryDetailViewModel(
                 _state.value = _state.value.copy(readingPreferences = prefs)
             }
             .launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            while (true) {
+                delay(60_000L)
+                checkInactivity()
+            }
+        }
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -73,7 +103,25 @@ class SummaryDetailViewModel(
                     markSummaryAsReadUseCase(id)
                 }
                 if (summary != null) {
+                    if (activeSessionId != null) {
+                        endReadingSession()
+                    }
+                    activeSessionId = startReadingSessionUseCase(id)
+                    val now = Clock.System.now()
+                    sessionStartTime = now
+                    lastScrollTime = now
+                    isSessionPaused = false
                     fetchFullContent(id)
+                    viewModelScope.launch {
+                        getHighlightsUseCase(id).collect { highlights ->
+                            _state.update { state ->
+                                state.copy(
+                                    highlights = highlights,
+                                    highlightedNodeOffsets = highlights.map { it.nodeOffset }.toSet(),
+                                )
+                            }
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
@@ -156,11 +204,49 @@ class SummaryDetailViewModel(
         }
     }
 
+    fun notifyScrolled() {
+        val now = Clock.System.now()
+        lastScrollTime = now
+        if (isSessionPaused) {
+            isSessionPaused = false
+            sessionStartTime = now
+        }
+    }
+
+    private fun checkInactivity() {
+        val now = Clock.System.now()
+        if (!isSessionPaused && activeSessionId != null &&
+            (now - lastScrollTime).inWholeMilliseconds > INACTIVITY_THRESHOLD_MS
+        ) {
+            isSessionPaused = true
+        }
+    }
+
+    private fun endReadingSession() {
+        val sessionId = activeSessionId ?: return
+        activeSessionId = null
+        val now = Clock.System.now()
+        val durationSec =
+            if (isSessionPaused) {
+                (lastScrollTime - sessionStartTime).inWholeSeconds.toInt().coerceAtLeast(0)
+            } else {
+                (now - sessionStartTime).inWholeSeconds.toInt().coerceAtLeast(0)
+            }
+        viewModelScope.launch {
+            try {
+                endReadingSessionUseCase(sessionId, durationSec)
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                logger.debug(e) { "Failed to end reading session $sessionId" }
+            }
+        }
+    }
+
     fun saveReadPosition(
         position: Int,
         offset: Int,
     ) {
         val summaryId = _state.value.summary?.id ?: return
+        endReadingSession()
         viewModelScope.launch {
             try {
                 saveReadPositionUseCase(summaryId, position, offset)
@@ -278,6 +364,52 @@ class SummaryDetailViewModel(
     fun stopAudio() {
         audioPlayer.stop()
         _state.value = _state.value.copy(audioState = null)
+    }
+
+    fun toggleHighlightMode() {
+        _state.update { it.copy(isHighlightModeActive = !it.isHighlightModeActive) }
+    }
+
+    fun toggleHighlight(
+        nodeOffset: Int,
+        text: String,
+    ) {
+        val summaryId = _state.value.summary?.id ?: return
+        viewModelScope.launch {
+            toggleHighlightUseCase(
+                summaryId = summaryId,
+                nodeOffset = nodeOffset,
+                text = text,
+                existingHighlights = _state.value.highlights,
+            )
+        }
+    }
+
+    fun openAnnotationEditor(highlightId: String) {
+        val note = _state.value.highlights.find { it.id == highlightId }?.note ?: ""
+        _state.update { it.copy(editingAnnotationHighlightId = highlightId, annotationDraft = note) }
+    }
+
+    fun updateAnnotationDraft(text: String) {
+        _state.update { it.copy(annotationDraft = text) }
+    }
+
+    fun saveAnnotation() {
+        val highlightId = _state.value.editingAnnotationHighlightId ?: return
+        val note = _state.value.annotationDraft.trim().ifEmpty { null }
+        viewModelScope.launch {
+            updateAnnotationUseCase(highlightId, note)
+            _state.update { it.copy(editingAnnotationHighlightId = null, annotationDraft = "") }
+        }
+    }
+
+    fun closeAnnotationEditor() {
+        _state.update { it.copy(editingAnnotationHighlightId = null, annotationDraft = "") }
+    }
+
+    override fun onDestroy() {
+        endReadingSession()
+        super.onDestroy()
     }
 
     @Suppress("TooGenericExceptionCaught")

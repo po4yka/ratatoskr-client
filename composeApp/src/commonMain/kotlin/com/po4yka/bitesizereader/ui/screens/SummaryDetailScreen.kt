@@ -48,10 +48,13 @@ import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.MarkdownElement
 import com.mikepenz.markdown.model.DefaultMarkdownColors
 import com.mikepenz.markdown.model.DefaultMarkdownTypography
+import com.po4yka.bitesizereader.domain.model.Highlight
+import com.po4yka.bitesizereader.domain.model.HighlightColor
 import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.AddToCollectionDialog
+import com.po4yka.bitesizereader.ui.components.AnnotationDialog
 import com.po4yka.bitesizereader.domain.usecase.GetProxiedImageUrlUseCase
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
@@ -61,6 +64,10 @@ import com.po4yka.bitesizereader.ui.components.ReadingSettingsPanel
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.TagChip
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.HighlightBlue
+import com.po4yka.bitesizereader.ui.theme.HighlightGreen
+import com.po4yka.bitesizereader.ui.theme.HighlightPink
+import com.po4yka.bitesizereader.ui.theme.HighlightYellow
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
 import com.po4yka.bitesizereader.util.extractDomain
@@ -96,6 +103,8 @@ fun SummaryDetailScreen(
             onFavoriteClick = { viewModel.toggleFavorite() },
             onAddToCollectionClick = { viewModel.showAddToCollection() },
             onReadingSettingsClick = { viewModel.toggleReadingSettings() },
+            onHighlightModeClick = { viewModel.toggleHighlightMode() },
+            isHighlightModeActive = state.isHighlightModeActive,
         )
 
         // Reading settings panel
@@ -134,6 +143,15 @@ fun SummaryDetailScreen(
                     readingPreferences = state.readingPreferences,
                     initialScrollPosition = state.lastReadPosition,
                     initialScrollOffset = state.lastReadOffset,
+                    highlights = state.highlights,
+                    highlightedNodeOffsets = state.highlightedNodeOffsets,
+                    isHighlightModeActive = state.isHighlightModeActive,
+                    onToggleHighlight = { nodeOffset, text ->
+                        viewModel.toggleHighlight(nodeOffset, text)
+                    },
+                    onOpenAnnotationEditor = { highlightId ->
+                        viewModel.openAnnotationEditor(highlightId)
+                    },
                     onSaveReadPosition = { position, offset ->
                         viewModel.saveReadPosition(position, offset)
                     },
@@ -154,6 +172,16 @@ fun SummaryDetailScreen(
             onDismiss = { viewModel.dismissAddToCollection() },
         )
     }
+
+    // Annotation Dialog
+    if (state.editingAnnotationHighlightId != null) {
+        AnnotationDialog(
+            draft = state.annotationDraft,
+            onDraftChange = { viewModel.updateAnnotationDraft(it) },
+            onSave = { viewModel.saveAnnotation() },
+            onCancel = { viewModel.closeAnnotationEditor() },
+        )
+    }
 }
 
 @Suppress("FunctionNaming")
@@ -165,6 +193,8 @@ private fun SummaryDetailHeader(
     onFavoriteClick: () -> Unit = {},
     onAddToCollectionClick: () -> Unit = {},
     onReadingSettingsClick: () -> Unit = {},
+    onHighlightModeClick: () -> Unit = {},
+    isHighlightModeActive: Boolean = false,
 ) {
     ScreenHeader(
         title = summary?.let { extractDomain(it.sourceUrl) ?: "Summary" } ?: "Summary",
@@ -195,6 +225,13 @@ private fun SummaryDetailHeader(
                     onClick = onAddToCollectionClick,
                 )
 
+                HeaderIconButton(
+                    icon = if (isHighlightModeActive) CarbonIcons.BookmarkAdd else CarbonIcons.Bookmark,
+                    contentDescription = if (isHighlightModeActive) "Exit highlight mode" else "Highlight mode",
+                    onClick = onHighlightModeClick,
+                    tint = if (isHighlightModeActive) Carbon.theme.linkPrimary else Carbon.theme.iconSecondary,
+                )
+
                 Icon(
                     imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
                     contentDescription = if (s.isRead) "Read" else "Unread",
@@ -218,13 +255,18 @@ private fun SummaryDetailHeader(
     )
 }
 
-@Suppress("FunctionNaming")
+@Suppress("FunctionNaming", "LongParameterList")
 @Composable
 private fun SummaryDetailContent(
     summary: Summary,
     readingPreferences: ReadingPreferences,
     initialScrollPosition: Int,
     initialScrollOffset: Int,
+    highlights: List<Highlight>,
+    highlightedNodeOffsets: Set<Int>,
+    isHighlightModeActive: Boolean,
+    onToggleHighlight: (nodeOffset: Int, text: String) -> Unit,
+    onOpenAnnotationEditor: (highlightId: String) -> Unit,
     onSaveReadPosition: (position: Int, offset: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -372,7 +414,59 @@ private fun SummaryDetailContent(
                             key = { node -> "md_${node.startOffset}" },
                             contentType = { "markdown_node" },
                         ) { node ->
-                            MarkdownElement(node, components, state.content)
+                            val isHighlighted = node.startOffset in highlightedNodeOffsets
+                            val highlight = highlights.find { it.nodeOffset == node.startOffset }
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .then(
+                                            if (isHighlighted) {
+                                                Modifier.background(
+                                                    color =
+                                                        when (highlight?.color) {
+                                                            HighlightColor.GREEN -> HighlightGreen.copy(alpha = 0.15f)
+                                                            HighlightColor.BLUE -> HighlightBlue.copy(alpha = 0.15f)
+                                                            HighlightColor.PINK -> HighlightPink.copy(alpha = 0.15f)
+                                                            else -> HighlightYellow.copy(alpha = 0.2f)
+                                                        },
+                                                )
+                                            } else {
+                                                Modifier
+                                            },
+                                        )
+                                        .then(
+                                            if (isHighlightModeActive) {
+                                                Modifier.clickable {
+                                                    val text =
+                                                        state.content.let { content ->
+                                                            if (node.startOffset < content.length &&
+                                                                node.endOffset <= content.length
+                                                            ) {
+                                                                content.substring(node.startOffset, node.endOffset)
+                                                            } else {
+                                                                ""
+                                                            }
+                                                        }
+                                                    onToggleHighlight(node.startOffset, text)
+                                                }
+                                            } else if (isHighlighted && highlight != null) {
+                                                Modifier.clickable { onOpenAnnotationEditor(highlight.id) }
+                                            } else {
+                                                Modifier
+                                            },
+                                        ),
+                            ) {
+                                MarkdownElement(node, components, state.content)
+                                if (isHighlighted && highlight?.note != null) {
+                                    Icon(
+                                        imageVector = CarbonIcons.WarningAlt,
+                                        contentDescription = "Has annotation",
+                                        tint = Carbon.theme.textSecondary,
+                                        modifier = Modifier.size(12.dp).align(Alignment.TopEnd),
+                                    )
+                                }
+                            }
                         }
 
                         item(key = "footer") { ArticleFooter(sourceUrl = summary.sourceUrl) }

@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit
 object WorkManagerInitializer {
     // Minimum allowed by WorkManager; expose here so it's easy to adjust later.
     private const val REPEAT_INTERVAL_MINUTES = 15L
+
     // Initial backoff before the first retry. Doubles on each attempt up to the platform cap (~5h).
     private const val INITIAL_BACKOFF_SECONDS = 30L
 
