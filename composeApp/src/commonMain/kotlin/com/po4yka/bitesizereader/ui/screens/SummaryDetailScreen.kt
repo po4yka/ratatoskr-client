@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,8 +20,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,8 +37,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextLinkStyles
@@ -50,6 +56,7 @@ import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.MarkdownElement
 import com.mikepenz.markdown.model.DefaultMarkdownColors
 import com.mikepenz.markdown.model.DefaultMarkdownTypography
+import com.po4yka.bitesizereader.domain.model.AudioStatus
 import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.domain.model.Highlight
 import com.po4yka.bitesizereader.domain.model.HighlightColor
@@ -77,7 +84,37 @@ import com.po4yka.bitesizereader.ui.theme.HighlightYellow
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
 import com.po4yka.bitesizereader.util.extractDomain
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.audio_error
+import bitesizereader.composeapp.generated.resources.audio_generating
+import bitesizereader.composeapp.generated.resources.audio_listen
+import bitesizereader.composeapp.generated.resources.audio_loading
+import bitesizereader.composeapp.generated.resources.audio_pause_narration
+import bitesizereader.composeapp.generated.resources.audio_paused
+import bitesizereader.composeapp.generated.resources.audio_play_narration
+import bitesizereader.composeapp.generated.resources.audio_playing
+import bitesizereader.composeapp.generated.resources.audio_stop_narration
+import bitesizereader.composeapp.generated.resources.summary_detail_add_to_collection
+import bitesizereader.composeapp.generated.resources.summary_detail_exit_highlight_mode
+import bitesizereader.composeapp.generated.resources.summary_detail_favorite
+import bitesizereader.composeapp.generated.resources.summary_detail_has_annotation
+import bitesizereader.composeapp.generated.resources.summary_detail_highlight_mode
+import bitesizereader.composeapp.generated.resources.summary_detail_mark_read
+import bitesizereader.composeapp.generated.resources.summary_detail_mark_unread
+import bitesizereader.composeapp.generated.resources.summary_detail_no_content
+import bitesizereader.composeapp.generated.resources.summary_detail_original_article
+import bitesizereader.composeapp.generated.resources.summary_detail_re_summarize
+import bitesizereader.composeapp.generated.resources.summary_detail_re_summarizing
+import bitesizereader.composeapp.generated.resources.summary_detail_reading_offline
+import bitesizereader.composeapp.generated.resources.summary_detail_reading_settings
+import bitesizereader.composeapp.generated.resources.summary_detail_share
+import bitesizereader.composeapp.generated.resources.summary_detail_summary
+import bitesizereader.composeapp.generated.resources.summary_detail_thumbs_down
+import bitesizereader.composeapp.generated.resources.summary_detail_thumbs_up
+import bitesizereader.composeapp.generated.resources.summary_detail_unfavorite
+import bitesizereader.composeapp.generated.resources.summary_detail_unknown_source
 import kotlin.time.Instant
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 /** Summary detail screen using Carbon Design System */
@@ -105,7 +142,7 @@ fun SummaryDetailScreen(
         SummaryDetailHeader(
             summary = state.summary,
             onBackClick = onBackClick,
-            onShareClick = onShareClick,
+            onShareClick = { viewModel.exportSummary() },
             onFavoriteClick = { viewModel.toggleFavorite() },
             onAddToCollectionClick = { viewModel.showAddToCollection() },
             onReadingSettingsClick = { viewModel.toggleReadingSettings() },
@@ -118,8 +155,48 @@ fun SummaryDetailScreen(
             isResummarizing = state.feedback.isResummarizing,
         )
 
+        // Offline banner (Feature 3.2)
+        if (state.isOffline) {
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .semantics { liveRegion = LiveRegionMode.Polite }
+                        .background(Carbon.theme.layer02)
+                        .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            ) {
+                Icon(
+                    imageVector = CarbonIcons.WifiOff,
+                    contentDescription = null,
+                    tint = Carbon.theme.supportWarning,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+                Text(
+                    text = stringResource(Res.string.summary_detail_reading_offline),
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.textSecondary,
+                )
+            }
+        }
+
+        // Export error banner
+        state.exportError?.let { exportError ->
+            Text(
+                text = exportError,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.supportError,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+            )
+        }
+
         // Re-summarize progress indicator
         if (state.feedback.isResummarizing) {
+            val reSummarizeDesc = stringResource(Res.string.summary_detail_re_summarizing)
             Column(
                 modifier =
                     Modifier
@@ -128,14 +205,14 @@ fun SummaryDetailScreen(
             ) {
                 LinearProgressIndicator(
                     progress = { state.feedback.resummarizeProgress },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().semantics { contentDescription = reSummarizeDesc },
                     color = Carbon.theme.interactive,
                     trackColor = Carbon.theme.layer02,
                 )
                 Text(
                     text =
                         if (state.feedback.resummarizeStage == ProcessingStage.UNSPECIFIED) {
-                            "Re-summarizing..."
+                            stringResource(Res.string.summary_detail_re_summarizing)
                         } else {
                             state.feedback.resummarizeStage.name.replace('_', ' ').lowercase()
                                 .replaceFirstChar { it.uppercase() }
@@ -212,6 +289,19 @@ fun SummaryDetailScreen(
                 )
             }
         }
+
+        // Audio player row (Feature 3.3)
+        AudioPlayerRow(
+            audioState = state.audioState,
+            onPlayPause = {
+                if (state.audioState == null) {
+                    viewModel.generateAndPlayAudio()
+                } else {
+                    viewModel.toggleAudioPlayback()
+                }
+            },
+            onStop = { viewModel.stopAudio() },
+        )
     }
 
     // Add to Collection Dialog
@@ -257,6 +347,92 @@ fun SummaryDetailScreen(
     }
 }
 
+@Suppress("FunctionNaming")
+@Composable
+private fun AudioPlayerRow(
+    audioState: com.po4yka.bitesizereader.domain.model.AudioPlaybackState?,
+    onPlayPause: () -> Unit,
+    onStop: () -> Unit,
+) {
+    val status = audioState?.status ?: AudioStatus.IDLE
+    val isLoading = status == AudioStatus.GENERATING || status == AudioStatus.LOADING
+    val isPlaying = status == AudioStatus.PLAYING
+    val isActive = audioState != null && status != AudioStatus.ERROR
+
+    HorizontalDivider(color = Carbon.theme.borderSubtle00)
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
+        if (isLoading) {
+            val audioLoadingDesc =
+                if (status == AudioStatus.GENERATING) {
+                    stringResource(Res.string.audio_generating)
+                } else {
+                    stringResource(Res.string.audio_loading)
+                }
+            CircularProgressIndicator(
+                modifier = Modifier.size(IconSizes.sm).semantics { contentDescription = audioLoadingDesc },
+                color = Carbon.theme.interactive,
+                strokeWidth = 2.dp,
+            )
+        } else {
+            val playPauseDesc =
+                if (isPlaying) {
+                    stringResource(Res.string.audio_pause_narration)
+                } else {
+                    stringResource(Res.string.audio_play_narration)
+                }
+            IconButton(onClick = onPlayPause, modifier = Modifier.size(IconSizes.sm)) {
+                Icon(
+                    imageVector = if (isPlaying) CarbonIcons.PauseFilled else CarbonIcons.PlayFilled,
+                    contentDescription = playPauseDesc,
+                    tint = Carbon.theme.iconPrimary,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
+        }
+
+        val generatingText = stringResource(Res.string.audio_generating)
+        val loadingText = stringResource(Res.string.audio_loading)
+        val playingText = stringResource(Res.string.audio_playing)
+        val pausedText = stringResource(Res.string.audio_paused)
+        val audioErrorText = stringResource(Res.string.audio_error)
+        val listenText = stringResource(Res.string.audio_listen)
+        val audioLabel =
+            when (status) {
+                AudioStatus.GENERATING -> generatingText
+                AudioStatus.LOADING -> loadingText
+                AudioStatus.PLAYING -> playingText
+                AudioStatus.PAUSED -> pausedText
+                AudioStatus.ERROR -> audioState?.error ?: audioErrorText
+                AudioStatus.IDLE -> listenText
+            }
+        Text(
+            text = audioLabel,
+            style = Carbon.typography.label01,
+            color = if (status == AudioStatus.ERROR) Carbon.theme.supportError else Carbon.theme.textSecondary,
+            modifier = Modifier.weight(1f),
+        )
+
+        if (isActive && !isLoading) {
+            IconButton(onClick = onStop, modifier = Modifier.size(IconSizes.sm)) {
+                Icon(
+                    imageVector = CarbonIcons.Close,
+                    contentDescription = stringResource(Res.string.audio_stop_narration),
+                    tint = Carbon.theme.iconSecondary,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
+        }
+    }
+}
+
 @Suppress("FunctionNaming", "LongParameterList")
 @Composable
 private fun SummaryDetailHeader(
@@ -274,12 +450,21 @@ private fun SummaryDetailHeader(
     onResummarizeClick: () -> Unit = {},
     isResummarizing: Boolean = false,
 ) {
+    val summaryTitle =
+        summary?.let { extractDomain(it.sourceUrl) ?: stringResource(Res.string.summary_detail_summary) }
+            ?: stringResource(Res.string.summary_detail_summary)
     ScreenHeader(
-        title = summary?.let { extractDomain(it.sourceUrl) ?: "Summary" } ?: "Summary",
+        title = summaryTitle,
         isDetailScreen = true,
         onBackClick = onBackClick,
         actions = {
             summary?.let { s ->
+                val favoriteDesc =
+                    if (s.isFavorited) {
+                        stringResource(Res.string.summary_detail_unfavorite)
+                    } else {
+                        stringResource(Res.string.summary_detail_favorite)
+                    }
                 HeaderIconButton(
                     icon =
                         if (s.isFavorited) {
@@ -287,7 +472,7 @@ private fun SummaryDetailHeader(
                         } else {
                             CarbonIcons.Favorite
                         },
-                    contentDescription = if (s.isFavorited) "Unfavorite" else "Favorite",
+                    contentDescription = favoriteDesc,
                     onClick = onFavoriteClick,
                     tint =
                         if (s.isFavorited) {
@@ -299,7 +484,7 @@ private fun SummaryDetailHeader(
 
                 HeaderIconButton(
                     icon = CarbonIcons.ThumbsUp,
-                    contentDescription = "Thumbs up",
+                    contentDescription = stringResource(Res.string.summary_detail_thumbs_up),
                     onClick = onThumbsUpClick,
                     tint =
                         if (feedbackRating == FeedbackRating.UP) {
@@ -311,7 +496,7 @@ private fun SummaryDetailHeader(
 
                 HeaderIconButton(
                     icon = CarbonIcons.ThumbsDown,
-                    contentDescription = "Thumbs down",
+                    contentDescription = stringResource(Res.string.summary_detail_thumbs_down),
                     onClick = onThumbsDownClick,
                     tint =
                         if (feedbackRating == FeedbackRating.DOWN) {
@@ -323,33 +508,45 @@ private fun SummaryDetailHeader(
 
                 HeaderIconButton(
                     icon = CarbonIcons.Folder,
-                    contentDescription = "Add to collection",
+                    contentDescription = stringResource(Res.string.summary_detail_add_to_collection),
                     onClick = onAddToCollectionClick,
                 )
 
+                val highlightDesc =
+                    if (isHighlightModeActive) {
+                        stringResource(Res.string.summary_detail_exit_highlight_mode)
+                    } else {
+                        stringResource(Res.string.summary_detail_highlight_mode)
+                    }
                 HeaderIconButton(
                     icon = if (isHighlightModeActive) CarbonIcons.BookmarkAdd else CarbonIcons.Bookmark,
-                    contentDescription = if (isHighlightModeActive) "Exit highlight mode" else "Highlight mode",
+                    contentDescription = highlightDesc,
                     onClick = onHighlightModeClick,
                     tint = if (isHighlightModeActive) Carbon.theme.linkPrimary else Carbon.theme.iconSecondary,
                 )
 
+                val readDesc =
+                    if (s.isRead) {
+                        stringResource(Res.string.summary_detail_mark_read)
+                    } else {
+                        stringResource(Res.string.summary_detail_mark_unread)
+                    }
                 Icon(
                     imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
-                    contentDescription = if (s.isRead) "Read" else "Unread",
+                    contentDescription = readDesc,
                     tint = if (s.isRead) Carbon.theme.supportSuccess else Carbon.theme.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
                 )
 
                 HeaderIconButton(
                     icon = CarbonIcons.Settings,
-                    contentDescription = "Reading settings",
+                    contentDescription = stringResource(Res.string.summary_detail_reading_settings),
                     onClick = onReadingSettingsClick,
                 )
 
                 HeaderIconButton(
                     icon = CarbonIcons.Renew,
-                    contentDescription = "Re-summarize",
+                    contentDescription = stringResource(Res.string.summary_detail_re_summarize),
                     onClick = { if (!isResummarizing) onResummarizeClick() },
                     tint = Carbon.theme.iconSecondary,
                     modifier = Modifier.alpha(if (isResummarizing) 0.4f else 1f),
@@ -357,7 +554,7 @@ private fun SummaryDetailHeader(
 
                 HeaderIconButton(
                     icon = CarbonIcons.Share,
-                    contentDescription = "Share",
+                    contentDescription = stringResource(Res.string.summary_detail_share),
                     onClick = onShareClick,
                 )
             }
@@ -463,7 +660,7 @@ private fun SummaryDetailContent(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "No content available",
+                    text = stringResource(Res.string.summary_detail_no_content),
                     style = Carbon.typography.body01,
                     color = Carbon.theme.textSecondary,
                 )
@@ -571,7 +768,7 @@ private fun SummaryDetailContent(
                                 if (isHighlighted && highlight?.note != null) {
                                     Icon(
                                         imageVector = CarbonIcons.WarningAlt,
-                                        contentDescription = "Has annotation",
+                                        contentDescription = stringResource(Res.string.summary_detail_has_annotation),
                                         tint = Carbon.theme.textSecondary,
                                         modifier = Modifier.size(12.dp).align(Alignment.TopEnd),
                                     )
@@ -613,7 +810,7 @@ private fun ArticleHeader(summary: Summary) {
         }
 
         Text(
-            text = extractDomain(summary.sourceUrl) ?: "Unknown source",
+            text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.summary_detail_unknown_source),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )
@@ -650,7 +847,7 @@ private fun ArticleFooter(sourceUrl: String) {
         Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
-            text = "Original Article",
+            text = stringResource(Res.string.summary_detail_original_article),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )

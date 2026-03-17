@@ -34,6 +34,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.SmallLoading
@@ -63,9 +67,20 @@ import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.summary_list_close_search
+import bitesizereader.composeapp.generated.resources.summary_list_create_digest
+import bitesizereader.composeapp.generated.resources.summary_list_offline
+import bitesizereader.composeapp.generated.resources.summary_list_refresh
+import bitesizereader.composeapp.generated.resources.summary_list_search
+import bitesizereader.composeapp.generated.resources.summary_list_submit_url
+import bitesizereader.composeapp.generated.resources.summary_list_switch_to_grid
+import bitesizereader.composeapp.generated.resources.summary_list_switch_to_list
+import bitesizereader.composeapp.generated.resources.summary_list_title
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.time.Duration.Companion.hours
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Summary list screen with search, filtering, sorting, swipe actions,
@@ -98,7 +113,7 @@ fun SummaryListScreen(
     ) {
         // Header with actions
         SummaryListHeader(
-            title = "Read Later",
+            title = stringResource(Res.string.summary_list_title),
             isSearchActive = state.search.isActive,
             layoutMode = state.layout.layoutMode,
             sortOrder = state.filter.sortOrder,
@@ -248,14 +263,14 @@ private fun SummaryListHeader(
             text = title,
             style = Carbon.typography.heading04,
             color = Carbon.theme.textPrimary,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).semantics { heading() },
         )
 
         // Add URL button
         IconButton(onClick = onSubmitUrlClicked) {
             Icon(
                 imageVector = CarbonIcons.Add,
-                contentDescription = "Submit URL",
+                contentDescription = stringResource(Res.string.summary_list_submit_url),
                 tint = Carbon.theme.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),
             )
@@ -265,17 +280,23 @@ private fun SummaryListHeader(
         IconButton(onClick = onCreateDigestClicked) {
             Icon(
                 imageVector = CarbonIcons.Document,
-                contentDescription = "Create Digest",
+                contentDescription = stringResource(Res.string.summary_list_create_digest),
                 tint = Carbon.theme.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),
             )
         }
 
         // Search toggle
+        val searchDesc =
+            if (isSearchActive) {
+                stringResource(Res.string.summary_list_close_search)
+            } else {
+                stringResource(Res.string.summary_list_search)
+            }
         IconButton(onClick = onToggleSearch) {
             Icon(
                 imageVector = if (isSearchActive) CarbonIcons.Close else CarbonIcons.Search,
-                contentDescription = if (isSearchActive) "Close search" else "Search",
+                contentDescription = searchDesc,
                 tint = Carbon.theme.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),
             )
@@ -292,9 +313,9 @@ private fun SummaryListHeader(
                     },
                 contentDescription =
                     if (layoutMode == LayoutMode.LIST) {
-                        "Switch to grid view"
+                        stringResource(Res.string.summary_list_switch_to_grid)
                     } else {
-                        "Switch to list view"
+                        stringResource(Res.string.summary_list_switch_to_list)
                     },
                 tint = Carbon.theme.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),
@@ -311,7 +332,7 @@ private fun SummaryListHeader(
         IconButton(onClick = onRefresh) {
             Icon(
                 imageVector = CarbonIcons.Renew,
-                contentDescription = "Refresh",
+                contentDescription = stringResource(Res.string.summary_list_refresh),
                 tint = Carbon.theme.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),
             )
@@ -458,6 +479,7 @@ private fun SummaryListView(
                 onMarkRead = { onMarkRead(summary.id) },
                 onFavoriteClick = { onFavoriteClick(summary.id) },
                 onArchiveClick = { onArchive(summary.id) },
+                modifier = Modifier.animateItem(),
             )
         }
 
@@ -490,10 +512,11 @@ private fun SyncStatusBanner(
     val isStale = !isOffline && syncError == null && lastSyncTime != null && (now - lastSyncTime) > 24.hours
     val showBanner = isOffline || isStale || syncError != null
 
+    val offlineText = stringResource(Res.string.summary_list_offline)
     // Priority: offline > sync error > stale data
     val (backgroundColor, text) =
         when {
-            isOffline -> Carbon.theme.supportWarning to "No internet connection"
+            isOffline -> Carbon.theme.supportWarning to offlineText
             syncError != null -> Carbon.theme.supportError to syncError
             else -> Carbon.theme.supportWarning to "Last synced: ${formatTimeSince(lastSyncTime!!)} — may be outdated"
         }
@@ -509,6 +532,7 @@ private fun SyncStatusBanner(
             modifier =
                 Modifier
                     .fillMaxWidth()
+                    .semantics { liveRegion = LiveRegionMode.Polite }
                     .background(backgroundColor)
                     .padding(horizontal = Spacing.md, vertical = Spacing.xs),
         ) {

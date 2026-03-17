@@ -22,10 +22,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
+import com.po4yka.bitesizereader.ui.components.AppLogo
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.a11y_loading
+import bitesizereader.composeapp.generated.resources.auth_app_title
+import bitesizereader.composeapp.generated.resources.auth_developer_login
+import bitesizereader.composeapp.generated.resources.auth_feature_search
+import bitesizereader.composeapp.generated.resources.auth_feature_summaries
+import bitesizereader.composeapp.generated.resources.auth_feature_sync
+import bitesizereader.composeapp.generated.resources.auth_login_with_telegram
+import bitesizereader.composeapp.generated.resources.auth_logging_in
+import bitesizereader.composeapp.generated.resources.auth_subtitle
 import com.gabrieldrn.carbon.Carbon
+import org.jetbrains.compose.resources.stringResource
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.SmallLoading
@@ -59,32 +73,22 @@ fun AuthScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            // App Logo/Icon
-            Box(
-                modifier =
-                    Modifier
-                        .size(100.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Carbon.theme.layer01),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = "B",
-                    style = Carbon.typography.heading05,
-                    color = Carbon.theme.textPrimary,
-                )
-            }
+            // App Logo
+            AppLogo(
+                modifier = Modifier.size(100.dp),
+                size = 100.dp,
+            )
 
             // App Title
             Text(
-                text = "Bite-Size Reader",
+                text = stringResource(Res.string.auth_app_title),
                 style = Carbon.typography.heading04,
                 color = Carbon.theme.textPrimary,
                 textAlign = TextAlign.Center,
             )
 
             Text(
-                text = "AI-powered summaries of web articles",
+                text = stringResource(Res.string.auth_subtitle),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
                 textAlign = TextAlign.Center,
@@ -96,22 +100,23 @@ fun AuthScreen(
             var showTelegramLogin by remember { mutableStateOf(false) }
 
             if (state.isLoading) {
+                val loadingDesc = stringResource(Res.string.a11y_loading)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().semantics { contentDescription = loadingDesc },
                 ) {
                     SmallLoading()
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Logging in...",
+                        text = stringResource(Res.string.auth_logging_in),
                         style = Carbon.typography.bodyCompact01,
                         color = Carbon.theme.textSecondary,
                     )
                 }
             } else {
                 Button(
-                    label = "Login with Telegram",
+                    label = stringResource(Res.string.auth_login_with_telegram),
                     onClick = { showTelegramLogin = true },
                     isEnabled = !state.isLoading,
                     buttonType = ButtonType.Primary,
@@ -132,7 +137,7 @@ fun AuthScreen(
             // Developer Login (Secret Key)
             var showDevLogin by remember { mutableStateOf(false) }
             Button(
-                label = "Developer Login",
+                label = stringResource(Res.string.auth_developer_login),
                 onClick = { showDevLogin = true },
                 isEnabled = !state.isLoading,
                 buttonType = ButtonType.Ghost,
@@ -176,15 +181,15 @@ fun AuthScreen(
             ) {
                 FeatureItem(
                     icon = "[1]",
-                    text = "Get concise summaries of any web article",
+                    text = stringResource(Res.string.auth_feature_summaries),
                 )
                 FeatureItem(
                     icon = "[2]",
-                    text = "Search and organize your reading history",
+                    text = stringResource(Res.string.auth_feature_search),
                 )
                 FeatureItem(
                     icon = "[3]",
-                    text = "Sync across all your devices",
+                    text = stringResource(Res.string.auth_feature_sync),
                 )
             }
         }

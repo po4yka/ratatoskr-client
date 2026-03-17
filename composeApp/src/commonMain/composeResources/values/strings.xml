@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Auth Screen -->
+    <string name="auth_app_title">Bite-Size Reader</string>
+    <string name="auth_subtitle">AI-powered summaries of web articles</string>
+    <string name="auth_logging_in">Logging in...</string>
+    <string name="auth_login_with_telegram">Login with Telegram</string>
+    <string name="auth_developer_login">Developer Login</string>
+    <string name="auth_feature_summaries">Get concise summaries of any web article</string>
+    <string name="auth_feature_search">Search and organize your reading history</string>
+    <string name="auth_feature_sync">Sync across all your devices</string>
+
+    <!-- Summary List Screen -->
+    <string name="summary_list_title">Read Later</string>
+    <string name="summary_list_submit_url">Submit URL</string>
+    <string name="summary_list_create_digest">Create Digest</string>
+    <string name="summary_list_close_search">Close search</string>
+    <string name="summary_list_search">Search</string>
+    <string name="summary_list_switch_to_grid">Switch to grid view</string>
+    <string name="summary_list_switch_to_list">Switch to list view</string>
+    <string name="summary_list_refresh">Refresh</string>
+    <string name="summary_list_offline">No internet connection</string>
+
+    <!-- Summary Detail Screen -->
+    <string name="summary_detail_reading_offline">Reading offline</string>
+    <string name="summary_detail_re_summarizing">Re-summarizing...</string>
+    <string name="summary_detail_no_content">No content available</string>
+    <string name="summary_detail_original_article">Original Article</string>
+    <string name="summary_detail_unknown_source">Unknown source</string>
+    <string name="summary_detail_unfavorite">Unfavorite</string>
+    <string name="summary_detail_favorite">Favorite</string>
+    <string name="summary_detail_thumbs_up">Thumbs up</string>
+    <string name="summary_detail_thumbs_down">Thumbs down</string>
+    <string name="summary_detail_add_to_collection">Add to collection</string>
+    <string name="summary_detail_exit_highlight_mode">Exit highlight mode</string>
+    <string name="summary_detail_highlight_mode">Highlight mode</string>
+    <string name="summary_detail_mark_read">Read</string>
+    <string name="summary_detail_mark_unread">Unread</string>
+    <string name="summary_detail_reading_settings">Reading settings</string>
+    <string name="summary_detail_re_summarize">Re-summarize</string>
+    <string name="summary_detail_share">Share</string>
+    <string name="summary_detail_summary">Summary</string>
+    <string name="summary_detail_has_annotation">Has annotation</string>
+
+    <!-- Audio Player -->
+    <string name="audio_generating">Generating narration...</string>
+    <string name="audio_loading">Loading audio...</string>
+    <string name="audio_playing">Playing</string>
+    <string name="audio_paused">Paused</string>
+    <string name="audio_error">Audio error</string>
+    <string name="audio_listen">Listen to summary</string>
+    <string name="audio_pause_narration">Pause narration</string>
+    <string name="audio_play_narration">Play narration</string>
+    <string name="audio_stop_narration">Stop narration</string>
+
+    <!-- Stats Screen -->
+    <string name="stats_title">Reading Statistics</string>
+    <string name="stats_error_default">Failed to load statistics</string>
+    <string name="stats_goals_and_streaks">Goals &amp; Streaks</string>
+    <string name="stats_overview">Overview</string>
+    <string name="stats_total">Total</string>
+    <string name="stats_unread">Unread</string>
+    <string name="stats_read">Read</string>
+    <string name="stats_total_reading_time">Total reading time</string>
+    <string name="stats_avg_per_summary">Avg. per summary</string>
+    <string name="stats_top_topics">Top Topics</string>
+    <string name="stats_top_sources">Top Sources</string>
+    <string name="stats_languages">Languages</string>
+    <string name="stats_error_icon">Error</string>
+    <string name="stats_goal_achieved">Achieved</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_account_binding">Account Binding</string>
+    <string name="settings_telegram_account">Telegram Account</string>
+    <string name="settings_loading">Loading...</string>
+    <string name="settings_linked_to">Linked to: %1$s</string>
+    <string name="settings_unlink_telegram">Unlink Telegram</string>
+    <string name="settings_link_telegram_prompt">Link your Telegram account to sync your data.</string>
+    <string name="settings_begin_linking">Begin Linking</string>
+    <string name="settings_linking_code">Linking Code</string>
+    <string name="settings_linking_code_prompt">Send this code to the Telegram bot to complete the linking process:</string>
+    <string name="settings_check_status_prompt">After sending the code to the bot, tap "Check Status" to verify the link.</string>
+    <string name="settings_check_status">Check Status</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_retry">Retry</string>
+    <string name="settings_reading_goals">Reading Goals</string>
+    <string name="settings_daily_reading_goal">Daily Reading Goal</string>
+    <string name="settings_goal_enabled">Enabled</string>
+    <string name="settings_goal_disabled">Disabled</string>
+    <string name="settings_goal_target">Target: %1$d minutes per day</string>
+    <string name="settings_current_streak">Current streak</string>
+    <string name="settings_longest_streak">Longest streak</string>
+    <string name="settings_goal_enable_prompt">Enable to set a daily reading target and track your streak.</string>
+    <string name="settings_data_management">Data Management</string>
+    <string name="settings_synchronization">Synchronization</string>
+    <string name="settings_sync_prompt">Import the latest data from the backend to synchronize your local database.</string>
+    <string name="settings_import_from_backend">Import from Backend</string>
+    <string name="settings_cached_content">Cached Content</string>
+    <string name="settings_cache_prompt">Full article content cached for offline reading.</string>
+    <string name="settings_clear_cache">Clear Cache</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_danger_zone">Danger Zone</string>
+    <string name="settings_delete_account">Delete Account</string>
+    <string name="settings_delete_account_description">Permanently delete your account and all associated data. This action cannot be undone.</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_prompt">Select your preferred language for summaries.</string>
+    <string name="settings_language_auto">Auto</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_russian">Russian</string>
+    <string name="settings_digest_channels">Digest Channels</string>
+    <string name="settings_digest_channels_description">Manage channel subscriptions and preferences</string>
+    <string name="settings_cancel_sync">Cancel sync</string>
+
+    <!-- Sync Phase -->
+    <string name="sync_creating_session">Creating session...</string>
+    <string name="sync_downloading_data">Downloading data...</string>
+    <string name="sync_fetching_updates">Fetching updates...</string>
+    <string name="sync_processing">Processing...</string>
+    <string name="sync_validating">Validating...</string>
+    <string name="sync_completed">Completed</string>
+    <string name="sync_failed">Failed</string>
+    <string name="sync_cancelled">Cancelled</string>
+    <string name="sync_synchronizing">Synchronizing...</string>
+
+    <!-- Search Screen -->
+    <string name="search_title">Search</string>
+    <string name="search_toggle_filters">Toggle filters</string>
+    <string name="search_placeholder">Search summaries...</string>
+    <string name="search_clear">Clear search</string>
+    <string name="search_filters">Filters</string>
+    <string name="search_filter_all">All</string>
+    <string name="search_filter_read">Read</string>
+    <string name="search_filter_unread">Unread</string>
+    <string name="search_language">Language</string>
+    <string name="search_language_all">All</string>
+    <string name="search_language_english">English</string>
+    <string name="search_language_russian">Russian</string>
+    <string name="search_mode_text">Text</string>
+    <string name="search_mode_ai">AI</string>
+
+    <!-- Collections Screen -->
+    <string name="collections_title">Collections</string>
+    <string name="collections_new">New Collection</string>
+    <string name="collections_loading">Loading collections...</string>
+    <string name="collections_empty_title">No collections yet</string>
+    <string name="collections_empty_message">Create collections to organize your articles</string>
+    <string name="collections_section_work">Work</string>
+    <string name="collections_section_other">Other</string>
+    <string name="collections_create_dialog_title">New Collection</string>
+    <string name="collections_name_label">Name</string>
+    <string name="collections_name_placeholder">Collection name</string>
+    <string name="collections_description_label">Description</string>
+    <string name="collections_description_placeholder">Optional description</string>
+    <string name="collections_creating">Creating...</string>
+    <string name="collections_create">Create</string>
+    <string name="collections_cancel">Cancel</string>
+
+    <!-- Submit URL Screen -->
+    <string name="submit_url_title">Submit URL</string>
+    <string name="submit_url_back">Back</string>
+    <string name="submit_url_mode_single">Single</string>
+    <string name="submit_url_mode_batch">Batch</string>
+    <string name="submit_url_enter_prompt">Enter an article or video URL to summarize</string>
+    <string name="submit_url_label">URL</string>
+    <string name="submit_url_placeholder">https://example.com/article</string>
+    <string name="submit_url_submitting">Submitting...</string>
+    <string name="submit_url_submit">Submit</string>
+    <string name="submit_url_duplicate_title">Duplicate URL Detected</string>
+    <string name="submit_url_duplicate_message">This URL has already been summarized. You can view the existing summary or submit it again.</string>
+    <string name="submit_url_view_existing">View Existing</string>
+    <string name="submit_url_submit_anyway">Submit Anyway</string>
+    <string name="submit_url_cancel">Cancel</string>
+    <string name="submit_url_processing">Processing</string>
+    <string name="submit_url_success">Summary created successfully!</string>
+    <string name="submit_url_request_history">Request History</string>
+    <string name="submit_url_hide_history">Hide history</string>
+    <string name="submit_url_show_history">Show history</string>
+    <string name="submit_url_no_recent_requests">No recent requests</string>
+    <string name="submit_url_batch_prompt">Paste URLs to summarize, one per line</string>
+    <string name="submit_url_batch_submit_all">Submit All</string>
+    <string name="submit_url_batch_cancel">Cancel</string>
+    <string name="submit_url_batch_submit_more">Submit More</string>
+    <string name="submit_url_batch_duplicate_skipped">Duplicate — skipped</string>
+    <string name="submit_url_batch_retry">Retry</string>
+    <string name="submit_url_batch_submit_anyway">Submit Anyway</string>
+    <string name="submit_url_duplicate_warning">Warning</string>
+    <string name="submit_url_batch_pending">Pending</string>
+    <string name="submit_url_batch_completed">Completed</string>
+    <string name="submit_url_batch_failed">Failed</string>
+    <string name="submit_url_batch_skipped">Skipped</string>
+    <string name="submit_url_error_invalid_url">Please enter a valid URL (e.g. https://example.com)</string>
+    <string name="submit_url_error_duplicate">This URL has already been summarized. Find it in your library.</string>
+    <string name="submit_url_error_network">No internet connection. Please check your network and try again.</string>
+    <string name="submit_url_error_server">Something went wrong on our end. Please try again in a moment.</string>
+    <string name="submit_url_error_view_library">View in library</string>
+
+    <!-- Accessibility -->
+    <string name="a11y_navigate_back">Navigate back</string>
+    <string name="a11y_loading">Loading</string>
+    <string name="a11y_streak_description">%1$d day streak, best is %2$d days</string>
+    <string name="a11y_goal_progress">%1$s goal: %2$d of %3$d, %4$s</string>
+    <string name="a11y_goal_in_progress">in progress</string>
+    <string name="a11y_sync_progress">Syncing: %1$s</string>
+
+    <!-- Legal -->
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_of_service">Terms of Service</string>
+
+    <!-- Main Screen / Bottom Nav -->
+    <string name="nav_read_later">Read Later</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_collections">Collections</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_settings">Settings</string>
+</resources>

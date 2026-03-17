@@ -4,6 +4,50 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
+ * User reading streak data from GET /v1/user/streak.
+ */
+@Serializable
+data class StreakDto(
+    @SerialName("current_streak") val currentStreak: Int,
+    @SerialName("longest_streak") val longestStreak: Int,
+    @SerialName("last_activity_date") val lastActivityDate: String? = null,
+    @SerialName("today_count") val todayCount: Int = 0,
+    @SerialName("week_count") val weekCount: Int = 0,
+    @SerialName("month_count") val monthCount: Int = 0,
+)
+
+/**
+ * A server-side reading goal from GET /v1/user/goals.
+ */
+@Serializable
+data class GoalDto(
+    @SerialName("id") val id: String,
+    @SerialName("goal_type") val goalType: String,
+    @SerialName("target_count") val targetCount: Int,
+    @SerialName("created_at") val createdAt: String,
+)
+
+/**
+ * Progress towards a reading goal from GET /v1/user/goals/progress.
+ */
+@Serializable
+data class GoalProgressDto(
+    @SerialName("goal_type") val goalType: String,
+    @SerialName("target_count") val targetCount: Int,
+    @SerialName("current_count") val currentCount: Int,
+    @SerialName("achieved") val achieved: Boolean,
+)
+
+/**
+ * Request body for POST /v1/user/goals.
+ */
+@Serializable
+data class CreateGoalRequestDto(
+    @SerialName("goal_type") val goalType: String,
+    @SerialName("target_count") val targetCount: Int,
+)
+
+/**
  * Topic statistics entry with name and count.
  */
 @Serializable

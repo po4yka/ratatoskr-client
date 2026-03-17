@@ -57,11 +57,50 @@ import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
 import com.po4yka.bitesizereader.presentation.navigation.SubmitURLComponent
 import com.po4yka.bitesizereader.presentation.state.SubmitURLState
+import com.po4yka.bitesizereader.presentation.state.SubmitUrlError
 import com.po4yka.bitesizereader.presentation.viewmodel.SubmitURLViewModel
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.submit_url_back
+import bitesizereader.composeapp.generated.resources.submit_url_batch_cancel
+import bitesizereader.composeapp.generated.resources.submit_url_batch_completed
+import bitesizereader.composeapp.generated.resources.submit_url_batch_duplicate_skipped
+import bitesizereader.composeapp.generated.resources.submit_url_batch_failed
+import bitesizereader.composeapp.generated.resources.submit_url_batch_pending
+import bitesizereader.composeapp.generated.resources.submit_url_batch_prompt
+import bitesizereader.composeapp.generated.resources.submit_url_batch_retry
+import bitesizereader.composeapp.generated.resources.submit_url_batch_skipped
+import bitesizereader.composeapp.generated.resources.submit_url_batch_submit_all
+import bitesizereader.composeapp.generated.resources.submit_url_batch_submit_anyway
+import bitesizereader.composeapp.generated.resources.submit_url_batch_submit_more
+import bitesizereader.composeapp.generated.resources.submit_url_cancel
+import bitesizereader.composeapp.generated.resources.submit_url_duplicate_message
+import bitesizereader.composeapp.generated.resources.submit_url_duplicate_title
+import bitesizereader.composeapp.generated.resources.submit_url_duplicate_warning
+import bitesizereader.composeapp.generated.resources.submit_url_enter_prompt
+import bitesizereader.composeapp.generated.resources.submit_url_hide_history
+import bitesizereader.composeapp.generated.resources.submit_url_label
+import bitesizereader.composeapp.generated.resources.submit_url_mode_batch
+import bitesizereader.composeapp.generated.resources.submit_url_mode_single
+import bitesizereader.composeapp.generated.resources.submit_url_no_recent_requests
+import bitesizereader.composeapp.generated.resources.submit_url_processing
+import bitesizereader.composeapp.generated.resources.submit_url_request_history
+import bitesizereader.composeapp.generated.resources.submit_url_show_history
+import bitesizereader.composeapp.generated.resources.submit_url_submit
+import bitesizereader.composeapp.generated.resources.submit_url_submit_anyway
+import bitesizereader.composeapp.generated.resources.submit_url_submitting
+import bitesizereader.composeapp.generated.resources.submit_url_success
+import bitesizereader.composeapp.generated.resources.submit_url_title
+import bitesizereader.composeapp.generated.resources.submit_url_view_existing
+import bitesizereader.composeapp.generated.resources.submit_url_error_invalid_url
+import bitesizereader.composeapp.generated.resources.submit_url_error_duplicate
+import bitesizereader.composeapp.generated.resources.submit_url_error_network
+import bitesizereader.composeapp.generated.resources.submit_url_error_server
+import bitesizereader.composeapp.generated.resources.submit_url_error_view_library
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod")
 @Composable
@@ -109,6 +148,8 @@ fun SubmitURLScreen(
                         onSubmit = { viewModel.checkDuplicate() },
                         isLoading = state.isLoading || state.isCheckingDuplicate,
                         error = state.error,
+                        submitError = state.submitError,
+                        onViewLibrary = component::onBackClicked,
                     )
                 }
 
@@ -212,7 +253,7 @@ fun SubmitURLScreen(
                 } else if (state.recentRequests.isEmpty()) {
                     item {
                         Text(
-                            text = "No recent requests",
+                            text = stringResource(Res.string.submit_url_no_recent_requests),
                             style = Carbon.typography.bodyCompact01,
                             color = Carbon.theme.textSecondary,
                             modifier = Modifier.padding(vertical = Spacing.md),
@@ -250,12 +291,12 @@ private fun BatchModeToggle(
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
         ModeChip(
-            label = "Single",
+            label = stringResource(Res.string.submit_url_mode_single),
             isSelected = !isBatchMode,
             onClick = { if (isBatchMode) onToggle() },
         )
         ModeChip(
-            label = "Batch",
+            label = stringResource(Res.string.submit_url_mode_batch),
             isSelected = isBatchMode,
             onClick = { if (!isBatchMode) onToggle() },
         )
@@ -312,7 +353,7 @@ private fun BatchInputSection(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
-            text = "Paste URLs to summarize, one per line",
+            text = stringResource(Res.string.submit_url_batch_prompt),
             style = Carbon.typography.body01,
             color = Carbon.theme.textSecondary,
         )
@@ -348,7 +389,7 @@ private fun BatchInputSection(
         )
 
         Button(
-            label = "Submit All",
+            label = stringResource(Res.string.submit_url_batch_submit_all),
             onClick = onSubmitBatch,
             isEnabled = urlCount > 0,
             buttonType = ButtonType.Primary,
@@ -382,13 +423,13 @@ private fun BatchProgressHeader(
         )
         if (isBatchSubmitting) {
             Button(
-                label = "Cancel",
+                label = stringResource(Res.string.submit_url_batch_cancel),
                 onClick = onCancel,
                 buttonType = ButtonType.Ghost,
             )
         } else {
             Button(
-                label = "Submit More",
+                label = stringResource(Res.string.submit_url_batch_submit_more),
                 onClick = onReset,
                 buttonType = ButtonType.Ghost,
             )
@@ -418,7 +459,7 @@ private fun BatchUrlEntryRow(
             BatchUrlStatus.PENDING -> {
                 Icon(
                     imageVector = CarbonIcons.CircleOutline,
-                    contentDescription = "Pending",
+                    contentDescription = stringResource(Res.string.submit_url_batch_pending),
                     tint = Carbon.theme.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
                 )
@@ -437,7 +478,7 @@ private fun BatchUrlEntryRow(
             BatchUrlStatus.COMPLETED -> {
                 Icon(
                     imageVector = CarbonIcons.CheckmarkFilled,
-                    contentDescription = "Completed",
+                    contentDescription = stringResource(Res.string.submit_url_batch_completed),
                     tint = Carbon.theme.supportSuccess,
                     modifier = Modifier.size(IconSizes.sm),
                 )
@@ -445,7 +486,7 @@ private fun BatchUrlEntryRow(
             BatchUrlStatus.FAILED -> {
                 Icon(
                     imageVector = CarbonIcons.Close,
-                    contentDescription = "Failed",
+                    contentDescription = stringResource(Res.string.submit_url_batch_failed),
                     tint = Carbon.theme.supportError,
                     modifier = Modifier.size(IconSizes.sm),
                 )
@@ -453,7 +494,7 @@ private fun BatchUrlEntryRow(
             BatchUrlStatus.SKIPPED -> {
                 Icon(
                     imageVector = CarbonIcons.Close,
-                    contentDescription = "Skipped",
+                    contentDescription = stringResource(Res.string.submit_url_batch_skipped),
                     tint = Carbon.theme.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
                 )
@@ -481,7 +522,7 @@ private fun BatchUrlEntryRow(
             }
             if (entry.isDuplicate && entry.status == BatchUrlStatus.SKIPPED) {
                 Text(
-                    text = "Duplicate — skipped",
+                    text = stringResource(Res.string.submit_url_batch_duplicate_skipped),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                 )
@@ -492,7 +533,7 @@ private fun BatchUrlEntryRow(
         when (entry.status) {
             BatchUrlStatus.FAILED -> {
                 Button(
-                    label = "Retry",
+                    label = stringResource(Res.string.submit_url_batch_retry),
                     onClick = onRetry,
                     buttonType = ButtonType.Ghost,
                 )
@@ -500,7 +541,7 @@ private fun BatchUrlEntryRow(
             BatchUrlStatus.SKIPPED -> {
                 if (entry.isDuplicate) {
                     Button(
-                        label = "Submit Anyway",
+                        label = stringResource(Res.string.submit_url_batch_submit_anyway),
                         onClick = onSubmitAnyway,
                         buttonType = ButtonType.Ghost,
                     )
@@ -526,14 +567,14 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = CarbonIcons.ArrowLeft,
-                contentDescription = "Back",
+                contentDescription = stringResource(Res.string.submit_url_back),
                 tint = Carbon.theme.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),
             )
         }
 
         Text(
-            text = "Submit URL",
+            text = stringResource(Res.string.submit_url_title),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
             modifier = Modifier.weight(1f),
@@ -541,7 +582,7 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
     }
 }
 
-@Suppress("FunctionNaming")
+@Suppress("FunctionNaming", "LongParameterList")
 @Composable
 private fun URLInputSection(
     url: String,
@@ -549,25 +590,28 @@ private fun URLInputSection(
     onSubmit: () -> Unit,
     isLoading: Boolean,
     error: String?,
+    submitError: SubmitUrlError? = null,
+    onViewLibrary: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
+    val hasError = error != null || submitError != null
 
     Column(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
-            text = "Enter an article or video URL to summarize",
+            text = stringResource(Res.string.submit_url_enter_prompt),
             style = Carbon.typography.body01,
             color = Carbon.theme.textSecondary,
         )
 
         TextInput(
-            label = "URL",
+            label = stringResource(Res.string.submit_url_label),
             value = url,
             onValueChange = onUrlChanged,
             state =
                 when {
-                    error != null -> TextInputState.Error
+                    hasError -> TextInputState.Error
                     isLoading -> TextInputState.Disabled
                     else -> TextInputState.Enabled
                 },
@@ -587,16 +631,68 @@ private fun URLInputSection(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (error != null) {
-            Text(
-                text = error,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
-            )
+        when (submitError) {
+            is SubmitUrlError.InvalidUrl -> {
+                Text(
+                    text = stringResource(Res.string.submit_url_error_invalid_url),
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.supportError,
+                )
+            }
+            is SubmitUrlError.DuplicateUrl -> {
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                    Text(
+                        text = stringResource(Res.string.submit_url_error_duplicate),
+                        style = Carbon.typography.label01,
+                        color = Carbon.theme.supportError,
+                    )
+                    Button(
+                        label = stringResource(Res.string.submit_url_error_view_library),
+                        onClick = onViewLibrary,
+                        buttonType = ButtonType.Ghost,
+                    )
+                }
+            }
+            is SubmitUrlError.NetworkError -> {
+                Text(
+                    text = stringResource(Res.string.submit_url_error_network),
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.supportError,
+                )
+            }
+            is SubmitUrlError.ServerError -> {
+                Text(
+                    text = stringResource(Res.string.submit_url_error_server),
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.supportError,
+                )
+            }
+            is SubmitUrlError.Unknown -> {
+                Text(
+                    text = submitError.message,
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.supportError,
+                )
+            }
+            null -> {
+                if (error != null) {
+                    Text(
+                        text = error,
+                        style = Carbon.typography.label01,
+                        color = Carbon.theme.supportError,
+                    )
+                }
+            }
         }
 
+        val submitLabel =
+            if (isLoading) {
+                stringResource(Res.string.submit_url_submitting)
+            } else {
+                stringResource(Res.string.submit_url_submit)
+            }
         Button(
-            label = if (isLoading) "Submitting..." else "Submit",
+            label = submitLabel,
             onClick = onSubmit,
             isEnabled = !isLoading && url.isNotBlank(),
             buttonType = ButtonType.Primary,
@@ -627,19 +723,19 @@ private fun DuplicateWarningSection(
         ) {
             Icon(
                 imageVector = CarbonIcons.WarningAlt,
-                contentDescription = "Warning",
+                contentDescription = stringResource(Res.string.submit_url_duplicate_warning),
                 tint = Carbon.theme.supportWarning,
                 modifier = Modifier.size(IconSizes.md),
             )
             Text(
-                text = "Duplicate URL Detected",
+                text = stringResource(Res.string.submit_url_duplicate_title),
                 style = Carbon.typography.headingCompact01,
                 color = Carbon.theme.textPrimary,
             )
         }
 
         Text(
-            text = "This URL has already been summarized. You can view the existing summary or submit it again.",
+            text = stringResource(Res.string.submit_url_duplicate_message),
             style = Carbon.typography.bodyCompact01,
             color = Carbon.theme.textSecondary,
         )
@@ -650,7 +746,7 @@ private fun DuplicateWarningSection(
         ) {
             if (summaryId != null) {
                 Button(
-                    label = "View Existing",
+                    label = stringResource(Res.string.submit_url_view_existing),
                     onClick = { onViewExisting(summaryId) },
                     buttonType = ButtonType.Primary,
                     modifier = Modifier.weight(1f),
@@ -658,14 +754,14 @@ private fun DuplicateWarningSection(
             }
 
             Button(
-                label = "Submit Anyway",
+                label = stringResource(Res.string.submit_url_submit_anyway),
                 onClick = onForceSubmit,
                 buttonType = ButtonType.Secondary,
                 modifier = Modifier.weight(1f),
             )
 
             Button(
-                label = "Cancel",
+                label = stringResource(Res.string.submit_url_cancel),
                 onClick = onDismiss,
                 buttonType = ButtonType.Ghost,
                 modifier = Modifier.weight(1f),
@@ -686,7 +782,7 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
-            text = "Processing",
+            text = stringResource(Res.string.submit_url_processing),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
@@ -735,7 +831,7 @@ private fun CompletionSection() {
             modifier = Modifier.size(IconSizes.md),
         )
         Text(
-            text = "Summary created successfully!",
+            text = stringResource(Res.string.submit_url_success),
             style = Carbon.typography.body01,
             color = Carbon.theme.supportSuccess,
         )
@@ -755,16 +851,22 @@ private fun RequestHistoryHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Request History",
+            text = stringResource(Res.string.submit_url_request_history),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
             modifier = Modifier.weight(1f),
         )
 
+        val historyDesc =
+            if (showHistory) {
+                stringResource(Res.string.submit_url_hide_history)
+            } else {
+                stringResource(Res.string.submit_url_show_history)
+            }
         IconButton(onClick = onToggle) {
             Icon(
                 imageVector = if (showHistory) CarbonIcons.ChevronUp else CarbonIcons.ChevronDown,
-                contentDescription = if (showHistory) "Hide history" else "Show history",
+                contentDescription = historyDesc,
                 tint = Carbon.theme.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),
             )

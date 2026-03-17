@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Auth Screen -->
+    <string name="auth_app_title">Bite-Size Reader</string>
+    <string name="auth_subtitle">Резюме веб-статей на основе ИИ</string>
+    <string name="auth_logging_in">Вход...</string>
+    <string name="auth_login_with_telegram">Войти через Telegram</string>
+    <string name="auth_developer_login">Вход для разработчика</string>
+    <string name="auth_feature_summaries">Получайте краткие резюме любых статей</string>
+    <string name="auth_feature_search">Ищите и упорядочивайте историю чтения</string>
+    <string name="auth_feature_sync">Синхронизация на всех устройствах</string>
+
+    <!-- Summary List Screen -->
+    <string name="summary_list_title">Читать позже</string>
+    <string name="summary_list_submit_url">Добавить ссылку</string>
+    <string name="summary_list_create_digest">Создать дайджест</string>
+    <string name="summary_list_close_search">Закрыть поиск</string>
+    <string name="summary_list_search">Поиск</string>
+    <string name="summary_list_switch_to_grid">Переключить на сетку</string>
+    <string name="summary_list_switch_to_list">Переключить на список</string>
+    <string name="summary_list_refresh">Обновить</string>
+    <string name="summary_list_offline">Нет подключения к интернету</string>
+
+    <!-- Summary Detail Screen -->
+    <string name="summary_detail_reading_offline">Чтение офлайн</string>
+    <string name="summary_detail_re_summarizing">Создание нового резюме...</string>
+    <string name="summary_detail_no_content">Содержимое недоступно</string>
+    <string name="summary_detail_original_article">Оригинальная статья</string>
+    <string name="summary_detail_unknown_source">Неизвестный источник</string>
+    <string name="summary_detail_unfavorite">Убрать из избранного</string>
+    <string name="summary_detail_favorite">В избранное</string>
+    <string name="summary_detail_thumbs_up">Нравится</string>
+    <string name="summary_detail_thumbs_down">Не нравится</string>
+    <string name="summary_detail_add_to_collection">Добавить в коллекцию</string>
+    <string name="summary_detail_exit_highlight_mode">Выйти из режима выделения</string>
+    <string name="summary_detail_highlight_mode">Режим выделения</string>
+    <string name="summary_detail_mark_read">Прочитано</string>
+    <string name="summary_detail_mark_unread">Непрочитано</string>
+    <string name="summary_detail_reading_settings">Настройки чтения</string>
+    <string name="summary_detail_re_summarize">Пересоздать резюме</string>
+    <string name="summary_detail_share">Поделиться</string>
+    <string name="summary_detail_summary">Резюме</string>
+    <string name="summary_detail_has_annotation">Есть аннотация</string>
+
+    <!-- Audio Player -->
+    <string name="audio_generating">Генерация озвучки...</string>
+    <string name="audio_loading">Загрузка аудио...</string>
+    <string name="audio_playing">Воспроизведение</string>
+    <string name="audio_paused">Пауза</string>
+    <string name="audio_error">Ошибка аудио</string>
+    <string name="audio_listen">Прослушать резюме</string>
+    <string name="audio_pause_narration">Пауза</string>
+    <string name="audio_play_narration">Воспроизвести</string>
+    <string name="audio_stop_narration">Остановить</string>
+
+    <!-- Stats Screen -->
+    <string name="stats_title">Статистика чтения</string>
+    <string name="stats_error_default">Не удалось загрузить статистику</string>
+    <string name="stats_goals_and_streaks">Цели и серии</string>
+    <string name="stats_overview">Обзор</string>
+    <string name="stats_total">Всего</string>
+    <string name="stats_unread">Непрочитанные</string>
+    <string name="stats_read">Прочитанные</string>
+    <string name="stats_total_reading_time">Общее время чтения</string>
+    <string name="stats_avg_per_summary">Среднее на резюме</string>
+    <string name="stats_top_topics">Топ тематик</string>
+    <string name="stats_top_sources">Топ источников</string>
+    <string name="stats_languages">Языки</string>
+    <string name="stats_error_icon">Ошибка</string>
+    <string name="stats_goal_achieved">Достигнуто</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_account_binding">Привязка аккаунта</string>
+    <string name="settings_telegram_account">Аккаунт Telegram</string>
+    <string name="settings_loading">Загрузка...</string>
+    <string name="settings_linked_to">Привязан: %1$s</string>
+    <string name="settings_unlink_telegram">Отвязать Telegram</string>
+    <string name="settings_link_telegram_prompt">Привяжите аккаунт Telegram для синхронизации данных.</string>
+    <string name="settings_begin_linking">Начать привязку</string>
+    <string name="settings_linking_code">Код привязки</string>
+    <string name="settings_linking_code_prompt">Отправьте этот код боту Telegram для завершения привязки:</string>
+    <string name="settings_check_status_prompt">После отправки кода боту нажмите «Проверить статус» для подтверждения.</string>
+    <string name="settings_check_status">Проверить статус</string>
+    <string name="settings_cancel">Отмена</string>
+    <string name="settings_retry">Повторить</string>
+    <string name="settings_reading_goals">Цели чтения</string>
+    <string name="settings_daily_reading_goal">Ежедневная цель чтения</string>
+    <string name="settings_goal_enabled">Включено</string>
+    <string name="settings_goal_disabled">Отключено</string>
+    <string name="settings_goal_target">Цель: %1$d минут в день</string>
+    <string name="settings_current_streak">Текущая серия</string>
+    <string name="settings_longest_streak">Лучшая серия</string>
+    <string name="settings_goal_enable_prompt">Включите, чтобы задать цель и отслеживать серию.</string>
+    <string name="settings_data_management">Управление данными</string>
+    <string name="settings_synchronization">Синхронизация</string>
+    <string name="settings_sync_prompt">Импортируйте данные с сервера для синхронизации локальной базы данных.</string>
+    <string name="settings_import_from_backend">Импортировать с сервера</string>
+    <string name="settings_cached_content">Кэшированный контент</string>
+    <string name="settings_cache_prompt">Полное содержимое статей кэшировано для офлайн-чтения.</string>
+    <string name="settings_clear_cache">Очистить кэш</string>
+    <string name="settings_security">Безопасность</string>
+    <string name="settings_danger_zone">Опасная зона</string>
+    <string name="settings_delete_account">Удалить аккаунт</string>
+    <string name="settings_delete_account_description">Навсегда удалить аккаунт и все связанные данные. Это действие нельзя отменить.</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_language_prompt">Выберите предпочитаемый язык для резюме.</string>
+    <string name="settings_language_auto">Авто</string>
+    <string name="settings_language_english">Английский</string>
+    <string name="settings_language_russian">Русский</string>
+    <string name="settings_digest_channels">Каналы дайджестов</string>
+    <string name="settings_digest_channels_description">Управление подписками и настройками каналов</string>
+    <string name="settings_cancel_sync">Отменить синхронизацию</string>
+
+    <!-- Sync Phase -->
+    <string name="sync_creating_session">Создание сессии...</string>
+    <string name="sync_downloading_data">Загрузка данных...</string>
+    <string name="sync_fetching_updates">Получение обновлений...</string>
+    <string name="sync_processing">Обработка...</string>
+    <string name="sync_validating">Проверка...</string>
+    <string name="sync_completed">Завершено</string>
+    <string name="sync_failed">Ошибка</string>
+    <string name="sync_cancelled">Отменено</string>
+    <string name="sync_synchronizing">Синхронизация...</string>
+
+    <!-- Search Screen -->
+    <string name="search_title">Поиск</string>
+    <string name="search_toggle_filters">Показать фильтры</string>
+    <string name="search_placeholder">Поиск резюме...</string>
+    <string name="search_clear">Очистить поиск</string>
+    <string name="search_filters">Фильтры</string>
+    <string name="search_filter_all">Все</string>
+    <string name="search_filter_read">Прочитанные</string>
+    <string name="search_filter_unread">Непрочитанные</string>
+    <string name="search_language">Язык</string>
+    <string name="search_language_all">Все</string>
+    <string name="search_language_english">Английский</string>
+    <string name="search_language_russian">Русский</string>
+    <string name="search_mode_text">Текст</string>
+    <string name="search_mode_ai">ИИ</string>
+
+    <!-- Collections Screen -->
+    <string name="collections_title">Коллекции</string>
+    <string name="collections_new">Новая коллекция</string>
+    <string name="collections_loading">Загрузка коллекций...</string>
+    <string name="collections_empty_title">Коллекций пока нет</string>
+    <string name="collections_empty_message">Создайте коллекции для организации статей</string>
+    <string name="collections_section_work">Работа</string>
+    <string name="collections_section_other">Другое</string>
+    <string name="collections_create_dialog_title">Новая коллекция</string>
+    <string name="collections_name_label">Название</string>
+    <string name="collections_name_placeholder">Название коллекции</string>
+    <string name="collections_description_label">Описание</string>
+    <string name="collections_description_placeholder">Необязательное описание</string>
+    <string name="collections_creating">Создание...</string>
+    <string name="collections_create">Создать</string>
+    <string name="collections_cancel">Отмена</string>
+
+    <!-- Submit URL Screen -->
+    <string name="submit_url_title">Добавить ссылку</string>
+    <string name="submit_url_back">Назад</string>
+    <string name="submit_url_mode_single">Одна</string>
+    <string name="submit_url_mode_batch">Несколько</string>
+    <string name="submit_url_enter_prompt">Введите ссылку на статью или видео для создания резюме</string>
+    <string name="submit_url_label">URL</string>
+    <string name="submit_url_placeholder">https://example.com/article</string>
+    <string name="submit_url_submitting">Отправка...</string>
+    <string name="submit_url_submit">Отправить</string>
+    <string name="submit_url_duplicate_title">Обнаружен дубликат</string>
+    <string name="submit_url_duplicate_message">Эта ссылка уже была обработана. Можно просмотреть существующее резюме или создать новое.</string>
+    <string name="submit_url_view_existing">Посмотреть</string>
+    <string name="submit_url_submit_anyway">Отправить всё равно</string>
+    <string name="submit_url_cancel">Отмена</string>
+    <string name="submit_url_processing">Обработка</string>
+    <string name="submit_url_success">Резюме успешно создано!</string>
+    <string name="submit_url_request_history">История запросов</string>
+    <string name="submit_url_hide_history">Скрыть историю</string>
+    <string name="submit_url_show_history">Показать историю</string>
+    <string name="submit_url_no_recent_requests">Нет недавних запросов</string>
+    <string name="submit_url_batch_prompt">Вставьте ссылки для создания резюме, по одной на строку</string>
+    <string name="submit_url_batch_submit_all">Отправить все</string>
+    <string name="submit_url_batch_cancel">Отмена</string>
+    <string name="submit_url_batch_submit_more">Добавить ещё</string>
+    <string name="submit_url_batch_duplicate_skipped">Дубликат — пропущено</string>
+    <string name="submit_url_batch_retry">Повторить</string>
+    <string name="submit_url_batch_submit_anyway">Отправить всё равно</string>
+    <string name="submit_url_duplicate_warning">Предупреждение</string>
+    <string name="submit_url_batch_pending">Ожидание</string>
+    <string name="submit_url_batch_completed">Завершено</string>
+    <string name="submit_url_batch_failed">Ошибка</string>
+    <string name="submit_url_batch_skipped">Пропущено</string>
+    <string name="submit_url_error_invalid_url">Введите корректный URL (например, https://example.com)</string>
+    <string name="submit_url_error_duplicate">Эта ссылка уже была обработана. Найдите её в библиотеке.</string>
+    <string name="submit_url_error_network">Нет подключения к интернету. Проверьте сеть и попробуйте снова.</string>
+    <string name="submit_url_error_server">Что-то пошло не так на нашей стороне. Попробуйте снова через момент.</string>
+    <string name="submit_url_error_view_library">Открыть в библиотеке</string>
+
+    <!-- Accessibility -->
+    <string name="a11y_navigate_back">Назад</string>
+    <string name="a11y_loading">Загрузка</string>
+    <string name="a11y_streak_description">%1$d дней подряд, лучший результат: %2$d дней</string>
+    <string name="a11y_goal_progress">Цель %1$s: %2$d из %3$d, %4$s</string>
+    <string name="a11y_goal_in_progress">в процессе</string>
+    <string name="a11y_sync_progress">Синхронизация: %1$s</string>
+
+    <!-- Legal -->
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="terms_of_service">Условия использования</string>
+
+    <!-- Main Screen / Bottom Nav -->
+    <string name="nav_read_later">Читать позже</string>
+    <string name="nav_search">Поиск</string>
+    <string name="nav_collections">Коллекции</string>
+    <string name="nav_stats">Статистика</string>
+    <string name="nav_settings">Настройки</string>
+</resources>

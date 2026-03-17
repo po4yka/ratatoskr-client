@@ -63,18 +63,39 @@ data class DeltaSyncResponseDto(
 /**
  * Individual sync item.
  * Note: The server sends entity-specific data under keys matching the entity type
- * (e.g., "summary" for summary entities). The `summary` field contains the actual data.
+ * (e.g., "summary" for summary entities, "highlight" for highlight entities).
+ * Each entity type has its own typed field on the envelope, consistent with the
+ * backend SyncEntityEnvelope model.
  */
 @Serializable
 data class SyncItemDto(
     @SerialName("id") val id: Long,
-    @SerialName("entityType") val entityType: String, // "summary", "collection", etc.
+    @SerialName("entityType") val entityType: String, // "summary", "highlight", etc.
     @SerialName("serverVersion") val serverVersion: Long,
     /** Summary data - populated when entityType is "summary" */
     @SerialName("summary") val summary: JsonObject? = null,
+    /** Highlight data - populated when entityType is "highlight" */
+    @SerialName("highlight") val highlight: JsonObject? = null,
     @SerialName("createdAt") val createdAt: String? = null,
     @SerialName("updatedAt") val updatedAt: String? = null,
     @SerialName("deletedAt") val deletedAt: String? = null,
+)
+
+/**
+ * Typed representation of a highlight payload received during sync.
+ * Matches the "highlight" field on the sync envelope for entity_type="highlight".
+ */
+@Serializable
+data class HighlightDto(
+    val id: String,
+    @SerialName("summary_id") val summaryId: String,
+    val text: String,
+    @SerialName("start_offset") val startOffset: Int? = null,
+    @SerialName("end_offset") val endOffset: Int? = null,
+    val color: String? = null,
+    val note: String? = null,
+    @SerialName("created_at") val createdAt: String,
+    @SerialName("updated_at") val updatedAt: String,
 )
 
 // ============================================================================

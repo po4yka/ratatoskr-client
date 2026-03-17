@@ -10,6 +10,7 @@ data class SubmitURLState(
     val status: RequestStatus = RequestStatus.PENDING,
     val isLoading: Boolean = false,
     val error: String? = null,
+    val submitError: SubmitUrlError? = null,
     val progress: Float = 0f,
     val stage: ProcessingStage = ProcessingStage.UNSPECIFIED,
     val message: String? = null,

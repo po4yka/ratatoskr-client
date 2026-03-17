@@ -31,6 +31,7 @@ interface MainComponent {
         SUMMARY_LIST,
         SEARCH,
         COLLECTIONS,
+        STATS,
         SETTINGS,
     }
 
@@ -44,6 +45,8 @@ interface MainComponent {
         data class Collections(val component: CollectionsComponent) : Child()
 
         data class CollectionView(val component: CollectionViewComponent) : Child()
+
+        data class Stats(val component: StatsComponent) : Child()
 
         data class Settings(val component: SettingsComponent) : Child()
 
@@ -109,6 +112,10 @@ class DefaultMainComponent(
                         onNavigateToSummary = { summaryId -> navigation.push(Config.SummaryDetail(summaryId)) },
                         onCollectionDeleted = { navigation.pop() },
                     ),
+                )
+            is Config.Stats ->
+                MainComponent.Child.Stats(
+                    DefaultStatsComponent(componentContext = componentContext),
                 )
             is Config.Settings ->
                 MainComponent.Child.Settings(
@@ -195,6 +202,7 @@ class DefaultMainComponent(
                 MainComponent.Tab.SUMMARY_LIST -> Config.SummaryList()
                 MainComponent.Tab.SEARCH -> Config.Search
                 MainComponent.Tab.COLLECTIONS -> Config.Collections
+                MainComponent.Tab.STATS -> Config.Stats
                 MainComponent.Tab.SETTINGS -> Config.Settings
             }
         navigation.bringToFront(config)
@@ -213,6 +221,9 @@ class DefaultMainComponent(
 
         @kotlinx.serialization.Serializable
         data class CollectionView(val collectionId: String) : Config
+
+        @kotlinx.serialization.Serializable
+        data object Stats : Config
 
         @kotlinx.serialization.Serializable
         data object Settings : Config

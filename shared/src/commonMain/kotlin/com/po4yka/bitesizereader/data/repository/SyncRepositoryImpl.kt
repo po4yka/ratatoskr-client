@@ -6,6 +6,7 @@ import com.po4yka.bitesizereader.data.mappers.toDto
 import com.po4yka.bitesizereader.data.mappers.toSummaryEntity
 import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.data.remote.SyncApi
+import com.po4yka.bitesizereader.data.remote.dto.HighlightDto
 import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
@@ -690,8 +691,34 @@ class SyncRepositoryImpl(
                 }
             }
             "highlight" -> {
-                // TODO: Sync highlights with backend when API is available
-                true
+                try {
+                    val highlightData = item.highlight
+                    if (highlightData == null) {
+                        logger.warn { "Highlight sync item ${item.id} has no highlight payload, skipping" }
+                        false
+                    } else {
+                        val dto =
+                            kotlinx.serialization.json.Json.decodeFromJsonElement(
+                                HighlightDto.serializer(),
+                                highlightData,
+                            )
+                        database.databaseQueries.upsertHighlight(
+                            id = dto.id,
+                            summary_id = dto.summaryId,
+                            text = dto.text,
+                            start_offset = dto.startOffset?.toLong(),
+                            end_offset = dto.endOffset?.toLong(),
+                            color = dto.color,
+                            note = dto.note,
+                            created_at = dto.createdAt,
+                            updated_at = dto.updatedAt,
+                        )
+                        true
+                    }
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                    logger.error(e) { "Failed to process highlight sync item ${item.id}" }
+                    false
+                }
             }
             else -> {
                 logger.warn { "Unknown entity type: ${item.entityType}" }
