@@ -40,4 +40,6 @@ data class SummaryListState(
     // Connectivity and freshness
     val lastSyncTime: Instant? = null,
     val isOffline: Boolean = false,
+    // Non-null while a sync error is active (cleared on next successful sync)
+    val syncError: String? = null,
 )

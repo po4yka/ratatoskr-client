@@ -745,11 +745,31 @@ class SyncRepositoryImpl(
         }
 
         try {
-            applyChanges(sessionId, changes)
+            val result = applyChanges(sessionId, changes)
             database.databaseQueries.deleteAllPendingOperations()
             // Also clear legacy pending deletes table
             database.databaseQueries.deleteAllPendingDeletes()
-            logger.info { "Successfully flushed ${changes.size} pending operations" }
+            if (result.conflicts.isNotEmpty()) {
+                // Server wins: conflicting local changes are discarded.
+                // The server version will overwrite local data on the next delta sync.
+                logger.warn {
+                    "${result.conflicts.size} pending operation(s) rejected by server (server wins):"
+                }
+                result.conflicts.forEach { conflict ->
+                    logger.warn {
+                        "  conflict: entity=${conflict.entityType}#${conflict.id} " +
+                            "reason=${conflict.reason} " +
+                            "clientVersion=${conflict.clientVersion} serverVersion=${conflict.serverVersion}"
+                    }
+                }
+                _syncProgress.update { current ->
+                    current?.copy(errorCount = (current.errorCount) + result.conflicts.size)
+                }
+            }
+            logger.info {
+                "Successfully flushed ${changes.size} pending operations " +
+                    "(applied=${result.appliedCount}, conflicts=${result.conflicts.size})"
+            }
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.warn(e) { "Failed to flush pending operations, will retry next sync" }
         }
