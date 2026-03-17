@@ -1,9 +1,11 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
+import com.po4yka.bitesizereader.domain.ProcessingService
 import com.po4yka.bitesizereader.domain.model.AudioPlaybackState
 import com.po4yka.bitesizereader.domain.model.AudioStatus
 import com.po4yka.bitesizereader.domain.model.FeedbackIssue
 import com.po4yka.bitesizereader.domain.model.FeedbackRating
+import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import com.po4yka.bitesizereader.domain.repository.CollectionRepository
 import com.po4yka.bitesizereader.domain.repository.ReadingPreferencesRepository
 import com.po4yka.bitesizereader.domain.usecase.AddToCollectionUseCase
@@ -64,6 +66,7 @@ class SummaryDetailViewModel(
     private val updateAnnotationUseCase: UpdateAnnotationUseCase,
     private val submitSummaryFeedbackUseCase: SubmitSummaryFeedbackUseCase,
     private val getSummaryFeedbackUseCase: GetSummaryFeedbackUseCase,
+    private val processingService: ProcessingService,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state = _state.asStateFlow()
@@ -450,6 +453,47 @@ class SummaryDetailViewModel(
                 logger.warn(e) { "Failed to submit detailed feedback for $summaryId" }
             } finally {
                 _state.update { it.copy(isSubmittingFeedback = false, showFeedbackDialog = false) }
+            }
+        }
+    }
+
+    fun openResummarizeConfirmDialog() {
+        _state.update { it.copy(showResummarizeConfirmDialog = true) }
+    }
+
+    fun dismissResummarizeConfirmDialog() {
+        _state.update { it.copy(showResummarizeConfirmDialog = false) }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    fun resummarize() {
+        val sourceUrl = _state.value.summary?.sourceUrl ?: return
+        dismissResummarizeConfirmDialog()
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    isResummarizing = true,
+                    resummarizeError = null,
+                    resummarizeProgress = 0f,
+                    resummarizeStage = ProcessingStage.UNSPECIFIED,
+                )
+            }
+            try {
+                processingService.submitUrl(sourceUrl, forceRefresh = true).collect { update ->
+                    _state.update { it.copy(resummarizeProgress = update.progress, resummarizeStage = update.stage) }
+                    if (update.stage == ProcessingStage.DONE) {
+                        loadSummary(_state.value.summary?.id ?: return@collect)
+                        _state.update { it.copy(isResummarizing = false) }
+                    }
+                }
+            } catch (e: Exception) {
+                logger.warn { "Re-summarize failed: ${e.message}" }
+                _state.update {
+                    it.copy(
+                        isResummarizing = false,
+                        resummarizeError = e.message ?: "Re-summarization failed",
+                    )
+                }
             }
         }
     }
