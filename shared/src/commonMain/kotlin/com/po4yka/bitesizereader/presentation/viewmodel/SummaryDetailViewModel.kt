@@ -467,6 +467,7 @@ class SummaryDetailViewModel(
 
     @Suppress("TooGenericExceptionCaught")
     fun resummarize() {
+        if (_state.value.isResummarizing) return
         val sourceUrl = _state.value.summary?.sourceUrl ?: return
         dismissResummarizeConfirmDialog()
         viewModelScope.launch {
@@ -484,6 +485,7 @@ class SummaryDetailViewModel(
                     if (update.stage == ProcessingStage.DONE) {
                         loadSummary(_state.value.summary?.id ?: return@collect)
                         _state.update { it.copy(isResummarizing = false) }
+                        return@collect
                     }
                 }
             } catch (e: Exception) {
