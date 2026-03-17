@@ -20,4 +20,10 @@ object Dimensions {
 
     /** 16.dp - Corner radius for chips and pills */
     val chipCornerRadius = 16.dp
+
+    /** 200.dp - Width of a recommendation card in the horizontal strip */
+    val recommendationCardWidth = 200.dp
+
+    /** 120.dp - Height of the image area in a recommendation card */
+    val recommendationCardImageHeight = 120.dp
 }

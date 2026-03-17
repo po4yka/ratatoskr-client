@@ -686,6 +686,10 @@ class SyncRepositoryImpl(
                     false
                 }
             }
+            "highlight" -> {
+                // TODO: Sync highlights with backend when API is available
+                true
+            }
             else -> {
                 logger.warn { "Unknown entity type: ${item.entityType}" }
                 false
@@ -701,6 +705,11 @@ class SyncRepositoryImpl(
 
         val changes =
             pendingOps.mapNotNull { op ->
+                // Highlight operations cannot be synced yet (no backend API), skip them
+                if (op.entityType == "highlight") {
+                    logger.debug { "Skipping highlight pending operation: ${op.action} for ${op.entityId}" }
+                    return@mapNotNull null
+                }
                 val remoteId = op.entityId.toLongOrNull() ?: return@mapNotNull null
                 when (op.action) {
                     "delete" ->

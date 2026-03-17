@@ -37,9 +37,11 @@ import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
+import com.po4yka.bitesizereader.presentation.state.ReadingGoalState
 import com.po4yka.bitesizereader.presentation.state.SettingsState
 import com.po4yka.bitesizereader.presentation.state.SyncSettingsState
 import com.po4yka.bitesizereader.presentation.state.TelegramLinkState
+import com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalViewModel
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.ui.components.DeleteAccountDialog
@@ -49,6 +51,7 @@ import com.po4yka.bitesizereader.ui.components.SessionsSection
 import com.po4yka.bitesizereader.ui.components.UserStatsCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.koin.compose.koinInject
 
 /**
  * Settings screen using Carbon Design System
@@ -58,6 +61,8 @@ import com.po4yka.bitesizereader.ui.theme.Spacing
 fun SettingsScreen(component: SettingsComponent) {
     val viewModel: SettingsViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
+    val readingGoalViewModel: ReadingGoalViewModel = koinInject()
+    val readingGoalState by readingGoalViewModel.state.collectAsState()
 
     val onRetryLinkStatus = remember<() -> Unit>(viewModel) { viewModel::loadLinkStatus }
     val onBeginLink = remember<() -> Unit>(viewModel) { viewModel::beginTelegramLink }
@@ -86,6 +91,7 @@ fun SettingsScreen(component: SettingsComponent) {
 
         SettingsContent(
             state = state,
+            readingGoalState = readingGoalState,
             onRetryLinkStatus = onRetryLinkStatus,
             onBeginLink = onBeginLink,
             onUnlink = onUnlink,
@@ -100,6 +106,8 @@ fun SettingsScreen(component: SettingsComponent) {
             onRetryRequest = onRetryRequest,
             onDigestClicked = onDigestClicked,
             onLanguageChanged = onLanguageChanged,
+            onToggleGoalEnabled = { readingGoalViewModel.toggleEnabled() },
+            onGoalTargetChanged = { readingGoalViewModel.setDailyTarget(it) },
         )
 
         // Delete Account Confirmation Dialog
@@ -120,10 +128,11 @@ private fun SettingsHeader() {
     ScreenHeader(title = "Settings")
 }
 
-@Suppress("FunctionNaming", "LongParameterList")
+@Suppress("FunctionNaming", "LongParameterList", "LongMethod")
 @Composable
 private fun SettingsContent(
     state: SettingsState,
+    readingGoalState: ReadingGoalState,
     onRetryLinkStatus: () -> Unit,
     onBeginLink: () -> Unit,
     onUnlink: () -> Unit,
@@ -138,6 +147,8 @@ private fun SettingsContent(
     onRetryRequest: (Request) -> Unit,
     onDigestClicked: () -> Unit = {},
     onLanguageChanged: (String) -> Unit = {},
+    onToggleGoalEnabled: () -> Unit = {},
+    onGoalTargetChanged: (Int) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -183,6 +194,20 @@ private fun SettingsContent(
             isLoading = state.account.isLoadingPreferences,
             isSaving = state.account.isSavingPreferences,
             onLanguageChanged = onLanguageChanged,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Reading Goals",
+            style = Carbon.typography.heading03,
+            color = Carbon.theme.textPrimary,
+        )
+
+        ReadingGoalsCard(
+            readingGoalState = readingGoalState,
+            onToggleEnabled = onToggleGoalEnabled,
+            onTargetChanged = onGoalTargetChanged,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -772,3 +797,114 @@ private fun getSyncPhaseText(phase: SyncPhase?): String =
         SyncPhase.CANCELLED -> "Cancelled"
         null -> "Synchronizing..."
     }
+
+@Suppress("FunctionNaming", "LongParameterList")
+@Composable
+private fun ReadingGoalsCard(
+    readingGoalState: ReadingGoalState,
+    onToggleEnabled: () -> Unit,
+    onTargetChanged: (Int) -> Unit,
+) {
+    val goal = readingGoalState.goalProgress?.goal
+    val isEnabled = goal?.isEnabled ?: false
+
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(Carbon.theme.layer01)
+                .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Daily Reading Goal",
+                style = Carbon.typography.headingCompact01,
+                color = Carbon.theme.textPrimary,
+            )
+            val toggleText = if (isEnabled) "Enabled" else "Disabled"
+            Text(
+                text = toggleText,
+                style = Carbon.typography.label01,
+                color = if (isEnabled) Carbon.theme.supportSuccess else Carbon.theme.textSecondary,
+                modifier =
+                    Modifier
+                        .clickable(onClick = onToggleEnabled)
+                        .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+            )
+        }
+
+        if (goal != null) {
+            Text(
+                text = "Target: ${goal.dailyTargetMin} minutes per day",
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textSecondary,
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                val targets = listOf(5, 10, 15, 20, 30, 45, 60)
+                targets.forEach { minutes ->
+                    val isSelected = goal.dailyTargetMin == minutes
+                    val bgColor = if (isSelected) Carbon.theme.linkPrimary else Carbon.theme.layer02
+                    val textColor = if (isSelected) Carbon.theme.textOnColor else Carbon.theme.textPrimary
+                    Text(
+                        text = "${minutes}m",
+                        style = Carbon.typography.label01,
+                        color = textColor,
+                        modifier =
+                            Modifier
+                                .background(bgColor)
+                                .clickable(enabled = isEnabled && !isSelected) { onTargetChanged(minutes) }
+                                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+                    )
+                }
+            }
+
+            if (goal.currentStreakDays > 0 || goal.longestStreakDays > 0) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
+                ) {
+                    Column {
+                        Text(
+                            text = "${goal.currentStreakDays}",
+                            style = Carbon.typography.heading03,
+                            color = Carbon.theme.textPrimary,
+                        )
+                        Text(
+                            text = "Current streak",
+                            style = Carbon.typography.label01,
+                            color = Carbon.theme.textSecondary,
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "${goal.longestStreakDays}",
+                            style = Carbon.typography.heading03,
+                            color = Carbon.theme.textPrimary,
+                        )
+                        Text(
+                            text = "Longest streak",
+                            style = Carbon.typography.label01,
+                            color = Carbon.theme.textSecondary,
+                        )
+                    }
+                }
+            }
+        } else {
+            Text(
+                text = "Enable to set a daily reading target and track your streak.",
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textSecondary,
+            )
+        }
+    }
+}

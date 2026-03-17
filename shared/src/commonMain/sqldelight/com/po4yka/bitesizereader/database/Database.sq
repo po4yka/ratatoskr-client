@@ -274,3 +274,122 @@ DELETE FROM pendingOperationEntity;
 
 deletePendingOperationsForEntity:
 DELETE FROM pendingOperationEntity WHERE entityId = :entityId AND action = :action;
+
+-- Reading Session Table
+CREATE TABLE readingSessionEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    summaryId TEXT NOT NULL,
+    startedAt INTEGER AS kotlin.time.Instant NOT NULL,
+    endedAt INTEGER AS kotlin.time.Instant,
+    durationSec INTEGER AS kotlin.Int NOT NULL DEFAULT 0,
+    FOREIGN KEY (summaryId) REFERENCES summaryEntity(id) ON DELETE CASCADE
+);
+CREATE INDEX readingSession_summaryId ON readingSessionEntity(summaryId);
+CREATE INDEX readingSession_startedAt ON readingSessionEntity(startedAt);
+
+insertReadingSession:
+INSERT INTO readingSessionEntity (summaryId, startedAt, durationSec)
+VALUES (?, ?, 0);
+
+updateReadingSessionEnd:
+UPDATE readingSessionEntity
+SET endedAt = ?, durationSec = ?
+WHERE id = ?;
+
+getTotalReadingTimeForDate:
+SELECT COALESCE(SUM(durationSec), 0)
+FROM readingSessionEntity
+WHERE startedAt >= ? AND startedAt < ?;
+
+getDailyReadingTotals:
+SELECT
+    DATE(startedAt / 1000, 'unixepoch') AS date,
+    CAST(SUM(durationSec) AS INTEGER) AS totalSec
+FROM readingSessionEntity
+WHERE startedAt >= ?
+GROUP BY date
+ORDER BY date DESC
+LIMIT :limit;
+
+getLastInsertedSessionId:
+SELECT last_insert_rowid();
+
+-- Reading Goal Table
+CREATE TABLE readingGoalEntity (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT 0,
+    dailyTargetMin INTEGER AS kotlin.Int NOT NULL DEFAULT 15,
+    currentStreakDays INTEGER AS kotlin.Int NOT NULL DEFAULT 0,
+    longestStreakDays INTEGER AS kotlin.Int NOT NULL DEFAULT 0,
+    lastCompletedDate TEXT,
+    isEnabled INTEGER AS Boolean NOT NULL DEFAULT 0
+);
+
+getReadingGoal:
+SELECT * FROM readingGoalEntity WHERE id = 0;
+
+upsertReadingGoal:
+INSERT OR REPLACE INTO readingGoalEntity (id, dailyTargetMin, currentStreakDays, longestStreakDays, lastCompletedDate, isEnabled)
+VALUES (0, ?, ?, ?, ?, ?);
+
+updateStreak:
+UPDATE readingGoalEntity
+SET currentStreakDays = ?, longestStreakDays = ?, lastCompletedDate = ?
+WHERE id = 0;
+
+-- Highlight Table
+CREATE TABLE highlightEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    summaryId TEXT NOT NULL,
+    text TEXT NOT NULL,
+    nodeOffset INTEGER AS kotlin.Int NOT NULL,
+    color TEXT NOT NULL DEFAULT 'yellow',
+    note TEXT,
+    createdAt INTEGER AS kotlin.time.Instant NOT NULL,
+    syncStatus TEXT NOT NULL DEFAULT 'pending',
+    FOREIGN KEY (summaryId) REFERENCES summaryEntity(id) ON DELETE CASCADE
+);
+CREATE INDEX highlight_summaryId ON highlightEntity(summaryId);
+
+getHighlightsForSummary:
+SELECT * FROM highlightEntity WHERE summaryId = ? ORDER BY nodeOffset ASC;
+
+insertHighlight:
+INSERT INTO highlightEntity (id, summaryId, text, nodeOffset, color, note, createdAt, syncStatus)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteHighlight:
+DELETE FROM highlightEntity WHERE id = ?;
+
+updateHighlightNote:
+UPDATE highlightEntity SET note = ? WHERE id = ?;
+
+updateHighlightSyncStatus:
+UPDATE highlightEntity SET syncStatus = ? WHERE id = ?;
+
+updateHighlightColor:
+UPDATE highlightEntity SET color = ? WHERE id = ?;
+
+-- Recommendation Table
+CREATE TABLE recommendationEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    summaryId TEXT NOT NULL,
+    score REAL NOT NULL,
+    reason TEXT,
+    strategy TEXT NOT NULL,
+    fetchedAt INTEGER AS kotlin.time.Instant NOT NULL,
+    FOREIGN KEY (summaryId) REFERENCES summaryEntity(id) ON DELETE CASCADE
+);
+CREATE INDEX recommendation_fetchedAt ON recommendationEntity(fetchedAt);
+
+getRecommendations:
+SELECT * FROM recommendationEntity ORDER BY score DESC LIMIT :limit;
+
+insertRecommendation:
+INSERT OR REPLACE INTO recommendationEntity (id, summaryId, score, reason, strategy, fetchedAt)
+VALUES (?, ?, ?, ?, ?, ?);
+
+clearStaleRecommendations:
+DELETE FROM recommendationEntity WHERE fetchedAt < ?;
+
+deleteRecommendation:
+DELETE FROM recommendationEntity WHERE id = ?;

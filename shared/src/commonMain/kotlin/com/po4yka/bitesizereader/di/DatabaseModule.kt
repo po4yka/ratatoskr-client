@@ -3,6 +3,10 @@ package com.po4yka.bitesizereader.di
 import app.cash.sqldelight.ColumnAdapter
 import com.po4yka.bitesizereader.data.local.DatabaseDriverFactory
 import com.po4yka.bitesizereader.database.Database
+import com.po4yka.bitesizereader.database.HighlightEntity
+import com.po4yka.bitesizereader.database.RecommendationEntity
+import com.po4yka.bitesizereader.database.ReadingGoalEntity
+import com.po4yka.bitesizereader.database.ReadingSessionEntity
 import com.po4yka.bitesizereader.database.RequestEntity
 import com.po4yka.bitesizereader.database.SearchHistoryEntity
 import com.po4yka.bitesizereader.database.SummaryEntity
@@ -67,6 +71,27 @@ class DatabaseModule {
             searchHistoryEntityAdapter =
                 SearchHistoryEntity.Adapter(
                     searchedAtAdapter = instantColumnAdapter,
+                ),
+            readingSessionEntityAdapter =
+                ReadingSessionEntity.Adapter(
+                    startedAtAdapter = instantColumnAdapter,
+                    endedAtAdapter = instantColumnAdapter,
+                    durationSecAdapter = intColumnAdapter,
+                ),
+            readingGoalEntityAdapter =
+                ReadingGoalEntity.Adapter(
+                    dailyTargetMinAdapter = intColumnAdapter,
+                    currentStreakDaysAdapter = intColumnAdapter,
+                    longestStreakDaysAdapter = intColumnAdapter,
+                ),
+            highlightEntityAdapter =
+                HighlightEntity.Adapter(
+                    createdAtAdapter = instantColumnAdapter,
+                    nodeOffsetAdapter = intColumnAdapter,
+                ),
+            recommendationEntityAdapter =
+                RecommendationEntity.Adapter(
+                    fetchedAtAdapter = instantColumnAdapter,
                 ),
         )
     }
