@@ -61,19 +61,19 @@ class DefaultRootComponent(
     }
 
     override fun navigateToSubmitUrl(prefilledUrl: String) {
-        // TODO(po4yka): Wire through to SubmitURLComponent with prefilledUrl
-        val currentConfig = childStack.value.active.configuration
-        if (currentConfig is Config.Auth) {
+        if (childStack.value.active.configuration is Config.Auth) {
             navigation.replaceCurrent(Config.Main)
         }
+        (childStack.value.active.instance as? RootComponent.Child.Main)
+            ?.component?.navigateToSubmitUrl(prefilledUrl)
     }
 
     override fun navigateToSummaryDetail(summaryId: String) {
-        // TODO(po4yka): Wire through to SummaryDetailComponent with summaryId
-        val currentConfig = childStack.value.active.configuration
-        if (currentConfig is Config.Auth) {
+        if (childStack.value.active.configuration is Config.Auth) {
             navigation.replaceCurrent(Config.Main)
         }
+        (childStack.value.active.instance as? RootComponent.Child.Main)
+            ?.component?.navigateToSummaryDetail(summaryId)
     }
 
     private fun createChild(

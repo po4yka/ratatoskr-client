@@ -16,10 +16,17 @@ interface SubmitURLComponent {
 
 class DefaultSubmitURLComponent(
     componentContext: ComponentContext,
+    private val prefilledUrl: String?,
     private val onBack: () -> Unit,
     private val onNavigateToSummary: (String) -> Unit,
 ) : SubmitURLComponent, ComponentContext by componentContext, KoinComponent {
     override val viewModel: SubmitURLViewModel = retainedInstance { get() }
+
+    init {
+        if (!prefilledUrl.isNullOrBlank()) {
+            viewModel.onUrlChanged(prefilledUrl)
+        }
+    }
 
     override fun onBackClicked() {
         onBack()

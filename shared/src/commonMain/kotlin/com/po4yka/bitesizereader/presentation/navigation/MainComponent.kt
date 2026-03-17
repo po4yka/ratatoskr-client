@@ -19,6 +19,10 @@ interface MainComponent {
 
     fun navigateToTab(tab: Tab)
 
+    fun navigateToSubmitUrl(prefilledUrl: String)
+
+    fun navigateToSummaryDetail(summaryId: String)
+
     fun navigateToCustomDigestCreate()
 
     fun navigateToCustomDigestView(digestId: String)
@@ -77,7 +81,7 @@ class DefaultMainComponent(
                     DefaultSummaryListComponent(
                         componentContext = componentContext,
                         onSummarySelected = { id -> navigateToSummaryDetail(id) },
-                        onSubmitUrl = { navigateToSubmitUrl() },
+                        onSubmitUrl = { navigateToSubmitUrl("") },
                         onCreateDigest = { navigateToCustomDigestCreate() },
                     ),
                 )
@@ -124,6 +128,7 @@ class DefaultMainComponent(
                 MainComponent.Child.SubmitURL(
                     DefaultSubmitURLComponent(
                         componentContext = componentContext,
+                        prefilledUrl = config.prefilledUrl,
                         onBack = { navigation.pop() },
                         onNavigateToSummary = { summaryId ->
                             navigation.pop()
@@ -159,8 +164,12 @@ class DefaultMainComponent(
                 )
         }
 
-    private fun navigateToSubmitUrl() {
-        navigation.push(Config.SubmitURL)
+    override fun navigateToSubmitUrl(prefilledUrl: String) {
+        navigation.push(Config.SubmitURL(prefilledUrl.ifBlank { null }))
+    }
+
+    override fun navigateToSummaryDetail(summaryId: String) {
+        navigation.push(Config.SummaryDetail(summaryId))
     }
 
     private fun navigateToDigest() {
@@ -173,10 +182,6 @@ class DefaultMainComponent(
 
     override fun navigateToCustomDigestView(digestId: String) {
         navigation.push(Config.CustomDigestView(digestId))
-    }
-
-    private fun navigateToSummaryDetail(summaryId: String) {
-        navigation.push(Config.SummaryDetail(summaryId))
     }
 
     private fun navigateToCollectionView(collectionId: String) {
@@ -216,7 +221,7 @@ class DefaultMainComponent(
         data object Search : Config
 
         @kotlinx.serialization.Serializable
-        data object SubmitURL : Config
+        data class SubmitURL(val prefilledUrl: String? = null) : Config
 
         @kotlinx.serialization.Serializable
         data object Digest : Config
