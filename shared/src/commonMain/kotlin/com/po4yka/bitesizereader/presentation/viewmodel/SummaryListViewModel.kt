@@ -99,9 +99,12 @@ class SummaryListViewModel(
                     logger.info { "Network reconnected, triggering delta sync" }
                     try {
                         syncDataUseCase()
+                        _state.update { it.copy(syncError = null) }
                         loadSummariesFromDatabase()
                     } catch (e: Exception) {
-                        logger.warn(e) { "Auto-sync on reconnect failed" }
+                        val appError = e.toAppError()
+                        _state.update { it.copy(syncError = appError.userMessage()) }
+                        logger.warn(e) { "Auto-sync on reconnect failed (${appError::class.simpleName})" }
                     }
                 }
                 previousStatus = status
@@ -124,12 +127,15 @@ class SummaryListViewModel(
             _state.update { it.copy(isLoading = true, error = null) }
             try {
                 syncDataUseCase()
+                _state.update { it.copy(syncError = null) }
                 logger.info { "Sync completed successfully" }
             } catch (_: AppError.SessionExpiredError) {
                 logger.warn { "Session expired, triggering re-authentication" }
                 logoutUseCase()
             } catch (e: Exception) {
-                logger.warn(e) { "Sync failed, loading from local cache" }
+                val appError = e.toAppError()
+                _state.update { it.copy(syncError = appError.userMessage()) }
+                logger.warn(e) { "Sync failed (${appError::class.simpleName}), loading from local cache" }
             }
             loadSummariesFromDatabase()
         }
@@ -148,9 +154,12 @@ class SummaryListViewModel(
             }
             try {
                 syncDataUseCase()
+                _state.update { it.copy(syncError = null) }
                 logger.info { "Refresh sync completed" }
             } catch (e: Exception) {
-                logger.warn(e) { "Refresh sync failed, loading from local cache" }
+                val appError = e.toAppError()
+                _state.update { it.copy(syncError = appError.userMessage()) }
+                logger.warn(e) { "Refresh sync failed (${appError::class.simpleName}), loading from local cache" }
             }
             loadSummariesFromDatabase()
             _state.update { it.copy(isRefreshing = false) }

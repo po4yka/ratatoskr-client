@@ -161,10 +161,11 @@ fun SummaryListScreen(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        // Offline / stale sync banner
+        // Offline / stale sync / error banner
         SyncStatusBanner(
             isOffline = state.isOffline,
             lastSyncTime = state.lastSyncTime,
+            syncError = state.syncError,
         )
 
         // Content with pull-to-refresh
@@ -436,16 +437,26 @@ private fun SummaryListView(
     }
 }
 
-@Suppress("FunctionNaming")
+@Suppress("FunctionNaming", "LongMethod")
 @Composable
 private fun SyncStatusBanner(
     isOffline: Boolean,
     lastSyncTime: Instant?,
+    syncError: String?,
     modifier: Modifier = Modifier,
 ) {
     val now = remember { Clock.System.now() }
-    val isStale = !isOffline && lastSyncTime != null && (now - lastSyncTime) > 24.hours
-    val showBanner = isOffline || isStale
+    val isStale = !isOffline && syncError == null && lastSyncTime != null && (now - lastSyncTime) > 24.hours
+    val showBanner = isOffline || isStale || syncError != null
+
+    // Priority: offline > sync error > stale data
+    val (backgroundColor, text) =
+        when {
+            isOffline -> Carbon.theme.supportWarning to "No internet connection"
+            syncError != null -> Carbon.theme.supportError to syncError
+            else -> Carbon.theme.supportWarning to "Last synced: ${formatTimeSince(lastSyncTime!!)} — may be outdated"
+        }
+
     AnimatedVisibility(
         visible = showBanner,
         enter = expandVertically(),
@@ -457,25 +468,20 @@ private fun SyncStatusBanner(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .background(Carbon.theme.supportWarning)
+                    .background(backgroundColor)
                     .padding(horizontal = Spacing.md, vertical = Spacing.xs),
         ) {
             Icon(
                 imageVector = CarbonIcons.WarningAlt,
                 contentDescription = null,
-                tint = Carbon.theme.textPrimary,
+                tint = Carbon.theme.textOnColor,
                 modifier = Modifier.size(IconSizes.sm),
             )
             Spacer(modifier = Modifier.width(Spacing.xs))
             Text(
-                text =
-                    if (isOffline) {
-                        "No internet connection"
-                    } else {
-                        "Last synced: ${formatTimeSince(lastSyncTime!!)} — may be outdated"
-                    },
+                text = text,
                 style = Carbon.typography.label01,
-                color = Carbon.theme.textPrimary,
+                color = Carbon.theme.textOnColor,
             )
         }
     }

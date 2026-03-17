@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
+import com.po4yka.bitesizereader.util.error.AppError
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -22,8 +23,18 @@ class SyncWorker(
             Result.success()
         } catch (e: kotlinx.coroutines.CancellationException) {
             throw e
+        } catch (e: AppError.SessionExpiredError) {
+            // Auth is broken — retrying won't help until the user re-authenticates.
+            logger.warn { "Sync worker stopped: session expired, user must re-authenticate" }
+            Result.failure()
+        } catch (e: AppError.NetworkError) {
+            logger.warn { "Sync worker: network unavailable, will retry with backoff" }
+            Result.retry()
+        } catch (e: AppError.TimeoutError) {
+            logger.warn { "Sync worker: request timed out, will retry with backoff" }
+            Result.retry()
         } catch (e: Exception) {
-            logger.error(e) { "Sync worker failed, will retry" }
+            logger.error(e) { "Sync worker failed, will retry with backoff" }
             Result.retry()
         }
     }
