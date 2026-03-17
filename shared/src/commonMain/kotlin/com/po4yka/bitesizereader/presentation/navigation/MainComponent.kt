@@ -78,6 +78,7 @@ class DefaultMainComponent(
                         componentContext = componentContext,
                         onSummarySelected = { id -> navigateToSummaryDetail(id) },
                         onSubmitUrl = { navigateToSubmitUrl() },
+                        onCreateDigest = { navigateToCustomDigestCreate() },
                     ),
                 )
             is Config.SummaryDetail ->

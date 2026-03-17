@@ -45,7 +45,9 @@ fun MainScreen(
         activeChild !is MainComponent.Child.SummaryDetail &&
             activeChild !is MainComponent.Child.CollectionView &&
             activeChild !is MainComponent.Child.SubmitURL &&
-            activeChild !is MainComponent.Child.Digest
+            activeChild !is MainComponent.Child.Digest &&
+            activeChild !is MainComponent.Child.CustomDigestCreate &&
+            activeChild !is MainComponent.Child.CustomDigestView
 
     Column(
         modifier =
@@ -83,6 +85,10 @@ fun MainScreen(
                         SubmitURLScreen(component = instance.component)
                     is MainComponent.Child.Digest ->
                         DigestScreen(component = instance.component)
+                    is MainComponent.Child.CustomDigestCreate ->
+                        CustomDigestCreateScreen(component = instance.component)
+                    is MainComponent.Child.CustomDigestView ->
+                        CustomDigestViewScreen(component = instance.component)
                 }
             }
         }
