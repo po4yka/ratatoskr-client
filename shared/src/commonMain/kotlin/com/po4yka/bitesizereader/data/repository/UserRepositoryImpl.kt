@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.data.mappers.toDomain
-import com.po4yka.bitesizereader.data.remote.UserApi
+import com.po4yka.bitesizereader.data.remote.TelegramLinkApi
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLinkCompleteRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.TelegramLoginRequestDto
 import com.po4yka.bitesizereader.domain.model.TelegramLinkData
@@ -13,7 +13,7 @@ import io.ktor.client.plugins.ClientRequestException
 
 @Single(binds = [UserRepository::class])
 class UserRepositoryImpl(
-    private val userApi: UserApi,
+    private val userApi: TelegramLinkApi,
 ) : UserRepository {
     override suspend fun getTelegramLinkStatus(): TelegramLinkStatus {
         try {

@@ -40,8 +40,8 @@ fun ErrorResponseDto.toAppError(): AppError {
         // Auth errors
         ApiErrorCode.isAuthError(code) ->
             when (errorCode) {
-                ApiErrorCode.TOKEN_EXPIRED,
-                ApiErrorCode.SESSION_EXPIRED,
+                ApiErrorCode.AUTH_TOKEN_EXPIRED,
+                ApiErrorCode.AUTH_SESSION_EXPIRED,
                 -> AppError.SessionExpiredError(fallbackMessage = message)
                 else -> AppError.AuthError(fallbackMessage = message)
             }
@@ -54,10 +54,18 @@ fun ErrorResponseDto.toAppError(): AppError {
             )
 
         // Specific error codes
-        errorCode == ApiErrorCode.NOT_FOUND -> AppError.NotFoundError(fallbackMessage = message)
-        errorCode == ApiErrorCode.CONFLICT -> AppError.ConflictError(fallbackMessage = message)
-        errorCode == ApiErrorCode.VALIDATION_ERROR -> AppError.ValidationError(fallbackMessage = message)
-        errorCode == ApiErrorCode.FORBIDDEN ->
+        errorCode == ApiErrorCode.RESOURCE_NOT_FOUND -> AppError.NotFoundError(fallbackMessage = message)
+        errorCode == ApiErrorCode.RESOURCE_ALREADY_EXISTS ||
+            errorCode == ApiErrorCode.RESOURCE_VERSION_CONFLICT ->
+            AppError.ConflictError(fallbackMessage = message)
+        errorCode == ApiErrorCode.VALIDATION_FAILED ||
+            errorCode == ApiErrorCode.VALIDATION_FIELD_REQUIRED ||
+            errorCode == ApiErrorCode.VALIDATION_FIELD_INVALID ||
+            errorCode == ApiErrorCode.VALIDATION_URL_INVALID ->
+            AppError.ValidationError(fallbackMessage = message)
+        errorCode == ApiErrorCode.AUTHZ_USER_NOT_ALLOWED ||
+            errorCode == ApiErrorCode.AUTHZ_OWNER_REQUIRED ||
+            errorCode == ApiErrorCode.AUTHZ_ACCESS_DENIED ->
             AppError.AuthError(
                 messageKey = "error.auth.forbidden",
                 fallbackMessage = message,
@@ -67,9 +75,13 @@ fun ErrorResponseDto.toAppError(): AppError {
         errorCode in
             listOf(
                 ApiErrorCode.INTERNAL_ERROR,
-                ApiErrorCode.DATABASE_ERROR,
-                ApiErrorCode.EXTERNAL_API_ERROR,
-                ApiErrorCode.PROCESSING_ERROR,
+                ApiErrorCode.INTERNAL_DATABASE_ERROR,
+                ApiErrorCode.INTERNAL_CONFIG_ERROR,
+                ApiErrorCode.EXTERNAL_FIRECRAWL_ERROR,
+                ApiErrorCode.EXTERNAL_OPENROUTER_ERROR,
+                ApiErrorCode.EXTERNAL_TELEGRAM_ERROR,
+                ApiErrorCode.EXTERNAL_SERVICE_TIMEOUT,
+                ApiErrorCode.EXTERNAL_SERVICE_UNAVAILABLE,
             )
         ->
             AppError.ServerError(
