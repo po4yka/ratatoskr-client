@@ -117,7 +117,7 @@ fun CustomDigestCreateScreen(
                 SmallLoading()
             }
         } else {
-            val filtered = viewModel.filteredSummaries
+            val filtered = state.filteredSummaries
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(bottom = Spacing.sm),

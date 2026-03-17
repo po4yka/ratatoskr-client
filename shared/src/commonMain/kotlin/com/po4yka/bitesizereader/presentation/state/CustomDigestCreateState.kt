@@ -5,6 +5,7 @@ import com.po4yka.bitesizereader.domain.model.Summary
 
 data class CustomDigestCreateState(
     val summaries: List<Summary> = emptyList(),
+    val filteredSummaries: List<Summary> = emptyList(),
     val selectedIds: Set<String> = emptySet(),
     val title: String = "",
     val format: DigestFormat = DigestFormat.BRIEF,
