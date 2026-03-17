@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,20 +18,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
@@ -38,6 +51,8 @@ import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
 import com.gabrieldrn.carbon.progressbar.ProgressBarState
 import com.gabrieldrn.carbon.textinput.TextInput
 import com.gabrieldrn.carbon.textinput.TextInputState
+import com.po4yka.bitesizereader.domain.model.BatchUrlEntry
+import com.po4yka.bitesizereader.domain.model.BatchUrlStatus
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
 import com.po4yka.bitesizereader.presentation.navigation.SubmitURLComponent
@@ -76,55 +91,99 @@ fun SubmitURLScreen(
                     .padding(horizontal = Spacing.md),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            // URL Input section
+            // Mode toggle
             item {
                 Spacer(modifier = Modifier.height(Spacing.sm))
-                URLInputSection(
-                    url = state.url,
-                    onUrlChanged = viewModel::onUrlChanged,
-                    onSubmit = { viewModel.checkDuplicate() },
-                    isLoading = state.isLoading || state.isCheckingDuplicate,
-                    error = state.error,
+                BatchModeToggle(
+                    isBatchMode = state.isBatchMode,
+                    onToggle = { viewModel.toggleBatchMode() },
                 )
             }
 
-            // Duplicate warning section
-            item {
-                AnimatedVisibility(
-                    visible = state.isDuplicate,
-                    enter = expandVertically(),
-                    exit = shrinkVertically(),
-                ) {
-                    DuplicateWarningSection(
-                        summaryId = state.duplicateSummaryId,
-                        onViewExisting = { summaryId ->
-                            summaryId?.let { component.onViewExistingSummary(it) }
-                        },
-                        onForceSubmit = { viewModel.forceSubmit() },
-                        onDismiss = { viewModel.dismissDuplicate() },
+            if (!state.isBatchMode) {
+                // URL Input section (single mode)
+                item {
+                    URLInputSection(
+                        url = state.url,
+                        onUrlChanged = viewModel::onUrlChanged,
+                        onSubmit = { viewModel.checkDuplicate() },
+                        isLoading = state.isLoading || state.isCheckingDuplicate,
+                        error = state.error,
                     )
                 }
-            }
 
-            // Progress section
-            item {
-                AnimatedVisibility(
-                    visible = state.isLoading,
-                    enter = expandVertically(),
-                    exit = shrinkVertically(),
-                ) {
-                    SubmissionProgressSection(state = state)
+                // Duplicate warning section
+                item {
+                    AnimatedVisibility(
+                        visible = state.isDuplicate,
+                        enter = expandVertically(),
+                        exit = shrinkVertically(),
+                    ) {
+                        DuplicateWarningSection(
+                            summaryId = state.duplicateSummaryId,
+                            onViewExisting = { summaryId ->
+                                summaryId?.let { component.onViewExistingSummary(it) }
+                            },
+                            onForceSubmit = { viewModel.forceSubmit() },
+                            onDismiss = { viewModel.dismissDuplicate() },
+                        )
+                    }
                 }
-            }
 
-            // Completion message
-            item {
-                AnimatedVisibility(
-                    visible = state.status == RequestStatus.COMPLETED,
-                    enter = expandVertically(),
-                    exit = shrinkVertically(),
-                ) {
-                    CompletionSection()
+                // Progress section
+                item {
+                    AnimatedVisibility(
+                        visible = state.isLoading,
+                        enter = expandVertically(),
+                        exit = shrinkVertically(),
+                    ) {
+                        SubmissionProgressSection(state = state)
+                    }
+                }
+
+                // Completion message
+                item {
+                    AnimatedVisibility(
+                        visible = state.status == RequestStatus.COMPLETED,
+                        enter = expandVertically(),
+                        exit = shrinkVertically(),
+                    ) {
+                        CompletionSection()
+                    }
+                }
+            } else {
+                // Batch input section (when not submitting)
+                if (!state.isBatchSubmitting) {
+                    item {
+                        BatchInputSection(
+                            batchInput = state.batchInput,
+                            onBatchInputChanged = viewModel::onBatchInputChanged,
+                            onSubmitBatch = { viewModel.submitBatch() },
+                        )
+                    }
+                }
+
+                // Batch progress section (when submitting)
+                if (state.isBatchSubmitting) {
+                    item {
+                        BatchProgressHeader(
+                            completedCount = state.batchCompletedCount,
+                            totalCount = state.batchEntries.size,
+                            onCancel = { viewModel.cancelBatch() },
+                        )
+                    }
+
+                    itemsIndexed(
+                        items = state.batchEntries,
+                        key = { _, entry -> entry.url },
+                    ) { index, entry ->
+                        BatchUrlEntryRow(
+                            entry = entry,
+                            onRetry = { viewModel.retryBatchEntry(index) },
+                            onSkip = { viewModel.skipBatchEntry(index) },
+                            onSubmitAnyway = { viewModel.submitBatchEntryAnyway(index) },
+                        )
+                    }
                 }
             }
 
@@ -176,6 +235,265 @@ fun SubmitURLScreen(
             item {
                 Spacer(modifier = Modifier.height(Spacing.xl))
             }
+        }
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun BatchModeToggle(
+    isBatchMode: Boolean,
+    onToggle: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
+        ModeChip(
+            label = "Single",
+            isSelected = !isBatchMode,
+            onClick = { if (isBatchMode) onToggle() },
+        )
+        ModeChip(
+            label = "Batch",
+            isSelected = isBatchMode,
+            onClick = { if (!isBatchMode) onToggle() },
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun ModeChip(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    val shape = RoundedCornerShape(Spacing.md)
+    val backgroundColor = if (isSelected) Carbon.theme.backgroundInverse else Carbon.theme.layer01
+    val textColor = if (isSelected) Carbon.theme.textOnColor else Carbon.theme.textSecondary
+    val borderColor = if (isSelected) Carbon.theme.backgroundInverse else Carbon.theme.borderSubtle00
+
+    Box(
+        modifier =
+            Modifier
+                .clip(shape)
+                .background(backgroundColor)
+                .border(1.dp, borderColor, shape)
+                .clickable(onClick = onClick)
+                .padding(horizontal = Spacing.md, vertical = Spacing.xs)
+                .semantics {
+                    role = Role.Tab
+                    selected = isSelected
+                },
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = Carbon.typography.bodyCompact01,
+            color = textColor,
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun BatchInputSection(
+    batchInput: String,
+    onBatchInputChanged: (String) -> Unit,
+    onSubmitBatch: () -> Unit,
+) {
+    val urlCount = batchInput.lines().count { it.trim().isNotBlank() }
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        Text(
+            text = "Paste URLs to summarize, one per line",
+            style = Carbon.typography.body01,
+            color = Carbon.theme.textSecondary,
+        )
+
+        OutlinedTextField(
+            value = batchInput,
+            onValueChange = onBatchInputChanged,
+            modifier = Modifier.fillMaxWidth().height(180.dp),
+            placeholder = {
+                Text(
+                    text = "https://example.com/article\nhttps://example.com/video",
+                    style = Carbon.typography.bodyCompact01,
+                    color = Carbon.theme.textSecondary,
+                )
+            },
+            colors =
+                OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Carbon.theme.borderSubtle00,
+                    unfocusedBorderColor = Carbon.theme.borderSubtle00,
+                    cursorColor = Carbon.theme.textPrimary,
+                    focusedTextColor = Carbon.theme.textPrimary,
+                    unfocusedTextColor = Carbon.theme.textPrimary,
+                    focusedContainerColor = Carbon.theme.layer01,
+                    unfocusedContainerColor = Carbon.theme.layer01,
+                ),
+            textStyle = Carbon.typography.bodyCompact01,
+        )
+
+        Text(
+            text = "$urlCount URL${if (urlCount == 1) "" else "s"} detected",
+            style = Carbon.typography.label01,
+            color = Carbon.theme.textSecondary,
+        )
+
+        Button(
+            label = "Submit All",
+            onClick = onSubmitBatch,
+            isEnabled = urlCount > 0,
+            buttonType = ButtonType.Primary,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun BatchProgressHeader(
+    completedCount: Int,
+    totalCount: Int,
+    onCancel: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "$completedCount of $totalCount completed",
+            style = Carbon.typography.headingCompact01,
+            color = Carbon.theme.textPrimary,
+            modifier = Modifier.weight(1f),
+        )
+        Button(
+            label = "Cancel",
+            onClick = onCancel,
+            buttonType = ButtonType.Ghost,
+        )
+    }
+}
+
+@Suppress("FunctionNaming", "LongMethod")
+@Composable
+private fun BatchUrlEntryRow(
+    entry: BatchUrlEntry,
+    onRetry: () -> Unit,
+    onSkip: () -> Unit,
+    onSubmitAnyway: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
+        // Status indicator
+        when (entry.status) {
+            BatchUrlStatus.PENDING -> {
+                Icon(
+                    imageVector = CarbonIcons.CircleOutline,
+                    contentDescription = "Pending",
+                    tint = Carbon.theme.iconSecondary,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
+            BatchUrlStatus.CHECKING -> {
+                SmallLoading()
+            }
+            BatchUrlStatus.SUBMITTING -> {
+                Text(
+                    text = "${(entry.progress * 100).toInt()}%",
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.linkPrimary,
+                    modifier = Modifier.width(Spacing.xl),
+                )
+            }
+            BatchUrlStatus.COMPLETED -> {
+                Icon(
+                    imageVector = CarbonIcons.CheckmarkFilled,
+                    contentDescription = "Completed",
+                    tint = Carbon.theme.supportSuccess,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
+            BatchUrlStatus.FAILED -> {
+                Icon(
+                    imageVector = CarbonIcons.Close,
+                    contentDescription = "Failed",
+                    tint = Carbon.theme.supportError,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
+            BatchUrlStatus.SKIPPED -> {
+                Icon(
+                    imageVector = CarbonIcons.Close,
+                    contentDescription = "Skipped",
+                    tint = Carbon.theme.iconSecondary,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
+        }
+
+        // URL text
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = entry.url,
+                style = Carbon.typography.bodyCompact01,
+                color = Carbon.theme.textPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            val entryError = entry.error
+            if (entry.status == BatchUrlStatus.FAILED && entryError != null) {
+                Text(
+                    text = entryError,
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.supportError,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            if (entry.isDuplicate && entry.status == BatchUrlStatus.SKIPPED) {
+                Text(
+                    text = "Duplicate — skipped",
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.textSecondary,
+                )
+            }
+        }
+
+        // Action buttons
+        when (entry.status) {
+            BatchUrlStatus.FAILED -> {
+                Button(
+                    label = "Retry",
+                    onClick = onRetry,
+                    buttonType = ButtonType.Ghost,
+                )
+            }
+            BatchUrlStatus.SKIPPED -> {
+                if (entry.isDuplicate) {
+                    Button(
+                        label = "Submit Anyway",
+                        onClick = onSubmitAnyway,
+                        buttonType = ButtonType.Ghost,
+                    )
+                }
+            }
+            else -> {}
         }
     }
 }

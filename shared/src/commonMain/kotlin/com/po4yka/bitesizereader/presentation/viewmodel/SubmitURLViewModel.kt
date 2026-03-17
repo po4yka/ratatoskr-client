@@ -1,6 +1,8 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.ProcessingService
+import com.po4yka.bitesizereader.domain.model.BatchUrlEntry
+import com.po4yka.bitesizereader.domain.model.BatchUrlStatus
 import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 
@@ -119,6 +122,193 @@ class SubmitURLViewModel(
                 isDuplicate = false,
                 duplicateSummaryId = null,
             )
+    }
+
+    fun toggleBatchMode() {
+        _state.update {
+            it.copy(
+                isBatchMode = !it.isBatchMode,
+                batchInput = "",
+                batchEntries = emptyList(),
+                batchCompletedCount = 0,
+                isBatchSubmitting = false,
+            )
+        }
+    }
+
+    @Suppress("unused") // Public API for UI layer
+    fun onBatchInputChanged(text: String) {
+        _state.update { it.copy(batchInput = text) }
+    }
+
+    private fun parseBatchUrls(): List<String> =
+        _state.value.batchInput
+            .lines()
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .filter { it.startsWith("http://") || it.startsWith("https://") }
+
+    @Suppress("unused") // Public API for UI layer
+    fun submitBatch() {
+        val urls = parseBatchUrls()
+        if (urls.isEmpty()) return
+        if (_state.value.isBatchSubmitting) return
+
+        val entries = urls.map { BatchUrlEntry(url = it, status = BatchUrlStatus.PENDING) }
+        _state.update { it.copy(batchEntries = entries, batchCompletedCount = 0, isBatchSubmitting = true) }
+
+        viewModelScope.launch {
+            urls.forEachIndexed { index, url ->
+                if (_state.value.batchEntries.getOrNull(index)?.status == BatchUrlStatus.SKIPPED) {
+                    return@forEachIndexed
+                }
+
+                // Duplicate check
+                updateEntryStatus(index, BatchUrlStatus.CHECKING)
+                val duplicateSummaryId = checkForDuplicate(url)
+                if (duplicateSummaryId != null) {
+                    updateEntry(index) {
+                        it.copy(
+                            isDuplicate = true,
+                            duplicateSummaryId = duplicateSummaryId,
+                            status = BatchUrlStatus.SKIPPED,
+                        )
+                    }
+                    return@forEachIndexed
+                }
+
+                // Submit
+                updateEntryStatus(index, BatchUrlStatus.SUBMITTING)
+                try {
+                    processingService.submitUrl(url).collect { update ->
+                        updateEntry(index) { entry ->
+                            entry.copy(progress = update.progress, stage = update.stage)
+                        }
+                        if (update.stage == ProcessingStage.DONE) {
+                            updateEntryStatus(index, BatchUrlStatus.COMPLETED)
+                            _state.update { it.copy(batchCompletedCount = it.batchCompletedCount + 1) }
+                            return@collect
+                        }
+                        if (update.status == RequestStatus.FAILED) {
+                            updateEntry(index) { entry ->
+                                entry.copy(status = BatchUrlStatus.FAILED, error = update.error ?: "Failed")
+                            }
+                            return@collect
+                        }
+                    }
+                } catch (e: Exception) {
+                    updateEntry(index) { it.copy(status = BatchUrlStatus.FAILED, error = e.message ?: "Failed") }
+                }
+            }
+            _state.update { it.copy(isBatchSubmitting = false) }
+        }
+    }
+
+    private suspend fun checkForDuplicate(url: String): String? =
+        try {
+            val result = checkDuplicateUrlUseCase(url)
+            if (result.isDuplicate) result.existingSummaryId else null
+        } catch (e: Exception) {
+            logger.warn(e) { "Failed to check duplicate for $url, proceeding with submit" }
+            null
+        }
+
+    private fun updateEntryStatus(
+        index: Int,
+        status: BatchUrlStatus,
+    ) {
+        _state.update { state ->
+            val entries = state.batchEntries.toMutableList()
+            entries.getOrNull(index)?.let { entries[index] = it.copy(status = status) }
+            state.copy(batchEntries = entries)
+        }
+    }
+
+    private fun updateEntry(
+        index: Int,
+        transform: (BatchUrlEntry) -> BatchUrlEntry,
+    ) {
+        _state.update { state ->
+            val entries = state.batchEntries.toMutableList()
+            entries.getOrNull(index)?.let { entries[index] = transform(it) }
+            state.copy(batchEntries = entries)
+        }
+    }
+
+    @Suppress("unused") // Public API for UI layer
+    fun skipBatchEntry(index: Int) {
+        updateEntryStatus(index, BatchUrlStatus.SKIPPED)
+    }
+
+    @Suppress("unused") // Public API for UI layer
+    fun retryBatchEntry(index: Int) {
+        val entry = _state.value.batchEntries.getOrNull(index) ?: return
+        viewModelScope.launch {
+            updateEntryStatus(index, BatchUrlStatus.SUBMITTING)
+            try {
+                processingService.submitUrl(entry.url).collect { update ->
+                    updateEntry(index) { e -> e.copy(progress = update.progress, stage = update.stage) }
+                    if (update.stage == ProcessingStage.DONE) {
+                        updateEntryStatus(index, BatchUrlStatus.COMPLETED)
+                        _state.update { it.copy(batchCompletedCount = it.batchCompletedCount + 1) }
+                        return@collect
+                    }
+                    if (update.status == RequestStatus.FAILED) {
+                        updateEntry(
+                            index,
+                        ) { e -> e.copy(status = BatchUrlStatus.FAILED, error = update.error ?: "Failed") }
+                        return@collect
+                    }
+                }
+            } catch (e: Exception) {
+                updateEntry(index) { it.copy(status = BatchUrlStatus.FAILED, error = e.message ?: "Failed") }
+            }
+        }
+    }
+
+    @Suppress("unused") // Public API for UI layer
+    fun cancelBatch() {
+        _state.update { state ->
+            val entries =
+                state.batchEntries.map { entry ->
+                    if (entry.status == BatchUrlStatus.PENDING ||
+                        entry.status == BatchUrlStatus.CHECKING ||
+                        entry.status == BatchUrlStatus.SUBMITTING
+                    ) {
+                        entry.copy(status = BatchUrlStatus.SKIPPED)
+                    } else {
+                        entry
+                    }
+                }
+            state.copy(isBatchSubmitting = false, batchEntries = entries)
+        }
+    }
+
+    @Suppress("unused") // Public API for UI layer
+    fun submitBatchEntryAnyway(index: Int) {
+        val entry = _state.value.batchEntries.getOrNull(index) ?: return
+        viewModelScope.launch {
+            updateEntry(index) { it.copy(isDuplicate = false, duplicateSummaryId = null) }
+            updateEntryStatus(index, BatchUrlStatus.SUBMITTING)
+            try {
+                processingService.submitUrl(entry.url).collect { update ->
+                    updateEntry(index) { e -> e.copy(progress = update.progress, stage = update.stage) }
+                    if (update.stage == ProcessingStage.DONE) {
+                        updateEntryStatus(index, BatchUrlStatus.COMPLETED)
+                        _state.update { it.copy(batchCompletedCount = it.batchCompletedCount + 1) }
+                        return@collect
+                    }
+                    if (update.status == RequestStatus.FAILED) {
+                        updateEntry(
+                            index,
+                        ) { e -> e.copy(status = BatchUrlStatus.FAILED, error = update.error ?: "Failed") }
+                        return@collect
+                    }
+                }
+            } catch (e: Exception) {
+                updateEntry(index) { it.copy(status = BatchUrlStatus.FAILED, error = e.message ?: "Failed") }
+            }
+        }
     }
 
     @Suppress("unused") // Public API for UI layer
