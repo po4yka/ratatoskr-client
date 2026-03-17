@@ -110,16 +110,16 @@ fun SummaryDetailScreen(
             onAddToCollectionClick = { viewModel.showAddToCollection() },
             onReadingSettingsClick = { viewModel.toggleReadingSettings() },
             onHighlightModeClick = { viewModel.toggleHighlightMode() },
-            isHighlightModeActive = state.isHighlightModeActive,
+            isHighlightModeActive = state.highlights.isHighlightModeActive,
             onThumbsUpClick = { viewModel.rateSummary(FeedbackRating.UP) },
             onThumbsDownClick = { viewModel.rateSummary(FeedbackRating.DOWN) },
-            feedbackRating = state.feedback?.rating,
+            feedbackRating = state.feedback.feedback?.rating,
             onResummarizeClick = { viewModel.openResummarizeConfirmDialog() },
-            isResummarizing = state.isResummarizing,
+            isResummarizing = state.feedback.isResummarizing,
         )
 
         // Re-summarize progress indicator
-        if (state.isResummarizing) {
+        if (state.feedback.isResummarizing) {
             Column(
                 modifier =
                     Modifier
@@ -127,17 +127,17 @@ fun SummaryDetailScreen(
                         .padding(horizontal = Spacing.md, vertical = Spacing.xs),
             ) {
                 LinearProgressIndicator(
-                    progress = { state.resummarizeProgress },
+                    progress = { state.feedback.resummarizeProgress },
                     modifier = Modifier.fillMaxWidth(),
                     color = Carbon.theme.interactive,
                     trackColor = Carbon.theme.layer02,
                 )
                 Text(
                     text =
-                        if (state.resummarizeStage == ProcessingStage.UNSPECIFIED) {
+                        if (state.feedback.resummarizeStage == ProcessingStage.UNSPECIFIED) {
                             "Re-summarizing..."
                         } else {
-                            state.resummarizeStage.name.replace('_', ' ').lowercase()
+                            state.feedback.resummarizeStage.name.replace('_', ' ').lowercase()
                                 .replaceFirstChar { it.uppercase() }
                         },
                     style = Carbon.typography.label01,
@@ -148,7 +148,7 @@ fun SummaryDetailScreen(
         }
 
         // Re-summarize error
-        state.resummarizeError?.let { errorMessage ->
+        state.feedback.resummarizeError?.let { errorMessage ->
             Text(
                 text = errorMessage,
                 style = Carbon.typography.label01,
@@ -196,9 +196,9 @@ fun SummaryDetailScreen(
                     readingPreferences = state.readingPreferences,
                     initialScrollPosition = state.lastReadPosition,
                     initialScrollOffset = state.lastReadOffset,
-                    highlights = state.highlights,
-                    highlightedNodeOffsets = state.highlightedNodeOffsets,
-                    isHighlightModeActive = state.isHighlightModeActive,
+                    highlights = state.highlights.highlights,
+                    highlightedNodeOffsets = state.highlights.highlightedNodeOffsets,
+                    isHighlightModeActive = state.highlights.isHighlightModeActive,
                     onToggleHighlight = { nodeOffset, text ->
                         viewModel.toggleHighlight(nodeOffset, text)
                     },
@@ -215,21 +215,21 @@ fun SummaryDetailScreen(
     }
 
     // Add to Collection Dialog
-    if (state.showAddToCollectionDialog) {
+    if (state.collection.showDialog) {
         AddToCollectionDialog(
-            collections = state.collections,
-            isLoading = state.isLoadingCollections,
-            isAdding = state.isAddingToCollection,
-            error = state.addToCollectionError,
+            collections = state.collection.collections,
+            isLoading = state.collection.isLoading,
+            isAdding = state.collection.isAdding,
+            error = state.collection.error,
             onCollectionSelected = { id -> viewModel.addToCollection(id) },
             onDismiss = { viewModel.dismissAddToCollection() },
         )
     }
 
     // Annotation Dialog
-    if (state.editingAnnotationHighlightId != null) {
+    if (state.highlights.editingAnnotationHighlightId != null) {
         AnnotationDialog(
-            draft = state.annotationDraft,
+            draft = state.highlights.annotationDraft,
             onDraftChange = { viewModel.updateAnnotationDraft(it) },
             onSave = { viewModel.saveAnnotation() },
             onCancel = { viewModel.closeAnnotationEditor() },
@@ -237,10 +237,10 @@ fun SummaryDetailScreen(
     }
 
     // Feedback Dialog
-    if (state.showFeedbackDialog) {
+    if (state.feedback.showFeedbackDialog) {
         FeedbackDialog(
             rating = FeedbackRating.DOWN,  // explicit, will be easy to update later
-            isSubmitting = state.isSubmittingFeedback,
+            isSubmitting = state.feedback.isSubmittingFeedback,
             onSubmit = { rating, issues, comment ->
                 viewModel.submitDetailedFeedback(rating, issues, comment)
             },
@@ -249,7 +249,7 @@ fun SummaryDetailScreen(
     }
 
     // Re-summarize Confirm Dialog
-    if (state.showResummarizeConfirmDialog) {
+    if (state.feedback.showResummarizeConfirmDialog) {
         ResummarizeConfirmDialog(
             onConfirm = { viewModel.resummarize() },
             onDismiss = { viewModel.dismissResummarizeConfirmDialog() },
