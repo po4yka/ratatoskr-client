@@ -431,10 +431,6 @@ class SummaryDetailViewModel(
         }
     }
 
-    fun openFeedbackDialog() {
-        _state.update { it.copy(showFeedbackDialog = true) }
-    }
-
     fun dismissFeedbackDialog() {
         _state.update { it.copy(showFeedbackDialog = false) }
     }

@@ -13,8 +13,10 @@ import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.model.SummaryFeedback
 import com.po4yka.bitesizereader.domain.repository.SummaryRepository
+import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
 import com.po4yka.bitesizereader.util.MarkdownSanitizer
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.serialization.json.Json
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -319,19 +321,14 @@ class SummaryRepositoryImpl(
         rating: FeedbackRating,
         issues: List<FeedbackIssue>,
         comment: String?,
-    ): String {
-        val issuesStr = issues.joinToString(",") { it.name }
-        val commentJson =
-            if (comment != null) {
-                "\"comment\":\"${comment.replace(
-                    "\"",
-                    "\\\"",
-                )}\""
-            } else {
-                "\"comment\":null"
-            }
-        return "{\"rating\":\"${rating.name}\",\"issues\":\"$issuesStr\",$commentJson}"
-    }
+    ): String =
+        Json.encodeToString(
+            SubmitFeedbackRequestDto(
+                rating = rating.name,
+                issues = issues.map { it.name },
+                comment = comment,
+            ),
+        )
 
     override fun getFeedback(summaryId: String): Flow<SummaryFeedback?> {
         return database.databaseQueries.getFeedbackForSummary(summaryId)
