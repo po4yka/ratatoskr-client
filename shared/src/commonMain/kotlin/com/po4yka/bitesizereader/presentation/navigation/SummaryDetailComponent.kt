@@ -23,6 +23,12 @@ interface SummaryDetailComponent {
     )
 
     fun dismissFeedbackDialog()
+
+    fun openResummarizeConfirmDialog()
+
+    fun dismissResummarizeConfirmDialog()
+
+    fun resummarize()
 }
 
 class DefaultSummaryDetailComponent(
@@ -53,5 +59,17 @@ class DefaultSummaryDetailComponent(
 
     override fun dismissFeedbackDialog() {
         viewModel.dismissFeedbackDialog()
+    }
+
+    override fun openResummarizeConfirmDialog() {
+        viewModel.openResummarizeConfirmDialog()
+    }
+
+    override fun dismissResummarizeConfirmDialog() {
+        viewModel.dismissResummarizeConfirmDialog()
+    }
+
+    override fun resummarize() {
+        viewModel.resummarize()
     }
 }
