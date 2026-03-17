@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SuccessResponse
 import com.po4yka.bitesizereader.data.remote.dto.SummaryContentDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryDetailDataDto
@@ -87,4 +88,14 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
                 parameter("url", url)
             }.body()
         }
+
+    override suspend fun submitFeedback(
+        id: Long,
+        request: SubmitFeedbackRequestDto,
+    ): ApiResponseDto<SuccessResponse> {
+        return client.post("v1/summaries/$id/feedback") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }.body()
+    }
 }

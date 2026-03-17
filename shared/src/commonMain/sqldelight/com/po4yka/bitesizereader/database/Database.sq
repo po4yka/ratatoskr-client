@@ -393,3 +393,29 @@ DELETE FROM recommendationEntity WHERE fetchedAt < ?;
 
 deleteRecommendation:
 DELETE FROM recommendationEntity WHERE id = ?;
+
+-- Summary Feedback Table
+CREATE TABLE summaryFeedbackEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    summaryId TEXT NOT NULL UNIQUE,
+    rating TEXT NOT NULL,
+    issues TEXT,
+    comment TEXT,
+    createdAt INTEGER AS kotlin.time.Instant NOT NULL,
+    syncStatus TEXT NOT NULL DEFAULT 'pending',
+    FOREIGN KEY (summaryId) REFERENCES summaryEntity(id) ON DELETE CASCADE
+);
+CREATE INDEX summaryFeedback_summaryId ON summaryFeedbackEntity(summaryId);
+
+getFeedbackForSummary:
+SELECT * FROM summaryFeedbackEntity WHERE summaryId = :summaryId;
+
+insertOrReplaceFeedback:
+INSERT OR REPLACE INTO summaryFeedbackEntity(summaryId, rating, issues, comment, createdAt, syncStatus)
+VALUES (:summaryId, :rating, :issues, :comment, :createdAt, :syncStatus);
+
+deleteFeedback:
+DELETE FROM summaryFeedbackEntity WHERE summaryId = :summaryId;
+
+updateFeedbackSyncStatus:
+UPDATE summaryFeedbackEntity SET syncStatus = :syncStatus WHERE summaryId = :summaryId;

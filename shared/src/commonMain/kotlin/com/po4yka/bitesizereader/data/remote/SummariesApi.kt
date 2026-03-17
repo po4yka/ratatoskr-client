@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
+import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryContentDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryDetailDataDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryListDataDto
@@ -59,4 +60,10 @@ interface SummariesApi {
 
     /** Look up a summary by original article URL. */
     suspend fun getSummaryByUrl(url: String): ApiResponseDto<SummaryDetailDataDto>
+
+    /** Submit quality feedback for a summary. */
+    suspend fun submitFeedback(
+        id: Long,
+        request: SubmitFeedbackRequestDto,
+    ): ApiResponseDto<SuccessResponse>
 }

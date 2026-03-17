@@ -1550,6 +1550,74 @@ object CarbonIcons {
         }.build()
     }
 
+    val ThumbsUp: ImageVector by lazy {
+        // Carbon "ThumbsUp" icon (32x32) - simplified clean path
+        ImageVector.Builder(
+            name = "ThumbsUp",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Handle/wrist block
+                moveTo(4f, 14f)
+                horizontalLineTo(8f)
+                verticalLineTo(28f)
+                horizontalLineTo(4f)
+                close()
+                // Thumb body
+                moveTo(28f, 14f)
+                horizontalLineTo(18f)
+                verticalLineTo(8f)
+                curveTo(18f, 6.346f, 16.654f, 5f, 15f, 5f)
+                lineTo(9f, 14f)
+                verticalLineTo(28f)
+                horizontalLineTo(24f)
+                curveTo(25.1f, 28f, 26.05f, 27.27f, 26.32f, 26.2f)
+                lineTo(28f, 19f)
+                curveTo(28.17f, 18.3f, 28.01f, 17.56f, 27.56f, 16.98f)
+                curveTo(27.11f, 16.4f, 26.42f, 16.05f, 27f, 16f)
+                horizontalLineTo(28f)
+                close()
+            }
+        }.build()
+    }
+
+    val ThumbsDown: ImageVector by lazy {
+        // Carbon "ThumbsDown" icon (32x32) - simplified clean path (mirrored ThumbsUp)
+        ImageVector.Builder(
+            name = "ThumbsDown",
+            defaultWidth = ICON_SIZE,
+            defaultHeight = ICON_SIZE,
+            viewportWidth = VIEWPORT_SIZE,
+            viewportHeight = VIEWPORT_SIZE,
+        ).apply {
+            path(fill = SolidColor(Color.Black)) {
+                // Handle/wrist block
+                moveTo(28f, 4f)
+                horizontalLineTo(24f)
+                verticalLineTo(18f)
+                horizontalLineTo(28f)
+                close()
+                // Thumb body
+                moveTo(4f, 18f)
+                horizontalLineTo(14f)
+                verticalLineTo(24f)
+                curveTo(14f, 25.654f, 15.346f, 27f, 17f, 27f)
+                lineTo(23f, 18f)
+                verticalLineTo(4f)
+                horizontalLineTo(8f)
+                curveTo(6.9f, 4f, 5.95f, 4.73f, 5.68f, 5.8f)
+                lineTo(4f, 13f)
+                curveTo(3.83f, 13.7f, 3.99f, 14.44f, 4.44f, 15.02f)
+                curveTo(4.89f, 15.6f, 5.58f, 15.95f, 5f, 16f)
+                horizontalLineTo(4f)
+                close()
+            }
+        }.build()
+    }
+
     val Archive: ImageVector by lazy {
         ImageVector.Builder(
             name = "Archive",

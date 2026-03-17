@@ -2,6 +2,8 @@ package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.model.AudioPlaybackState
 import com.po4yka.bitesizereader.domain.model.AudioStatus
+import com.po4yka.bitesizereader.domain.model.FeedbackIssue
+import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.domain.repository.CollectionRepository
 import com.po4yka.bitesizereader.domain.repository.ReadingPreferencesRepository
 import com.po4yka.bitesizereader.domain.usecase.AddToCollectionUseCase
@@ -12,10 +14,12 @@ import com.po4yka.bitesizereader.domain.usecase.GetAudioUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetHighlightsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryByIdUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetSummaryContentUseCase
+import com.po4yka.bitesizereader.domain.usecase.GetSummaryFeedbackUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.RefreshFullContentUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveReadPositionUseCase
 import com.po4yka.bitesizereader.domain.usecase.StartReadingSessionUseCase
+import com.po4yka.bitesizereader.domain.usecase.SubmitSummaryFeedbackUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleHighlightUseCase
 import com.po4yka.bitesizereader.domain.usecase.UpdateAnnotationUseCase
@@ -58,6 +62,8 @@ class SummaryDetailViewModel(
     private val getHighlightsUseCase: GetHighlightsUseCase,
     private val toggleHighlightUseCase: ToggleHighlightUseCase,
     private val updateAnnotationUseCase: UpdateAnnotationUseCase,
+    private val submitSummaryFeedbackUseCase: SubmitSummaryFeedbackUseCase,
+    private val getSummaryFeedbackUseCase: GetSummaryFeedbackUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SummaryDetailState())
     val state = _state.asStateFlow()
@@ -122,6 +128,9 @@ class SummaryDetailViewModel(
                             }
                         }
                     }
+                    getSummaryFeedbackUseCase(id)
+                        .onEach { feedback -> _state.update { it.copy(feedback = feedback) } }
+                        .launchIn(viewModelScope)
                 }
             } catch (e: Exception) {
                 _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
@@ -405,6 +414,48 @@ class SummaryDetailViewModel(
 
     fun closeAnnotationEditor() {
         _state.update { it.copy(editingAnnotationHighlightId = null, annotationDraft = "") }
+    }
+
+    fun rateSummary(rating: FeedbackRating) {
+        val summaryId = _state.value.summary?.id ?: return
+        if (rating == FeedbackRating.UP) {
+            viewModelScope.launch {
+                try {
+                    submitSummaryFeedbackUseCase(summaryId, rating, emptyList(), null)
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                    logger.warn(e) { "Failed to submit thumbs up feedback for $summaryId" }
+                }
+            }
+        } else {
+            _state.update { it.copy(showFeedbackDialog = true) }
+        }
+    }
+
+    fun openFeedbackDialog() {
+        _state.update { it.copy(showFeedbackDialog = true) }
+    }
+
+    fun dismissFeedbackDialog() {
+        _state.update { it.copy(showFeedbackDialog = false) }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    fun submitDetailedFeedback(
+        rating: FeedbackRating,
+        issues: List<FeedbackIssue>,
+        comment: String?,
+    ) {
+        val summaryId = _state.value.summary?.id ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(isSubmittingFeedback = true) }
+            try {
+                submitSummaryFeedbackUseCase(summaryId, rating, issues, comment)
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to submit detailed feedback for $summaryId" }
+            } finally {
+                _state.update { it.copy(isSubmittingFeedback = false, showFeedbackDialog = false) }
+            }
+        }
     }
 
     override fun onDestroy() {
