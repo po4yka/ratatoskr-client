@@ -108,8 +108,11 @@ data class HighlightDto(
  */
 @Serializable
 enum class SyncApplyAction {
-    @SerialName("update") UPDATE,
-    @SerialName("delete") DELETE,
+    @SerialName("update")
+    UPDATE,
+
+    @SerialName("delete")
+    DELETE,
     ;
 
     companion object {
