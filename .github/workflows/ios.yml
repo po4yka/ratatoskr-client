@@ -27,8 +27,8 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build KMP Framework
-      run: ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+    - name: Generate dummy framework for CocoaPods
+      run: ./gradlew :composeApp:generateDummyFramework
 
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
@@ -39,6 +39,9 @@ jobs:
       run: |
         cd iosApp
         pod install
+
+    - name: Build KMP Framework
+      run: ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
 
     - name: Build iOS App
       run: |
