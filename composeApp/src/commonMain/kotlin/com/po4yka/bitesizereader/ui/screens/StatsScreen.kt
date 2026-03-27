@@ -89,8 +89,9 @@ fun StatsScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(PROGRESS_INDICATOR_SIZE.dp)
-                            .semantics { contentDescription = loadingDesc },
+                        modifier =
+                            Modifier.size(PROGRESS_INDICATOR_SIZE.dp)
+                                .semantics { contentDescription = loadingDesc },
                         color = Carbon.theme.iconPrimary,
                     )
                 }
@@ -300,13 +301,14 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
         } else {
             stringResource(Res.string.a11y_goal_in_progress)
         }
-    val goalDesc = stringResource(
-        Res.string.a11y_goal_progress,
-        goalProgress.goalType.replaceFirstChar { it.uppercase() },
-        goalProgress.currentCount,
-        goalProgress.targetCount,
-        statusText,
-    )
+    val goalDesc =
+        stringResource(
+            Res.string.a11y_goal_progress,
+            goalProgress.goalType.replaceFirstChar { it.uppercase() },
+            goalProgress.currentCount,
+            goalProgress.targetCount,
+            statusText,
+        )
     Column(
         modifier =
             Modifier
