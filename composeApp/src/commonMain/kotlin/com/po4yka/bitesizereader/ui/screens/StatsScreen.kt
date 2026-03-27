@@ -409,17 +409,19 @@ private fun SummarySection(stats: UserStats) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
-                if (stats.totalReadingTimeMin != null) {
+                val totalTime = stats.totalReadingTimeMin
+                if (totalTime != null) {
                     StatCard(
                         label = stringResource(Res.string.stats_total_reading_time),
-                        value = formatReadingTime(stats.totalReadingTimeMin),
+                        value = formatReadingTime(totalTime),
                         modifier = Modifier.weight(SUMMARY_CARD_WEIGHT),
                     )
                 }
-                if (stats.averageReadingTimeMin != null) {
+                val avgTime = stats.averageReadingTimeMin
+                if (avgTime != null) {
                     StatCard(
                         label = stringResource(Res.string.stats_avg_per_summary),
-                        value = formatAverageTime(stats.averageReadingTimeMin),
+                        value = formatAverageTime(avgTime),
                         modifier = Modifier.weight(SUMMARY_CARD_WEIGHT),
                     )
                 }

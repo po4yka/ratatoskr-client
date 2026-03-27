@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.data.repository
 
+import kotlin.concurrent.Volatile
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.po4yka.bitesizereader.data.mappers.toDto
