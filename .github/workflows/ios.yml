@@ -28,7 +28,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build KMP Framework
-      run: ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+      run: ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
 
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
