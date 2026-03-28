@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +24,12 @@ import com.po4yka.bitesizereader.domain.model.Collection
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.add_to_collection_adding
+import bitesizereader.composeapp.generated.resources.add_to_collection_empty
+import bitesizereader.composeapp.generated.resources.add_to_collection_title
+import bitesizereader.composeapp.generated.resources.collections_cancel
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming")
 @Composable
@@ -36,81 +41,72 @@ fun AddToCollectionDialog(
     onCollectionSelected: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
+    CarbonDialog(
         onDismissRequest = { if (!isAdding) onDismiss() },
-        containerColor = Carbon.theme.layer01,
-        title = {
-            Text(
-                text = "Add to Collection",
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.textPrimary,
-            )
-        },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                if (isLoading) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        SmallLoading()
-                    }
-                } else if (collections.isEmpty()) {
-                    Text(
-                        text = "No collections available",
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textSecondary,
-                    )
-                } else {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
-                    ) {
-                        items(
-                            items = collections,
-                            key = { it.id },
-                        ) { collection ->
-                            CollectionSelectionRow(
-                                collection = collection,
-                                isEnabled = !isAdding,
-                                onClick = { onCollectionSelected(collection.id) },
-                            )
-                        }
-                    }
-                }
-
-                if (isAdding) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-                    ) {
-                        SmallLoading()
-                        Text(
-                            text = "Adding...",
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textSecondary,
-                        )
-                    }
-                }
-
-                error?.let {
-                    Text(
-                        text = it,
-                        style = Carbon.typography.label01,
-                        color = Carbon.theme.supportError,
-                    )
-                }
-            }
-        },
-        confirmButton = {},
+        title = stringResource(Res.string.add_to_collection_title),
         dismissButton = {
             Button(
-                label = "Cancel",
+                label = stringResource(Res.string.collections_cancel),
                 onClick = onDismiss,
                 isEnabled = !isAdding,
                 buttonType = ButtonType.Ghost,
             )
         },
-    )
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    SmallLoading()
+                }
+            } else if (collections.isEmpty()) {
+                Text(
+                    text = stringResource(Res.string.add_to_collection_empty),
+                    style = Carbon.typography.bodyCompact01,
+                    color = Carbon.theme.textSecondary,
+                )
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                ) {
+                    items(
+                        items = collections,
+                        key = { it.id },
+                    ) { collection ->
+                        CollectionSelectionRow(
+                            collection = collection,
+                            isEnabled = !isAdding,
+                            onClick = { onCollectionSelected(collection.id) },
+                        )
+                    }
+                }
+            }
+
+            if (isAdding) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                ) {
+                    SmallLoading()
+                    Text(
+                        text = stringResource(Res.string.add_to_collection_adding),
+                        style = Carbon.typography.bodyCompact01,
+                        color = Carbon.theme.textSecondary,
+                    )
+                }
+            }
+
+            error?.let {
+                Text(
+                    text = it,
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.supportError,
+                )
+            }
+        }
+    }
 }
 
 @Suppress("FunctionNaming")

@@ -1,69 +1,15 @@
 package com.po4yka.bitesizereader.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.gabrieldrn.carbon.CarbonDesignSystem
+import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.foundation.color.Gray100Theme
 import com.gabrieldrn.carbon.foundation.color.WhiteTheme
-
-private val LightColorScheme =
-    lightColorScheme(
-        primary = Primary,
-        onPrimary = OnPrimary,
-        primaryContainer = PrimaryContainer,
-        onPrimaryContainer = OnPrimaryContainer,
-        secondary = Secondary,
-        onSecondary = OnSecondary,
-        secondaryContainer = SecondaryContainer,
-        onSecondaryContainer = OnSecondaryContainer,
-        tertiary = Tertiary,
-        onTertiary = OnTertiary,
-        tertiaryContainer = TertiaryContainer,
-        onTertiaryContainer = OnTertiaryContainer,
-        error = Error,
-        onError = OnError,
-        errorContainer = ErrorContainer,
-        onErrorContainer = OnErrorContainer,
-        background = Background,
-        onBackground = OnBackground,
-        surface = Surface,
-        onSurface = OnSurface,
-        surfaceVariant = SurfaceVariant,
-        onSurfaceVariant = OnSurfaceVariant,
-        outline = Outline,
-        outlineVariant = OutlineVariant,
-    )
-
-private val DarkColorScheme =
-    darkColorScheme(
-        primary = DarkPrimary,
-        onPrimary = DarkOnPrimary,
-        primaryContainer = DarkPrimaryContainer,
-        onPrimaryContainer = DarkOnPrimaryContainer,
-        secondary = DarkSecondary,
-        onSecondary = DarkOnSecondary,
-        secondaryContainer = DarkSecondaryContainer,
-        onSecondaryContainer = DarkOnSecondaryContainer,
-        tertiary = DarkTertiary,
-        onTertiary = DarkOnTertiary,
-        tertiaryContainer = DarkTertiaryContainer,
-        onTertiaryContainer = DarkOnTertiaryContainer,
-        error = DarkError,
-        onError = DarkOnError,
-        errorContainer = DarkErrorContainer,
-        onErrorContainer = DarkOnErrorContainer,
-        background = DarkBackground,
-        onBackground = DarkOnBackground,
-        surface = DarkSurface,
-        onSurface = DarkOnSurface,
-        surfaceVariant = DarkSurfaceVariant,
-        onSurfaceVariant = DarkOnSurfaceVariant,
-        outline = DarkOutline,
-        outlineVariant = DarkOutlineVariant,
-    )
 
 /**
  * Bite-Size Reader theme combining Carbon Design System with Material 3.
@@ -76,16 +22,103 @@ fun BiteSizeReaderTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     val carbonTheme = if (darkTheme) Gray100Theme else WhiteTheme
 
     CarbonDesignSystem(
         theme = carbonTheme,
     ) {
+        val materialColorScheme =
+            rememberCarbonMaterialColorScheme()
+        val materialTypography =
+            rememberCarbonMaterialTypography()
+
         MaterialTheme(
-            colorScheme = colorScheme,
-            typography = AppTypography,
+            colorScheme = materialColorScheme,
+            typography = materialTypography,
             content = content,
+        )
+    }
+}
+
+@Composable
+private fun rememberCarbonMaterialColorScheme(): ColorScheme {
+    val theme = Carbon.theme
+
+    return remember(
+        theme.background,
+        theme.backgroundInverse,
+        theme.borderSubtle00,
+        theme.iconSecondary,
+        theme.interactive,
+        theme.layer01,
+        theme.layer02,
+        theme.linkPrimary,
+        theme.supportError,
+        theme.textOnColor,
+        theme.textPrimary,
+        theme.textSecondary,
+    ) {
+        androidx.compose.material3.lightColorScheme(
+            primary = theme.interactive,
+            onPrimary = theme.textOnColor,
+            primaryContainer = theme.layer02,
+            onPrimaryContainer = theme.textPrimary,
+            secondary = theme.iconSecondary,
+            onSecondary = theme.textOnColor,
+            secondaryContainer = theme.layer02,
+            onSecondaryContainer = theme.textPrimary,
+            tertiary = theme.linkPrimary,
+            onTertiary = theme.textOnColor,
+            tertiaryContainer = theme.layer02,
+            onTertiaryContainer = theme.textPrimary,
+            error = theme.supportError,
+            onError = theme.textOnColor,
+            errorContainer = theme.supportError,
+            onErrorContainer = theme.textOnColor,
+            background = theme.background,
+            onBackground = theme.textPrimary,
+            surface = theme.layer01,
+            onSurface = theme.textPrimary,
+            surfaceVariant = theme.layer02,
+            onSurfaceVariant = theme.textSecondary,
+            outline = theme.borderSubtle00,
+            outlineVariant = theme.borderSubtle00,
+            inverseSurface = theme.backgroundInverse,
+            inverseOnSurface = theme.textOnColor,
+            inversePrimary = theme.linkPrimary,
+        )
+    }
+}
+
+@Composable
+private fun rememberCarbonMaterialTypography(): Typography {
+    val typography = Carbon.typography
+
+    return remember(
+        typography.body01,
+        typography.bodyCompact01,
+        typography.heading02,
+        typography.heading03,
+        typography.heading04,
+        typography.headingCompact01,
+        typography.label01,
+    ) {
+        Typography(
+            displayLarge = typography.heading02,
+            displayMedium = typography.heading03,
+            displaySmall = typography.heading04,
+            headlineLarge = typography.heading02,
+            headlineMedium = typography.heading03,
+            headlineSmall = typography.heading04,
+            titleLarge = typography.headingCompact01,
+            titleMedium = typography.headingCompact01,
+            titleSmall = typography.label01,
+            bodyLarge = typography.body01,
+            bodyMedium = typography.bodyCompact01,
+            bodySmall = typography.label01,
+            labelLarge = typography.label01,
+            labelMedium = typography.label01,
+            labelSmall = typography.label01,
         )
     }
 }

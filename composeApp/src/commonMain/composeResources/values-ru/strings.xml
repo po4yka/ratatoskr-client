@@ -68,6 +68,10 @@
     <string name="stats_languages">Языки</string>
     <string name="stats_error_icon">Ошибка</string>
     <string name="stats_goal_achieved">Достигнуто</string>
+    <string name="stats_current_streak">%1$d дней подряд</string>
+    <string name="stats_best_streak">Лучший результат: %1$d дней</string>
+    <string name="stats_this_week">%1$d на этой неделе</string>
+    <string name="stats_this_month">%1$d в этом месяце</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Настройки</string>
@@ -103,6 +107,12 @@
     <string name="settings_danger_zone">Опасная зона</string>
     <string name="settings_delete_account">Удалить аккаунт</string>
     <string name="settings_delete_account_description">Навсегда удалить аккаунт и все связанные данные. Это действие нельзя отменить.</string>
+    <string name="settings_legal">Правовая информация</string>
+    <string name="settings_error_prefix">Ошибка: %1$s</string>
+    <string name="settings_sync_failed">Синхронизация не удалась: %1$s</string>
+    <string name="settings_cache_size">Размер кэша: %1$s</string>
+    <string name="settings_sync_failed_items">%1$d элементов не удалось синхронизировать</string>
+    <string name="settings_digest_icon">Дайджест</string>
     <string name="settings_language">Язык</string>
     <string name="settings_language_prompt">Выберите предпочитаемый язык для резюме.</string>
     <string name="settings_language_auto">Авто</string>
@@ -156,6 +166,109 @@
     <string name="collections_create">Создать</string>
     <string name="collections_cancel">Отмена</string>
 
+    <!-- Custom Digest Create Screen -->
+    <string name="custom_digest_create_title">Создать дайджест</string>
+    <string name="custom_digest_create_title_label">Название дайджеста</string>
+    <string name="custom_digest_create_title_placeholder">Необязательное название</string>
+    <string name="custom_digest_create_brief">Краткий</string>
+    <string name="custom_digest_create_detailed">Подробный</string>
+    <string name="custom_digest_create_search_label">Поиск статей</string>
+    <string name="custom_digest_create_no_articles">Статьи не найдены</string>
+    <string name="custom_digest_create_selected_count">Выбрано: %1$d</string>
+    <string name="custom_digest_create_generate">Создать</string>
+    <string name="custom_digest_create_creating">Создание...</string>
+    <string name="custom_digest_create_read_time">%1$d мин чтения</string>
+
+    <!-- Collection View Screen -->
+    <string name="collection_view_default_title">Коллекция</string>
+    <string name="collection_view_items_count">%1$d элементов</string>
+    <string name="collection_view_shared">Общая</string>
+    <string name="collection_view_tab_items">Элементы</string>
+    <string name="collection_view_tab_settings">Настройки</string>
+    <string name="collection_view_tab_sharing">Доступ</string>
+    <string name="collection_view_empty_items_title">Пока нет элементов</string>
+    <string name="collection_view_empty_items_message">Добавьте статьи в эту коллекцию, чтобы увидеть их здесь</string>
+    <string name="collection_view_system_readonly">Системные коллекции нельзя редактировать</string>
+    <string name="collection_view_settings_title">Настройки коллекции</string>
+    <string name="collection_view_name">Название</string>
+    <string name="collection_view_description">Описание</string>
+    <string name="collection_view_save_changes">Сохранить изменения</string>
+    <string name="collection_view_saving">Сохранение...</string>
+    <string name="collection_view_danger_zone">Опасная зона</string>
+    <string name="collection_view_deleting">Удаление...</string>
+    <string name="collection_view_delete_collection">Удалить коллекцию</string>
+    <string name="collection_view_delete_dialog_title">Удалить коллекцию?</string>
+    <string name="collection_view_delete_dialog_message">Это действие нельзя отменить. Все элементы будут удалены из этой коллекции.</string>
+    <string name="collection_view_delete_action">Удалить</string>
+    <string name="collection_view_system_unshareable">Системные коллекции нельзя публиковать</string>
+    <string name="collection_view_collaborators">Участники</string>
+    <string name="collection_view_no_collaborators">Пока нет участников</string>
+    <string name="collection_view_user">Пользователь №%1$d</string>
+    <string name="collection_view_remove">Удалить</string>
+    <string name="collection_view_invite_link">Ссылка-приглашение</string>
+    <string name="collection_view_create_invite_viewer">Создать ссылку-приглашение (читатель)</string>
+    <string name="collection_view_creating_invite">Создание...</string>
+    <string name="collection_view_invite_token">Токен приглашения:</string>
+    <string name="collection_view_expires">Истекает: %1$s</string>
+
+    <!-- Recommendations -->
+    <string name="recommendations_title">Рекомендуем для вас</string>
+    <string name="recommendations_dismiss">Скрыть</string>
+
+    <!-- Filter Chips -->
+    <string name="filter_chip_favorites">Избранное</string>
+    <string name="filter_chip_archived">Архив</string>
+
+    <!-- Developer Login -->
+    <string name="auth_developer_user_id_label">ID пользователя</string>
+    <string name="auth_developer_user_id_placeholder">Введите ID пользователя</string>
+    <string name="auth_developer_user_id_error">ID пользователя должен быть числом</string>
+    <string name="auth_developer_client_id_label">Client ID</string>
+    <string name="auth_developer_client_id_placeholder">Введите Client ID</string>
+    <string name="auth_developer_secret_label">Секрет</string>
+    <string name="auth_developer_secret_placeholder">Введите секрет</string>
+    <string name="auth_developer_remember_credentials">Запомнить данные</string>
+    <string name="auth_developer_login_action">Войти</string>
+
+    <!-- Delete Account Dialog -->
+    <string name="delete_account_confirmation_warning">Это действие необратимо. Все ваши данные, включая резюме и настройки, будут удалены навсегда.</string>
+    <string name="delete_account_confirmation_prompt">Введите "%1$s" для подтверждения:</string>
+    <string name="delete_account_confirmation_label">Подтверждение</string>
+    <string name="delete_account_deleting">Удаление...</string>
+
+    <!-- Reading Settings -->
+    <string name="reading_settings_font_size">Размер шрифта</string>
+    <string name="reading_settings_line_spacing">Межстрочный интервал</string>
+
+    <!-- Add To Collection Dialog -->
+    <string name="add_to_collection_title">Добавить в коллекцию</string>
+    <string name="add_to_collection_empty">Нет доступных коллекций</string>
+    <string name="add_to_collection_adding">Добавление...</string>
+
+    <!-- Annotation Dialog -->
+    <string name="annotation_dialog_title">Добавить заметку</string>
+    <string name="annotation_dialog_save">Сохранить</string>
+    <string name="annotation_dialog_placeholder">Ваша заметка...</string>
+    <string name="annotation_dialog_helper">Добавьте личную заметку к этому выделению.</string>
+
+    <!-- Feedback Dialog -->
+    <string name="feedback_dialog_title">Сообщить об ошибке</string>
+    <string name="feedback_dialog_submit">Отправить</string>
+    <string name="feedback_dialog_prompt">Что не так с этим резюме?</string>
+    <string name="feedback_dialog_comment_label">Дополнительные комментарии (необязательно)</string>
+    <string name="feedback_dialog_submitting">Отправка...</string>
+    <string name="feedback_issue_too_short">Слишком коротко</string>
+    <string name="feedback_issue_inaccurate">Неточно</string>
+    <string name="feedback_issue_missing_context">Не хватает контекста</string>
+    <string name="feedback_issue_outdated">Устарело</string>
+    <string name="feedback_issue_poorly_written">Плохо написано</string>
+    <string name="feedback_issue_other">Другое</string>
+
+    <!-- Re-summarize Dialog -->
+    <string name="resummarize_confirm_title">Пересоздать резюме?</string>
+    <string name="resummarize_confirm_action">Пересоздать</string>
+    <string name="resummarize_confirm_message">Текущее резюме будет заменено новым. Это действие нельзя отменить.</string>
+
     <!-- Submit URL Screen -->
     <string name="submit_url_title">Добавить ссылку</string>
     <string name="submit_url_back">Назад</string>
@@ -189,6 +302,12 @@
     <string name="submit_url_batch_completed">Завершено</string>
     <string name="submit_url_batch_failed">Ошибка</string>
     <string name="submit_url_batch_skipped">Пропущено</string>
+    <string name="submit_url_batch_placeholder">https://example.com/article
+https://example.com/video</string>
+    <string name="submit_url_batch_detected_singular">Обнаружен %1$d URL</string>
+    <string name="submit_url_batch_detected_plural">Обнаружено URL: %1$d</string>
+    <string name="submit_url_batch_progress">Завершено %1$d из %2$d</string>
+    <string name="submit_url_processing_stage">Этап: %1$s</string>
     <string name="submit_url_error_invalid_url">Введите корректный URL (например, https://example.com)</string>
     <string name="submit_url_error_duplicate">Эта ссылка уже была обработана. Найдите её в библиотеке.</string>
     <string name="submit_url_error_network">Нет подключения к интернету. Проверьте сеть и попробуйте снова.</string>

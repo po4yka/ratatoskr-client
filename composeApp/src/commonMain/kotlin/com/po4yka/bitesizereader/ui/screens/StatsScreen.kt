@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,6 +29,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
+import com.gabrieldrn.carbon.loading.Loading
 import com.po4yka.bitesizereader.domain.model.DomainStat
 import com.po4yka.bitesizereader.domain.model.GoalProgress
 import com.po4yka.bitesizereader.domain.model.Streak
@@ -45,6 +45,8 @@ import bitesizereader.composeapp.generated.resources.a11y_goal_progress
 import bitesizereader.composeapp.generated.resources.a11y_loading
 import bitesizereader.composeapp.generated.resources.a11y_streak_description
 import bitesizereader.composeapp.generated.resources.stats_avg_per_summary
+import bitesizereader.composeapp.generated.resources.stats_best_streak
+import bitesizereader.composeapp.generated.resources.stats_current_streak
 import bitesizereader.composeapp.generated.resources.stats_error_default
 import bitesizereader.composeapp.generated.resources.stats_error_icon
 import bitesizereader.composeapp.generated.resources.stats_goal_achieved
@@ -52,6 +54,8 @@ import bitesizereader.composeapp.generated.resources.stats_goals_and_streaks
 import bitesizereader.composeapp.generated.resources.stats_languages
 import bitesizereader.composeapp.generated.resources.stats_overview
 import bitesizereader.composeapp.generated.resources.stats_read
+import bitesizereader.composeapp.generated.resources.stats_this_month
+import bitesizereader.composeapp.generated.resources.stats_this_week
 import bitesizereader.composeapp.generated.resources.stats_title
 import bitesizereader.composeapp.generated.resources.stats_top_sources
 import bitesizereader.composeapp.generated.resources.stats_top_topics
@@ -88,11 +92,10 @@ fun StatsScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    CircularProgressIndicator(
+                    Loading(
                         modifier =
                             Modifier.size(PROGRESS_INDICATOR_SIZE.dp)
                                 .semantics { contentDescription = loadingDesc },
-                        color = Carbon.theme.iconPrimary,
                     )
                 }
             }
@@ -261,24 +264,24 @@ private fun StreakCard(streak: Streak) {
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "${streak.currentStreak}-day streak",
+                text = stringResource(Res.string.stats_current_streak, streak.currentStreak),
                 style = Carbon.typography.heading03,
                 color = Carbon.theme.textPrimary,
             )
             Text(
-                text = "Best: ${streak.longestStreak} days",
+                text = stringResource(Res.string.stats_best_streak, streak.longestStreak),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = "${streak.weekCount} this week",
+                text = stringResource(Res.string.stats_this_week, streak.weekCount),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
             Text(
-                text = "${streak.monthCount} this month",
+                text = stringResource(Res.string.stats_this_month, streak.monthCount),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )

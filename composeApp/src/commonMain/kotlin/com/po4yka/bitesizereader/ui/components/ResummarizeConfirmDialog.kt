@@ -1,11 +1,16 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.collections_cancel
+import bitesizereader.composeapp.generated.resources.resummarize_confirm_action
+import bitesizereader.composeapp.generated.resources.resummarize_confirm_message
+import bitesizereader.composeapp.generated.resources.resummarize_confirm_title
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming")
 @Composable
@@ -13,24 +18,28 @@ fun ResummarizeConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
+    CarbonDialog(
         onDismissRequest = onDismiss,
-        containerColor = Carbon.theme.layer01,
-        title = {
-            Text("Re-summarize?", style = Carbon.typography.heading03, color = Carbon.theme.textPrimary)
-        },
-        text = {
-            Text(
-                "This will replace the current summary with a fresh one. This cannot be undone.",
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+        title = stringResource(Res.string.resummarize_confirm_title),
+        dismissButton = {
+            Button(
+                label = stringResource(Res.string.collections_cancel),
+                onClick = onDismiss,
+                buttonType = ButtonType.Ghost,
             )
         },
         confirmButton = {
-            Button(label = "Re-summarize", onClick = onConfirm, buttonType = ButtonType.Primary)
+            Button(
+                label = stringResource(Res.string.resummarize_confirm_action),
+                onClick = onConfirm,
+                buttonType = ButtonType.Primary,
+            )
         },
-        dismissButton = {
-            Button(label = "Cancel", onClick = onDismiss, buttonType = ButtonType.Ghost)
-        },
-    )
+    ) {
+        Text(
+            stringResource(Res.string.resummarize_confirm_message),
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
+        )
+    }
 }

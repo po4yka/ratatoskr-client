@@ -23,9 +23,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,11 +41,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
+import com.gabrieldrn.carbon.loading.Loading
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.navigation.SearchComponent
 import com.po4yka.bitesizereader.presentation.state.SearchMode
 import com.po4yka.bitesizereader.presentation.state.SearchState
 import com.po4yka.bitesizereader.presentation.viewmodel.SearchViewModel
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
+import com.po4yka.bitesizereader.ui.components.CarbonSelectableChip
 import com.po4yka.bitesizereader.ui.components.ContextualEmptyState
 import com.po4yka.bitesizereader.ui.components.EmptyStateType
 import com.po4yka.bitesizereader.ui.components.InsightsSection
@@ -162,14 +163,12 @@ private fun SearchScreenHeader(
                 modifier = Modifier.weight(1f),
             )
 
-            IconButton(onClick = onFilterClick) {
-                Icon(
-                    imageVector = CarbonIcons.Filter,
-                    contentDescription = stringResource(Res.string.search_toggle_filters),
-                    tint = Carbon.theme.iconPrimary,
-                    modifier = Modifier.size(20.dp),
-                )
-            }
+            CarbonIconButton(
+                imageVector = CarbonIcons.Filter,
+                contentDescription = stringResource(Res.string.search_toggle_filters),
+                onClick = onFilterClick,
+                iconSize = 20.dp,
+            )
         }
 
         SearchInputRow(
@@ -246,17 +245,15 @@ private fun SearchInputRow(
             )
 
             if (query.isNotEmpty()) {
-                IconButton(
+                CarbonIconButton(
+                    imageVector = CarbonIcons.Close,
+                    contentDescription = stringResource(Res.string.search_clear),
                     onClick = onClearQuery,
                     modifier = Modifier.size(24.dp),
-                ) {
-                    Icon(
-                        imageVector = CarbonIcons.Close,
-                        contentDescription = stringResource(Res.string.search_clear),
-                        tint = Carbon.theme.iconSecondary,
-                        modifier = Modifier.size(16.dp),
-                    )
-                }
+                    tint = Carbon.theme.iconSecondary,
+                    buttonSize = 24.dp,
+                    iconSize = 16.dp,
+                )
             }
         }
 
@@ -406,29 +403,11 @@ private fun ReadFilterChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val backgroundColor =
-        if (isSelected) {
-            Carbon.theme.linkPrimary
-        } else {
-            Carbon.theme.layer02
-        }
-    val textColor =
-        if (isSelected) {
-            Carbon.theme.textOnColor
-        } else {
-            Carbon.theme.textPrimary
-        }
-
-    Text(
-        text = label,
-        style = Carbon.typography.label01,
-        color = textColor,
-        modifier =
-            modifier
-                .semantics { role = Role.Button }
-                .background(backgroundColor)
-                .clickable(onClick = onClick)
-                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+    CarbonSelectableChip(
+        label = label,
+        selected = isSelected,
+        onClick = onClick,
+        modifier = modifier,
     )
 }
 
@@ -506,11 +485,7 @@ private fun SearchScreenContent(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                CircularProgressIndicator(
-                    color = Carbon.theme.linkPrimary,
-                    strokeWidth = 3.dp,
-                    modifier = Modifier.size(48.dp),
-                )
+                Loading(modifier = Modifier.size(48.dp))
             }
         }
 
@@ -598,11 +573,7 @@ private fun SearchResultsList(
                             .padding(Spacing.md),
                     contentAlignment = Alignment.Center,
                 ) {
-                    CircularProgressIndicator(
-                        color = Carbon.theme.linkPrimary,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier.size(24.dp),
-                    )
+                    Loading(modifier = Modifier.size(24.dp))
                 }
             }
         }

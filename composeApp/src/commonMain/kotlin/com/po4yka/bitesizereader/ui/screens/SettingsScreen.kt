@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,6 +36,9 @@ import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.SmallLoading
+import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
+import com.gabrieldrn.carbon.progressbar.ProgressBar
+import com.gabrieldrn.carbon.progressbar.ProgressBarState
 import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
@@ -53,7 +55,9 @@ import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.SessionsSection
 import com.po4yka.bitesizereader.ui.components.UserStatsCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import kotlin.math.round
 import bitesizereader.composeapp.generated.resources.Res
 import bitesizereader.composeapp.generated.resources.a11y_sync_progress
 import bitesizereader.composeapp.generated.resources.settings_account_binding
@@ -67,18 +71,22 @@ import bitesizereader.composeapp.generated.resources.settings_cancel_sync
 import bitesizereader.composeapp.generated.resources.settings_check_status
 import bitesizereader.composeapp.generated.resources.settings_check_status_prompt
 import bitesizereader.composeapp.generated.resources.settings_clear_cache
+import bitesizereader.composeapp.generated.resources.settings_cache_size
 import bitesizereader.composeapp.generated.resources.settings_current_streak
 import bitesizereader.composeapp.generated.resources.settings_daily_reading_goal
 import bitesizereader.composeapp.generated.resources.settings_danger_zone
 import bitesizereader.composeapp.generated.resources.settings_data_management
 import bitesizereader.composeapp.generated.resources.settings_delete_account
 import bitesizereader.composeapp.generated.resources.settings_delete_account_description
+import bitesizereader.composeapp.generated.resources.settings_digest_icon
 import bitesizereader.composeapp.generated.resources.settings_digest_channels
 import bitesizereader.composeapp.generated.resources.settings_digest_channels_description
+import bitesizereader.composeapp.generated.resources.settings_error_prefix
 import bitesizereader.composeapp.generated.resources.settings_goal_disabled
 import bitesizereader.composeapp.generated.resources.settings_goal_enable_prompt
 import bitesizereader.composeapp.generated.resources.settings_goal_enabled
 import bitesizereader.composeapp.generated.resources.settings_import_from_backend
+import bitesizereader.composeapp.generated.resources.settings_legal
 import bitesizereader.composeapp.generated.resources.settings_language
 import bitesizereader.composeapp.generated.resources.settings_language_auto
 import bitesizereader.composeapp.generated.resources.settings_language_english
@@ -92,6 +100,8 @@ import bitesizereader.composeapp.generated.resources.settings_longest_streak
 import bitesizereader.composeapp.generated.resources.settings_reading_goals
 import bitesizereader.composeapp.generated.resources.settings_retry
 import bitesizereader.composeapp.generated.resources.settings_security
+import bitesizereader.composeapp.generated.resources.settings_sync_failed
+import bitesizereader.composeapp.generated.resources.settings_sync_failed_items
 import bitesizereader.composeapp.generated.resources.settings_synchronization
 import bitesizereader.composeapp.generated.resources.settings_sync_prompt
 import bitesizereader.composeapp.generated.resources.settings_telegram_account
@@ -328,7 +338,7 @@ private fun LegalSection() {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "Legal",
+            text = stringResource(Res.string.settings_legal),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
             modifier = Modifier.semantics { heading() },
@@ -470,7 +480,7 @@ private fun AccountBindingCard(
             }
             telegramState.error != null -> {
                 Text(
-                    text = "Error: ${telegramState.error}",
+                    text = stringResource(Res.string.settings_error_prefix, telegramState.error.orEmpty()),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.supportError,
                 )
@@ -619,7 +629,7 @@ private fun SyncCard(
 
         syncState.downloadError?.let { error ->
             Text(
-                text = "Sync Failed: $error",
+                text = stringResource(Res.string.settings_sync_failed, error),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.supportError,
             )
@@ -654,7 +664,7 @@ private fun CacheManagementCard(
             color = Carbon.theme.textSecondary,
         )
         Text(
-            text = "Cache size: ${formatCacheSize(cacheSize)}",
+            text = stringResource(Res.string.settings_cache_size, formatCacheSize(cacheSize)),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )
@@ -675,9 +685,9 @@ private fun CacheManagementCard(
 private fun formatCacheSize(bytes: Long): String {
     if (bytes < 1024) return "$bytes B"
     val kb = bytes / 1024.0
-    if (kb < 1024) return "%.1f KB".format(kb)
+    if (kb < 1024) return "${round(kb * 10) / 10} KB"
     val mb = kb / 1024.0
-    return "%.1f MB".format(mb)
+    return "${round(mb * 10) / 10} MB"
 }
 
 @Suppress("FunctionNaming")
@@ -700,27 +710,23 @@ private fun SyncProgressSection(
                 getSyncPhaseText(progress?.phase),
             )
         progress?.progressFraction?.let { fraction ->
-            LinearProgressIndicator(
-                progress =
-                    { fraction },
+            ProgressBar(
+                value = fraction,
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(4.dp)
+                        .height(Dimensions.progressBarThickness)
                         .clip(RoundedCornerShape(2.dp))
                         .semantics { contentDescription = syncProgressDesc },
-                color = Carbon.theme.linkPrimary,
-                trackColor = Carbon.theme.borderSubtle00,
             )
-        } ?: LinearProgressIndicator(
+        } ?: IndeterminateProgressBar(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(4.dp)
+                    .height(Dimensions.progressBarThickness)
                     .clip(RoundedCornerShape(2.dp))
                     .semantics { contentDescription = syncProgressDesc },
-            color = Carbon.theme.linkPrimary,
-            trackColor = Carbon.theme.borderSubtle00,
+            state = ProgressBarState.Active,
         )
 
         if (progress != null) {
@@ -800,7 +806,7 @@ private fun SyncProgressDetails(progress: SyncProgress) {
 
     if (progress.errorCount > 0) {
         Text(
-            text = "${progress.errorCount} items failed to sync",
+            text = stringResource(Res.string.settings_sync_failed_items, progress.errorCount),
             style = Carbon.typography.label01,
             color = Carbon.theme.supportWarning,
         )
@@ -907,7 +913,7 @@ private fun DigestNavigationRow(onClick: () -> Unit) {
     ) {
         Icon(
             imageVector = CarbonIcons.Notification,
-            contentDescription = "Digest",
+            contentDescription = stringResource(Res.string.settings_digest_icon),
             tint = Carbon.theme.iconPrimary,
             modifier = Modifier.size(24.dp),
         )

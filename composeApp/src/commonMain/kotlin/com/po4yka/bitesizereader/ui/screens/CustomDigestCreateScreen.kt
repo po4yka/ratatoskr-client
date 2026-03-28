@@ -16,10 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,12 +30,28 @@ import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.SmallLoading
+import com.gabrieldrn.carbon.textinput.TextInput
+import com.gabrieldrn.carbon.textinput.TextInputState
 import com.po4yka.bitesizereader.domain.model.DigestFormat
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.presentation.navigation.CustomDigestCreateComponent
+import com.po4yka.bitesizereader.ui.components.CarbonCheckbox
+import com.po4yka.bitesizereader.ui.components.CarbonSelectableChip
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
-import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.custom_digest_create_creating
+import bitesizereader.composeapp.generated.resources.custom_digest_create_detailed
+import bitesizereader.composeapp.generated.resources.custom_digest_create_generate
+import bitesizereader.composeapp.generated.resources.custom_digest_create_no_articles
+import bitesizereader.composeapp.generated.resources.custom_digest_create_read_time
+import bitesizereader.composeapp.generated.resources.custom_digest_create_search_label
+import bitesizereader.composeapp.generated.resources.custom_digest_create_selected_count
+import bitesizereader.composeapp.generated.resources.custom_digest_create_title
+import bitesizereader.composeapp.generated.resources.custom_digest_create_title_label
+import bitesizereader.composeapp.generated.resources.custom_digest_create_title_placeholder
+import bitesizereader.composeapp.generated.resources.custom_digest_create_brief
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod")
 @Composable
@@ -60,7 +73,7 @@ fun CustomDigestCreateScreen(
                 .background(Carbon.theme.background),
     ) {
         ScreenHeader(
-            title = "Create Digest",
+            title = stringResource(Res.string.custom_digest_create_title),
             isDetailScreen = true,
             onBackClick = component::onBackClicked,
         )
@@ -68,15 +81,16 @@ fun CustomDigestCreateScreen(
         HorizontalDivider(color = Carbon.theme.borderSubtle00)
 
         // Title input
-        OutlinedTextField(
+        TextInput(
+            label = stringResource(Res.string.custom_digest_create_title_label),
             value = state.title,
             onValueChange = { viewModel.setTitle(it) },
-            label = { Text("Digest title (optional)", style = Carbon.typography.label01) },
+            placeholderText = stringResource(Res.string.custom_digest_create_title_placeholder),
+            state = TextInputState.Enabled,
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Spacing.md, vertical = Spacing.sm),
-            singleLine = true,
         )
 
         // Format toggle: Brief / Detailed
@@ -85,27 +99,27 @@ fun CustomDigestCreateScreen(
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             FormatChip(
-                label = "Brief",
+                label = stringResource(Res.string.custom_digest_create_brief),
                 isSelected = state.format == DigestFormat.BRIEF,
                 onClick = { viewModel.setFormat(DigestFormat.BRIEF) },
             )
             FormatChip(
-                label = "Detailed",
+                label = stringResource(Res.string.custom_digest_create_detailed),
                 isSelected = state.format == DigestFormat.DETAILED,
                 onClick = { viewModel.setFormat(DigestFormat.DETAILED) },
             )
         }
 
         // Search bar
-        OutlinedTextField(
+        TextInput(
+            label = stringResource(Res.string.custom_digest_create_search_label),
             value = state.searchQuery,
             onValueChange = { viewModel.onSearchChanged(it) },
-            label = { Text("Search articles", style = Carbon.typography.label01) },
+            state = TextInputState.Enabled,
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Spacing.md, vertical = Spacing.xs),
-            singleLine = true,
         )
 
         // Summary list
@@ -137,7 +151,7 @@ fun CustomDigestCreateScreen(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = "No articles found",
+                                text = stringResource(Res.string.custom_digest_create_no_articles),
                                 style = Carbon.typography.bodyCompact01,
                                 color = Carbon.theme.textSecondary,
                             )
@@ -160,12 +174,17 @@ fun CustomDigestCreateScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = "${state.selectedIds.size} selected",
+                text = stringResource(Res.string.custom_digest_create_selected_count, state.selectedIds.size),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
             )
             Button(
-                label = if (state.isCreating) "Creating..." else "Generate",
+                label =
+                    if (state.isCreating) {
+                        stringResource(Res.string.custom_digest_create_creating)
+                    } else {
+                        stringResource(Res.string.custom_digest_create_generate)
+                    },
                 onClick = { viewModel.createDigest() },
                 isEnabled = state.selectedIds.isNotEmpty() && !state.isCreating,
                 buttonType = ButtonType.Primary,
@@ -191,26 +210,11 @@ private fun FormatChip(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val backgroundColor = if (isSelected) Carbon.theme.interactive else Carbon.theme.layer01
-    val textColor = if (isSelected) Carbon.theme.textOnColor else Carbon.theme.textPrimary
-
-    Box(
-        modifier =
-            Modifier
-                .background(
-                    color = backgroundColor,
-                    shape = RoundedCornerShape(16.dp),
-                )
-                .clickable(onClick = onClick)
-                .padding(horizontal = Spacing.md, vertical = Spacing.xs),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = label,
-            style = Carbon.typography.bodyCompact01,
-            color = textColor,
-        )
-    }
+    CarbonSelectableChip(
+        label = label,
+        selected = isSelected,
+        onClick = onClick,
+    )
 }
 
 @Suppress("FunctionNaming")
@@ -229,10 +233,9 @@ private fun SelectableSummaryRow(
                 .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Checkbox(
+        CarbonCheckbox(
             checked = isSelected,
             onCheckedChange = { onClick() },
-            modifier = Modifier.size(IconSizes.md),
         )
 
         Spacer(modifier = Modifier.width(Spacing.sm))
@@ -248,7 +251,7 @@ private fun SelectableSummaryRow(
             summary.readingTimeMin?.let { readTime ->
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "$readTime min read",
+                    text = stringResource(Res.string.custom_digest_create_read_time, readTime),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                 )

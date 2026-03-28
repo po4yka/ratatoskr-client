@@ -25,8 +25,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -59,6 +57,7 @@ import com.po4yka.bitesizereader.presentation.navigation.SubmitURLComponent
 import com.po4yka.bitesizereader.presentation.state.SubmitURLState
 import com.po4yka.bitesizereader.presentation.state.SubmitUrlError
 import com.po4yka.bitesizereader.presentation.viewmodel.SubmitURLViewModel
+import com.po4yka.bitesizereader.ui.components.CarbonTextArea
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
@@ -67,9 +66,13 @@ import bitesizereader.composeapp.generated.resources.Res
 import bitesizereader.composeapp.generated.resources.submit_url_back
 import bitesizereader.composeapp.generated.resources.submit_url_batch_cancel
 import bitesizereader.composeapp.generated.resources.submit_url_batch_completed
+import bitesizereader.composeapp.generated.resources.submit_url_batch_detected_plural
+import bitesizereader.composeapp.generated.resources.submit_url_batch_detected_singular
 import bitesizereader.composeapp.generated.resources.submit_url_batch_duplicate_skipped
 import bitesizereader.composeapp.generated.resources.submit_url_batch_failed
 import bitesizereader.composeapp.generated.resources.submit_url_batch_pending
+import bitesizereader.composeapp.generated.resources.submit_url_batch_placeholder
+import bitesizereader.composeapp.generated.resources.submit_url_batch_progress
 import bitesizereader.composeapp.generated.resources.submit_url_batch_prompt
 import bitesizereader.composeapp.generated.resources.submit_url_batch_retry
 import bitesizereader.composeapp.generated.resources.submit_url_batch_skipped
@@ -87,6 +90,7 @@ import bitesizereader.composeapp.generated.resources.submit_url_mode_batch
 import bitesizereader.composeapp.generated.resources.submit_url_mode_single
 import bitesizereader.composeapp.generated.resources.submit_url_no_recent_requests
 import bitesizereader.composeapp.generated.resources.submit_url_processing
+import bitesizereader.composeapp.generated.resources.submit_url_processing_stage
 import bitesizereader.composeapp.generated.resources.submit_url_request_history
 import bitesizereader.composeapp.generated.resources.submit_url_show_history
 import bitesizereader.composeapp.generated.resources.submit_url_submit
@@ -95,11 +99,13 @@ import bitesizereader.composeapp.generated.resources.submit_url_submitting
 import bitesizereader.composeapp.generated.resources.submit_url_success
 import bitesizereader.composeapp.generated.resources.submit_url_title
 import bitesizereader.composeapp.generated.resources.submit_url_view_existing
+import bitesizereader.composeapp.generated.resources.submit_url_placeholder
 import bitesizereader.composeapp.generated.resources.submit_url_error_invalid_url
 import bitesizereader.composeapp.generated.resources.submit_url_error_duplicate
 import bitesizereader.composeapp.generated.resources.submit_url_error_network
 import bitesizereader.composeapp.generated.resources.submit_url_error_server
 import bitesizereader.composeapp.generated.resources.submit_url_error_view_library
+import bitesizereader.composeapp.generated.resources.settings_retry
 import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod")
@@ -358,32 +364,21 @@ private fun BatchInputSection(
             color = Carbon.theme.textSecondary,
         )
 
-        OutlinedTextField(
+        CarbonTextArea(
             value = batchInput,
             onValueChange = onBatchInputChanged,
-            modifier = Modifier.fillMaxWidth().height(180.dp),
-            placeholder = {
-                Text(
-                    text = "https://example.com/article\nhttps://example.com/video",
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.textSecondary,
-                )
-            },
-            colors =
-                OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Carbon.theme.borderSubtle00,
-                    unfocusedBorderColor = Carbon.theme.borderSubtle00,
-                    cursorColor = Carbon.theme.textPrimary,
-                    focusedTextColor = Carbon.theme.textPrimary,
-                    unfocusedTextColor = Carbon.theme.textPrimary,
-                    focusedContainerColor = Carbon.theme.layer01,
-                    unfocusedContainerColor = Carbon.theme.layer01,
-                ),
-            textStyle = Carbon.typography.bodyCompact01,
+            modifier = Modifier.fillMaxWidth(),
+            placeholderText = stringResource(Res.string.submit_url_batch_placeholder),
+            minHeight = 180.dp,
         )
 
         Text(
-            text = "$urlCount URL${if (urlCount == 1) "" else "s"} detected",
+            text =
+                if (urlCount == 1) {
+                    stringResource(Res.string.submit_url_batch_detected_singular, urlCount)
+                } else {
+                    stringResource(Res.string.submit_url_batch_detected_plural, urlCount)
+                },
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )
@@ -416,7 +411,7 @@ private fun BatchProgressHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "$completedCount of $totalCount completed",
+            text = stringResource(Res.string.submit_url_batch_progress, completedCount, totalCount),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
             modifier = Modifier.weight(1f),
@@ -615,7 +610,7 @@ private fun URLInputSection(
                     isLoading -> TextInputState.Disabled
                     else -> TextInputState.Enabled
                 },
-            placeholderText = "https://example.com/article",
+            placeholderText = stringResource(Res.string.submit_url_placeholder),
             keyboardOptions =
                 KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
@@ -805,7 +800,11 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
         }
 
         Text(
-            text = "Stage: ${state.stage.name.lowercase().replaceFirstChar { it.uppercase() }}",
+            text =
+                stringResource(
+                    Res.string.submit_url_processing_stage,
+                    state.stage.name.lowercase().replaceFirstChar { it.uppercase() },
+                ),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )
@@ -826,7 +825,7 @@ private fun CompletionSection() {
     ) {
         Icon(
             imageVector = CarbonIcons.CheckmarkFilled,
-            contentDescription = "Completed",
+            contentDescription = stringResource(Res.string.submit_url_batch_completed),
             tint = Carbon.theme.supportSuccess,
             modifier = Modifier.size(IconSizes.md),
         )
@@ -927,7 +926,7 @@ private fun RequestHistoryItem(
             IconButton(onClick = onRetry) {
                 Icon(
                     imageVector = CarbonIcons.Renew,
-                    contentDescription = "Retry",
+                    contentDescription = stringResource(Res.string.settings_retry),
                     tint = Carbon.theme.iconPrimary,
                     modifier = Modifier.size(IconSizes.sm),
                 )

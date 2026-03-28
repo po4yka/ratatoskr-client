@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
+import com.gabrieldrn.carbon.loading.Loading
 import kotlin.math.roundToInt
 
 private const val REFRESH_TRIGGER_PX = 200f
@@ -106,14 +106,12 @@ fun PullToRefreshContainer(
                         .padding(top = 16.dp),
                 contentAlignment = Alignment.TopCenter,
             ) {
-                CircularProgressIndicator(
+                Loading(
                     modifier =
                         Modifier
                             .offset {
                                 IntOffset(0, ((pullOffset / 2f) - 24.dp.toPx()).roundToInt())
                             },
-                    color = Carbon.theme.linkPrimary,
-                    strokeWidth = 2.dp,
                 )
             }
         }

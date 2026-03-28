@@ -20,13 +20,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,6 +40,8 @@ import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
 import com.gabrieldrn.carbon.loading.Loading
+import com.gabrieldrn.carbon.textinput.TextInput
+import com.gabrieldrn.carbon.textinput.TextInputState
 import com.po4yka.bitesizereader.domain.model.CollaboratorRole
 import com.po4yka.bitesizereader.domain.model.Collection
 import com.po4yka.bitesizereader.domain.model.CollectionAcl
@@ -53,12 +52,50 @@ import com.po4yka.bitesizereader.presentation.state.CollectionItemsState
 import com.po4yka.bitesizereader.presentation.state.CollectionSettingsState
 import com.po4yka.bitesizereader.presentation.state.CollectionSharingState
 import com.po4yka.bitesizereader.presentation.state.CollectionViewTab
+import com.po4yka.bitesizereader.ui.components.CarbonDialog
+import com.po4yka.bitesizereader.ui.components.CarbonTextArea
 import com.po4yka.bitesizereader.ui.components.EmptyStateView
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.SummaryCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.a11y_navigate_back
+import bitesizereader.composeapp.generated.resources.collection_view_collaborators
+import bitesizereader.composeapp.generated.resources.collection_view_creating_invite
+import bitesizereader.composeapp.generated.resources.collection_view_create_invite_viewer
+import bitesizereader.composeapp.generated.resources.collection_view_danger_zone
+import bitesizereader.composeapp.generated.resources.collection_view_default_title
+import bitesizereader.composeapp.generated.resources.collection_view_delete_action
+import bitesizereader.composeapp.generated.resources.collection_view_delete_collection
+import bitesizereader.composeapp.generated.resources.collection_view_delete_dialog_message
+import bitesizereader.composeapp.generated.resources.collection_view_delete_dialog_title
+import bitesizereader.composeapp.generated.resources.collection_view_deleting
+import bitesizereader.composeapp.generated.resources.collection_view_description
+import bitesizereader.composeapp.generated.resources.collection_view_empty_items_message
+import bitesizereader.composeapp.generated.resources.collection_view_empty_items_title
+import bitesizereader.composeapp.generated.resources.collection_view_expires
+import bitesizereader.composeapp.generated.resources.collection_view_invite_link
+import bitesizereader.composeapp.generated.resources.collection_view_invite_token
+import bitesizereader.composeapp.generated.resources.collection_view_items_count
+import bitesizereader.composeapp.generated.resources.collection_view_name
+import bitesizereader.composeapp.generated.resources.collection_view_no_collaborators
+import bitesizereader.composeapp.generated.resources.collection_view_remove
+import bitesizereader.composeapp.generated.resources.collection_view_save_changes
+import bitesizereader.composeapp.generated.resources.collection_view_saving
+import bitesizereader.composeapp.generated.resources.collection_view_settings_title
+import bitesizereader.composeapp.generated.resources.collection_view_shared
+import bitesizereader.composeapp.generated.resources.collection_view_system_readonly
+import bitesizereader.composeapp.generated.resources.collection_view_system_unshareable
+import bitesizereader.composeapp.generated.resources.collection_view_tab_items
+import bitesizereader.composeapp.generated.resources.collection_view_tab_settings
+import bitesizereader.composeapp.generated.resources.collection_view_tab_sharing
+import bitesizereader.composeapp.generated.resources.collection_view_user
+import bitesizereader.composeapp.generated.resources.collections_cancel
+import bitesizereader.composeapp.generated.resources.collections_description_placeholder
+import bitesizereader.composeapp.generated.resources.collections_name_placeholder
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming")
 @Composable
@@ -141,7 +178,7 @@ private fun CollectionViewHeader(
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = CarbonIcons.ArrowLeft,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(Res.string.a11y_navigate_back),
                     tint = Carbon.theme.iconPrimary,
                     modifier = Modifier.size(24.dp),
                 )
@@ -150,7 +187,7 @@ private fun CollectionViewHeader(
             Spacer(modifier = Modifier.width(Spacing.xs))
 
             Text(
-                text = collection?.name ?: "Collection",
+                text = collection?.name ?: stringResource(Res.string.collection_view_default_title),
                 style = Carbon.typography.heading03,
                 color = Carbon.theme.textPrimary,
                 maxLines = 1,
@@ -195,14 +232,14 @@ private fun CollectionInfoSection(collection: Collection) {
             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             Text(
-                text = "${collection.count} items",
+                text = stringResource(Res.string.collection_view_items_count, collection.count),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
 
             if (collection.isShared) {
                 Text(
-                    text = "Shared",
+                    text = stringResource(Res.string.collection_view_shared),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.linkPrimary,
                 )
@@ -226,14 +263,14 @@ private fun CollectionTabBar(
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         TabItem(
-            label = "Items",
+            label = stringResource(Res.string.collection_view_tab_items),
             icon = CarbonIcons.Document,
             isSelected = selectedTab == CollectionViewTab.Items,
             onClick = { onTabSelected(CollectionViewTab.Items) },
         )
 
         TabItem(
-            label = "Settings",
+            label = stringResource(Res.string.collection_view_tab_settings),
             icon = CarbonIcons.Settings,
             isSelected = selectedTab == CollectionViewTab.Settings,
             onClick = { onTabSelected(CollectionViewTab.Settings) },
@@ -241,7 +278,7 @@ private fun CollectionTabBar(
         )
 
         TabItem(
-            label = "Sharing",
+            label = stringResource(Res.string.collection_view_tab_sharing),
             icon = CarbonIcons.Share,
             isSelected = selectedTab == CollectionViewTab.Sharing,
             onClick = { onTabSelected(CollectionViewTab.Sharing) },
@@ -360,8 +397,8 @@ private fun ItemsTabContent(
 
         items.items.isEmpty() && !items.isLoading ->
             EmptyStateView(
-                title = "No items yet",
-                message = "Add articles to this collection to see them here",
+                title = stringResource(Res.string.collection_view_empty_items_title),
+                message = stringResource(Res.string.collection_view_empty_items_message),
                 modifier = Modifier.fillMaxSize(),
             )
 
@@ -425,7 +462,7 @@ private fun SettingsTabContent(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "System collections cannot be edited",
+                text = stringResource(Res.string.collection_view_system_readonly),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
             )
@@ -440,7 +477,7 @@ private fun SettingsTabContent(
     ) {
         item {
             Text(
-                text = "Collection Settings",
+                text = stringResource(Res.string.collection_view_settings_title),
                 style = Carbon.typography.heading03,
                 color = Carbon.theme.textPrimary,
             )
@@ -497,36 +534,43 @@ private fun CollectionEditForm(
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             Text(
-                text = "Name",
+                text = stringResource(Res.string.collection_view_name),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
-            OutlinedTextField(
+            TextInput(
+                label = stringResource(Res.string.collection_view_name),
                 value = editedName,
                 onValueChange = onNameChange,
-                placeholder = { Text("Collection name") },
+                placeholderText = stringResource(Res.string.collections_name_placeholder),
+                state = if (isUpdating) TextInputState.Disabled else TextInputState.Enabled,
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
             )
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             Text(
-                text = "Description",
+                text = stringResource(Res.string.collection_view_description),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
-            OutlinedTextField(
+            CarbonTextArea(
+                label = stringResource(Res.string.collection_view_description),
                 value = editedDescription,
                 onValueChange = onDescriptionChange,
-                placeholder = { Text("Optional description") },
+                placeholderText = stringResource(Res.string.collections_description_placeholder),
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 2,
+                enabled = !isUpdating,
             )
         }
 
         Button(
-            label = if (isUpdating) "Saving..." else "Save Changes",
+            label =
+                if (isUpdating) {
+                    stringResource(Res.string.collection_view_saving)
+                } else {
+                    stringResource(Res.string.collection_view_save_changes)
+                },
             onClick = onSave,
             buttonType = ButtonType.Primary,
             isEnabled = !isUpdating,
@@ -557,13 +601,18 @@ private fun CollectionDangerZone(
         )
 
         Text(
-            text = "Danger Zone",
+            text = stringResource(Res.string.collection_view_danger_zone),
             style = Carbon.typography.heading03,
             color = Carbon.theme.supportError,
         )
 
         Button(
-            label = if (isDeleting) "Deleting..." else "Delete Collection",
+            label =
+                if (isDeleting) {
+                    stringResource(Res.string.collection_view_deleting)
+                } else {
+                    stringResource(Res.string.collection_view_delete_collection)
+                },
             onClick = onShowDeleteDialog,
             buttonType = ButtonType.PrimaryDanger,
             isEnabled = !isDeleting,
@@ -586,40 +635,30 @@ private fun DeleteCollectionDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
+    CarbonDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "Delete Collection?",
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.textPrimary,
-            )
-        },
-        text = {
-            Text(
-                text = "This action cannot be undone. All items will be removed from this collection.",
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
-            )
-        },
+        title = stringResource(Res.string.collection_view_delete_dialog_title),
         confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    text = "Delete",
-                    color = Carbon.theme.supportError,
-                )
-            }
+            Button(
+                label = stringResource(Res.string.collection_view_delete_action),
+                onClick = onConfirm,
+                buttonType = ButtonType.PrimaryDanger,
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = "Cancel",
-                    color = Carbon.theme.textPrimary,
-                )
-            }
+            Button(
+                label = stringResource(Res.string.collections_cancel),
+                onClick = onDismiss,
+                buttonType = ButtonType.Ghost,
+            )
         },
-        containerColor = Carbon.theme.layer01,
-    )
+    ) {
+        Text(
+            text = stringResource(Res.string.collection_view_delete_dialog_message),
+            style = Carbon.typography.bodyCompact01,
+            color = Carbon.theme.textSecondary,
+        )
+    }
 }
 
 @Suppress("FunctionNaming")
@@ -636,7 +675,7 @@ private fun SharingTabContent(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "System collections cannot be shared",
+                text = stringResource(Res.string.collection_view_system_unshareable),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
             )
@@ -679,7 +718,7 @@ private fun CollaboratorsList(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         Text(
-            text = "Collaborators",
+            text = stringResource(Res.string.collection_view_collaborators),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
         )
@@ -695,7 +734,7 @@ private fun CollaboratorsList(
             }
             collaborators.isEmpty() -> {
                 Text(
-                    text = "No collaborators yet",
+                    text = stringResource(Res.string.collection_view_no_collaborators),
                     style = Carbon.typography.bodyCompact01,
                     color = Carbon.theme.textSecondary,
                 )
@@ -739,7 +778,7 @@ private fun CollaboratorRow(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "User #${collaborator.userId}",
+                text = stringResource(Res.string.collection_view_user, collaborator.userId ?: 0),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textPrimary,
             )
@@ -754,7 +793,7 @@ private fun CollaboratorRow(
             IconButton(onClick = { onRemove(collaborator.userId!!) }) {
                 Icon(
                     imageVector = CarbonIcons.Close,
-                    contentDescription = "Remove",
+                    contentDescription = stringResource(Res.string.collection_view_remove),
                     tint = Carbon.theme.iconSecondary,
                     modifier = Modifier.size(20.dp),
                 )
@@ -778,13 +817,18 @@ private fun InviteLinkSection(
         )
 
         Text(
-            text = "Invite Link",
+            text = stringResource(Res.string.collection_view_invite_link),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
         )
 
         Button(
-            label = if (isCreatingInvite) "Creating..." else "Create Invite Link (Viewer)",
+            label =
+                if (isCreatingInvite) {
+                    stringResource(Res.string.collection_view_creating_invite)
+                } else {
+                    stringResource(Res.string.collection_view_create_invite_viewer)
+                },
             onClick = { onCreateInviteLink(CollaboratorRole.Viewer) },
             buttonType = ButtonType.Secondary,
             isEnabled = !isCreatingInvite,
@@ -804,7 +848,7 @@ private fun InviteLinkSection(
                 verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
             ) {
                 Text(
-                    text = "Invite Token:",
+                    text = stringResource(Res.string.collection_view_invite_token),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                 )
@@ -816,7 +860,7 @@ private fun InviteLinkSection(
                 val expiresAt = inviteLink.expiresAt
                 if (expiresAt != null) {
                     Text(
-                        text = "Expires: $expiresAt",
+                        text = stringResource(Res.string.collection_view_expires, expiresAt),
                         style = Carbon.typography.label01,
                         color = Carbon.theme.textSecondary,
                     )

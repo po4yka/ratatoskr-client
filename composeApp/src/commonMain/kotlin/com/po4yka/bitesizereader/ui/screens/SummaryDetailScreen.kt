@@ -20,11 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -52,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.Loading
+import com.gabrieldrn.carbon.progressbar.ProgressBar
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.MarkdownElement
 import com.mikepenz.markdown.model.DefaultMarkdownColors
@@ -203,11 +202,9 @@ fun SummaryDetailScreen(
                         .fillMaxWidth()
                         .padding(horizontal = Spacing.md, vertical = Spacing.xs),
             ) {
-                LinearProgressIndicator(
-                    progress = { state.feedback.resummarizeProgress },
+                ProgressBar(
+                    value = state.feedback.resummarizeProgress,
                     modifier = Modifier.fillMaxWidth().semantics { contentDescription = reSummarizeDesc },
-                    color = Carbon.theme.interactive,
-                    trackColor = Carbon.theme.layer02,
                 )
                 Text(
                     text =
@@ -376,10 +373,8 @@ private fun AudioPlayerRow(
                 } else {
                     stringResource(Res.string.audio_loading)
                 }
-            CircularProgressIndicator(
+            Loading(
                 modifier = Modifier.size(IconSizes.sm).semantics { contentDescription = audioLoadingDesc },
-                color = Carbon.theme.interactive,
-                strokeWidth = 2.dp,
             )
         } else {
             val playPauseDesc =
@@ -606,11 +601,9 @@ private fun SummaryDetailContent(
     val imageTransformer = remember { ProxiedImageTransformer(getProxiedImageUrlUseCase) }
 
     Column(modifier = modifier.fillMaxSize()) {
-        LinearProgressIndicator(
-            progress = { readingProgress },
+        ProgressBar(
+            value = readingProgress,
             modifier = Modifier.fillMaxWidth().height(2.dp),
-            color = Carbon.theme.linkPrimary,
-            trackColor = Carbon.theme.borderSubtle00,
         )
 
         val textPrimary = Carbon.theme.textPrimary

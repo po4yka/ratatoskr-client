@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +33,7 @@ import com.gabrieldrn.carbon.textinput.TextInputState
 import com.po4yka.bitesizereader.domain.model.CollectionType
 import com.po4yka.bitesizereader.presentation.navigation.CollectionsComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.CollectionsViewModel
+import com.po4yka.bitesizereader.ui.components.CarbonDialog
 import com.po4yka.bitesizereader.ui.components.CollectionItem
 import com.po4yka.bitesizereader.ui.components.EmptyStateView
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
@@ -215,61 +215,9 @@ private fun CreateCollectionDialog(
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    AlertDialog(
+    CarbonDialog(
         onDismissRequest = { if (!isCreating) onDismiss() },
-        containerColor = Carbon.theme.layer01,
-        title = {
-            Text(
-                text = stringResource(Res.string.collections_create_dialog_title),
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.textPrimary,
-            )
-        },
-        text = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
-            ) {
-                TextInput(
-                    label = stringResource(Res.string.collections_name_label),
-                    value = name,
-                    onValueChange = { name = it },
-                    placeholderText = stringResource(Res.string.collections_name_placeholder),
-                    state = if (isCreating) TextInputState.Disabled else TextInputState.Enabled,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                TextInput(
-                    label = stringResource(Res.string.collections_description_label),
-                    value = description,
-                    onValueChange = { description = it },
-                    placeholderText = stringResource(Res.string.collections_description_placeholder),
-                    state = if (isCreating) TextInputState.Disabled else TextInputState.Enabled,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                if (createError != null) {
-                    Text(
-                        text = createError,
-                        style = Carbon.typography.label01,
-                        color = Carbon.theme.supportError,
-                    )
-                }
-
-                if (isCreating) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-                    ) {
-                        SmallLoading()
-                        Text(
-                            text = stringResource(Res.string.collections_creating),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textSecondary,
-                        )
-                    }
-                }
-            }
-        },
+        title = stringResource(Res.string.collections_create_dialog_title),
         confirmButton = {
             Button(
                 label = stringResource(Res.string.collections_create),
@@ -286,5 +234,45 @@ private fun CreateCollectionDialog(
                 buttonType = ButtonType.Ghost,
             )
         },
-    )
+    ) {
+        TextInput(
+            label = stringResource(Res.string.collections_name_label),
+            value = name,
+            onValueChange = { name = it },
+            placeholderText = stringResource(Res.string.collections_name_placeholder),
+            state = if (isCreating) TextInputState.Disabled else TextInputState.Enabled,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        TextInput(
+            label = stringResource(Res.string.collections_description_label),
+            value = description,
+            onValueChange = { description = it },
+            placeholderText = stringResource(Res.string.collections_description_placeholder),
+            state = if (isCreating) TextInputState.Disabled else TextInputState.Enabled,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        if (createError != null) {
+            Text(
+                text = createError,
+                style = Carbon.typography.label01,
+                color = Carbon.theme.supportError,
+            )
+        }
+
+        if (isCreating) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            ) {
+                SmallLoading()
+                Text(
+                    text = stringResource(Res.string.collections_creating),
+                    style = Carbon.typography.bodyCompact01,
+                    color = Carbon.theme.textSecondary,
+                )
+            }
+        }
+    }
 }

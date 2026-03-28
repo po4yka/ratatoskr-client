@@ -68,6 +68,10 @@
     <string name="stats_languages">Languages</string>
     <string name="stats_error_icon">Error</string>
     <string name="stats_goal_achieved">Achieved</string>
+    <string name="stats_current_streak">%1$d-day streak</string>
+    <string name="stats_best_streak">Best: %1$d days</string>
+    <string name="stats_this_week">%1$d this week</string>
+    <string name="stats_this_month">%1$d this month</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
@@ -103,6 +107,12 @@
     <string name="settings_danger_zone">Danger Zone</string>
     <string name="settings_delete_account">Delete Account</string>
     <string name="settings_delete_account_description">Permanently delete your account and all associated data. This action cannot be undone.</string>
+    <string name="settings_legal">Legal</string>
+    <string name="settings_error_prefix">Error: %1$s</string>
+    <string name="settings_sync_failed">Sync Failed: %1$s</string>
+    <string name="settings_cache_size">Cache size: %1$s</string>
+    <string name="settings_sync_failed_items">%1$d items failed to sync</string>
+    <string name="settings_digest_icon">Digest</string>
     <string name="settings_language">Language</string>
     <string name="settings_language_prompt">Select your preferred language for summaries.</string>
     <string name="settings_language_auto">Auto</string>
@@ -156,6 +166,109 @@
     <string name="collections_create">Create</string>
     <string name="collections_cancel">Cancel</string>
 
+    <!-- Custom Digest Create Screen -->
+    <string name="custom_digest_create_title">Create Digest</string>
+    <string name="custom_digest_create_title_label">Digest title</string>
+    <string name="custom_digest_create_title_placeholder">Optional title</string>
+    <string name="custom_digest_create_brief">Brief</string>
+    <string name="custom_digest_create_detailed">Detailed</string>
+    <string name="custom_digest_create_search_label">Search articles</string>
+    <string name="custom_digest_create_no_articles">No articles found</string>
+    <string name="custom_digest_create_selected_count">%1$d selected</string>
+    <string name="custom_digest_create_generate">Generate</string>
+    <string name="custom_digest_create_creating">Creating...</string>
+    <string name="custom_digest_create_read_time">%1$d min read</string>
+
+    <!-- Collection View Screen -->
+    <string name="collection_view_default_title">Collection</string>
+    <string name="collection_view_items_count">%1$d items</string>
+    <string name="collection_view_shared">Shared</string>
+    <string name="collection_view_tab_items">Items</string>
+    <string name="collection_view_tab_settings">Settings</string>
+    <string name="collection_view_tab_sharing">Sharing</string>
+    <string name="collection_view_empty_items_title">No items yet</string>
+    <string name="collection_view_empty_items_message">Add articles to this collection to see them here</string>
+    <string name="collection_view_system_readonly">System collections cannot be edited</string>
+    <string name="collection_view_settings_title">Collection Settings</string>
+    <string name="collection_view_name">Name</string>
+    <string name="collection_view_description">Description</string>
+    <string name="collection_view_save_changes">Save Changes</string>
+    <string name="collection_view_saving">Saving...</string>
+    <string name="collection_view_danger_zone">Danger Zone</string>
+    <string name="collection_view_deleting">Deleting...</string>
+    <string name="collection_view_delete_collection">Delete Collection</string>
+    <string name="collection_view_delete_dialog_title">Delete Collection?</string>
+    <string name="collection_view_delete_dialog_message">This action cannot be undone. All items will be removed from this collection.</string>
+    <string name="collection_view_delete_action">Delete</string>
+    <string name="collection_view_system_unshareable">System collections cannot be shared</string>
+    <string name="collection_view_collaborators">Collaborators</string>
+    <string name="collection_view_no_collaborators">No collaborators yet</string>
+    <string name="collection_view_user">User #%1$d</string>
+    <string name="collection_view_remove">Remove</string>
+    <string name="collection_view_invite_link">Invite Link</string>
+    <string name="collection_view_create_invite_viewer">Create Invite Link (Viewer)</string>
+    <string name="collection_view_creating_invite">Creating...</string>
+    <string name="collection_view_invite_token">Invite Token:</string>
+    <string name="collection_view_expires">Expires: %1$s</string>
+
+    <!-- Recommendations -->
+    <string name="recommendations_title">Recommended for You</string>
+    <string name="recommendations_dismiss">Dismiss</string>
+
+    <!-- Filter Chips -->
+    <string name="filter_chip_favorites">Favorites</string>
+    <string name="filter_chip_archived">Archived</string>
+
+    <!-- Developer Login -->
+    <string name="auth_developer_user_id_label">User ID</string>
+    <string name="auth_developer_user_id_placeholder">Enter user ID</string>
+    <string name="auth_developer_user_id_error">User ID must be a number</string>
+    <string name="auth_developer_client_id_label">Client ID</string>
+    <string name="auth_developer_client_id_placeholder">Enter client ID</string>
+    <string name="auth_developer_secret_label">Secret</string>
+    <string name="auth_developer_secret_placeholder">Enter secret</string>
+    <string name="auth_developer_remember_credentials">Remember credentials</string>
+    <string name="auth_developer_login_action">Login</string>
+
+    <!-- Delete Account Dialog -->
+    <string name="delete_account_confirmation_warning">This action is permanent and cannot be undone. All your data, including summaries and settings, will be permanently deleted.</string>
+    <string name="delete_account_confirmation_prompt">Type "%1$s" to confirm:</string>
+    <string name="delete_account_confirmation_label">Confirmation</string>
+    <string name="delete_account_deleting">Deleting...</string>
+
+    <!-- Reading Settings -->
+    <string name="reading_settings_font_size">Font Size</string>
+    <string name="reading_settings_line_spacing">Line Spacing</string>
+
+    <!-- Add To Collection Dialog -->
+    <string name="add_to_collection_title">Add to Collection</string>
+    <string name="add_to_collection_empty">No collections available</string>
+    <string name="add_to_collection_adding">Adding...</string>
+
+    <!-- Annotation Dialog -->
+    <string name="annotation_dialog_title">Add note</string>
+    <string name="annotation_dialog_save">Save</string>
+    <string name="annotation_dialog_placeholder">Your note...</string>
+    <string name="annotation_dialog_helper">Add a personal note to this highlight.</string>
+
+    <!-- Feedback Dialog -->
+    <string name="feedback_dialog_title">Report Feedback</string>
+    <string name="feedback_dialog_submit">Submit</string>
+    <string name="feedback_dialog_prompt">What was wrong with this summary?</string>
+    <string name="feedback_dialog_comment_label">Additional comments (optional)</string>
+    <string name="feedback_dialog_submitting">Submitting...</string>
+    <string name="feedback_issue_too_short">Too short</string>
+    <string name="feedback_issue_inaccurate">Inaccurate</string>
+    <string name="feedback_issue_missing_context">Missing context</string>
+    <string name="feedback_issue_outdated">Outdated</string>
+    <string name="feedback_issue_poorly_written">Poorly written</string>
+    <string name="feedback_issue_other">Other</string>
+
+    <!-- Re-summarize Dialog -->
+    <string name="resummarize_confirm_title">Re-summarize?</string>
+    <string name="resummarize_confirm_action">Re-summarize</string>
+    <string name="resummarize_confirm_message">This will replace the current summary with a fresh one. This cannot be undone.</string>
+
     <!-- Submit URL Screen -->
     <string name="submit_url_title">Submit URL</string>
     <string name="submit_url_back">Back</string>
@@ -189,6 +302,12 @@
     <string name="submit_url_batch_completed">Completed</string>
     <string name="submit_url_batch_failed">Failed</string>
     <string name="submit_url_batch_skipped">Skipped</string>
+    <string name="submit_url_batch_placeholder">https://example.com/article
+https://example.com/video</string>
+    <string name="submit_url_batch_detected_singular">%1$d URL detected</string>
+    <string name="submit_url_batch_detected_plural">%1$d URLs detected</string>
+    <string name="submit_url_batch_progress">%1$d of %2$d completed</string>
+    <string name="submit_url_processing_stage">Stage: %1$s</string>
     <string name="submit_url_error_invalid_url">Please enter a valid URL (e.g. https://example.com)</string>
     <string name="submit_url_error_duplicate">This URL has already been summarized. Find it in your library.</string>
     <string name="submit_url_error_network">No internet connection. Please check your network and try again.</string>
