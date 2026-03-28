@@ -1,0 +1,19 @@
+-- Tag entity table
+CREATE TABLE tagEntity (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    color TEXT,
+    summaryCount INTEGER NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL,
+    syncStatus TEXT NOT NULL DEFAULT 'synced'
+);
+CREATE INDEX tag_name ON tagEntity(name);
+
+-- Summary-Tag join table
+CREATE TABLE summaryTagEntity (
+    summaryId TEXT NOT NULL,
+    tagId INTEGER NOT NULL,
+    PRIMARY KEY (summaryId, tagId)
+);
+CREATE INDEX summaryTag_tagId ON summaryTagEntity(tagId);

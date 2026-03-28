@@ -360,6 +360,9 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 deleteHighlight:
 DELETE FROM highlightEntity WHERE id = ?;
 
+getHighlightById:
+SELECT * FROM highlightEntity WHERE id = ?;
+
 updateHighlightNote:
 UPDATE highlightEntity SET note = ? WHERE id = ?;
 
@@ -476,3 +479,54 @@ UPDATE customDigestEntity SET content = :content, status = :status WHERE id = :i
 
 deleteCustomDigest:
 DELETE FROM customDigestEntity WHERE id = :id;
+
+-- Tag Table
+CREATE TABLE tagEntity (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    color TEXT,
+    summaryCount INTEGER AS kotlin.Int NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL,
+    syncStatus TEXT NOT NULL DEFAULT 'synced'
+);
+CREATE INDEX tag_name ON tagEntity(name);
+
+-- Summary-Tag Join Table
+CREATE TABLE summaryTagEntity (
+    summaryId TEXT NOT NULL,
+    tagId INTEGER NOT NULL,
+    PRIMARY KEY (summaryId, tagId)
+);
+CREATE INDEX summaryTag_tagId ON summaryTagEntity(tagId);
+
+getAllTags:
+SELECT * FROM tagEntity ORDER BY name ASC;
+
+getTagById:
+SELECT * FROM tagEntity WHERE id = :id;
+
+insertOrReplaceTag:
+INSERT OR REPLACE INTO tagEntity(id, name, color, summaryCount, createdAt, updatedAt, syncStatus)
+VALUES (:id, :name, :color, :summaryCount, :createdAt, :updatedAt, :syncStatus);
+
+deleteTag:
+DELETE FROM tagEntity WHERE id = :id;
+
+getTagsForSummary:
+SELECT t.* FROM tagEntity t
+INNER JOIN summaryTagEntity st ON t.id = st.tagId
+WHERE st.summaryId = :summaryId
+ORDER BY t.name ASC;
+
+insertSummaryTag:
+INSERT OR IGNORE INTO summaryTagEntity(summaryId, tagId) VALUES (:summaryId, :tagId);
+
+deleteSummaryTag:
+DELETE FROM summaryTagEntity WHERE summaryId = :summaryId AND tagId = :tagId;
+
+deleteAllSummaryTagsForSummary:
+DELETE FROM summaryTagEntity WHERE summaryId = :summaryId;
+
+deleteAllSummaryTagsForTag:
+DELETE FROM summaryTagEntity WHERE tagId = :tagId;
