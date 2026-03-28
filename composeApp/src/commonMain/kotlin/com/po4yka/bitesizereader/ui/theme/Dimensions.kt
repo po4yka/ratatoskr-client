@@ -66,6 +66,15 @@ object Dimensions {
     /** 24.dp - Shared stage indicator size */
     val stageIndicatorSize = 24.dp
 
+    /** 56.dp - Reading goal circular progress ring size */
+    val readingGoalRingSize = 56.dp
+
+    /** 6.dp - Reading goal progress ring stroke width */
+    val readingGoalRingStrokeWidth = 6.dp
+
+    /** 12.dp - Inline icon size inside reading goal streak row */
+    val readingGoalInlineIconSize = 12.dp
+
     /** 200.dp - Width of a recommendation card in the horizontal strip */
     val recommendationCardWidth = 200.dp
 
