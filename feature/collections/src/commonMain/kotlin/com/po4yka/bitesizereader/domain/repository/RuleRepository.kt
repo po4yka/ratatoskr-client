@@ -34,7 +34,14 @@ interface RuleRepository {
 
     suspend fun deleteRule(ruleId: Int)
 
-    suspend fun testRule(ruleId: Int, summaryId: Int): TestRuleResult
+    suspend fun testRule(
+        ruleId: Int,
+        summaryId: Int,
+    ): TestRuleResult
 
-    suspend fun getRuleLogs(ruleId: Int, limit: Int = 50, offset: Int = 0): List<RuleLog>
+    suspend fun getRuleLogs(
+        ruleId: Int,
+        limit: Int = 50,
+        offset: Int = 0,
+    ): List<RuleLog>
 }

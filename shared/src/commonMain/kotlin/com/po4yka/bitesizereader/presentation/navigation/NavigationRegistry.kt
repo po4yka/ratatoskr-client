@@ -313,9 +313,7 @@ private fun mainTabEntry(
         override val routeFactory: RouteFactory<MainRoute, MainComponent.Child> = routeFactory
     }
 
-private fun routeEntry(
-    routeFactory: RouteFactory<MainRoute, MainComponent.Child>,
-): MainTabEntry =
+private fun routeEntry(routeFactory: RouteFactory<MainRoute, MainComponent.Child>): MainTabEntry =
     object : MainTabEntry {
         override val tab: MainComponent.Tab? = null
         override val defaultRoute: MainRoute? = null

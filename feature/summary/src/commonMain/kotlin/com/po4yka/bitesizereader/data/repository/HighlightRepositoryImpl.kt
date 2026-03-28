@@ -165,14 +165,16 @@ class HighlightRepositoryImpl(
     ): String {
         val remoteId = summaryId.toLongOrNull() ?: return "pending"
         return try {
-            val response = highlightsApi.createHighlight(
-                summaryId = remoteId,
-                request = CreateHighlightRequestDto(
-                    text = text,
-                    startOffset = nodeOffset,
-                    color = color.colorName,
-                ),
-            )
+            val response =
+                highlightsApi.createHighlight(
+                    summaryId = remoteId,
+                    request =
+                        CreateHighlightRequestDto(
+                            text = text,
+                            startOffset = nodeOffset,
+                            color = color.colorName,
+                        ),
+                )
             if (response.success) "synced" else "pending"
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.debug { "Highlight create will be synced later: ${e.message}" }
@@ -185,18 +187,21 @@ class HighlightRepositoryImpl(
      * Returns true on success, false to queue for later sync.
      */
     private suspend fun trySyncUpdate(highlightId: String): Boolean {
-        val entity = database.databaseQueries.getHighlightById(highlightId).executeAsOneOrNull()
-            ?: return false
+        val entity =
+            database.databaseQueries.getHighlightById(highlightId).executeAsOneOrNull()
+                ?: return false
         val remoteId = entity.summaryId.toLongOrNull() ?: return false
         return try {
-            val response = highlightsApi.updateHighlight(
-                summaryId = remoteId,
-                highlightId = highlightId,
-                request = UpdateHighlightRequestDto(
-                    color = entity.color,
-                    note = entity.note,
-                ),
-            )
+            val response =
+                highlightsApi.updateHighlight(
+                    summaryId = remoteId,
+                    highlightId = highlightId,
+                    request =
+                        UpdateHighlightRequestDto(
+                            color = entity.color,
+                            note = entity.note,
+                        ),
+                )
             if (response.success) {
                 database.databaseQueries.updateHighlightSyncStatus("synced", highlightId)
                 true
@@ -213,7 +218,10 @@ class HighlightRepositoryImpl(
      * Attempt to delete the highlight on the server immediately.
      * Returns true on success, false to queue for later sync.
      */
-    private suspend fun trySyncDelete(summaryId: String, highlightId: String): Boolean {
+    private suspend fun trySyncDelete(
+        summaryId: String,
+        highlightId: String,
+    ): Boolean {
         val remoteId = summaryId.toLongOrNull() ?: return false
         return try {
             val response = highlightsApi.deleteHighlight(remoteId, highlightId)

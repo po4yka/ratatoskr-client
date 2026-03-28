@@ -6,6 +6,8 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class TestRuleUseCase(private val ruleRepository: RuleRepository) {
-    suspend operator fun invoke(ruleId: Int, summaryId: Int): TestRuleResult =
-        ruleRepository.testRule(ruleId = ruleId, summaryId = summaryId)
+    suspend operator fun invoke(
+        ruleId: Int,
+        summaryId: Int,
+    ): TestRuleResult = ruleRepository.testRule(ruleId = ruleId, summaryId = summaryId)
 }

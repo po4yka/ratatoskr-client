@@ -30,17 +30,18 @@ class RuleRepositoryImpl(
         priority: Int,
         description: String?,
     ): AutomationRule {
-        val response = rulesApi.createRule(
-            CreateRuleRequestDto(
-                name = name,
-                eventType = eventType,
-                actions = actions,
-                conditions = conditions,
-                matchMode = matchMode,
-                priority = priority,
-                description = description,
-            ),
-        )
+        val response =
+            rulesApi.createRule(
+                CreateRuleRequestDto(
+                    name = name,
+                    eventType = eventType,
+                    actions = actions,
+                    conditions = conditions,
+                    matchMode = matchMode,
+                    priority = priority,
+                    description = description,
+                ),
+            )
         return requireNotNull(response.data) { "Server returned no data for rule creation" }.toDomain()
     }
 
@@ -60,19 +61,20 @@ class RuleRepositoryImpl(
         description: String?,
         enabled: Boolean?,
     ): AutomationRule {
-        val response = rulesApi.updateRule(
-            ruleId,
-            UpdateRuleRequestDto(
-                name = name,
-                eventType = eventType,
-                conditions = conditions,
-                actions = actions,
-                matchMode = matchMode,
-                priority = priority,
-                description = description,
-                enabled = enabled,
-            ),
-        )
+        val response =
+            rulesApi.updateRule(
+                ruleId,
+                UpdateRuleRequestDto(
+                    name = name,
+                    eventType = eventType,
+                    conditions = conditions,
+                    actions = actions,
+                    matchMode = matchMode,
+                    priority = priority,
+                    description = description,
+                    enabled = enabled,
+                ),
+            )
         return requireNotNull(response.data) { "Server returned no data for rule update" }.toDomain()
     }
 
@@ -80,12 +82,19 @@ class RuleRepositoryImpl(
         rulesApi.deleteRule(ruleId)
     }
 
-    override suspend fun testRule(ruleId: Int, summaryId: Int): TestRuleResult {
+    override suspend fun testRule(
+        ruleId: Int,
+        summaryId: Int,
+    ): TestRuleResult {
         val response = rulesApi.testRule(ruleId, TestRuleRequestDto(summaryId = summaryId))
         return requireNotNull(response.data) { "Server returned no data for rule test" }.toDomain()
     }
 
-    override suspend fun getRuleLogs(ruleId: Int, limit: Int, offset: Int): List<RuleLog> {
+    override suspend fun getRuleLogs(
+        ruleId: Int,
+        limit: Int,
+        offset: Int,
+    ): List<RuleLog> {
         val response = rulesApi.getRuleLogs(ruleId, limit = limit, offset = offset)
         return response.data?.logs?.map { it.toDomain() } ?: emptyList()
     }

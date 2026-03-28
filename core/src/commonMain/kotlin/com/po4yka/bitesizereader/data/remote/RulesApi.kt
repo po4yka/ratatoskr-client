@@ -17,11 +17,21 @@ interface RulesApi {
 
     suspend fun getRule(ruleId: Int): ApiResponseDto<RuleDto>
 
-    suspend fun updateRule(ruleId: Int, request: UpdateRuleRequestDto): ApiResponseDto<RuleDto>
+    suspend fun updateRule(
+        ruleId: Int,
+        request: UpdateRuleRequestDto,
+    ): ApiResponseDto<RuleDto>
 
     suspend fun deleteRule(ruleId: Int): ApiResponseDto<RuleDeleteResponseDto>
 
-    suspend fun testRule(ruleId: Int, request: TestRuleRequestDto): ApiResponseDto<TestRuleResponseDto>
+    suspend fun testRule(
+        ruleId: Int,
+        request: TestRuleRequestDto,
+    ): ApiResponseDto<TestRuleResponseDto>
 
-    suspend fun getRuleLogs(ruleId: Int, limit: Int = 50, offset: Int = 0): ApiResponseDto<RuleLogListResponseDto>
+    suspend fun getRuleLogs(
+        ruleId: Int,
+        limit: Int = 50,
+        offset: Int = 0,
+    ): ApiResponseDto<RuleLogListResponseDto>
 }

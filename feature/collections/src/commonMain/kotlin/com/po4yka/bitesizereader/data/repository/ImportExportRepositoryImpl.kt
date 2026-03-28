@@ -18,14 +18,15 @@ class ImportExportRepositoryImpl(
         targetCollectionId: Int?,
         skipDuplicates: Boolean,
     ): ImportJob {
-        val response = api.importBookmarks(
-            fileBytes = fileBytes,
-            fileName = fileName,
-            summarize = summarize,
-            createTags = createTags,
-            targetCollectionId = targetCollectionId,
-            skipDuplicates = skipDuplicates,
-        )
+        val response =
+            api.importBookmarks(
+                fileBytes = fileBytes,
+                fileName = fileName,
+                summarize = summarize,
+                createTags = createTags,
+                targetCollectionId = targetCollectionId,
+                skipDuplicates = skipDuplicates,
+            )
         return requireNotNull(response.data) { "Server returned no data for import" }.toDomain()
     }
 

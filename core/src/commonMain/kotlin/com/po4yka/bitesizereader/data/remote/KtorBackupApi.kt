@@ -52,11 +52,16 @@ class KtorBackupApi(private val client: HttpClient) : BackupApi {
     override suspend fun restoreBackup(fileBytes: ByteArray): ApiResponseDto<BackupRestoreResponseDto> {
         return client.submitFormWithBinaryData(
             url = "v1/backups/restore",
-            formData = formData {
-                append("file", fileBytes, Headers.build {
-                    append(HttpHeaders.ContentDisposition, "filename=\"backup.zip\"")
-                })
-            },
+            formData =
+                formData {
+                    append(
+                        "file",
+                        fileBytes,
+                        Headers.build {
+                            append(HttpHeaders.ContentDisposition, "filename=\"backup.zip\"")
+                        },
+                    )
+                },
         ).body()
     }
 

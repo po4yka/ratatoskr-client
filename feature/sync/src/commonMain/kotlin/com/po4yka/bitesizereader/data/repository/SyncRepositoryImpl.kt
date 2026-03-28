@@ -7,7 +7,6 @@ import com.po4yka.bitesizereader.data.mappers.toDto
 import com.po4yka.bitesizereader.data.remote.HighlightsApi
 import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.data.remote.SyncApi
-import com.po4yka.bitesizereader.database.PendingOperationEntity
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto

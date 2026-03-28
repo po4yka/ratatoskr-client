@@ -103,7 +103,7 @@ fun MainScreen(
                         Modifier
                             .weight(1f)
                             .fillMaxWidth(),
-                    ) {
+                ) {
                     ScreenContent(
                         childStack = childStack,
                         readingGoalViewModel = component.readingGoalViewModel,

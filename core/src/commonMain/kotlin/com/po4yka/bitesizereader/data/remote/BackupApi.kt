@@ -23,7 +23,5 @@ interface BackupApi {
 
     suspend fun getSchedule(): ApiResponseDto<BackupScheduleResponseDto>
 
-    suspend fun updateSchedule(
-        request: UpdateBackupScheduleRequestDto,
-    ): ApiResponseDto<BackupScheduleResponseDto>
+    suspend fun updateSchedule(request: UpdateBackupScheduleRequestDto): ApiResponseDto<BackupScheduleResponseDto>
 }

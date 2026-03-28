@@ -6,6 +6,8 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class SubscribeToFeedUseCase(private val rssRepository: RssRepository) {
-    suspend operator fun invoke(url: String, categoryId: Int? = null): RssFeedSubscription =
-        rssRepository.subscribe(url = url, categoryId = categoryId)
+    suspend operator fun invoke(
+        url: String,
+        categoryId: Int? = null,
+    ): RssFeedSubscription = rssRepository.subscribe(url = url, categoryId = categoryId)
 }

@@ -12,6 +12,8 @@ class ManageSummaryTagsUseCase(private val tagRepository: TagRepository) {
         tagNames: List<String>? = null,
     ): List<Tag> = tagRepository.attachTags(summaryId = summaryId, tagIds = tagIds, tagNames = tagNames)
 
-    suspend fun detach(summaryId: Long, tagId: Int) =
-        tagRepository.detachTag(summaryId = summaryId, tagId = tagId)
+    suspend fun detach(
+        summaryId: Long,
+        tagId: Int,
+    ) = tagRepository.detachTag(summaryId = summaryId, tagId = tagId)
 }

@@ -3,10 +3,8 @@ package com.po4yka.bitesizereader.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
 import com.po4yka.bitesizereader.ui.theme.Spacing
