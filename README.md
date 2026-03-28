@@ -120,8 +120,7 @@ bite-size-reader-client/
  gradle/
     libs.versions.toml          # Version catalog
  README.md                        # This file
- TODO.md                          # Implementation checklist
- ROADMAP.md                       # Development phases
+ docs/                            # Reference documentation
 ```
 
 ## Backend API Integration
@@ -1001,7 +1000,7 @@ class LoginWithTelegramUseCase(
 }
 ```
 
-See [TODO.md](./TODO.md) for step-by-step implementation tasks.
+See [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) for setup and workflow guidance.
 
 ## Getting Started
 

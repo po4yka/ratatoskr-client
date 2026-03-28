@@ -74,7 +74,6 @@ Central navigation hub for Bite-Size Reader client documentation.
 |----------|-------------|
 | [CICD.md](CICD.md) | GitHub Actions workflows |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | Development setup |
-| [SETUP.md](../SETUP.md) | Initial project setup |
 
 ---
 
@@ -84,8 +83,7 @@ Central navigation hub for Bite-Size Reader client documentation.
 |------|-------------|
 | [CLAUDE.md](../CLAUDE.md) | AI assistant guidance (build commands, patterns) |
 | [README.md](../README.md) | Project overview |
-| [ROADMAP.md](../ROADMAP.md) | Development roadmap |
-| [TODO.md](../TODO.md) | Implementation checklist |
+| [CHANGELOG.md](../CHANGELOG.md) | Release notes |
 
 ---
 
