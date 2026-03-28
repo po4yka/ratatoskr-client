@@ -13,6 +13,8 @@ import com.po4yka.bitesizereader.data.remote.dto.UpdateHighlightRequestDto
 import com.po4yka.bitesizereader.database.PendingOperationEntity
 import com.po4yka.bitesizereader.data.remote.dto.HighlightDto
 import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
+import com.po4yka.bitesizereader.data.remote.dto.SyncSummaryTagDto
+import com.po4yka.bitesizereader.data.remote.dto.SyncTagDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto
@@ -182,7 +184,7 @@ class SyncRepositoryImpl(
         val response = api.createSession(request)
         if (response.success && response.data != null) {
             val data = response.data
-            logger.info { "Created sync session: ${data.sessionId}, totalItems=${data.totalItems}" }
+            logger.info { "Created sync session: ${data.sessionId}, defaultLimit=${data.defaultLimit}" }
             val expiresAt =
                 data.expiresAt?.let {
                     try {
@@ -193,7 +195,7 @@ class SyncRepositoryImpl(
                 }
             return SyncSessionInfo(
                 sessionId = data.sessionId,
-                totalItems = data.totalItems,
+                totalItems = data.defaultLimit,
                 expiresAt = expiresAt,
             )
         } else {
@@ -496,7 +498,7 @@ class SyncRepositoryImpl(
                 chunk.forEach { item ->
                     if (processSyncItem(item)) {
                         successCount++
-                        fullSyncReceivedIds?.add(item.id.toString())
+                        fullSyncReceivedIds?.add(item.idAsString)
                     } else {
                         errorCount++
                     }
@@ -597,11 +599,19 @@ class SyncRepositoryImpl(
             }
         }
 
-        // Process deletes in sub-chunks
+        // Process deletes in sub-chunks (deleted items are full envelope objects)
         data.deleted.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
-                chunk.forEach { id ->
-                    database.databaseQueries.deleteSummary(id.toString())
+                chunk.forEach { item ->
+                    when (item.entityType) {
+                        "summary" -> database.databaseQueries.deleteSummary(item.idAsString)
+                        "highlight" -> database.databaseQueries.deleteHighlightById(item.idAsString)
+                        "tag" -> item.idAsLong?.toInt()?.let { database.databaseQueries.deleteTag(it) }
+                        "summary_tag" -> {
+                            // Summary-tag associations are cleaned up via tag delete cascade
+                        }
+                        else -> logger.debug { "Ignoring delete for entity type: ${item.entityType}" }
+                    }
                 }
             }
         }
@@ -688,7 +698,7 @@ class SyncRepositoryImpl(
     private fun processSyncItem(item: SyncItemDto): Boolean {
         return when (item.entityType) {
             "summary" -> {
-                val entity = item.summary?.toSummaryEntity(item.id)
+                val entity = item.summary?.toSummaryEntity(item.idAsLong ?: 0L)
                 if (entity != null) {
                     database.databaseQueries.insertSummary(entity)
                     true
@@ -700,7 +710,7 @@ class SyncRepositoryImpl(
                 try {
                     val highlightData = item.highlight
                     if (highlightData == null) {
-                        logger.warn { "Highlight sync item ${item.id} has no highlight payload, skipping" }
+                        logger.warn { "Highlight sync item ${item.idAsString} has no highlight payload, skipping" }
                         false
                     } else {
                         val dto =
@@ -722,13 +732,66 @@ class SyncRepositoryImpl(
                         true
                     }
                 } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                    logger.error(e) { "Failed to process highlight sync item ${item.id}" }
+                    logger.error(e) { "Failed to process highlight sync item ${item.idAsString}" }
+                    false
+                }
+            }
+            "tag" -> {
+                try {
+                    val tagData = item.tag
+                    if (tagData == null) {
+                        logger.warn { "Tag sync item ${item.idAsString} has no tag payload, skipping" }
+                        false
+                    } else {
+                        val dto =
+                            kotlinx.serialization.json.Json.decodeFromJsonElement(
+                                SyncTagDto.serializer(),
+                                tagData,
+                            )
+                        if (!dto.isDeleted) {
+                            database.databaseQueries.insertOrReplaceTag(
+                                id = dto.id,
+                                name = dto.name,
+                                color = dto.color,
+                                summaryCount = 0,
+                                createdAt = dto.createdAt,
+                                updatedAt = dto.updatedAt,
+                                syncStatus = "synced",
+                            )
+                        }
+                        true
+                    }
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                    logger.error(e) { "Failed to process tag sync item ${item.idAsString}" }
+                    false
+                }
+            }
+            "summary_tag" -> {
+                try {
+                    val stData = item.summaryTag
+                    if (stData == null) {
+                        logger.warn { "SummaryTag sync item ${item.idAsString} has no payload, skipping" }
+                        false
+                    } else {
+                        val dto =
+                            kotlinx.serialization.json.Json.decodeFromJsonElement(
+                                SyncSummaryTagDto.serializer(),
+                                stData,
+                            )
+                        database.databaseQueries.insertSummaryTag(
+                            summaryId = dto.summaryId.toString(),
+                            tagId = dto.tagId,
+                        )
+                        true
+                    }
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                    logger.error(e) { "Failed to process summary_tag sync item ${item.idAsString}" }
                     false
                 }
             }
             else -> {
-                logger.warn { "Unknown entity type: ${item.entityType}" }
-                false
+                logger.debug { "Skipping entity type not needed on mobile: ${item.entityType}" }
+                true
             }
         }
     }

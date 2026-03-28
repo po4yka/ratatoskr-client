@@ -3,6 +3,8 @@ package com.po4yka.bitesizereader.data.remote.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.longOrNull
 
 /**
  * Request to create a sync session.
@@ -15,75 +17,80 @@ data class SyncSessionRequestDto(
 
 /**
  * Sync session response - provides session ID for subsequent sync calls.
+ * Backend serializes via Pydantic `SyncSessionData` with camelCase aliases.
  */
 @Serializable
 data class SyncSessionResponseDto(
-    /** Sync session identifier */
-    @SerialName("session_id") val sessionId: String,
-    /** Session expiration time */
-    @SerialName("expires_at") val expiresAt: String? = null,
-    /** Total items available for sync */
-    @SerialName("total_items") val totalItems: Int? = null,
+    @SerialName("sessionId") val sessionId: String,
+    @SerialName("expiresAt") val expiresAt: String? = null,
+    @SerialName("defaultLimit") val defaultLimit: Int? = null,
+    @SerialName("maxLimit") val maxLimit: Int? = null,
 )
 
 /**
  * Full sync response data (chunked).
+ * Backend serializes via Pydantic `FullSyncResponseData` with camelCase aliases.
  */
 @Serializable
 data class FullSyncResponseDto(
-    /** Synced items in this chunk */
     @SerialName("items") val items: List<SyncItemDto> = emptyList(),
-    /** Whether more chunks are available */
-    @SerialName("has_more") val hasMore: Boolean = false,
-    /** Cursor for fetching next chunk */
-    @SerialName("next_cursor") val nextCursor: Long? = null,
-    /** Current server version */
-    @SerialName("server_version") val serverVersion: Long? = null,
+    @SerialName("hasMore") val hasMore: Boolean = false,
+    @SerialName("nextSince") val nextCursor: Long? = null,
+    @SerialName("serverVersion") val serverVersion: Long? = null,
 )
 
 /**
  * Delta sync response data.
+ * Backend serializes via Pydantic `DeltaSyncResponseData` with camelCase aliases.
+ * The `deleted` array contains full `SyncEntityEnvelope` objects (not bare IDs).
  */
 @Serializable
 data class DeltaSyncResponseDto(
-    /** Created items since cursor */
     @SerialName("created") val created: List<SyncItemDto> = emptyList(),
-    /** Updated items since cursor */
     @SerialName("updated") val updated: List<SyncItemDto> = emptyList(),
-    /** Deleted item IDs since cursor */
-    @SerialName("deleted") val deleted: List<Long> = emptyList(),
-    /** Whether more changes are available */
-    @SerialName("has_more") val hasMore: Boolean = false,
-    /** New cursor for subsequent delta sync */
-    @SerialName("new_cursor") val newCursor: Long? = null,
-    /** Current server version */
-    @SerialName("server_version") val serverVersion: Long? = null,
+    @SerialName("deleted") val deleted: List<SyncItemDto> = emptyList(),
+    @SerialName("hasMore") val hasMore: Boolean = false,
+    @SerialName("nextSince") val newCursor: Long? = null,
+    @SerialName("serverVersion") val serverVersion: Long? = null,
 )
 
 /**
- * Individual sync item.
- * Note: The server sends entity-specific data under keys matching the entity type
- * (e.g., "summary" for summary entities, "highlight" for highlight entities).
- * Each entity type has its own typed field on the envelope, consistent with the
- * backend SyncEntityEnvelope model.
+ * Individual sync item (maps to backend `SyncEntityEnvelope`).
+ *
+ * The server sends entity-specific data under keys matching the entity type.
+ * Each entity type has its own typed field on the envelope.
+ * The `id` field is `JsonPrimitive` because it can be `int` (summaries, tags)
+ * or `string` (highlights use UUIDs).
  */
 @Serializable
 data class SyncItemDto(
-    @SerialName("id") val id: Long,
-    @SerialName("entityType") val entityType: String, // "summary", "highlight", etc.
-    @SerialName("serverVersion") val serverVersion: Long,
-    /** Summary data - populated when entityType is "summary" */
+    @SerialName("id") val id: JsonPrimitive,
+    @SerialName("entityType") val entityType: String,
+    @SerialName("serverVersion") val serverVersion: Long = 0,
     @SerialName("summary") val summary: JsonObject? = null,
-    /** Highlight data - populated when entityType is "highlight" */
+    @SerialName("request") val request: JsonObject? = null,
+    @SerialName("preference") val preference: JsonObject? = null,
+    @SerialName("stat") val stat: JsonObject? = null,
+    @SerialName("crawlResult") val crawlResult: JsonObject? = null,
+    @SerialName("llmCall") val llmCall: JsonObject? = null,
     @SerialName("highlight") val highlight: JsonObject? = null,
+    @SerialName("tag") val tag: JsonObject? = null,
+    @SerialName("summaryTag") val summaryTag: JsonObject? = null,
     @SerialName("createdAt") val createdAt: String? = null,
     @SerialName("updatedAt") val updatedAt: String? = null,
     @SerialName("deletedAt") val deletedAt: String? = null,
-)
+) {
+    /** ID as String (works for both numeric and UUID IDs). */
+    val idAsString: String get() = id.content
+
+    /** ID as Long (returns null for non-numeric IDs like highlight UUIDs). */
+    val idAsLong: Long? get() = id.longOrNull
+}
 
 /**
  * Typed representation of a highlight payload received during sync.
  * Matches the "highlight" field on the sync envelope for entity_type="highlight".
+ * Backend returns raw dicts (not Pydantic aliases), so field names are snake_case.
  */
 @Serializable
 data class HighlightDto(
@@ -96,6 +103,34 @@ data class HighlightDto(
     val note: String? = null,
     @SerialName("created_at") val createdAt: String,
     @SerialName("updated_at") val updatedAt: String,
+)
+
+/**
+ * Typed representation of a tag payload received during sync.
+ * Backend returns raw dicts, so field names are snake_case.
+ */
+@Serializable
+data class SyncTagDto(
+    val id: Int,
+    val name: String,
+    @SerialName("normalized_name") val normalizedName: String? = null,
+    val color: String? = null,
+    @SerialName("is_deleted") val isDeleted: Boolean = false,
+    @SerialName("created_at") val createdAt: String,
+    @SerialName("updated_at") val updatedAt: String,
+)
+
+/**
+ * Typed representation of a summary-tag association received during sync.
+ * Backend returns raw dicts, so field names are snake_case.
+ */
+@Serializable
+data class SyncSummaryTagDto(
+    val id: Int,
+    @SerialName("summary_id") val summaryId: Int,
+    @SerialName("tag_id") val tagId: Int,
+    val source: String? = null,
+    @SerialName("created_at") val createdAt: String,
 )
 
 // ============================================================================
@@ -124,12 +159,11 @@ enum class SyncApplyAction {
 
 /**
  * Request to apply local changes to server.
+ * Backend accepts snake_case field names (Pydantic reads by field name, not alias).
  */
 @Serializable
 data class SyncApplyRequestDto(
-    /** Sync session identifier */
     @SerialName("session_id") val sessionId: String,
-    /** List of changes to apply */
     @SerialName("changes") val changes: List<SyncApplyItemDto>,
 )
 
@@ -138,16 +172,11 @@ data class SyncApplyRequestDto(
  */
 @Serializable
 data class SyncApplyItemDto(
-    /** Entity type (e.g., "summary", "collection") */
     @SerialName("entity_type") val entityType: String,
-    /** Entity ID */
     @SerialName("id") val id: Long,
     @SerialName("action") val action: SyncApplyAction,
-    /** Last seen server version for conflict detection */
     @SerialName("last_seen_version") val lastSeenVersion: Long,
-    /** Entity payload for create/update (not needed for delete) */
     @SerialName("payload") val payload: JsonObject? = null,
-    /** Client-side timestamp of the change */
     @SerialName("client_timestamp") val clientTimestamp: String? = null,
 )
 
@@ -156,11 +185,8 @@ data class SyncApplyItemDto(
  */
 @Serializable
 data class SyncApplyResponseDto(
-    /** Successfully applied changes */
     @SerialName("applied") val applied: List<SyncApplyResultDto> = emptyList(),
-    /** Conflicting changes that weren't applied */
     @SerialName("conflicts") val conflicts: List<SyncConflictDto> = emptyList(),
-    /** New server version after apply */
     @SerialName("server_version") val serverVersion: Long? = null,
 )
 
@@ -185,6 +211,5 @@ data class SyncConflictDto(
     @SerialName("client_version") val clientVersion: Long,
     @SerialName("server_version") val serverVersion: Long,
     @SerialName("reason") val reason: String,
-    /** Server's current data (for manual conflict resolution) */
     @SerialName("server_payload") val serverPayload: JsonObject? = null,
 )
