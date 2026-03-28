@@ -13,11 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.error_view_title
+import bitesizereader.composeapp.generated.resources.settings_retry
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
 import com.gabrieldrn.carbon.button.ButtonType
+import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Error state view component using Carbon Design System
@@ -32,27 +37,27 @@ fun ErrorView(
         modifier =
             modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(Spacing.xl),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             imageVector = CarbonIcons.WarningAlt,
-            contentDescription = "Error",
+            contentDescription = stringResource(Res.string.error_view_title),
             tint = Carbon.theme.supportError,
-            modifier = Modifier.size(64.dp),
+            modifier = Modifier.size(IconSizes.xl),
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
-            text = "Oops! Something went wrong",
+            text = stringResource(Res.string.error_view_title),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
 
         Text(
             text = message,
@@ -62,10 +67,10 @@ fun ErrorView(
         )
 
         if (onRetry != null) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(Spacing.lg))
 
             Button(
-                label = "Retry",
+                label = stringResource(Res.string.settings_retry),
                 onClick = onRetry,
                 buttonType = ButtonType.Primary,
             )

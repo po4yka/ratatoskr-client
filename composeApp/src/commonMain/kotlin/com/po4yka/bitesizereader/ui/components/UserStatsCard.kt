@@ -14,13 +14,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.stats_avg_per_summary
+import bitesizereader.composeapp.generated.resources.stats_read
+import bitesizereader.composeapp.generated.resources.stats_total
+import bitesizereader.composeapp.generated.resources.stats_total_reading_time
+import bitesizereader.composeapp.generated.resources.stats_unread
+import bitesizereader.composeapp.generated.resources.user_stats_average_minutes
+import bitesizereader.composeapp.generated.resources.user_stats_favorite_topics
+import bitesizereader.composeapp.generated.resources.user_stats_hours_minutes_short
+import bitesizereader.composeapp.generated.resources.user_stats_hours_short
+import bitesizereader.composeapp.generated.resources.user_stats_loading
+import bitesizereader.composeapp.generated.resources.user_stats_member_since
+import bitesizereader.composeapp.generated.resources.user_stats_minutes_short
+import bitesizereader.composeapp.generated.resources.user_stats_title
+import bitesizereader.composeapp.generated.resources.user_stats_topic_chip
+import bitesizereader.composeapp.generated.resources.user_stats_unavailable
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.TopicStat
 import com.po4yka.bitesizereader.domain.model.UserStats
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Card displaying user statistics on the settings screen.
@@ -41,9 +57,9 @@ fun UserStatsCard(
                 .background(Carbon.theme.layer01)
                 .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
-    ) {
+        ) {
         Text(
-            text = "Your Statistics",
+            text = stringResource(Res.string.user_stats_title),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
@@ -56,7 +72,7 @@ fun UserStatsCard(
                 ) {
                     SmallLoading()
                     Text(
-                        text = "Loading stats...",
+                        text = stringResource(Res.string.user_stats_loading),
                         style = Carbon.typography.label01,
                         color = Carbon.theme.textSecondary,
                     )
@@ -68,9 +84,9 @@ fun UserStatsCard(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
-                    StatItem(label = "Total", value = stats.totalSummaries.toString())
-                    StatItem(label = "Read", value = stats.readCount.toString())
-                    StatItem(label = "Unread", value = stats.unreadCount.toString())
+                    StatItem(label = stringResource(Res.string.stats_total), value = stats.totalSummaries.toString())
+                    StatItem(label = stringResource(Res.string.stats_read), value = stats.readCount.toString())
+                    StatItem(label = stringResource(Res.string.stats_unread), value = stats.unreadCount.toString())
                 }
 
                 // Reading time stats (if available)
@@ -80,7 +96,7 @@ fun UserStatsCard(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = "Total reading time",
+                            text = stringResource(Res.string.stats_total_reading_time),
                             style = Carbon.typography.bodyCompact01,
                             color = Carbon.theme.textSecondary,
                         )
@@ -98,12 +114,12 @@ fun UserStatsCard(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = "Avg. per article",
+                            text = stringResource(Res.string.stats_avg_per_summary),
                             style = Carbon.typography.bodyCompact01,
                             color = Carbon.theme.textSecondary,
                         )
                         Text(
-                            text = "${avgTime.toInt()} min",
+                            text = stringResource(Res.string.user_stats_average_minutes, avgTime.toInt()),
                             style = Carbon.typography.bodyCompact01,
                             color = Carbon.theme.textPrimary,
                         )
@@ -116,13 +132,13 @@ fun UserStatsCard(
                         verticalArrangement = Arrangement.spacedBy(Spacing.xs),
                     ) {
                         Text(
-                            text = "Favorite Topics",
+                            text = stringResource(Res.string.user_stats_favorite_topics),
                             style = Carbon.typography.label01,
                             color = Carbon.theme.textSecondary,
                         )
                         FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(Spacing.xxs + 2.dp),
-                            verticalArrangement = Arrangement.spacedBy(Spacing.xxs + 2.dp),
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
                         ) {
                             topics.take(5).forEach { topicStat ->
                                 TopicChip(topicStat = topicStat)
@@ -138,7 +154,7 @@ fun UserStatsCard(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = "Member since",
+                            text = stringResource(Res.string.user_stats_member_since),
                             style = Carbon.typography.bodyCompact01,
                             color = Carbon.theme.textSecondary,
                         )
@@ -152,7 +168,7 @@ fun UserStatsCard(
             }
             else -> {
                 Text(
-                    text = "Stats unavailable",
+                    text = stringResource(Res.string.user_stats_unavailable),
                     style = Carbon.typography.bodyCompact01,
                     color = Carbon.theme.textSecondary,
                 )
@@ -192,7 +208,7 @@ private fun TopicChip(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "${topicStat.topic} (${topicStat.count})",
+        text = stringResource(Res.string.user_stats_topic_chip, topicStat.topic, topicStat.count),
         style = Carbon.typography.label01,
         color = Carbon.theme.textOnColor,
         modifier =
@@ -203,13 +219,18 @@ private fun TopicChip(
     )
 }
 
+@Composable
 private fun formatReadingTime(minutes: Int): String {
     return when {
-        minutes < 60 -> "$minutes min"
+        minutes < 60 -> stringResource(Res.string.user_stats_minutes_short, minutes)
         else -> {
             val hours = minutes / 60
             val mins = minutes % 60
-            if (mins > 0) "${hours}h ${mins}m" else "${hours}h"
+            if (mins > 0) {
+                stringResource(Res.string.user_stats_hours_minutes_short, hours, mins)
+            } else {
+                stringResource(Res.string.user_stats_hours_short, hours)
+            }
         }
     }
 }

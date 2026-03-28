@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,12 +52,14 @@ import com.po4yka.bitesizereader.presentation.state.CollectionSettingsState
 import com.po4yka.bitesizereader.presentation.state.CollectionSharingState
 import com.po4yka.bitesizereader.presentation.state.CollectionViewTab
 import com.po4yka.bitesizereader.ui.components.CarbonDialog
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.ui.components.CarbonTextArea
 import com.po4yka.bitesizereader.ui.components.EmptyStateView
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.SummaryCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
 import bitesizereader.composeapp.generated.resources.Res
 import bitesizereader.composeapp.generated.resources.a11y_navigate_back
@@ -82,6 +83,9 @@ import bitesizereader.composeapp.generated.resources.collection_view_items_count
 import bitesizereader.composeapp.generated.resources.collection_view_name
 import bitesizereader.composeapp.generated.resources.collection_view_no_collaborators
 import bitesizereader.composeapp.generated.resources.collection_view_remove
+import bitesizereader.composeapp.generated.resources.collection_view_role_editor
+import bitesizereader.composeapp.generated.resources.collection_view_role_owner
+import bitesizereader.composeapp.generated.resources.collection_view_role_viewer
 import bitesizereader.composeapp.generated.resources.collection_view_save_changes
 import bitesizereader.composeapp.generated.resources.collection_view_saving
 import bitesizereader.composeapp.generated.resources.collection_view_settings_title
@@ -175,14 +179,12 @@ private fun CollectionViewHeader(
                     .padding(horizontal = Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = CarbonIcons.ArrowLeft,
-                    contentDescription = stringResource(Res.string.a11y_navigate_back),
-                    tint = Carbon.theme.iconPrimary,
-                    modifier = Modifier.size(24.dp),
-                )
-            }
+            CarbonIconButton(
+                imageVector = CarbonIcons.ArrowLeft,
+                contentDescription = stringResource(Res.string.a11y_navigate_back),
+                onClick = onBackClick,
+                iconSize = IconSizes.md,
+            )
 
             Spacer(modifier = Modifier.width(Spacing.xs))
 
@@ -783,24 +785,32 @@ private fun CollaboratorRow(
                 color = Carbon.theme.textPrimary,
             )
             Text(
-                text = collaborator.role.name,
+                text = collaboratorRoleLabel(collaborator.role),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
         }
 
         if (collaborator.role != CollaboratorRole.Owner && collaborator.userId != null) {
-            IconButton(onClick = { onRemove(collaborator.userId!!) }) {
-                Icon(
-                    imageVector = CarbonIcons.Close,
-                    contentDescription = stringResource(Res.string.collection_view_remove),
-                    tint = Carbon.theme.iconSecondary,
-                    modifier = Modifier.size(20.dp),
-                )
-            }
+            CarbonIconButton(
+                imageVector = CarbonIcons.Close,
+                contentDescription = stringResource(Res.string.collection_view_remove),
+                onClick = { onRemove(collaborator.userId!!) },
+                tint = Carbon.theme.iconSecondary,
+                buttonSize = Dimensions.compactIconButtonSize,
+                iconSize = IconSizes.sm,
+            )
         }
     }
 }
+
+@Composable
+private fun collaboratorRoleLabel(role: CollaboratorRole): String =
+    when (role) {
+        CollaboratorRole.Owner -> stringResource(Res.string.collection_view_role_owner)
+        CollaboratorRole.Editor -> stringResource(Res.string.collection_view_role_editor)
+        CollaboratorRole.Viewer -> stringResource(Res.string.collection_view_role_viewer)
+    }
 
 @Suppress("FunctionNaming")
 @Composable

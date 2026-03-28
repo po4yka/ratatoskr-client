@@ -14,6 +14,7 @@ import com.po4yka.bitesizereader.domain.model.Session
 import com.po4yka.bitesizereader.domain.model.TelegramAuthData
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.model.UserPreferences
+import com.po4yka.bitesizereader.domain.port.AuthSessionPort
 import com.po4yka.bitesizereader.domain.repository.AuthRepository
 import com.po4yka.bitesizereader.util.config.AppConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -25,7 +26,7 @@ import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
-@Single(binds = [AuthRepository::class])
+@Single(binds = [AuthRepository::class, AuthSessionPort::class])
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val secureStorage: SecureStorage,

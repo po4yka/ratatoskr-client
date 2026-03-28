@@ -6,10 +6,12 @@ import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.model.SummaryFeedback
+import com.po4yka.bitesizereader.domain.port.ContentCachePort
+import com.po4yka.bitesizereader.domain.port.SummaryFeedPort
 import kotlinx.coroutines.flow.Flow
 
-interface SummaryRepository {
-    fun getSummaries(
+interface SummaryRepository : SummaryFeedPort, ContentCachePort {
+    override fun getSummaries(
         page: Int,
         pageSize: Int,
         tags: List<String>?,
@@ -61,9 +63,9 @@ interface SummaryRepository {
 
     suspend fun prefetchContent(maxItems: Int): Int
 
-    suspend fun getCacheSize(): Long
+    override suspend fun getCacheSize(): Long
 
-    suspend fun clearContentCache()
+    override suspend fun clearContentCache()
 
     suspend fun evictContentCacheIfNeeded()
 

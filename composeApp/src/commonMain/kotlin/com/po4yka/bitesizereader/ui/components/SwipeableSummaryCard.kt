@@ -31,9 +31,23 @@ import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.summary_card_accessibility_favorited
+import bitesizereader.composeapp.generated.resources.summary_card_accessibility_read_article
+import bitesizereader.composeapp.generated.resources.summary_card_accessibility_reading_time
+import bitesizereader.composeapp.generated.resources.summary_card_accessibility_unread_article
+import bitesizereader.composeapp.generated.resources.summary_card_mark_read
+import bitesizereader.composeapp.generated.resources.swipeable_summary_archive
+import bitesizereader.composeapp.generated.resources.swipeable_summary_archive_action
+import bitesizereader.composeapp.generated.resources.swipeable_summary_delete_action
+import bitesizereader.composeapp.generated.resources.swipeable_summary_mark_read_action
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 private const val SWIPE_THRESHOLD = 100f
@@ -80,29 +94,48 @@ fun SwipeableSummaryCard(
         label = "right_bg_color",
     )
 
-    val readStatus = if (summary.isRead) "Read" else "Unread"
-    val favoriteStatus = if (summary.isFavorited) ", Favorited" else ""
-    val readingTime = summary.readingTimeMin?.let { ", $it minute read" } ?: ""
-    val cardDescription = "${summary.title}. $readStatus article$favoriteStatus$readingTime"
+    val cardDescription =
+        buildString {
+            append(summary.title)
+            append(". ")
+            append(
+                if (summary.isRead) {
+                    stringResource(Res.string.summary_card_accessibility_read_article)
+                } else {
+                    stringResource(Res.string.summary_card_accessibility_unread_article)
+                },
+            )
+            if (summary.isFavorited) {
+                append(" ")
+                append(stringResource(Res.string.summary_card_accessibility_favorited))
+            }
+            summary.readingTimeMin?.let {
+                append(" ")
+                append(stringResource(Res.string.summary_card_accessibility_reading_time, it))
+            }
+        }
+    val archiveActionLabel = stringResource(Res.string.swipeable_summary_archive_action)
+    val deleteActionLabel = stringResource(Res.string.swipeable_summary_delete_action)
+    val markReadActionLabel = stringResource(Res.string.swipeable_summary_mark_read_action)
 
     Box(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                 .semantics {
                     contentDescription = cardDescription
                     customActions =
                         listOf(
-                            CustomAccessibilityAction("Archive article") {
+                            CustomAccessibilityAction(archiveActionLabel) {
                                 onArchiveClick()
                                 true
                             },
-                            CustomAccessibilityAction("Delete article") {
+                            CustomAccessibilityAction(deleteActionLabel) {
                                 onDelete()
                                 true
                             },
-                            CustomAccessibilityAction("Mark as read") {
+                            CustomAccessibilityAction(markReadActionLabel) {
                                 onMarkRead()
                                 true
                             },
@@ -127,12 +160,12 @@ fun SwipeableSummaryCard(
             ) {
                 Icon(
                     imageVector = CarbonIcons.Checkmark,
-                    contentDescription = "Mark as read",
+                    contentDescription = stringResource(Res.string.summary_card_mark_read),
                     tint = Carbon.theme.textOnColor,
                     modifier =
                         Modifier
-                            .padding(start = 24.dp)
-                            .size(24.dp),
+                            .padding(start = Spacing.lg)
+                            .size(Dimensions.stageIndicatorSize),
                 )
             }
 
@@ -147,12 +180,12 @@ fun SwipeableSummaryCard(
             ) {
                 Icon(
                     imageVector = CarbonIcons.Archive,
-                    contentDescription = "Archive",
+                    contentDescription = stringResource(Res.string.swipeable_summary_archive),
                     tint = Carbon.theme.textOnColor,
                     modifier =
                         Modifier
-                            .padding(end = 24.dp)
-                            .size(24.dp),
+                            .padding(end = Spacing.lg)
+                            .size(Dimensions.stageIndicatorSize),
                 )
             }
         }

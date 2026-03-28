@@ -28,7 +28,7 @@ fun BiteSizeReaderTheme(
         theme = carbonTheme,
     ) {
         val materialColorScheme =
-            rememberCarbonMaterialColorScheme()
+            rememberCarbonMaterialColorScheme(darkTheme = darkTheme)
         val materialTypography =
             rememberCarbonMaterialTypography()
 
@@ -41,10 +41,11 @@ fun BiteSizeReaderTheme(
 }
 
 @Composable
-private fun rememberCarbonMaterialColorScheme(): ColorScheme {
+private fun rememberCarbonMaterialColorScheme(darkTheme: Boolean): ColorScheme {
     val theme = Carbon.theme
 
     return remember(
+        darkTheme,
         theme.background,
         theme.backgroundInverse,
         theme.borderSubtle00,
@@ -58,35 +59,67 @@ private fun rememberCarbonMaterialColorScheme(): ColorScheme {
         theme.textPrimary,
         theme.textSecondary,
     ) {
-        androidx.compose.material3.lightColorScheme(
-            primary = theme.interactive,
-            onPrimary = theme.textOnColor,
-            primaryContainer = theme.layer02,
-            onPrimaryContainer = theme.textPrimary,
-            secondary = theme.iconSecondary,
-            onSecondary = theme.textOnColor,
-            secondaryContainer = theme.layer02,
-            onSecondaryContainer = theme.textPrimary,
-            tertiary = theme.linkPrimary,
-            onTertiary = theme.textOnColor,
-            tertiaryContainer = theme.layer02,
-            onTertiaryContainer = theme.textPrimary,
-            error = theme.supportError,
-            onError = theme.textOnColor,
-            errorContainer = theme.supportError,
-            onErrorContainer = theme.textOnColor,
-            background = theme.background,
-            onBackground = theme.textPrimary,
-            surface = theme.layer01,
-            onSurface = theme.textPrimary,
-            surfaceVariant = theme.layer02,
-            onSurfaceVariant = theme.textSecondary,
-            outline = theme.borderSubtle00,
-            outlineVariant = theme.borderSubtle00,
-            inverseSurface = theme.backgroundInverse,
-            inverseOnSurface = theme.textOnColor,
-            inversePrimary = theme.linkPrimary,
-        )
+        if (darkTheme) {
+            androidx.compose.material3.darkColorScheme(
+                primary = theme.interactive,
+                onPrimary = theme.textOnColor,
+                primaryContainer = theme.layer02,
+                onPrimaryContainer = theme.textPrimary,
+                secondary = theme.iconSecondary,
+                onSecondary = theme.textOnColor,
+                secondaryContainer = theme.layer02,
+                onSecondaryContainer = theme.textPrimary,
+                tertiary = theme.linkPrimary,
+                onTertiary = theme.textOnColor,
+                tertiaryContainer = theme.layer02,
+                onTertiaryContainer = theme.textPrimary,
+                error = theme.supportError,
+                onError = theme.textOnColor,
+                errorContainer = theme.supportError,
+                onErrorContainer = theme.textOnColor,
+                background = theme.background,
+                onBackground = theme.textPrimary,
+                surface = theme.layer01,
+                onSurface = theme.textPrimary,
+                surfaceVariant = theme.layer02,
+                onSurfaceVariant = theme.textSecondary,
+                outline = theme.borderSubtle00,
+                outlineVariant = theme.borderSubtle00,
+                inverseSurface = theme.backgroundInverse,
+                inverseOnSurface = theme.textOnColor,
+                inversePrimary = theme.linkPrimary,
+            )
+        } else {
+            androidx.compose.material3.lightColorScheme(
+                primary = theme.interactive,
+                onPrimary = theme.textOnColor,
+                primaryContainer = theme.layer02,
+                onPrimaryContainer = theme.textPrimary,
+                secondary = theme.iconSecondary,
+                onSecondary = theme.textOnColor,
+                secondaryContainer = theme.layer02,
+                onSecondaryContainer = theme.textPrimary,
+                tertiary = theme.linkPrimary,
+                onTertiary = theme.textOnColor,
+                tertiaryContainer = theme.layer02,
+                onTertiaryContainer = theme.textPrimary,
+                error = theme.supportError,
+                onError = theme.textOnColor,
+                errorContainer = theme.supportError,
+                onErrorContainer = theme.textOnColor,
+                background = theme.background,
+                onBackground = theme.textPrimary,
+                surface = theme.layer01,
+                onSurface = theme.textPrimary,
+                surfaceVariant = theme.layer02,
+                onSurfaceVariant = theme.textSecondary,
+                outline = theme.borderSubtle00,
+                outlineVariant = theme.borderSubtle00,
+                inverseSurface = theme.backgroundInverse,
+                inverseOnSurface = theme.textOnColor,
+                inversePrimary = theme.linkPrimary,
+            )
+        }
     }
 }
 

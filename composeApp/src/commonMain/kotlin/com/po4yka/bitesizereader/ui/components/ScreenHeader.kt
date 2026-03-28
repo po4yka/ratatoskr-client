@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -61,14 +59,11 @@ fun ScreenHeader(
     ) {
         // Back button (optional)
         if (onBackClick != null) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = CarbonIcons.ArrowLeft,
-                    contentDescription = stringResource(Res.string.a11y_navigate_back),
-                    tint = Carbon.theme.iconPrimary,
-                    modifier = Modifier.size(IconSizes.md),
-                )
-            }
+            CarbonIconButton(
+                imageVector = CarbonIcons.ArrowLeft,
+                contentDescription = stringResource(Res.string.a11y_navigate_back),
+                onClick = onBackClick,
+            )
         }
 
         // Title
@@ -90,7 +85,7 @@ fun ScreenHeader(
  * @param icon The icon to display
  * @param contentDescription Accessibility description for the icon
  * @param onClick Callback when the button is clicked
- * @param modifier Modifier for the IconButton
+ * @param modifier Modifier for the button container
  */
 @Suppress("FunctionNaming")
 @Composable
@@ -101,15 +96,12 @@ fun HeaderIconButton(
     modifier: Modifier = Modifier,
     tint: androidx.compose.ui.graphics.Color = Carbon.theme.iconPrimary,
 ) {
-    IconButton(
+    CarbonIconButton(
+        imageVector = icon,
+        contentDescription = contentDescription,
         onClick = onClick,
         modifier = modifier,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = tint,
-            modifier = Modifier.size(IconSizes.md),
-        )
-    }
+        tint = tint,
+        iconSize = IconSizes.md,
+    )
 }

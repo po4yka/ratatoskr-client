@@ -1,5 +1,7 @@
 package com.po4yka.bitesizereader.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,18 +11,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.progress_stages_completed
+import bitesizereader.composeapp.generated.resources.progress_stages_failed
+import bitesizereader.composeapp.generated.resources.progress_stages_processing_summary
+import bitesizereader.composeapp.generated.resources.progress_stages_ready
+import bitesizereader.composeapp.generated.resources.progress_stages_submitted
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
 import com.gabrieldrn.carbon.progressbar.ProgressBar
 import com.gabrieldrn.carbon.progressbar.ProgressBarState
 import com.po4yka.bitesizereader.domain.model.RequestStatus
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Progress indicator showing request processing stages using Carbon Design System
@@ -59,29 +68,29 @@ fun ProgressIndicatorWithStages(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         // Stage indicators
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
             StageIndicator(
-                title = "Submitted",
+                title = stringResource(Res.string.progress_stages_submitted),
                 isCompleted = true,
                 isCurrent = status == RequestStatus.PENDING,
                 isFailed = false,
             )
 
             StageIndicator(
-                title = "Processing Summary",
-                isCompleted = status == RequestStatus.COMPLETED,
+                title = stringResource(Res.string.progress_stages_processing_summary),
+                isCompleted = status == RequestStatus.COMPLETED || status == RequestStatus.FAILED,
                 isCurrent = status == RequestStatus.PROCESSING,
-                isFailed = status == RequestStatus.FAILED && status == RequestStatus.PROCESSING,
+                isFailed = status == RequestStatus.FAILED,
             )
 
             StageIndicator(
-                title = "Ready",
+                title = stringResource(Res.string.progress_stages_ready),
                 isCompleted = status == RequestStatus.COMPLETED,
                 isCurrent = false,
                 isFailed = status == RequestStatus.FAILED,
@@ -100,36 +109,38 @@ private fun StageIndicator(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         // Stage icon
         when {
             isFailed -> {
                 Icon(
                     imageVector = CarbonIcons.Close,
-                    contentDescription = "$title failed",
+                    contentDescription = stringResource(Res.string.progress_stages_failed, title),
                     tint = Carbon.theme.supportError,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(Dimensions.stageIndicatorSize),
                 )
             }
             isCompleted -> {
                 Icon(
                     imageVector = CarbonIcons.Checkmark,
-                    contentDescription = "$title completed",
+                    contentDescription = stringResource(Res.string.progress_stages_completed, title),
                     tint = Carbon.theme.supportSuccess,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(Dimensions.stageIndicatorSize),
                 )
             }
             isCurrent -> {
                 SmallLoading(
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(Dimensions.stageIndicatorSize),
                 )
             }
             else -> {
-                Surface(
-                    modifier = Modifier.size(24.dp),
-                    color = Carbon.theme.layer02,
-                ) {}
+                Box(
+                    modifier =
+                        Modifier
+                            .size(Dimensions.stageIndicatorSize)
+                            .background(Carbon.theme.layer02, shape = androidx.compose.foundation.shape.CircleShape),
+                )
             }
         }
 

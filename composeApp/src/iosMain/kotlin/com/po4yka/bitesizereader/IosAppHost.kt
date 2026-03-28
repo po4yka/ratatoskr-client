@@ -1,6 +1,9 @@
 package com.po4yka.bitesizereader
 
+import com.po4yka.bitesizereader.app.AppCompositionRoot
+import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.ios.IosAppBridge
+import com.po4yka.bitesizereader.ios.RecentSummariesSnapshotPublisher
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 
 /**
@@ -11,7 +14,16 @@ import com.po4yka.bitesizereader.presentation.navigation.RootComponent
  * manually on the Swift side.
  */
 class IosAppHost {
-    private val bridge = IosAppBridge()
+    private val compositionRoot: AppCompositionRoot = iosCompositionRoot()
+    private val bridge =
+        IosAppBridge(
+            compositionRoot = compositionRoot,
+            syncDataUseCase = compositionRoot.koin.get<SyncDataUseCase>(),
+            snapshotPublisher =
+                RecentSummariesSnapshotPublisher(
+                    getSummariesUseCase = compositionRoot.koin.get(),
+                ),
+        )
 
     val rootComponent: RootComponent
         get() = bridge.rootComponent

@@ -9,26 +9,28 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.po4yka.bitesizereader.domain.usecase.GetProxiedImageUrlUseCase
+import com.po4yka.bitesizereader.navigation.RootChildDescriptor
+import com.po4yka.bitesizereader.navigation.RootScreen
+import com.po4yka.bitesizereader.presentation.navigation.AuthComponent
+import com.po4yka.bitesizereader.presentation.navigation.MainComponent
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 import com.po4yka.bitesizereader.ui.components.LocalImageUrlTransformer
 import com.po4yka.bitesizereader.ui.screens.AuthScreen
 import com.po4yka.bitesizereader.ui.screens.MainScreen
 import com.po4yka.bitesizereader.ui.theme.BiteSizeReaderTheme
-import org.koin.compose.koinInject
 
 /** Main app composable with Decompose navigation */
 @Composable
 fun App(
     rootComponent: RootComponent,
+    imageUrlTransformer: (String) -> String,
     modifier: Modifier = Modifier,
 ) {
     val childStack = rootComponent.childStack.subscribeAsState()
-    val getProxiedImageUrlUseCase = koinInject<GetProxiedImageUrlUseCase>()
 
     BiteSizeReaderTheme {
         CompositionLocalProvider(
-            LocalImageUrlTransformer provides getProxiedImageUrlUseCase::invoke,
+            LocalImageUrlTransformer provides imageUrlTransformer,
         ) {
             Children(
                 stack = childStack.value,
@@ -37,15 +39,19 @@ fun App(
                         .fillMaxSize()
                         .windowInsetsPadding(WindowInsets.safeDrawing),
             ) { child ->
-                when (val instance = child.instance) {
-                    is RootComponent.Child.Auth ->
+                val instance = child.instance
+                when (instance.screen) {
+                    RootScreen.AUTH ->
                         AuthScreen(
-                            component = instance.component,
+                            component = instance.requireComponent<AuthComponent>(),
                         )
-
-                    is RootComponent.Child.Main -> MainScreen(component = instance.component)
+                    RootScreen.MAIN ->
+                        MainScreen(component = instance.requireComponent<MainComponent>())
                 }
             }
         }
     }
 }
+
+private inline fun <reified T> RootChildDescriptor.requireComponent(): T =
+    component as? T ?: error("Expected ${T::class.simpleName} for $screen, got ${component::class.simpleName}")

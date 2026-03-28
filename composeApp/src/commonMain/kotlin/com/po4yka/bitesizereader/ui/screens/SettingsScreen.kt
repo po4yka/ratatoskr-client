@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,17 +45,18 @@ import com.po4yka.bitesizereader.presentation.state.ReadingGoalState
 import com.po4yka.bitesizereader.presentation.state.SettingsState
 import com.po4yka.bitesizereader.presentation.state.SyncSettingsState
 import com.po4yka.bitesizereader.presentation.state.TelegramLinkState
-import com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalViewModel
+import com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalController
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.ui.components.DeleteAccountDialog
-import com.po4yka.bitesizereader.ui.components.LocalReadingGoalViewModel
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.ui.components.RequestHistorySection
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.SessionsSection
 import com.po4yka.bitesizereader.ui.components.UserStatsCard
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
 import kotlin.math.round
 import bitesizereader.composeapp.generated.resources.Res
@@ -65,6 +65,9 @@ import bitesizereader.composeapp.generated.resources.settings_account_binding
 import bitesizereader.composeapp.generated.resources.settings_goal_target
 import bitesizereader.composeapp.generated.resources.settings_linked_to
 import bitesizereader.composeapp.generated.resources.settings_begin_linking
+import bitesizereader.composeapp.generated.resources.settings_cache_bytes
+import bitesizereader.composeapp.generated.resources.settings_cache_kilobytes
+import bitesizereader.composeapp.generated.resources.settings_cache_megabytes
 import bitesizereader.composeapp.generated.resources.settings_cache_prompt
 import bitesizereader.composeapp.generated.resources.settings_cached_content
 import bitesizereader.composeapp.generated.resources.settings_cancel
@@ -103,11 +106,26 @@ import bitesizereader.composeapp.generated.resources.settings_retry
 import bitesizereader.composeapp.generated.resources.settings_security
 import bitesizereader.composeapp.generated.resources.settings_sync_failed
 import bitesizereader.composeapp.generated.resources.settings_sync_failed_items
+import bitesizereader.composeapp.generated.resources.settings_sync_batch_current
+import bitesizereader.composeapp.generated.resources.settings_sync_batch_progress
+import bitesizereader.composeapp.generated.resources.settings_sync_items_processed
+import bitesizereader.composeapp.generated.resources.settings_sync_items_progress
 import bitesizereader.composeapp.generated.resources.settings_synchronization
 import bitesizereader.composeapp.generated.resources.settings_sync_prompt
+import bitesizereader.composeapp.generated.resources.sync_cancelled
+import bitesizereader.composeapp.generated.resources.sync_completed
+import bitesizereader.composeapp.generated.resources.sync_creating_session
+import bitesizereader.composeapp.generated.resources.sync_failed
+import bitesizereader.composeapp.generated.resources.sync_fetching_updates
+import bitesizereader.composeapp.generated.resources.sync_downloading_data
+import bitesizereader.composeapp.generated.resources.sync_processing
+import bitesizereader.composeapp.generated.resources.sync_synchronizing
+import bitesizereader.composeapp.generated.resources.sync_validating
+import bitesizereader.composeapp.generated.resources.settings_unknown_username
 import bitesizereader.composeapp.generated.resources.settings_telegram_account
 import bitesizereader.composeapp.generated.resources.settings_title
 import bitesizereader.composeapp.generated.resources.settings_unlink_telegram
+import bitesizereader.composeapp.generated.resources.user_stats_minutes_short
 import bitesizereader.composeapp.generated.resources.privacy_policy
 import bitesizereader.composeapp.generated.resources.terms_of_service
 import org.jetbrains.compose.resources.stringResource
@@ -120,8 +138,8 @@ import org.jetbrains.compose.resources.stringResource
 fun SettingsScreen(component: SettingsComponent) {
     val viewModel: SettingsViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
-    val readingGoalViewModel: ReadingGoalViewModel = LocalReadingGoalViewModel.current
-    val readingGoalState by readingGoalViewModel.state.collectAsState()
+    val readingGoalController: ReadingGoalController = component.readingGoalController
+    val readingGoalState by readingGoalController.state.collectAsState()
 
     val onRetryLinkStatus = remember<() -> Unit>(viewModel) { viewModel::loadLinkStatus }
     val onBeginLink = remember<() -> Unit>(viewModel) { viewModel::beginTelegramLink }
@@ -165,8 +183,8 @@ fun SettingsScreen(component: SettingsComponent) {
             onRetryRequest = onRetryRequest,
             onDigestClicked = onDigestClicked,
             onLanguageChanged = onLanguageChanged,
-            onToggleGoalEnabled = { readingGoalViewModel.toggleEnabled() },
-            onGoalTargetChanged = { readingGoalViewModel.setDailyTarget(it) },
+            onToggleGoalEnabled = readingGoalController::toggleEnabled,
+            onGoalTargetChanged = readingGoalController::setDailyTarget,
         )
 
         // Delete Account Confirmation Dialog
@@ -494,7 +512,11 @@ private fun AccountBindingCard(
             telegramState.linkStatus?.linked == true -> {
                 val linkStatus = telegramState.linkStatus
                 Text(
-                    text = stringResource(Res.string.settings_linked_to, linkStatus?.username ?: "Unknown"),
+                    text =
+                        stringResource(
+                            Res.string.settings_linked_to,
+                            linkStatus?.username ?: stringResource(Res.string.settings_unknown_username),
+                        ),
                     style = Carbon.typography.bodyCompact01,
                     color = Carbon.theme.textSecondary,
                 )
@@ -682,12 +704,13 @@ private fun CacheManagementCard(
     }
 }
 
+@Composable
 private fun formatCacheSize(bytes: Long): String {
-    if (bytes < 1024) return "$bytes B"
+    if (bytes < 1024) return stringResource(Res.string.settings_cache_bytes, bytes)
     val kb = bytes / 1024.0
-    if (kb < 1024) return "${round(kb * 10) / 10} KB"
+    if (kb < 1024) return stringResource(Res.string.settings_cache_kilobytes, (round(kb * 10) / 10).toString())
     val mb = kb / 1024.0
-    return "${round(mb * 10) / 10} MB"
+    return stringResource(Res.string.settings_cache_megabytes, (round(mb * 10) / 10).toString())
 }
 
 @Suppress("FunctionNaming")
@@ -747,7 +770,7 @@ private fun SyncProgressHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             SmallLoading()
@@ -757,32 +780,32 @@ private fun SyncProgressHeader(
                 color = Carbon.theme.textSecondary,
             )
         }
-        IconButton(
+        CarbonIconButton(
+            imageVector = CarbonIcons.Close,
+            contentDescription = stringResource(Res.string.settings_cancel_sync),
             onClick = onCancelSync,
-            modifier = Modifier.size(32.dp),
-        ) {
-            Icon(
-                imageVector = CarbonIcons.Close,
-                contentDescription = stringResource(Res.string.settings_cancel_sync),
-                tint = Carbon.theme.iconSecondary,
-                modifier = Modifier.size(16.dp),
-            )
-        }
+            tint = Carbon.theme.iconSecondary,
+            buttonSize = Dimensions.compactIconButtonSize,
+            iconSize = IconSizes.xs,
+        )
     }
 }
 
 @Suppress("FunctionNaming")
 @Composable
 private fun SyncProgressDetails(progress: SyncProgress) {
+    val totalItems = progress.totalItems
+    val totalBatches = progress.totalBatches
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         val itemsText =
-            if (progress.totalItems != null) {
-                "${progress.processedItems} / ${progress.totalItems} items"
+            if (totalItems != null) {
+                stringResource(Res.string.settings_sync_items_progress, progress.processedItems, totalItems)
             } else {
-                "${progress.processedItems} items"
+                stringResource(Res.string.settings_sync_items_processed, progress.processedItems)
             }
         Text(
             text = itemsText,
@@ -791,10 +814,14 @@ private fun SyncProgressDetails(progress: SyncProgress) {
         )
         if (progress.currentBatch > 0) {
             val batchText =
-                if (progress.totalBatches != null) {
-                    "Batch ${progress.currentBatch}/${progress.totalBatches}"
+                if (totalBatches != null) {
+                    stringResource(
+                        Res.string.settings_sync_batch_progress,
+                        progress.currentBatch,
+                        totalBatches,
+                    )
                 } else {
-                    "Batch ${progress.currentBatch}"
+                    stringResource(Res.string.settings_sync_batch_current, progress.currentBatch)
                 }
             Text(
                 text = batchText,
@@ -932,17 +959,18 @@ private fun DigestNavigationRow(onClick: () -> Unit) {
     }
 }
 
+@Composable
 private fun getSyncPhaseText(phase: SyncPhase?): String =
     when (phase) {
-        SyncPhase.CREATING_SESSION -> "Creating session..."
-        SyncPhase.FETCHING_FULL -> "Downloading data..."
-        SyncPhase.FETCHING_DELTA -> "Fetching updates..."
-        SyncPhase.PROCESSING -> "Processing..."
-        SyncPhase.VALIDATING -> "Validating..."
-        SyncPhase.COMPLETED -> "Completed"
-        SyncPhase.FAILED -> "Failed"
-        SyncPhase.CANCELLED -> "Cancelled"
-        null -> "Synchronizing..."
+        SyncPhase.CREATING_SESSION -> stringResource(Res.string.sync_creating_session)
+        SyncPhase.FETCHING_FULL -> stringResource(Res.string.sync_downloading_data)
+        SyncPhase.FETCHING_DELTA -> stringResource(Res.string.sync_fetching_updates)
+        SyncPhase.PROCESSING -> stringResource(Res.string.sync_processing)
+        SyncPhase.VALIDATING -> stringResource(Res.string.sync_validating)
+        SyncPhase.COMPLETED -> stringResource(Res.string.sync_completed)
+        SyncPhase.FAILED -> stringResource(Res.string.sync_failed)
+        SyncPhase.CANCELLED -> stringResource(Res.string.sync_cancelled)
+        null -> stringResource(Res.string.sync_synchronizing)
     }
 
 @Suppress("FunctionNaming", "LongParameterList")
@@ -1009,7 +1037,7 @@ private fun ReadingGoalsCard(
                     val bgColor = if (isSelected) Carbon.theme.linkPrimary else Carbon.theme.layer02
                     val textColor = if (isSelected) Carbon.theme.textOnColor else Carbon.theme.textPrimary
                     Text(
-                        text = "${minutes}m",
+                        text = stringResource(Res.string.user_stats_minutes_short, minutes),
                         style = Carbon.typography.label01,
                         color = textColor,
                         modifier =
@@ -1028,7 +1056,7 @@ private fun ReadingGoalsCard(
                 ) {
                     Column {
                         Text(
-                            text = "${goal.currentStreakDays}",
+                            text = goal.currentStreakDays.toString(),
                             style = Carbon.typography.heading03,
                             color = Carbon.theme.textPrimary,
                         )
@@ -1040,7 +1068,7 @@ private fun ReadingGoalsCard(
                     }
                     Column {
                         Text(
-                            text = "${goal.longestStreakDays}",
+                            text = goal.longestStreakDays.toString(),
                             style = Carbon.typography.heading03,
                             color = Carbon.theme.textPrimary,
                         )

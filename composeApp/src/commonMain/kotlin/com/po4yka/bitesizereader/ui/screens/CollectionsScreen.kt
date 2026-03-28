@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,6 +33,7 @@ import com.po4yka.bitesizereader.domain.model.CollectionType
 import com.po4yka.bitesizereader.presentation.navigation.CollectionsComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.CollectionsViewModel
 import com.po4yka.bitesizereader.ui.components.CarbonDialog
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.ui.components.CollectionItem
 import com.po4yka.bitesizereader.ui.components.EmptyStateView
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
@@ -178,14 +178,12 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
             modifier = Modifier.weight(1f),
         )
 
-        IconButton(onClick = onCreateClick) {
-            Icon(
-                imageVector = CarbonIcons.Add,
-                contentDescription = stringResource(Res.string.collections_new),
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector = CarbonIcons.Add,
+            contentDescription = stringResource(Res.string.collections_new),
+            onClick = onCreateClick,
+            iconSize = IconSizes.md,
+        )
     }
 }
 

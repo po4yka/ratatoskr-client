@@ -1,9 +1,10 @@
 package com.po4yka.bitesizereader.domain.repository
 
 import com.po4yka.bitesizereader.domain.model.Request
+import com.po4yka.bitesizereader.domain.port.RequestOpsPort
 import kotlinx.coroutines.flow.Flow
 
-interface RequestRepository {
+interface RequestRepository : RequestOpsPort {
     suspend fun submitUrl(url: String): Request
 
     /** Submit a forwarded message for summarization. */
@@ -14,5 +15,7 @@ interface RequestRepository {
 
     suspend fun getRequestStatus(id: String): Request
 
-    fun getRequests(): Flow<List<Request>>
+    override fun getRequests(): Flow<List<Request>>
+
+    override suspend fun retryRequest(request: Request): Request = submitUrl(request.url)
 }

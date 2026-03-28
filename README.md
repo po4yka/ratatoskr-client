@@ -19,7 +19,7 @@ This is a **Kotlin Multiplatform + Compose Multiplatform** app that provides a s
 ### Architecture Philosophy
 
 **KMP + Compose Multiplatform UI:**
-- **Shared Code (80-90%)**: Infrastructure in `core/`, feature logic in `feature/*`, bootstrap/navigation in `shared/`
+- **Shared Code (80-90%)**: Infrastructure in `core/*`, feature logic in `feature/*`, navigation contracts in `core/navigation`, and shell composition in `composeApp/`
 - **Shared UI**: Compose Multiplatform screens rendered on Android, iOS, and Desktop (with native host hooks where needed)
 - **Offline-First**: Local SQLite database with session-based sync to the backend API
 - **Boundary-Driven**: Domain/UI code stays free of transport DTOs and routed screens receive dependencies from components
@@ -82,7 +82,16 @@ See **[docs/CICD.md](docs/CICD.md)** for complete documentation including setup,
 
 ```
 bite-size-reader-client/
- core/                            # Cross-feature infrastructure and transport
+ androidApp/                      # Android app host, widgets, workers, manifest/resources
+ composeApp/                      # Compose Multiplatform UI + navigation shell + CocoaPods export
+    src/iosMain/kotlin/          # Compose UIViewController for iOS host
+    src/desktopMain/kotlin/      # Desktop preview entrypoint
+    src/commonMain/kotlin/       # Shared Compose UI/theme/navigation
+ core/
+    common/                       # Shared domain, config, base presentation primitives
+    data/                         # Transport, SQLDelight, persistence, sync extensions
+    navigation/                   # Route contracts and navigator interfaces
+    ui/                           # Shared non-feature UI primitives
  feature/
     auth/                         # Auth/session feature
     collections/                  # Collections, tags, RSS, import/export
@@ -90,12 +99,6 @@ bite-size-reader-client/
     settings/                     # Settings, stats, reading goals, account
     summary/                      # Summary list/detail, search, submit URL, recommendations
     sync/                         # Sync orchestration
- shared/                          # Root navigation, Koin bootstrap, CocoaPods export glue
- composeApp/                      # Compose Multiplatform UI + Android app shell
-    src/androidMain/kotlin/      # Android-specific entrypoints
-    src/iosMain/kotlin/          # Compose UIViewController for iOS host
-    src/desktopMain/kotlin/      # Desktop preview entrypoint
-    src/commonMain/kotlin/       # Shared Compose UI/theme/navigation
  iosApp/                          # iOS app shell (SwiftUI hosting Compose)
     iosApp/
        Auth/                   # Native Telegram login sheet
@@ -748,7 +751,7 @@ suspend fun getDeltaSync(since: String): ApiResponse<SyncDeltaResponse> {
 **Complete Ktor HttpClient configuration**:
 
 ```kotlin
-// data/remote/ApiClient.kt
+// core/data/.../data/remote/ApiClient.kt
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.*
@@ -1085,10 +1088,10 @@ client.id=android-app-v1.0
 open -a "Android Studio" .
 
 # Or build from command line
-./gradlew :composeApp:assembleDebug
+./gradlew :androidApp:assembleDebug
 
 # Install on connected device/emulator
-./gradlew :composeApp:installDebug
+./gradlew :androidApp:installDebug
 ```
 
 #### iOS
@@ -1103,7 +1106,6 @@ cd ..
 open iosApp/iosApp.xcworkspace
 
 # Or build from command line
-./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
 xcodebuild -workspace iosApp/iosApp.xcworkspace \
            -scheme iosApp \
            -configuration Debug \
@@ -1113,14 +1115,12 @@ xcodebuild -workspace iosApp/iosApp.xcworkspace \
 ### Running Tests
 
 ```bash
-# All shared tests
-./gradlew :shared:allTests
+# Run the module tests you changed
+./gradlew :core:common:allTests :core:data:allTests
+./gradlew :feature:summary:allTests :feature:settings:allTests
 
 # Android tests
 ./gradlew :composeApp:testDebugUnitTest
-
-# iOS tests (requires macOS)
-./gradlew :shared:iosSimulatorArm64Test
 ```
 
 ## Development
@@ -1231,7 +1231,7 @@ interface RootComponent {
 3. User authorizes in Telegram app
 4. Callback receives auth data
 5. App exchanges auth data for JWT tokens
-6. Tokens stored securely (Keychain/EncryptedSharedPreferences)
+6. Tokens stored securely (Keychain/Tink AEAD + DataStore)
 
 ### URL Submission Flow
 
@@ -1271,14 +1271,18 @@ interface RootComponent {
 
 ### Common Issues
 
-**iOS build fails with "Framework not found Shared":**
+**iOS build fails with "Framework not found ComposeApp":**
 ```bash
-./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+./gradlew :composeApp:syncFramework \
+  -Pkotlin.native.cocoapods.platform=iphonesimulator \
+  -Pkotlin.native.cocoapods.archs=arm64 \
+  -Pkotlin.native.cocoapods.configuration=Debug
+cd iosApp && pod install
 ```
 
 **Android build fails with SQLDelight errors:**
 ```bash
-./gradlew :shared:generateSqlDelightInterface --rerun-tasks
+./gradlew :core:data:generateCommonMainDatabaseInterface --rerun-tasks
 ```
 
 **API connection refused:**

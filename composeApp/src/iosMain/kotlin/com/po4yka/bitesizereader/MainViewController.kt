@@ -8,8 +8,10 @@ import platform.UIKit.UIViewController
 
 fun MainViewController(rootComponent: RootComponent): UIViewController =
     ComposeUIViewController {
+        val compositionRoot = iosCompositionRoot()
         App(
             rootComponent = rootComponent,
+            imageUrlTransformer = compositionRoot.imageUrlTransformer(),
             modifier = Modifier.fillMaxSize(),
         )
     }

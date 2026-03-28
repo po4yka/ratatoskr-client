@@ -16,7 +16,7 @@ val verifyArchitectureBoundaries =
 
         navigationFiles.from(
             layout.projectDirectory
-                .dir("shared/src/commonMain/kotlin")
+                .dir("composeApp/src/commonMain/kotlin")
                 .asFileTree
                 .matching {
                     include("**/presentation/navigation/**/*.kt")
@@ -31,10 +31,29 @@ val verifyArchitectureBoundaries =
                 },
         )
 
+        shellFiles.from(
+            layout.projectDirectory
+                .dir("composeApp/src/commonMain/kotlin")
+                .asFileTree
+                .matching {
+                    include("**/presentation/navigation/**/*.kt")
+                    include("**/app/**/*.kt")
+                    exclude("**/build/**")
+                },
+        )
+
+        featureFiles.from(
+            layout.projectDirectory
+                .dir("feature")
+                .asFileTree
+                .matching {
+                    include("**/src/commonMain/kotlin/**/*.kt")
+                    exclude("**/build/**")
+                },
+        )
+
         legacyFiles.from(
             layout.projectDirectory.file("shared/src/commonMain/kotlin/com/po4yka/bitesizereader/di/AppModule.kt"),
-            layout.projectDirectory.file("shared/src/commonMain/kotlin/com/po4yka/bitesizereader/di/RepositoryModule.kt"),
-            layout.projectDirectory.file("shared/src/commonMain/kotlin/com/po4yka/bitesizereader/di/UseCaseModule.kt"),
         )
     }
 

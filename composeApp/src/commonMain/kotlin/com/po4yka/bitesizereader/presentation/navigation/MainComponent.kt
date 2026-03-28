@@ -1,0 +1,108 @@
+@file:OptIn(com.arkivanov.decompose.DelicateDecomposeApi::class)
+
+package com.po4yka.bitesizereader.presentation.navigation
+
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.stack.ChildStack
+import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
+import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
+import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.value.Value
+import com.po4yka.bitesizereader.navigation.MainChildDescriptor
+import com.po4yka.bitesizereader.navigation.MainNavigator
+import com.po4yka.bitesizereader.navigation.MainRoute
+import com.po4yka.bitesizereader.navigation.MainRouteEntry
+import com.po4yka.bitesizereader.navigation.MainTab
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
+interface MainComponent {
+    val childStack: Value<ChildStack<*, MainChildDescriptor>>
+
+    fun navigateToTab(tab: MainTab)
+
+    fun navigateToSubmitUrl(prefilledUrl: String)
+
+    fun navigateToSummaryDetail(summaryId: String)
+
+    fun navigateToCustomDigestCreate()
+
+    fun navigateToCustomDigestView(digestId: String)
+}
+
+internal class DefaultMainComponent(
+    componentContext: ComponentContext,
+    private val entries: List<MainRouteEntry>,
+) : MainComponent, ComponentContext by componentContext {
+    private val navigation = StackNavigation<MainRoute>()
+
+    private val navigator =
+        object : MainNavigator {
+            override fun goBack() {
+                navigation.pop()
+            }
+
+            override fun openSummaryDetail(summaryId: String) {
+                navigation.push(MainRoute.SummaryDetail(summaryId))
+            }
+
+            override fun openSubmitUrl(prefilledUrl: String) {
+                navigation.push(MainRoute.SubmitURL(prefilledUrl.ifBlank { null }))
+            }
+
+            override fun openCustomDigestCreate() {
+                navigation.push(MainRoute.CustomDigestCreate)
+            }
+
+            override fun openCustomDigestView(digestId: String) {
+                navigation.push(MainRoute.CustomDigestView(digestId))
+            }
+
+            override fun openCollectionView(collectionId: String) {
+                logger.info { "Navigate to collection view: $collectionId" }
+                navigation.push(MainRoute.CollectionView(collectionId))
+            }
+
+            override fun openDigest() {
+                navigation.push(MainRoute.Digest)
+            }
+        }
+
+    private val featureRegistry =
+        MainFeatureRegistry(
+            entries = entries,
+            navigator = navigator,
+        )
+
+    override val childStack: Value<ChildStack<*, MainChildDescriptor>> =
+        childStack(
+            source = navigation,
+            serializer = MainRoute.serializer(),
+            initialConfiguration = MainRoute.SummaryList(),
+            handleBackButton = true,
+            childFactory = featureRegistry::createChild,
+        )
+
+    override fun navigateToSubmitUrl(prefilledUrl: String) {
+        navigator.openSubmitUrl(prefilledUrl)
+    }
+
+    override fun navigateToSummaryDetail(summaryId: String) {
+        navigator.openSummaryDetail(summaryId)
+    }
+
+    override fun navigateToCustomDigestCreate() {
+        navigator.openCustomDigestCreate()
+    }
+
+    override fun navigateToCustomDigestView(digestId: String) {
+        navigator.openCustomDigestView(digestId)
+    }
+
+    override fun navigateToTab(tab: MainTab) {
+        navigation.bringToFront(featureRegistry.routeForTab(tab))
+    }
+}

@@ -20,6 +20,11 @@
     <string name="summary_list_switch_to_list">Переключить на список</string>
     <string name="summary_list_refresh">Обновить</string>
     <string name="summary_list_offline">Нет подключения к интернету</string>
+    <string name="summary_list_last_synced_stale">Последняя синхронизация: %1$s, данные могут быть устаревшими</string>
+    <string name="summary_list_just_now">только что</string>
+    <string name="summary_list_minutes_ago">%1$d мин назад</string>
+    <string name="summary_list_hours_ago">%1$d ч назад</string>
+    <string name="summary_list_days_ago">%1$d дн назад</string>
 
     <!-- Summary Detail Screen -->
     <string name="summary_detail_reading_offline">Чтение офлайн</string>
@@ -41,6 +46,12 @@
     <string name="summary_detail_share">Поделиться</string>
     <string name="summary_detail_summary">Резюме</string>
     <string name="summary_detail_has_annotation">Есть аннотация</string>
+    <string name="summary_detail_date_format">%2$02d.%1$02d.%3$d</string>
+    <string name="processing_stage_queued">В очереди</string>
+    <string name="processing_stage_extraction">Извлечение</string>
+    <string name="processing_stage_summarization">Создание резюме</string>
+    <string name="processing_stage_saving">Сохранение</string>
+    <string name="processing_stage_done">Готово</string>
 
     <!-- Audio Player -->
     <string name="audio_generating">Генерация озвучки...</string>
@@ -68,6 +79,15 @@
     <string name="stats_languages">Языки</string>
     <string name="stats_error_icon">Ошибка</string>
     <string name="stats_goal_achieved">Достигнуто</string>
+    <string name="stats_goal_label">%1$s цель: %2$d/%3$d</string>
+    <string name="stats_goal_type_daily">Ежедневная</string>
+    <string name="stats_goal_type_weekly">Еженедельная</string>
+    <string name="stats_goal_type_monthly">Ежемесячная</string>
+    <string name="stats_minutes_short">%1$d м</string>
+    <string name="stats_hours_short">%1$d ч</string>
+    <string name="stats_hours_minutes_short">%1$d ч %2$d м</string>
+    <string name="stats_seconds_short">%1$d с</string>
+    <string name="stats_minutes_seconds_short">%1$d м %2$d с</string>
     <string name="stats_current_streak">%1$d дней подряд</string>
     <string name="stats_best_streak">Лучший результат: %1$d дней</string>
     <string name="stats_this_week">%1$d на этой неделе</string>
@@ -111,6 +131,9 @@
     <string name="settings_error_prefix">Ошибка: %1$s</string>
     <string name="settings_sync_failed">Синхронизация не удалась: %1$s</string>
     <string name="settings_cache_size">Размер кэша: %1$s</string>
+    <string name="settings_cache_bytes">%1$d Б</string>
+    <string name="settings_cache_kilobytes">%1$s КБ</string>
+    <string name="settings_cache_megabytes">%1$s МБ</string>
     <string name="settings_sync_failed_items">%1$d элементов не удалось синхронизировать</string>
     <string name="settings_digest_icon">Дайджест</string>
     <string name="settings_language">Язык</string>
@@ -118,6 +141,7 @@
     <string name="settings_language_auto">Авто</string>
     <string name="settings_language_english">Английский</string>
     <string name="settings_language_russian">Русский</string>
+    <string name="settings_unknown_username">Неизвестно</string>
     <string name="settings_digest_channels">Каналы дайджестов</string>
     <string name="settings_digest_channels_description">Управление подписками и настройками каналов</string>
     <string name="settings_cancel_sync">Отменить синхронизацию</string>
@@ -204,6 +228,9 @@
     <string name="collection_view_collaborators">Участники</string>
     <string name="collection_view_no_collaborators">Пока нет участников</string>
     <string name="collection_view_user">Пользователь №%1$d</string>
+    <string name="collection_view_role_owner">Владелец</string>
+    <string name="collection_view_role_editor">Редактор</string>
+    <string name="collection_view_role_viewer">Читатель</string>
     <string name="collection_view_remove">Удалить</string>
     <string name="collection_view_invite_link">Ссылка-приглашение</string>
     <string name="collection_view_create_invite_viewer">Создать ссылку-приглашение (читатель)</string>
@@ -215,9 +242,34 @@
     <string name="recommendations_title">Рекомендуем для вас</string>
     <string name="recommendations_dismiss">Скрыть</string>
 
+    <!-- Summary Card -->
+    <string name="summary_card_saved_article">Сохранённая статья</string>
+    <string name="summary_card_favorited">В избранном</string>
+    <string name="summary_card_available_offline">Доступно офлайн</string>
+    <string name="summary_card_more_options">Ещё действия</string>
+    <string name="summary_card_mark_read">Отметить как прочитанное</string>
+    <string name="summary_card_already_read">Уже прочитано</string>
+    <string name="summary_card_accessibility_read_article">Прочитанная статья.</string>
+    <string name="summary_card_accessibility_unread_article">Непрочитанная статья.</string>
+    <string name="summary_card_accessibility_source">Источник: %1$s.</string>
+    <string name="summary_card_accessibility_favorited">В избранном.</string>
+    <string name="summary_card_accessibility_reading_time">%1$d минут чтения.</string>
+
     <!-- Filter Chips -->
     <string name="filter_chip_favorites">Избранное</string>
     <string name="filter_chip_archived">Архив</string>
+
+    <!-- Recent Searches -->
+    <string name="recent_searches_title">Недавние запросы</string>
+    <string name="recent_searches_clear_all">Очистить всё</string>
+    <string name="recent_searches_remove">Удалить %1$s из недавних запросов</string>
+
+    <!-- Sort Menu -->
+    <string name="sort_menu_description">Сортировать по: %1$s</string>
+    <string name="sort_menu_selected">Выбрано</string>
+    <string name="sort_menu_newest">Сначала новые</string>
+    <string name="sort_menu_oldest">Сначала старые</string>
+    <string name="sort_menu_alphabetical">А-Я</string>
 
     <!-- Developer Login -->
     <string name="auth_developer_user_id_label">ID пользователя</string>
@@ -234,6 +286,7 @@
     <string name="delete_account_confirmation_warning">Это действие необратимо. Все ваши данные, включая резюме и настройки, будут удалены навсегда.</string>
     <string name="delete_account_confirmation_prompt">Введите "%1$s" для подтверждения:</string>
     <string name="delete_account_confirmation_label">Подтверждение</string>
+    <string name="delete_account_confirmation_keyword">DELETE</string>
     <string name="delete_account_deleting">Удаление...</string>
 
     <!-- Reading Settings -->
@@ -313,6 +366,135 @@ https://example.com/video</string>
     <string name="submit_url_error_network">Нет подключения к интернету. Проверьте сеть и попробуйте снова.</string>
     <string name="submit_url_error_server">Что-то пошло не так на нашей стороне. Попробуйте снова через момент.</string>
     <string name="submit_url_error_view_library">Открыть в библиотеке</string>
+    <string name="submit_url_processing_default_message">Обработка...</string>
+    <string name="submit_url_request_status_pending">Ожидание</string>
+    <string name="submit_url_request_status_processing">Обработка</string>
+    <string name="submit_url_request_status_completed">Завершено</string>
+    <string name="submit_url_request_status_failed">Ошибка</string>
+
+    <!-- Progress Stages -->
+    <string name="progress_stages_submitted">Отправлено</string>
+    <string name="progress_stages_processing_summary">Обработка резюме</string>
+    <string name="progress_stages_ready">Готово</string>
+    <string name="progress_stages_failed">%1$s: ошибка</string>
+    <string name="progress_stages_completed">%1$s: завершено</string>
+
+    <!-- Request History -->
+    <string name="request_history_count_singular">%1$d запрос</string>
+    <string name="request_history_count_plural">%1$d запросов</string>
+    <string name="request_history_prompt">Просмотр истории отправленных ссылок</string>
+    <string name="request_history_loading">Загрузка запросов...</string>
+    <string name="request_history_empty">Запросов пока нет</string>
+    <string name="request_history_expand">Развернуть</string>
+    <string name="request_history_collapse">Свернуть</string>
+    <string name="request_history_retry">Повторить</string>
+    <string name="request_history_status_pending">Ожидание</string>
+    <string name="request_history_status_processing">Обработка</string>
+    <string name="request_history_status_completed">Завершено</string>
+    <string name="request_history_status_failed">Ошибка</string>
+
+    <!-- Sessions -->
+    <string name="sessions_title">Активные сессии</string>
+    <string name="sessions_count_singular">%1$d устройство</string>
+    <string name="sessions_count_plural">%1$d устройств</string>
+    <string name="sessions_prompt">Просмотр активных сессий</string>
+    <string name="sessions_loading">Загрузка сессий...</string>
+    <string name="sessions_empty">Сессии не найдены</string>
+    <string name="sessions_expand">Развернуть</string>
+    <string name="sessions_collapse">Свернуть</string>
+    <string name="sessions_unknown_device">Неизвестное устройство</string>
+    <string name="sessions_current">Текущая</string>
+    <string name="sessions_ip">IP: %1$s</string>
+    <string name="sessions_last_active">Последняя активность: %1$s</string>
+
+    <!-- Insights -->
+    <string name="insights_title">Популярное в этом месяце</string>
+    <string name="insights_fallback_source">Статья</string>
+
+    <!-- Trending Topics -->
+    <string name="trending_topics_title">Популярные темы</string>
+
+    <!-- Error View -->
+    <string name="error_view_title">Упс! Что-то пошло не так</string>
+
+    <!-- User Stats -->
+    <string name="user_stats_title">Ваша статистика</string>
+    <string name="user_stats_loading">Загрузка статистики...</string>
+    <string name="user_stats_favorite_topics">Любимые темы</string>
+    <string name="user_stats_member_since">С нами с</string>
+    <string name="user_stats_unavailable">Статистика недоступна</string>
+    <string name="user_stats_average_minutes">%1$d мин</string>
+    <string name="user_stats_topic_chip">%1$s (%2$d)</string>
+    <string name="user_stats_minutes_short">%1$d мин</string>
+    <string name="user_stats_hours_short">%1$d ч</string>
+    <string name="user_stats_hours_minutes_short">%1$d ч %2$d м</string>
+
+    <!-- Reading Goal -->
+    <string name="reading_goal_today_progress">%1$d из %2$d мин сегодня</string>
+    <string name="reading_goal_streak">%1$d дней подряд</string>
+    <string name="reading_goal_completed">Выполнено</string>
+
+    <!-- Custom Digest View -->
+    <string name="custom_digest_view_default_title">Дайджест</string>
+    <string name="custom_digest_view_delete">Удалить дайджест</string>
+    <string name="custom_digest_view_generating">Генерируем ваш дайджест...</string>
+    <string name="custom_digest_view_error">Ошибка</string>
+    <string name="custom_digest_view_failed">Не удалось создать дайджест</string>
+    <string name="custom_digest_view_not_found">Дайджест не найден</string>
+
+    <!-- Digest Screen -->
+    <string name="digest_screen_tab_channels">Каналы</string>
+    <string name="digest_screen_tab_preferences">Настройки</string>
+    <string name="digest_screen_tab_history">История</string>
+    <string name="digest_screen_subscriptions">Подписки (%1$d/%2$d)</string>
+    <string name="digest_screen_add_channel">Добавить канал</string>
+    <string name="digest_screen_channel_username">Имя канала</string>
+    <string name="digest_screen_channel_placeholder">@channel_name</string>
+    <string name="digest_screen_delivery_time_placeholder">HH:MM</string>
+    <string name="digest_screen_timezone_placeholder">UTC</string>
+    <string name="digest_screen_hours_lookback_placeholder">24</string>
+    <string name="digest_screen_max_posts_placeholder">10</string>
+    <string name="digest_screen_min_relevance_placeholder">0.5</string>
+    <string name="digest_screen_subscribing">Подписка...</string>
+    <string name="digest_screen_subscribe">Подписаться</string>
+    <string name="digest_screen_triggering">Запуск...</string>
+    <string name="digest_screen_trigger_now">Запустить дайджест сейчас</string>
+    <string name="digest_screen_trigger_success">Дайджест успешно запущен!</string>
+    <string name="digest_screen_subscribed">Подписка: %1$s</string>
+    <string name="digest_screen_unsubscribe">Отписаться</string>
+    <string name="digest_screen_delivery_time">Время доставки</string>
+    <string name="digest_screen_timezone">Часовой пояс</string>
+    <string name="digest_screen_hours_lookback">Период в часах</string>
+    <string name="digest_screen_max_posts">Макс. постов в дайджесте</string>
+    <string name="digest_screen_min_relevance">Мин. релевантность</string>
+    <string name="digest_screen_save_preferences">Сохранить настройки</string>
+    <string name="digest_screen_saving_preferences">Сохранение...</string>
+    <string name="digest_screen_no_history">История дайджестов пока пуста</string>
+    <string name="digest_screen_load_more">Загрузить ещё</string>
+    <string name="digest_screen_loading_more">Загрузка...</string>
+    <string name="digest_screen_history_channels_posts">%1$d каналов, %2$d постов</string>
+    <string name="digest_screen_status_delivered">Доставлено</string>
+    <string name="digest_screen_status_completed">Завершено</string>
+    <string name="digest_screen_status_failed">Ошибка</string>
+    <string name="digest_screen_status_pending">Ожидание</string>
+
+    <!-- Shared Formats -->
+    <string name="common_percent">%1$d%%</string>
+
+    <!-- Swipeable Summary -->
+    <string name="swipeable_summary_archive">Архив</string>
+    <string name="swipeable_summary_archive_action">Архивировать статью</string>
+    <string name="swipeable_summary_delete_action">Удалить статью</string>
+    <string name="swipeable_summary_mark_read_action">Отметить как прочитанную</string>
+
+    <!-- Settings Sync -->
+    <string name="settings_sync_items_progress">%1$d / %2$d элементов</string>
+    <string name="settings_sync_items_processed">%1$d элементов</string>
+    <string name="settings_sync_batch_progress">Пакет %1$d/%2$d</string>
+    <string name="settings_sync_batch_current">Пакет %1$d</string>
+
+    <!-- Telegram Auth -->
+    <string name="telegram_auth_close">Закрыть</string>
 
     <!-- Accessibility -->
     <string name="a11y_navigate_back">Назад</string>

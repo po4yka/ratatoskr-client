@@ -1,58 +1,25 @@
 # shared/AGENTS.md
 
-Guidance for work inside the shared bootstrap/navigation module.
+`shared/` is legacy migration residue and is not part of the active Gradle build.
 
-## Structure
+## Current Status
 
-`shared/` is intentionally thin:
+- Do not add new production code here.
+- Active bootstrapping and navigation composition live in `composeApp/`.
+- Active infrastructure lives in `core/*`.
+- Active feature logic lives in `feature/*`.
 
-- `presentation/navigation`: root and main Decompose shells that stitch feature components together
-- `di`: Koin bootstrap and expect/actual module aggregation
-- platform source sets: per-platform `commonModules()` or `platformModules()` wiring for the exported framework
+## If You Must Touch This Directory
 
-Business logic, repositories, use cases, and feature ViewModels now live in `core/` and `feature/*`, not in `shared/`.
+- Limit changes to migration cleanup or documentation.
+- Do not reintroduce DI bootstrap, navigation shells, repositories, or feature ViewModels here.
+- Keep any notes aligned with `docs/ARCHITECTURE.md` and root `AGENTS.md`.
 
-## DI Rules
+## Active Replacements
 
-Default rule set for code reached from `shared/`:
-
-- API implementations: `@Single`
-- repositories: `@Single`
-- use cases: `@Factory`
-- ViewModels and delegates: `@Factory`
-- scanners/providers: `@Module` classes with `@ComponentScan` or provider methods
-
-Use `binds = [...]` whenever an implementation backs a domain interface. Do not reintroduce feature logic into `shared/`.
-
-### Valid Exceptions
-
-- `core/src/iosMain/.../di/IosModule.kt` uses DSL because generated `.module` extensions are not visible from `iosMain`.
-- tests may use DSL modules for verification and overrides.
-
-Do not document the shared layer as "annotations only"; the real rule is "annotations by default, DSL where source-set or test constraints require it".
-
-## Boundary Rules
-
-- `shared/` should depend on feature/public interfaces only; it should not own transport, DTO, or repository implementation code.
-- Routed screens get dependencies from Decompose components. Keep `koinInject` out of routed screen composables.
-- Domain contracts must not import `data.remote` APIs or DTOs.
-
-## Sync And Auth
-
-- Auth refresh is implemented in `core/.../data/remote/ApiClient.kt`.
-- Sync orchestration lives in `feature/sync/.../data/repository/SyncRepositoryImpl.kt`.
-- UI should talk through use cases and repositories, not manually call transport helpers.
-
-## Platform Bindings
-
-- Android secure storage: Tink AEAD + DataStore
-- iOS secure storage: `KeychainSettings`
-- Android engine: OkHttp
-- iOS engine: Darwin
-- platform DI bootstrapping happens through `KoinInitializer.kt` plus expect/actual `commonModules()` and `platformModules()`
-
-## Source-Set Notes
-
-- `commonMain` is the default home for business logic.
-- `androidMain`, `iosMain`, and `desktopMain` only hold true platform bindings.
-- SKIE is currently disabled in Gradle; do not add new code that depends on SKIE-only generation being active.
+- Koin bootstrap: `composeApp/.../di/KoinInitializer.kt`
+- Route contracts: `core/navigation`
+- Compose shell and root navigation: `composeApp/.../presentation/navigation`
+- CocoaPods export: `composeApp/build.gradle.kts`
+- Auth transport: `core/data/.../data/remote/ApiClient.kt`
+- Sync orchestration: `feature/sync/.../data/repository/SyncRepositoryImpl.kt`

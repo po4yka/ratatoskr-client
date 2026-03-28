@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,12 +22,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.request_history_collapse
+import bitesizereader.composeapp.generated.resources.request_history_count_plural
+import bitesizereader.composeapp.generated.resources.request_history_count_singular
+import bitesizereader.composeapp.generated.resources.request_history_empty
+import bitesizereader.composeapp.generated.resources.request_history_expand
+import bitesizereader.composeapp.generated.resources.request_history_loading
+import bitesizereader.composeapp.generated.resources.request_history_prompt
+import bitesizereader.composeapp.generated.resources.request_history_retry
+import bitesizereader.composeapp.generated.resources.request_history_status_completed
+import bitesizereader.composeapp.generated.resources.request_history_status_failed
+import bitesizereader.composeapp.generated.resources.request_history_status_pending
+import bitesizereader.composeapp.generated.resources.request_history_status_processing
+import bitesizereader.composeapp.generated.resources.submit_url_request_history
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Expandable section showing recent URL submission requests with their status.
@@ -47,7 +63,7 @@ fun RequestHistorySection(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                 .background(Carbon.theme.layer01),
     ) {
         // Header (clickable to expand/collapse)
@@ -56,22 +72,26 @@ fun RequestHistorySection(
                 Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onToggleExpanded)
-                    .padding(16.dp),
+                    .padding(Spacing.md),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column {
                 Text(
-                    text = "Request History",
+                    text = stringResource(Res.string.submit_url_request_history),
                     style = Carbon.typography.headingCompact01,
                     color = Carbon.theme.textPrimary,
                 )
                 Text(
                     text =
                         if (requests.isNotEmpty()) {
-                            "${requests.size} request${if (requests.size != 1) "s" else ""}"
+                            if (requests.size == 1) {
+                                stringResource(Res.string.request_history_count_singular, requests.size)
+                            } else {
+                                stringResource(Res.string.request_history_count_plural, requests.size)
+                            }
                         } else {
-                            "View your URL submission history"
+                            stringResource(Res.string.request_history_prompt)
                         },
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
@@ -80,11 +100,16 @@ fun RequestHistorySection(
 
             Icon(
                 imageVector = CarbonIcons.ArrowLeft,
-                contentDescription = if (isExpanded) "Collapse" else "Expand",
+                contentDescription =
+                    if (isExpanded) {
+                        stringResource(Res.string.request_history_collapse)
+                    } else {
+                        stringResource(Res.string.request_history_expand)
+                    },
                 tint = Carbon.theme.iconSecondary,
                 modifier =
                     Modifier
-                        .size(16.dp)
+                        .size(IconSizes.xs)
                         .graphicsLayer {
                             rotationZ = if (isExpanded) 90f else 180f
                         },
@@ -101,9 +126,9 @@ fun RequestHistorySection(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                        .padding(horizontal = Spacing.md)
+                        .padding(bottom = Spacing.md),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
                 when {
                     isLoading -> {
@@ -114,16 +139,16 @@ fun RequestHistorySection(
                         ) {
                             SmallLoading()
                             Text(
-                                text = "Loading requests...",
+                                text = stringResource(Res.string.request_history_loading),
                                 style = Carbon.typography.label01,
                                 color = Carbon.theme.textSecondary,
-                                modifier = Modifier.padding(start = 8.dp),
+                                modifier = Modifier.padding(start = Spacing.xs),
                             )
                         }
                     }
                     requests.isEmpty() -> {
                         Text(
-                            text = "No requests yet",
+                            text = stringResource(Res.string.request_history_empty),
                             style = Carbon.typography.bodyCompact01,
                             color = Carbon.theme.textSecondary,
                         )
@@ -153,15 +178,15 @@ private fun RequestItem(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                 .background(Carbon.theme.layer02)
-                .padding(12.dp),
+                .padding(Spacing.sm),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
         ) {
             Text(
                 text = request.url,
@@ -171,7 +196,7 @@ private fun RequestItem(
                 overflow = TextOverflow.Ellipsis,
             )
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 StatusBadge(status = request.status)
@@ -184,17 +209,13 @@ private fun RequestItem(
         }
 
         if (request.status == RequestStatus.FAILED) {
-            IconButton(
+            CarbonIconButton(
+                imageVector = CarbonIcons.Renew,
+                contentDescription = stringResource(Res.string.request_history_retry),
                 onClick = onRetry,
-                modifier = Modifier.size(32.dp),
-            ) {
-                Icon(
-                    imageVector = CarbonIcons.Renew,
-                    contentDescription = "Retry",
-                    tint = Carbon.theme.iconPrimary,
-                    modifier = Modifier.size(16.dp),
-                )
-            }
+                buttonSize = Dimensions.compactIconButtonSize,
+                iconSize = IconSizes.xs,
+            )
         }
     }
 }
@@ -207,21 +228,28 @@ private fun StatusBadge(
 ) {
     val (text, backgroundColor, textColor) =
         when (status) {
-            RequestStatus.PENDING -> Triple("Pending", Carbon.theme.layer02, Carbon.theme.textSecondary)
-            RequestStatus.PROCESSING -> Triple("Processing", Carbon.theme.linkPrimary, Carbon.theme.textOnColor)
-            RequestStatus.COMPLETED -> Triple("Completed", Carbon.theme.supportSuccess, Carbon.theme.textOnColor)
-            RequestStatus.FAILED -> Triple("Failed", Carbon.theme.supportError, Carbon.theme.textOnColor)
+            RequestStatus.PENDING ->
+                Triple(stringResource(Res.string.request_history_status_pending), Carbon.theme.layer02, Carbon.theme.textSecondary)
+            RequestStatus.PROCESSING ->
+                Triple(stringResource(Res.string.request_history_status_processing), Carbon.theme.linkPrimary, Carbon.theme.textOnColor)
+            RequestStatus.COMPLETED ->
+                Triple(stringResource(Res.string.request_history_status_completed), Carbon.theme.supportSuccess, Carbon.theme.textOnColor)
+            RequestStatus.FAILED ->
+                Triple(stringResource(Res.string.request_history_status_failed), Carbon.theme.supportError, Carbon.theme.textOnColor)
         }
 
     Text(
         text = text,
         style = Carbon.typography.label01,
         color = textColor,
-        modifier =
-            modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(backgroundColor)
-                .padding(horizontal = 6.dp, vertical = 2.dp),
+            modifier =
+                modifier
+                    .clip(RoundedCornerShape(Dimensions.badgeCornerRadius))
+                    .background(backgroundColor)
+                    .padding(
+                        horizontal = Dimensions.badgeHorizontalPadding,
+                        vertical = Dimensions.badgeVerticalPadding,
+                    ),
     )
 }
 

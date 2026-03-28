@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -17,12 +15,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.telegram_auth_close
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.TelegramAuthData
 import com.po4yka.bitesizereader.presentation.viewmodel.AuthViewModel
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.util.UrlDecoder
 import com.po4yka.bitesizereader.util.config.AppConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.jetbrains.compose.resources.stringResource
 
 private val logger = KotlinLogging.logger {}
 
@@ -59,13 +61,11 @@ fun TelegramAuthScreen(
     ) {
         // Close button
         Box(Modifier.padding(top = 16.dp, start = 16.dp)) {
-            IconButton(onClick = onDismiss) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
-                    tint = Carbon.theme.iconPrimary,
-                )
-            }
+            CarbonIconButton(
+                imageVector = Icons.Default.Close,
+                contentDescription = stringResource(Res.string.telegram_auth_close),
+                onClick = onDismiss,
+            )
         }
 
         // WebView for authentication

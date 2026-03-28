@@ -4,7 +4,8 @@ Guidance for UI work in `composeApp/`.
 
 ## Module Role
 
-- `composeApp` contains shared Compose UI, Android app entrypoints, iOS CocoaPods export, and the desktop dev target.
+- `composeApp` contains shared Compose UI, the shell navigation layer, iOS CocoaPods export, and the desktop dev target.
+- Android app entrypoints, widgets, and workers now live in `androidApp/`.
 - UI code is split into `ui/screens`, `ui/components`, `ui/theme`, `ui/icons`, `ui/auth`, and a small `di/` layer.
 
 ## Screen Pattern

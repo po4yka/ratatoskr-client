@@ -21,14 +21,13 @@ import com.gabrieldrn.carbon.textinput.TextInput
 import com.gabrieldrn.carbon.textinput.TextInputState
 import bitesizereader.composeapp.generated.resources.Res
 import bitesizereader.composeapp.generated.resources.delete_account_confirmation_label
+import bitesizereader.composeapp.generated.resources.delete_account_confirmation_keyword
 import bitesizereader.composeapp.generated.resources.delete_account_confirmation_prompt
 import bitesizereader.composeapp.generated.resources.delete_account_confirmation_warning
 import bitesizereader.composeapp.generated.resources.delete_account_deleting
 import bitesizereader.composeapp.generated.resources.settings_cancel
 import bitesizereader.composeapp.generated.resources.settings_delete_account
 import org.jetbrains.compose.resources.stringResource
-
-private const val CONFIRMATION_TEXT = "DELETE"
 
 /**
  * Dialog for confirming account deletion.
@@ -42,8 +41,9 @@ fun DeleteAccountDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val confirmationText = stringResource(Res.string.delete_account_confirmation_keyword)
     var confirmationInput by remember { mutableStateOf("") }
-    val canConfirm = confirmationInput == CONFIRMATION_TEXT && !isDeleting
+    val canConfirm = confirmationInput == confirmationText && !isDeleting
 
     CarbonDialog(
         onDismissRequest = { if (!isDeleting) onDismiss() },
@@ -56,7 +56,7 @@ fun DeleteAccountDialog(
         )
 
         Text(
-            text = stringResource(Res.string.delete_account_confirmation_prompt, CONFIRMATION_TEXT),
+            text = stringResource(Res.string.delete_account_confirmation_prompt, confirmationText),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )
@@ -65,7 +65,7 @@ fun DeleteAccountDialog(
             label = stringResource(Res.string.delete_account_confirmation_label),
             value = confirmationInput,
             onValueChange = { confirmationInput = it },
-            placeholderText = CONFIRMATION_TEXT,
+            placeholderText = confirmationText,
             state = if (error != null) TextInputState.Error else TextInputState.Enabled,
             modifier = Modifier.fillMaxWidth(),
         )

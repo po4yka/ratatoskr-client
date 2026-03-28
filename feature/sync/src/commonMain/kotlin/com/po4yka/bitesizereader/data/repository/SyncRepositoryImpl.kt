@@ -1,11 +1,8 @@
 package com.po4yka.bitesizereader.data.repository
 
-import kotlin.concurrent.Volatile
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.po4yka.bitesizereader.data.mappers.toDto
-import com.po4yka.bitesizereader.data.remote.HighlightsApi
-import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.data.remote.SyncApi
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
@@ -40,7 +37,9 @@ import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
 import com.po4yka.bitesizereader.util.network.NetworkMonitor
-import org.koin.core.annotation.Single
+import com.po4yka.bitesizereader.sync.PendingOperationHandler
+import com.po4yka.bitesizereader.sync.SyncItemApplier
+import kotlin.concurrent.Volatile
 
 private val logger = KotlinLogging.logger {}
 
@@ -53,31 +52,21 @@ private const val TRANSACTION_CHUNK_SIZE = 25
 /** Timeout for the entire sync operation (5 minutes) */
 private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 
-@Single(binds = [SyncRepository::class])
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,
-    private val summariesApi: SummariesApi,
-    private val highlightsApi: HighlightsApi,
     private val networkMonitor: NetworkMonitor,
+    syncItemAppliers: List<SyncItemApplier>,
+    pendingOperationHandlers: List<PendingOperationHandler>,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncRepository {
     private val syncItemApplierRegistry =
-        SyncItemApplierRegistry(
-            appliers =
-                listOf(
-                    SummarySyncItemApplier(database),
-                    HighlightSyncItemApplier(database),
-                    TagSyncItemApplier(database),
-                    SummaryTagSyncItemApplier(database),
-                ),
-        )
+        SyncItemApplierRegistry(appliers = syncItemAppliers)
 
     private val pendingOperationFlusher =
         PendingOperationFlusher(
             database = database,
-            summariesApi = summariesApi,
-            highlightsApi = highlightsApi,
+            handlers = pendingOperationHandlers,
             applyChanges = ::applyChanges,
             onConflictCount = { conflicts ->
                 _syncProgress.update { current ->
