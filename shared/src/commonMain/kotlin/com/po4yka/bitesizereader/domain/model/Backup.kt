@@ -18,7 +18,7 @@ data class BackupSchedule(
 )
 
 data class BackupRestoreResult(
-    val imported: Int,
-    val errors: Int,
-    val total: Int,
+    val restored: Int,
+    val skipped: Int,
+    val errors: List<String>,
 )

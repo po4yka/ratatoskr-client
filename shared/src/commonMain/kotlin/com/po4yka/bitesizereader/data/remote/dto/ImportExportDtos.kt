@@ -6,17 +6,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ImportJobDto(
     @SerialName("id") val id: Int,
-    @SerialName("source_format") val sourceFormat: String,
-    @SerialName("file_name") val fileName: String,
+    @SerialName("sourceFormat") val sourceFormat: String,
+    @SerialName("fileName") val fileName: String? = null,
     @SerialName("status") val status: String,
-    @SerialName("total_items") val totalItems: Int,
-    @SerialName("processed_items") val processedItems: Int,
-    @SerialName("created_items") val createdItems: Int,
-    @SerialName("skipped_items") val skippedItems: Int,
-    @SerialName("failed_items") val failedItems: Int,
+    @SerialName("totalItems") val totalItems: Int,
+    @SerialName("processedItems") val processedItems: Int,
+    @SerialName("createdItems") val createdItems: Int,
+    @SerialName("skippedItems") val skippedItems: Int,
+    @SerialName("failedItems") val failedItems: Int,
     @SerialName("errors") val errors: List<String> = emptyList(),
-    @SerialName("created_at") val createdAt: String,
-    @SerialName("updated_at") val updatedAt: String,
+    @SerialName("createdAt") val createdAt: String,
+    @SerialName("updatedAt") val updatedAt: String,
 )
 
 @Serializable
