@@ -28,7 +28,7 @@ fun BackupScheduleDto.toDomain(): BackupSchedule =
 
 fun BackupRestoreResponseDto.toDomain(): BackupRestoreResult =
     BackupRestoreResult(
-        imported = imported,
+        restored = restored,
+        skipped = skipped,
         errors = errors,
-        total = total,
     )

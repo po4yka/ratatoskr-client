@@ -29,9 +29,9 @@ data class BackupDeleteResponseDto(
 
 @Serializable
 data class BackupRestoreResponseDto(
-    @SerialName("imported") val imported: Int,
-    @SerialName("errors") val errors: Int,
-    @SerialName("total") val total: Int,
+    @SerialName("restored") val restored: Int,
+    @SerialName("skipped") val skipped: Int,
+    @SerialName("errors") val errors: List<String> = emptyList(),
 )
 
 @Serializable
