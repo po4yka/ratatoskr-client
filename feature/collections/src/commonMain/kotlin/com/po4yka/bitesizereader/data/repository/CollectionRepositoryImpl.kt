@@ -13,7 +13,7 @@ import com.po4yka.bitesizereader.domain.model.CollaboratorRole
 import com.po4yka.bitesizereader.domain.model.CollectionAcl
 import com.po4yka.bitesizereader.domain.model.CollectionInvite
 import com.po4yka.bitesizereader.domain.model.Summary
-import com.po4yka.bitesizereader.domain.repository.CollectionRepository
+import com.po4yka.bitesizereader.feature.collections.domain.repository.CollectionRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

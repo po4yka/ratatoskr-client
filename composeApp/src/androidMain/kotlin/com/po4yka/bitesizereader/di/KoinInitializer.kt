@@ -24,21 +24,14 @@ actual fun KoinApplication.platformExtras(configuration: PlatformConfiguration) 
     // Android context is provided via the appDeclaration lambda (androidContext)
 }
 
-actual fun appModules(): List<Module> =
-    listOf(
-        com_po4yka_bitesizereader_di_CoreCommonModule,
-        com_po4yka_bitesizereader_di_NetworkModule,
-        com_po4yka_bitesizereader_di_DatabaseModule,
-        com_po4yka_bitesizereader_di_AuthFeatureModule,
-        com_po4yka_bitesizereader_di_CollectionsFeatureModule,
-        com_po4yka_bitesizereader_di_DigestFeatureModule,
-        com_po4yka_bitesizereader_di_SettingsFeatureModule,
-        com_po4yka_bitesizereader_di_SummaryFeatureModule,
-        com_po4yka_bitesizereader_di_SyncFeatureModule,
-        authFeatureBindingsModule,
-        collectionsFeatureBindingsModule,
-        digestFeatureBindingsModule,
-        settingsFeatureBindingsModule,
-        summaryFeatureBindingsModule,
-        syncFeatureBindingsModule,
-    )
+internal actual object GeneratedAppModules {
+    actual val coreCommon: Module = com_po4yka_bitesizereader_di_CoreCommonModule
+    actual val network: Module = com_po4yka_bitesizereader_di_NetworkModule
+    actual val database: Module = com_po4yka_bitesizereader_di_DatabaseModule
+    actual val auth: Module = com_po4yka_bitesizereader_di_AuthFeatureModule
+    actual val collections: Module = com_po4yka_bitesizereader_di_CollectionsFeatureModule
+    actual val digest: Module = com_po4yka_bitesizereader_di_DigestFeatureModule
+    actual val settings: Module = com_po4yka_bitesizereader_di_SettingsFeatureModule
+    actual val summary: Module = com_po4yka_bitesizereader_di_SummaryFeatureModule
+    actual val sync: Module = com_po4yka_bitesizereader_di_SyncFeatureModule
+}

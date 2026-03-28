@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.model.DigestFormat
-import com.po4yka.bitesizereader.domain.port.SummaryFeedPort
+import com.po4yka.bitesizereader.feature.summary.api.SummaryFeedPort
 import com.po4yka.bitesizereader.domain.usecase.CreateCustomDigestUseCase
 import com.po4yka.bitesizereader.presentation.state.CustomDigestCreateState
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -49,7 +49,7 @@ Catalog of domain entities in this project.
 
 ## Location
 
-All models: `shared/src/commonMain/kotlin/.../domain/model/`
+Shared immutable models live in `core/common/src/commonMain/kotlin/com/po4yka/bitesizereader/domain/`. Feature-owned public contracts live beside their owning feature in `feature/<name>/.../api` or `.../domain`.
 
 ## Example: Summary
 

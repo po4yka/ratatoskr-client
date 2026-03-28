@@ -5,7 +5,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
-import com.po4yka.bitesizereader.app.AppCompositionRoot
+import com.po4yka.bitesizereader.app.assembleAppCompositionRoot
 import com.po4yka.bitesizereader.di.appModules
 import com.po4yka.bitesizereader.di.initKoin
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
@@ -17,7 +17,7 @@ import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 fun main() {
     // Initialize Koin for desktop using annotation-based modules
     val koinApplication = initKoin(modules = appModules())
-    val compositionRoot = AppCompositionRoot(koinApplication.koin)
+    val compositionRoot = assembleAppCompositionRoot(koinApplication.koin)
 
     application {
         val windowState = rememberWindowState()

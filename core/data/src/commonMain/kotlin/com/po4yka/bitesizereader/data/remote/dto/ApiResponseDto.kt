@@ -48,3 +48,11 @@ data class PaginationDto(
     /** Whether more items are available */
     @SerialName("hasMore") val hasMore: Boolean,
 )
+
+/**
+ * Minimal success payload used by endpoints that only acknowledge completion.
+ */
+@Serializable
+data class SuccessResponse(
+    @SerialName("message") val message: String? = null,
+)

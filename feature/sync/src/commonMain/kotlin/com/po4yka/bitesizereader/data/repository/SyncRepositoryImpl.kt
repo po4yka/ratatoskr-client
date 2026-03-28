@@ -13,9 +13,11 @@ import com.po4yka.bitesizereader.domain.model.SyncPhase
 import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.domain.model.SyncResult
 import com.po4yka.bitesizereader.domain.model.SyncState
-import com.po4yka.bitesizereader.domain.repository.ApplyResult
-import com.po4yka.bitesizereader.domain.repository.LocalChange
-import com.po4yka.bitesizereader.domain.repository.SyncRepository
+import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandler
+import com.po4yka.bitesizereader.feature.sync.api.SyncItemApplier
+import com.po4yka.bitesizereader.feature.sync.domain.repository.ApplyResult
+import com.po4yka.bitesizereader.feature.sync.domain.repository.LocalChange
+import com.po4yka.bitesizereader.feature.sync.domain.repository.SyncRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -37,8 +39,6 @@ import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
 import com.po4yka.bitesizereader.util.network.NetworkMonitor
-import com.po4yka.bitesizereader.sync.PendingOperationHandler
-import com.po4yka.bitesizereader.sync.SyncItemApplier
 import kotlin.concurrent.Volatile
 
 private val logger = KotlinLogging.logger {}

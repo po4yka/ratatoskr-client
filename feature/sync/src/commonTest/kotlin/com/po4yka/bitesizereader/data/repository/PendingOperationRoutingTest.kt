@@ -1,9 +1,9 @@
 package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.database.PendingOperationEntity
-import com.po4yka.bitesizereader.domain.repository.LocalChange
-import com.po4yka.bitesizereader.sync.PendingOperationHandler
-import com.po4yka.bitesizereader.sync.PendingOperationHandlingResult
+import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandler
+import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandlingResult
+import com.po4yka.bitesizereader.feature.sync.domain.repository.LocalChange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest

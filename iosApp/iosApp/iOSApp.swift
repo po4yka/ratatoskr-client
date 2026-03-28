@@ -42,7 +42,7 @@ struct iOSApp: App {
     private func checkForSharedURL() {
         if let sharedURL = AppGroupStore.consumeSharedURL() {
             logger.debug("Found shared URL: \(sharedURL)")
-            appDelegate.rootComponent.navigateToSubmitUrl(prefilledUrl: sharedURL)
+            appDelegate.host.openSharedUrl(url: sharedURL)
         }
     }
 
@@ -58,7 +58,7 @@ struct iOSApp: App {
 
         if url.host == "summary", let summaryId = url.pathComponents.last {
             logger.debug("Opening summary with ID: \(summaryId)")
-            appDelegate.rootComponent.navigateToSummaryDetail(summaryId: summaryId)
+            appDelegate.host.openSummaryDetail(summaryId: summaryId)
         } else if url.host == "submit-url" || url.host == "share" {
             checkForSharedURL()
         } else {

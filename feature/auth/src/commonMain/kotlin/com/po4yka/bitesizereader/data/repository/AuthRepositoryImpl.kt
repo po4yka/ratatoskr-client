@@ -14,8 +14,8 @@ import com.po4yka.bitesizereader.domain.model.Session
 import com.po4yka.bitesizereader.domain.model.TelegramAuthData
 import com.po4yka.bitesizereader.domain.model.User
 import com.po4yka.bitesizereader.domain.model.UserPreferences
-import com.po4yka.bitesizereader.domain.port.AuthSessionPort
-import com.po4yka.bitesizereader.domain.repository.AuthRepository
+import com.po4yka.bitesizereader.feature.auth.api.AuthSessionPort
+import com.po4yka.bitesizereader.feature.auth.domain.repository.AuthRepository
 import com.po4yka.bitesizereader.util.config.AppConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.time.Clock

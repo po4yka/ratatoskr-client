@@ -3,7 +3,7 @@ package com.po4yka.bitesizereader.data.mappers
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyAction
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyItemDto
 import com.po4yka.bitesizereader.database.SummaryEntity
-import com.po4yka.bitesizereader.domain.repository.LocalChange
+import com.po4yka.bitesizereader.feature.sync.domain.repository.LocalChange
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive

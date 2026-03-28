@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.navigation
 
+import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 
 enum class RootScreen {
@@ -10,6 +11,7 @@ enum class RootScreen {
 data class RootChildDescriptor(
     val screen: RootScreen,
     val component: Any,
+    val render: @Composable () -> Unit,
 )
 
 fun interface AuthEntry {

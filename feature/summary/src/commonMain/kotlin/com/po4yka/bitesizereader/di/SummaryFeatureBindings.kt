@@ -5,11 +5,17 @@ import com.po4yka.bitesizereader.feature.summary.data.sync.HighlightSyncItemAppl
 import com.po4yka.bitesizereader.feature.summary.data.sync.SummaryFeedbackPendingOperationHandler
 import com.po4yka.bitesizereader.feature.summary.data.sync.SummaryPendingOperationHandler
 import com.po4yka.bitesizereader.feature.summary.data.sync.SummarySyncItemApplier
+import com.po4yka.bitesizereader.feature.summary.navigation.SummaryRoutes
+import com.po4yka.bitesizereader.feature.summary.ui.screens.SearchScreen
+import com.po4yka.bitesizereader.feature.summary.ui.screens.SubmitURLScreen
+import com.po4yka.bitesizereader.feature.summary.ui.screens.SummaryDetailScreen
+import com.po4yka.bitesizereader.feature.summary.ui.screens.SummaryListScreen
+import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandler
+import com.po4yka.bitesizereader.feature.sync.api.SyncItemApplier
+import com.po4yka.bitesizereader.navigation.AppRoute
 import com.po4yka.bitesizereader.navigation.MainChildDescriptor
 import com.po4yka.bitesizereader.navigation.MainNavigator
-import com.po4yka.bitesizereader.navigation.MainRoute
 import com.po4yka.bitesizereader.navigation.MainRouteEntry
-import com.po4yka.bitesizereader.navigation.MainScreen
 import com.po4yka.bitesizereader.navigation.MainTab
 import com.po4yka.bitesizereader.presentation.navigation.DefaultSearchComponent
 import com.po4yka.bitesizereader.presentation.navigation.DefaultSubmitURLComponent
@@ -22,8 +28,7 @@ import com.po4yka.bitesizereader.presentation.viewmodel.SearchViewModel
 import com.po4yka.bitesizereader.presentation.viewmodel.SubmitURLViewModel
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryListViewModel
-import com.po4yka.bitesizereader.sync.PendingOperationHandler
-import com.po4yka.bitesizereader.sync.SyncItemApplier
+import org.koin.core.Koin
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -102,59 +107,60 @@ val summaryFeatureBindingsModule =
                 searchHistoryManager = get(),
                 syncDataUseCase = get(),
                 toggleFavoriteUseCase = get(),
-                logoutUseCase = get(),
+                authSessionPort = get(),
                 networkMonitor = get(),
             )
         }
-        single {
-            val koin = getKoin()
-            SummaryListRouteEntry(
-                viewModelFactory = { koin.get<SummaryListViewModel>() },
-                recommendationsViewModelFactory = { koin.get<RecommendationsViewModel>() },
-                readingGoalControllerFactory = { koin.get<ReadingGoalController>() },
-            )
-        } bind MainRouteEntry::class
-        single {
-            val koin = getKoin()
-            SearchRouteEntry(viewModelFactory = { koin.get<SearchViewModel>() })
-        } bind MainRouteEntry::class
-        single {
-            val koin = getKoin()
-            SummaryDetailRouteEntry(viewModelFactory = { koin.get<SummaryDetailViewModel>() })
-        } bind MainRouteEntry::class
-        single {
-            val koin = getKoin()
-            SubmitUrlRouteEntry(viewModelFactory = { koin.get<SubmitURLViewModel>() })
-        } bind MainRouteEntry::class
     }
+
+fun summaryRouteEntries(
+    koin: Koin,
+    digestCreateRoute: () -> AppRoute,
+): List<MainRouteEntry> =
+    listOf(
+        SummaryListRouteEntry(
+            viewModelFactory = { koin.get<SummaryListViewModel>() },
+            recommendationsViewModelFactory = { koin.get<RecommendationsViewModel>() },
+            readingGoalControllerFactory = { koin.get<ReadingGoalController>() },
+            digestCreateRoute = digestCreateRoute,
+        ),
+        SearchRouteEntry(viewModelFactory = { koin.get<SearchViewModel>() }),
+        SummaryDetailRouteEntry(viewModelFactory = { koin.get<SummaryDetailViewModel>() }),
+        SubmitUrlRouteEntry(viewModelFactory = { koin.get<SubmitURLViewModel>() }),
+    )
 
 private class SummaryListRouteEntry(
     private val viewModelFactory: () -> SummaryListViewModel,
     private val recommendationsViewModelFactory: () -> RecommendationsViewModel,
     private val readingGoalControllerFactory: () -> ReadingGoalController,
+    private val digestCreateRoute: () -> AppRoute,
 ) : MainRouteEntry {
-    override val screen: MainScreen = MainScreen.SUMMARY_LIST
     override val tab: MainTab = MainTab.SUMMARY_LIST
-    override val defaultRoute: MainRoute = MainRoute.SummaryList()
+    override val defaultRoute: AppRoute = SummaryRoutes.list()
 
     override fun create(
-        route: MainRoute,
+        route: AppRoute,
         componentContext: com.arkivanov.decompose.ComponentContext,
         navigator: MainNavigator,
     ): MainChildDescriptor? =
-        (route as? MainRoute.SummaryList)?.let {
+        route.takeIf {
+            it.featureId == SummaryRoutes.FEATURE_ID && it.screenId == SummaryRoutes.SCREEN_LIST
+        }?.let {
+            val summaryListComponent =
+                DefaultSummaryListComponent(
+                    componentContext = componentContext,
+                    viewModelFactory = viewModelFactory,
+                    recommendationsViewModelFactory = recommendationsViewModelFactory,
+                    readingGoalControllerFactory = readingGoalControllerFactory,
+                    onSummarySelected = { summaryId -> navigator.open(SummaryRoutes.detail(summaryId)) },
+                    onSubmitUrl = { navigator.open(SummaryRoutes.submitUrl()) },
+                    onCreateDigest = { navigator.open(digestCreateRoute()) },
+                )
             MainChildDescriptor(
-                screen = screen,
-                component =
-                    DefaultSummaryListComponent(
-                        componentContext = componentContext,
-                        viewModelFactory = viewModelFactory,
-                        recommendationsViewModelFactory = recommendationsViewModelFactory,
-                        readingGoalControllerFactory = readingGoalControllerFactory,
-                        onSummarySelected = navigator::openSummaryDetail,
-                        onSubmitUrl = { navigator.openSubmitUrl() },
-                        onCreateDigest = navigator::openCustomDigestCreate,
-                    ),
+                route = route,
+                tab = tab,
+                component = summaryListComponent,
+                render = { SummaryListScreen(component = summaryListComponent) },
             )
         }
 }
@@ -162,24 +168,28 @@ private class SummaryListRouteEntry(
 private class SearchRouteEntry(
     private val viewModelFactory: () -> SearchViewModel,
 ) : MainRouteEntry {
-    override val screen: MainScreen = MainScreen.SEARCH
     override val tab: MainTab = MainTab.SEARCH
-    override val defaultRoute: MainRoute = MainRoute.Search
+    override val defaultRoute: AppRoute = SummaryRoutes.search()
 
     override fun create(
-        route: MainRoute,
+        route: AppRoute,
         componentContext: com.arkivanov.decompose.ComponentContext,
         navigator: MainNavigator,
     ): MainChildDescriptor? =
-        (route as? MainRoute.Search)?.let {
+        route.takeIf {
+            it.featureId == SummaryRoutes.FEATURE_ID && it.screenId == SummaryRoutes.SCREEN_SEARCH
+        }?.let {
+            val searchComponent =
+                DefaultSearchComponent(
+                    componentContext = componentContext,
+                    viewModelFactory = viewModelFactory,
+                    onSummarySelected = { summaryId -> navigator.open(SummaryRoutes.detail(summaryId)) },
+                )
             MainChildDescriptor(
-                screen = screen,
-                component =
-                    DefaultSearchComponent(
-                        componentContext = componentContext,
-                        viewModelFactory = viewModelFactory,
-                        onSummarySelected = navigator::openSummaryDetail,
-                    ),
+                route = route,
+                tab = tab,
+                component = searchComponent,
+                render = { SearchScreen(component = searchComponent) },
             )
         }
 }
@@ -187,25 +197,29 @@ private class SearchRouteEntry(
 private class SummaryDetailRouteEntry(
     private val viewModelFactory: () -> SummaryDetailViewModel,
 ) : MainRouteEntry {
-    override val screen: MainScreen = MainScreen.SUMMARY_DETAIL
     override val tab: MainTab? = null
-    override val defaultRoute: MainRoute? = null
+    override val defaultRoute: AppRoute? = null
 
     override fun create(
-        route: MainRoute,
+        route: AppRoute,
         componentContext: com.arkivanov.decompose.ComponentContext,
         navigator: MainNavigator,
     ): MainChildDescriptor? =
-        (route as? MainRoute.SummaryDetail)?.let {
+        route.takeIf {
+            it.featureId == SummaryRoutes.FEATURE_ID && it.screenId == SummaryRoutes.SCREEN_DETAIL
+        }?.let {
+            val summaryDetailComponent =
+                DefaultSummaryDetailComponent(
+                    componentContext = componentContext,
+                    viewModelFactory = viewModelFactory,
+                    summaryId = requireNotNull(route.argument),
+                    onBack = navigator::goBack,
+                )
             MainChildDescriptor(
-                screen = screen,
-                component =
-                    DefaultSummaryDetailComponent(
-                        componentContext = componentContext,
-                        viewModelFactory = viewModelFactory,
-                        summaryId = it.summaryId,
-                        onBack = navigator::goBack,
-                    ),
+                route = route,
+                tab = tab,
+                component = summaryDetailComponent,
+                render = { SummaryDetailScreen(component = summaryDetailComponent) },
             )
         }
 }
@@ -213,29 +227,33 @@ private class SummaryDetailRouteEntry(
 private class SubmitUrlRouteEntry(
     private val viewModelFactory: () -> SubmitURLViewModel,
 ) : MainRouteEntry {
-    override val screen: MainScreen = MainScreen.SUBMIT_URL
     override val tab: MainTab? = null
-    override val defaultRoute: MainRoute? = null
+    override val defaultRoute: AppRoute? = null
 
     override fun create(
-        route: MainRoute,
+        route: AppRoute,
         componentContext: com.arkivanov.decompose.ComponentContext,
         navigator: MainNavigator,
     ): MainChildDescriptor? =
-        (route as? MainRoute.SubmitURL)?.let {
+        route.takeIf {
+            it.featureId == SummaryRoutes.FEATURE_ID && it.screenId == SummaryRoutes.SCREEN_SUBMIT_URL
+        }?.let {
+            val submitUrlComponent =
+                DefaultSubmitURLComponent(
+                    componentContext = componentContext,
+                    viewModelFactory = viewModelFactory,
+                    prefilledUrl = route.argument,
+                    onBack = navigator::goBack,
+                    onNavigateToSummary = { summaryId ->
+                        navigator.goBack()
+                        navigator.open(SummaryRoutes.detail(summaryId))
+                    },
+                )
             MainChildDescriptor(
-                screen = screen,
-                component =
-                    DefaultSubmitURLComponent(
-                        componentContext = componentContext,
-                        viewModelFactory = viewModelFactory,
-                        prefilledUrl = it.prefilledUrl,
-                        onBack = navigator::goBack,
-                        onNavigateToSummary = { summaryId ->
-                            navigator.goBack()
-                            navigator.openSummaryDetail(summaryId)
-                        },
-                    ),
+                route = route,
+                tab = tab,
+                component = submitUrlComponent,
+                render = { SubmitURLScreen(component = submitUrlComponent) },
             )
         }
 }

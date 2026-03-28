@@ -46,9 +46,11 @@ open iosApp/iosApp.xcodeproj
 
 ```
 bite-size-reader-client/
- shared/              # Kotlin Multiplatform (90% code sharing)
- composeApp/          # Android app (Jetpack Compose)
- iosApp/              # iOS app (SwiftUI)
+ androidApp/          # Android application host
+ composeApp/          # Compose shell, shared UI, CocoaPods export
+ core/                # Shared domain, data, navigation, and UI infrastructure
+ feature/             # Feature-owned business logic, APIs, DTOs, and components
+ iosApp/              # iOS app (SwiftUI host + native share/widget targets)
  gradle/              # Gradle configuration
  docs/                # Documentation
 ```
@@ -61,20 +63,20 @@ bite-size-reader-client/
 
 ```bash
 # Build debug APK
-./gradlew :composeApp:assembleDebug
+./gradlew :androidApp:assembleDebug
 
 # Install on device/emulator
-./gradlew :composeApp:installDebug
+./gradlew :androidApp:installDebug
 
 # Run with Hot Reload (desktop)
-./gradlew :composeApp:run
+./gradlew :composeApp:hotRunDesktop
 ```
 
 ### iOS Development
 
 ```bash
 # Open in Xcode
-open iosApp/iosApp.xcodeproj
+open iosApp/iosApp.xcworkspace
 
 # Build from command line
 xcodebuild -scheme iosApp -configuration Debug
@@ -112,7 +114,7 @@ my-library = "1.0.0"
 my-library = { module = "com.example:my-library", version.ref = "my-library" }
 ```
 
-Then add to `shared/build.gradle.kts`:
+Then add it to the owning module `build.gradle.kts`:
 
 ```kotlin
 commonMain.dependencies {
@@ -122,20 +124,20 @@ commonMain.dependencies {
 
 ### Database Migrations
 
-Edit `shared/src/commonMain/sqldelight/`:
+Edit `core/data/src/commonMain/sqldelight/`:
 
 ```sql
 -- In schema file
 ALTER TABLE summaries ADD COLUMN new_field TEXT;
 ```
 
-Update models in `shared/src/commonMain/kotlin/domain/model/`.
+Update models in `core/common/src/commonMain/kotlin/com/po4yka/bitesizereader/domain/` or the owning feature module if the type is feature-specific.
 
 ### Adding API Endpoint
 
-1. Add DTO in `data/remote/dto/`
-2. Add method to `ApiClient.kt`
-3. Update repository
+1. Add DTO in the owning feature `data/remote/dto/`
+2. Add or extend the owning feature API in `data/remote/`
+3. Update the owning feature repository
 4. Create/update use case
 5. Update ViewModel
 

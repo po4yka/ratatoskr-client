@@ -9,11 +9,11 @@ import com.po4yka.bitesizereader.domain.usecase.GetAvailableTagsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetFilteredSummariesUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetRecentSearchesUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetTrendingTopicsUseCase
-import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveSearchQueryUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
-import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
+import com.po4yka.bitesizereader.feature.auth.api.AuthSessionPort
+import com.po4yka.bitesizereader.feature.sync.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
@@ -53,7 +53,7 @@ class SummaryListViewModelTest {
     private val deleteSearchQueryUseCase: DeleteSearchQueryUseCase = mockk()
     private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase = mockk()
     private val syncDataUseCase: SyncDataUseCase = mockk()
-    private val logoutUseCase: LogoutUseCase = mockk()
+    private val authSessionPort: AuthSessionPort = mockk(relaxed = true)
     private val networkMonitor: NetworkMonitor = mockk()
     private lateinit var searchHistoryManager: SearchHistoryManager
     private lateinit var viewModel: SummaryListViewModel
@@ -85,6 +85,9 @@ class SummaryListViewModelTest {
         coEvery { deleteSearchQueryUseCase(any()) } returns Unit
         coEvery { clearSearchHistoryUseCase() } returns Unit
         every { networkMonitor.networkStatus } returns flowOf(NetworkStatus.CONNECTED)
+        every { authSessionPort.isAuthenticated } returns flowOf(true)
+        coEvery { authSessionPort.checkAuthStatus() } returns Unit
+        coEvery { authSessionPort.logout() } returns Unit
         every {
             getFilteredSummariesUseCase(
                 page = any(),
@@ -115,7 +118,7 @@ class SummaryListViewModelTest {
                 searchHistoryManager = searchHistoryManager,
                 syncDataUseCase = syncDataUseCase,
                 toggleFavoriteUseCase = toggleFavoriteUseCase,
-                logoutUseCase = logoutUseCase,
+                authSessionPort = authSessionPort,
                 networkMonitor = networkMonitor,
                 dispatcher = testDispatcher,
             )

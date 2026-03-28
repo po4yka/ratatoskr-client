@@ -7,7 +7,8 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.replaceCurrent
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
-import com.po4yka.bitesizereader.domain.port.AuthSessionPort
+import com.po4yka.bitesizereader.feature.auth.api.AuthSessionPort
+import com.po4yka.bitesizereader.navigation.AppRoute
 import com.po4yka.bitesizereader.navigation.AuthEntry
 import com.po4yka.bitesizereader.navigation.RootChildDescriptor
 import com.po4yka.bitesizereader.navigation.RootScreen
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import com.po4yka.bitesizereader.ui.screens.MainScreen
 
 class DefaultRootComponent(
     componentContext: ComponentContext,
@@ -63,18 +65,11 @@ class DefaultRootComponent(
             .launchIn(scope)
     }
 
-    override fun navigateToSubmitUrl(prefilledUrl: String) {
+    override fun open(route: AppRoute) {
         if (childStack.value.active.configuration is Config.Auth) {
             navigation.replaceCurrent(Config.Main)
         }
-        activeMainComponent()?.navigateToSubmitUrl(prefilledUrl)
-    }
-
-    override fun navigateToSummaryDetail(summaryId: String) {
-        if (childStack.value.active.configuration is Config.Auth) {
-            navigation.replaceCurrent(Config.Main)
-        }
-        activeMainComponent()?.navigateToSummaryDetail(summaryId)
+        activeMainComponent()?.open(route)
     }
 
     private fun activeMainComponent(): MainComponent? = childStack.value.active.instance.component as? MainComponent
@@ -90,10 +85,13 @@ class DefaultRootComponent(
                 }
 
             is Config.Main ->
-                RootChildDescriptor(
-                    screen = RootScreen.MAIN,
-                    component = mainComponentFactory(componentContext),
-                )
+                mainComponentFactory(componentContext).let { mainComponent ->
+                    RootChildDescriptor(
+                        screen = RootScreen.MAIN,
+                        component = mainComponent,
+                        render = { MainScreen(component = mainComponent) },
+                    )
+                }
         }
 
     @Serializable

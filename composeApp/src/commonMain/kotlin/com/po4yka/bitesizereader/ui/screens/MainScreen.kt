@@ -20,13 +20,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import com.po4yka.bitesizereader.ui.icons.CarbonIcons
-import bitesizereader.composeapp.generated.resources.Res
-import bitesizereader.composeapp.generated.resources.nav_collections
-import bitesizereader.composeapp.generated.resources.nav_read_later
-import bitesizereader.composeapp.generated.resources.nav_search
-import bitesizereader.composeapp.generated.resources.nav_settings
-import bitesizereader.composeapp.generated.resources.nav_stats
+import com.po4yka.bitesizereader.core.ui.icons.CarbonIcons
+import bitesizereader.core.ui.generated.resources.Res
+import bitesizereader.core.ui.generated.resources.nav_collections
+import bitesizereader.core.ui.generated.resources.nav_read_later
+import bitesizereader.core.ui.generated.resources.nav_search
+import bitesizereader.core.ui.generated.resources.nav_settings
+import bitesizereader.core.ui.generated.resources.nav_stats
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import org.jetbrains.compose.resources.stringResource
@@ -39,21 +39,9 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.po4yka.bitesizereader.navigation.MainChildDescriptor
-import com.po4yka.bitesizereader.navigation.MainScreen as MainNavScreen
 import com.po4yka.bitesizereader.navigation.MainTab
 import com.gabrieldrn.carbon.Carbon
-import com.po4yka.bitesizereader.presentation.navigation.CollectionViewComponent
-import com.po4yka.bitesizereader.presentation.navigation.CollectionsComponent
-import com.po4yka.bitesizereader.presentation.navigation.CustomDigestCreateComponent
-import com.po4yka.bitesizereader.presentation.navigation.CustomDigestViewComponent
-import com.po4yka.bitesizereader.presentation.navigation.DigestComponent
 import com.po4yka.bitesizereader.presentation.navigation.MainComponent
-import com.po4yka.bitesizereader.presentation.navigation.SearchComponent
-import com.po4yka.bitesizereader.presentation.navigation.SettingsComponent
-import com.po4yka.bitesizereader.presentation.navigation.StatsComponent
-import com.po4yka.bitesizereader.presentation.navigation.SubmitURLComponent
-import com.po4yka.bitesizereader.presentation.navigation.SummaryDetailComponent
-import com.po4yka.bitesizereader.presentation.navigation.SummaryListComponent
 
 /** Minimum width to switch from bottom-bar to side navigation rail layout. */
 private val EXPANDED_WIDTH_THRESHOLD = 600.dp
@@ -72,14 +60,7 @@ fun MainScreen(
     val childStack by component.childStack.subscribeAsState()
     val activeChild = childStack.active.instance
 
-    // Determine if navigation should be shown (hide for detail screens)
-    val showNav =
-        activeChild.screen != MainNavScreen.SUMMARY_DETAIL &&
-            activeChild.screen != MainNavScreen.COLLECTION_VIEW &&
-            activeChild.screen != MainNavScreen.SUBMIT_URL &&
-            activeChild.screen != MainNavScreen.DIGEST &&
-            activeChild.screen != MainNavScreen.CUSTOM_DIGEST_CREATE &&
-            activeChild.screen != MainNavScreen.CUSTOM_DIGEST_VIEW
+    val showNav = activeChild.tab != null
 
     BoxWithConstraints(
         modifier =
@@ -128,46 +109,12 @@ fun MainScreen(
 }
 
 @Composable
-private fun ScreenContent(
-    childStack: ChildStack<*, MainChildDescriptor>,
-) {
+private fun ScreenContent(childStack: ChildStack<*, MainChildDescriptor>) {
     Children(
         stack = childStack,
         modifier = Modifier.fillMaxSize(),
         animation = stackAnimation(fade()),
-    ) { child ->
-        when (val instance = child.instance) {
-            is MainChildDescriptor ->
-                when (instance.screen) {
-                    MainNavScreen.SUMMARY_LIST ->
-                        SummaryListScreen(component = instance.requireComponent<SummaryListComponent>())
-                    MainNavScreen.SUMMARY_DETAIL ->
-                        SummaryDetailScreen(component = instance.requireComponent<SummaryDetailComponent>())
-                    MainNavScreen.SEARCH ->
-                        SearchScreen(component = instance.requireComponent<SearchComponent>())
-                    MainNavScreen.COLLECTIONS ->
-                        CollectionsScreen(component = instance.requireComponent<CollectionsComponent>())
-                    MainNavScreen.COLLECTION_VIEW ->
-                        CollectionViewScreen(component = instance.requireComponent<CollectionViewComponent>())
-                    MainNavScreen.STATS ->
-                        StatsScreen(component = instance.requireComponent<StatsComponent>())
-                    MainNavScreen.SETTINGS ->
-                        SettingsScreen(component = instance.requireComponent<SettingsComponent>())
-                    MainNavScreen.SUBMIT_URL ->
-                        SubmitURLScreen(component = instance.requireComponent<SubmitURLComponent>())
-                    MainNavScreen.DIGEST ->
-                        DigestScreen(component = instance.requireComponent<DigestComponent>())
-                    MainNavScreen.CUSTOM_DIGEST_CREATE ->
-                        CustomDigestCreateScreen(
-                            component = instance.requireComponent<CustomDigestCreateComponent>(),
-                        )
-                    MainNavScreen.CUSTOM_DIGEST_VIEW ->
-                        CustomDigestViewScreen(
-                            component = instance.requireComponent<CustomDigestViewComponent>(),
-                        )
-                }
-        }
-    }
+    ) { child -> child.instance.render() }
 }
 
 /** Vertical navigation rail shown on large screens. */
@@ -191,35 +138,35 @@ private fun NavigationRail(
         RailItem(
             icon = CarbonIcons.Bookmark,
             label = stringResource(Res.string.nav_read_later),
-            isSelected = activeChild.screen == MainNavScreen.SUMMARY_LIST,
+            isSelected = activeChild.tab == MainTab.SUMMARY_LIST,
             onClick = { onTabSelected(MainTab.SUMMARY_LIST) },
         )
 
         RailItem(
             icon = CarbonIcons.Search,
             label = stringResource(Res.string.nav_search),
-            isSelected = activeChild.screen == MainNavScreen.SEARCH,
+            isSelected = activeChild.tab == MainTab.SEARCH,
             onClick = { onTabSelected(MainTab.SEARCH) },
         )
 
         RailItem(
             icon = CarbonIcons.Folder,
             label = stringResource(Res.string.nav_collections),
-            isSelected = activeChild.screen == MainNavScreen.COLLECTIONS,
+            isSelected = activeChild.tab == MainTab.COLLECTIONS,
             onClick = { onTabSelected(MainTab.COLLECTIONS) },
         )
 
         RailItem(
             icon = CarbonIcons.Document,
             label = stringResource(Res.string.nav_stats),
-            isSelected = activeChild.screen == MainNavScreen.STATS,
+            isSelected = activeChild.tab == MainTab.STATS,
             onClick = { onTabSelected(MainTab.STATS) },
         )
 
         RailItem(
             icon = CarbonIcons.Settings,
             label = stringResource(Res.string.nav_settings),
-            isSelected = activeChild.screen == MainNavScreen.SETTINGS,
+            isSelected = activeChild.tab == MainTab.SETTINGS,
             onClick = { onTabSelected(MainTab.SETTINGS) },
         )
     }
@@ -309,42 +256,39 @@ private fun BottomNavigation(
         NavItem(
             icon = CarbonIcons.Bookmark,
             label = stringResource(Res.string.nav_read_later),
-            isSelected = activeChild.screen == MainNavScreen.SUMMARY_LIST,
+            isSelected = activeChild.tab == MainTab.SUMMARY_LIST,
             onClick = { onTabSelected(MainTab.SUMMARY_LIST) },
         )
 
         NavItem(
             icon = CarbonIcons.Search,
             label = stringResource(Res.string.nav_search),
-            isSelected = activeChild.screen == MainNavScreen.SEARCH,
+            isSelected = activeChild.tab == MainTab.SEARCH,
             onClick = { onTabSelected(MainTab.SEARCH) },
         )
 
         NavItem(
             icon = CarbonIcons.Folder,
             label = stringResource(Res.string.nav_collections),
-            isSelected = activeChild.screen == MainNavScreen.COLLECTIONS,
+            isSelected = activeChild.tab == MainTab.COLLECTIONS,
             onClick = { onTabSelected(MainTab.COLLECTIONS) },
         )
 
         NavItem(
             icon = CarbonIcons.Document,
             label = stringResource(Res.string.nav_stats),
-            isSelected = activeChild.screen == MainNavScreen.STATS,
+            isSelected = activeChild.tab == MainTab.STATS,
             onClick = { onTabSelected(MainTab.STATS) },
         )
 
         NavItem(
             icon = CarbonIcons.Settings,
             label = stringResource(Res.string.nav_settings),
-            isSelected = activeChild.screen == MainNavScreen.SETTINGS,
+            isSelected = activeChild.tab == MainTab.SETTINGS,
             onClick = { onTabSelected(MainTab.SETTINGS) },
         )
     }
 }
-
-private inline fun <reified T> MainChildDescriptor.requireComponent(): T =
-    component as? T ?: error("Expected ${T::class.simpleName} for $screen, got ${component::class.simpleName}")
 
 @Suppress("FunctionNaming")
 @Composable

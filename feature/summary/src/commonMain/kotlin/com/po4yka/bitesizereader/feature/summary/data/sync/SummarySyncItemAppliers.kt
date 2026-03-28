@@ -5,7 +5,7 @@ import com.po4yka.bitesizereader.data.remote.dto.HighlightDto
 import com.po4yka.bitesizereader.data.remote.dto.SummaryCompactDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
 import com.po4yka.bitesizereader.database.Database
-import com.po4yka.bitesizereader.sync.SyncItemApplier
+import com.po4yka.bitesizereader.feature.sync.api.SyncItemApplier
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
 

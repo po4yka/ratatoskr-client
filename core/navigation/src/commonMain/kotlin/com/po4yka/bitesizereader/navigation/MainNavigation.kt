@@ -1,6 +1,7 @@
 package com.po4yka.bitesizereader.navigation
 
 import com.arkivanov.decompose.ComponentContext
+import androidx.compose.runtime.Composable
 import kotlinx.serialization.Serializable
 
 enum class MainTab {
@@ -11,84 +12,32 @@ enum class MainTab {
     SETTINGS,
 }
 
-enum class MainScreen {
-    SUMMARY_LIST,
-    SUMMARY_DETAIL,
-    SEARCH,
-    COLLECTIONS,
-    COLLECTION_VIEW,
-    STATS,
-    SETTINGS,
-    SUBMIT_URL,
-    DIGEST,
-    CUSTOM_DIGEST_CREATE,
-    CUSTOM_DIGEST_VIEW,
-}
-
-data class MainChildDescriptor(
-    val screen: MainScreen,
-    val component: Any,
+@Serializable
+data class AppRoute(
+    val featureId: String,
+    val screenId: String,
+    val argument: String? = null,
 )
 
-@Serializable
-sealed interface MainRoute {
-    @Serializable
-    data class SummaryList(val collectionId: String? = null) : MainRoute
-
-    @Serializable
-    data class SummaryDetail(val summaryId: String) : MainRoute
-
-    @Serializable
-    data object Collections : MainRoute
-
-    @Serializable
-    data class CollectionView(val collectionId: String) : MainRoute
-
-    @Serializable
-    data object Stats : MainRoute
-
-    @Serializable
-    data object Settings : MainRoute
-
-    @Serializable
-    data object Search : MainRoute
-
-    @Serializable
-    data class SubmitURL(val prefilledUrl: String? = null) : MainRoute
-
-    @Serializable
-    data object Digest : MainRoute
-
-    @Serializable
-    data object CustomDigestCreate : MainRoute
-
-    @Serializable
-    data class CustomDigestView(val digestId: String) : MainRoute
-}
+data class MainChildDescriptor(
+    val route: AppRoute,
+    val tab: MainTab?,
+    val component: Any,
+    val render: @Composable () -> Unit,
+)
 
 interface MainNavigator {
     fun goBack()
 
-    fun openSummaryDetail(summaryId: String)
-
-    fun openSubmitUrl(prefilledUrl: String = "")
-
-    fun openCustomDigestCreate()
-
-    fun openCustomDigestView(digestId: String)
-
-    fun openCollectionView(collectionId: String)
-
-    fun openDigest()
+    fun open(route: AppRoute)
 }
 
 interface MainRouteEntry {
-    val screen: MainScreen
     val tab: MainTab?
-    val defaultRoute: MainRoute?
+    val defaultRoute: AppRoute?
 
     fun create(
-        route: MainRoute,
+        route: AppRoute,
         componentContext: ComponentContext,
         navigator: MainNavigator,
     ): MainChildDescriptor?

@@ -7,7 +7,7 @@ import com.po4yka.bitesizereader.domain.usecase.GetCurrentUserUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetDeveloperCredentialsUseCase
 import com.po4yka.bitesizereader.domain.usecase.LoginWithSecretUseCase
 import com.po4yka.bitesizereader.domain.usecase.LoginWithTelegramUseCase
-import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
+import com.po4yka.bitesizereader.feature.auth.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.domain.usecase.SaveDeveloperCredentialsUseCase
 import com.po4yka.bitesizereader.presentation.state.AuthState
 import com.po4yka.bitesizereader.util.error.toAppError

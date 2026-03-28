@@ -23,7 +23,7 @@ This project uses multiple code quality tools to maintain high code standards ac
 
 # Check specific module
 ./gradlew :composeApp:ktlintCheck
-./gradlew :shared:ktlintCheck
+./gradlew :feature:summary:ktlintCheck
 ```
 
 #### Customizations for This Project
@@ -106,7 +106,7 @@ Detekt automatically excludes:
 ./gradlew koverHtmlReport
 
 # View coverage
-open shared/build/reports/kover/html/index.html
+open build/reports/kover/
 ```
 
 ## CI/CD Integration

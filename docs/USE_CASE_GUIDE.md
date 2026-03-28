@@ -114,7 +114,7 @@ class LinkTelegramUseCase(
 
 ## File Location
 
-All use cases go in: `shared/src/commonMain/kotlin/.../domain/usecase/`
+Use cases live in the owning feature module under `feature/<name>/.../domain/usecase/`, or in `core/common` only when the behavior is intentionally cross-feature.
 
 ## Naming Convention
 
