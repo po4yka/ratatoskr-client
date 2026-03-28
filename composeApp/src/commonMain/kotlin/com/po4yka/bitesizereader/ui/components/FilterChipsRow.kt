@@ -1,28 +1,23 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.filter_chip_archived
+import bitesizereader.composeapp.generated.resources.filter_chip_favorites
+import bitesizereader.composeapp.generated.resources.search_filter_all
+import bitesizereader.composeapp.generated.resources.search_filter_read
+import bitesizereader.composeapp.generated.resources.search_filter_unread
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongParameterList")
 @Composable
@@ -72,53 +67,21 @@ private fun FilterChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(Spacing.md)
-    val backgroundColor =
-        if (isSelected) {
-            Carbon.theme.backgroundInverse
-        } else {
-            Carbon.theme.layer01
-        }
-    val textColor =
-        if (isSelected) {
-            Carbon.theme.textOnColor
-        } else {
-            Carbon.theme.textSecondary
-        }
-    val borderColor =
-        if (isSelected) {
-            Carbon.theme.backgroundInverse
-        } else {
-            Carbon.theme.borderSubtle00
-        }
-
-    Box(
-        modifier =
-            modifier
-                .clip(shape)
-                .background(backgroundColor)
-                .border(1.dp, borderColor, shape)
-                .clickable(onClick = onClick)
-                .padding(horizontal = Spacing.md, vertical = Spacing.xs)
-                .semantics {
-                    role = Role.Tab
-                    selected = isSelected
-                },
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = label,
-            style = Carbon.typography.bodyCompact01,
-            color = textColor,
-        )
-    }
+    CarbonSelectableChip(
+        label = label,
+        selected = isSelected,
+        onClick = onClick,
+        modifier = modifier,
+        role = Role.RadioButton,
+    )
 }
 
+@Composable
 private fun ReadFilter.displayName(): String =
     when (this) {
-        ReadFilter.ALL -> "All"
-        ReadFilter.UNREAD -> "Unread"
-        ReadFilter.READ -> "Read"
-        ReadFilter.FAVORITED -> "Favorites"
-        ReadFilter.ARCHIVED -> "Archived"
+        ReadFilter.ALL -> stringResource(Res.string.search_filter_all)
+        ReadFilter.UNREAD -> stringResource(Res.string.search_filter_unread)
+        ReadFilter.READ -> stringResource(Res.string.search_filter_read)
+        ReadFilter.FAVORITED -> stringResource(Res.string.filter_chip_favorites)
+        ReadFilter.ARCHIVED -> stringResource(Res.string.filter_chip_archived)
     }

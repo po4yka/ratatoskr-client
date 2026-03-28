@@ -11,6 +11,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 import com.po4yka.bitesizereader.ui.screens.AuthScreen
 import com.po4yka.bitesizereader.ui.screens.MainScreen
+import com.po4yka.bitesizereader.ui.theme.BiteSizeReaderTheme
 
 /** Main app composable with Decompose navigation */
 @Composable
@@ -20,20 +21,22 @@ fun App(
 ) {
     val childStack = rootComponent.childStack.subscribeAsState()
 
-    Children(
-        stack = childStack.value,
-        modifier =
-            modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing),
-    ) { child ->
-        when (val instance = child.instance) {
-            is RootComponent.Child.Auth ->
-                AuthScreen(
-                    component = instance.component,
-                )
+    BiteSizeReaderTheme {
+        Children(
+            stack = childStack.value,
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.safeDrawing),
+        ) { child ->
+            when (val instance = child.instance) {
+                is RootComponent.Child.Auth ->
+                    AuthScreen(
+                        component = instance.component,
+                    )
 
-            is RootComponent.Child.Main -> MainScreen(component = instance.component)
+                is RootComponent.Child.Main -> MainScreen(component = instance.component)
+            }
         }
     }
 }

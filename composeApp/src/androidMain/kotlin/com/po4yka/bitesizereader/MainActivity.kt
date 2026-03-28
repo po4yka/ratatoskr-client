@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.arkivanov.decompose.retainedComponent
 import com.po4yka.bitesizereader.presentation.navigation.DefaultRootComponent
-import com.po4yka.bitesizereader.ui.theme.BiteSizeReaderTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,11 +15,9 @@ class MainActivity : ComponentActivity() {
         val root = retainedComponent { DefaultRootComponent(it) }
 
         setContent {
-            BiteSizeReaderTheme {
-                App(
-                    rootComponent = root,
-                )
-            }
+            App(
+                rootComponent = root,
+            )
         }
     }
 }

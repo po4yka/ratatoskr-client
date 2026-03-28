@@ -21,6 +21,33 @@ object Dimensions {
     /** 16.dp - Corner radius for chips and pills */
     val chipCornerRadius = 16.dp
 
+    /** 24.dp - Shared dialog padding */
+    val dialogPadding = 24.dp
+
+    /** 560.dp - Maximum shared dialog width */
+    val dialogMaxWidth = 560.dp
+
+    /** 8.dp - Shared button spacing inside dialogs */
+    val dialogButtonSpacing = 8.dp
+
+    /** 40.dp - Default icon-only button hit target */
+    val iconButtonSize = 40.dp
+
+    /** 20.dp - Checkbox visual size */
+    val checkboxSize = 20.dp
+
+    /** 2.dp - Checkbox corner radius */
+    val checkboxCornerRadius = 2.dp
+
+    /** 4.dp - Shared progress bar thickness */
+    val progressBarThickness = 4.dp
+
+    /** 100.dp - Minimum text area height */
+    val textAreaMinHeight = 100.dp
+
+    /** 1.dp - Shared subtle border width */
+    val borderWidth = 1.dp
+
     /** 200.dp - Width of a recommendation card in the horizontal strip */
     val recommendationCardWidth = 200.dp
 

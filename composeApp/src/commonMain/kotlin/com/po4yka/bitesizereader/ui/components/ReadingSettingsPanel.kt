@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,6 +18,11 @@ import androidx.compose.ui.Modifier
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.reading_settings_font_size
+import bitesizereader.composeapp.generated.resources.reading_settings_line_spacing
+import bitesizereader.composeapp.generated.resources.summary_detail_reading_settings
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming")
 @Composable
@@ -44,7 +47,7 @@ fun ReadingSettingsPanel(
                     .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         ) {
             Text(
-                text = "Reading Settings",
+                text = stringResource(Res.string.summary_detail_reading_settings),
                 style = Carbon.typography.headingCompact01,
                 color = Carbon.theme.textPrimary,
             )
@@ -57,23 +60,17 @@ fun ReadingSettingsPanel(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = "Font Size",
+                    text = stringResource(Res.string.reading_settings_font_size),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                     modifier = Modifier.weight(0.3f),
                 )
-                Slider(
+                CarbonSlider(
                     value = preferences.fontSizeScale,
                     onValueChange = onFontSizeScaleChange,
                     valueRange = ReadingPreferences.MIN_FONT_SCALE..ReadingPreferences.MAX_FONT_SCALE,
                     steps = 7,
                     modifier = Modifier.weight(0.55f),
-                    colors =
-                        SliderDefaults.colors(
-                            thumbColor = Carbon.theme.linkPrimary,
-                            activeTrackColor = Carbon.theme.linkPrimary,
-                            inactiveTrackColor = Carbon.theme.borderSubtle00,
-                        ),
                 )
                 Text(
                     text = "${(preferences.fontSizeScale * 100).toInt()}%",
@@ -89,23 +86,17 @@ fun ReadingSettingsPanel(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = "Line Spacing",
+                    text = stringResource(Res.string.reading_settings_line_spacing),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                     modifier = Modifier.weight(0.3f),
                 )
-                Slider(
+                CarbonSlider(
                     value = preferences.lineSpacingScale,
                     onValueChange = onLineSpacingScaleChange,
                     valueRange = ReadingPreferences.MIN_LINE_SPACING_SCALE..ReadingPreferences.MAX_LINE_SPACING_SCALE,
                     steps = 9,
                     modifier = Modifier.weight(0.55f),
-                    colors =
-                        SliderDefaults.colors(
-                            thumbColor = Carbon.theme.linkPrimary,
-                            activeTrackColor = Carbon.theme.linkPrimary,
-                            inactiveTrackColor = Carbon.theme.borderSubtle00,
-                        ),
                 )
                 Text(
                     text = "${(preferences.lineSpacingScale * 100).toInt()}%",

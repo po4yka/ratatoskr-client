@@ -9,14 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +24,10 @@ import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.recommendations_dismiss
+import bitesizereader.composeapp.generated.resources.recommendations_title
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Horizontally scrolling recommendations strip shown on the summary list screen.
@@ -46,7 +45,7 @@ fun RecommendationsSection(
 
     Column(modifier = modifier) {
         Text(
-            text = "Recommended for You",
+            text = stringResource(Res.string.recommendations_title),
             style = Carbon.typography.heading02,
             color = Carbon.theme.textPrimary,
             modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.xs),
@@ -74,10 +73,9 @@ private fun RecommendationCard(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(
+    CarbonLayerCard(
         onClick = onClick,
         modifier = modifier.width(Dimensions.recommendationCardWidth),
-        colors = CardDefaults.cardColors(containerColor = Carbon.theme.layer01),
     ) {
         Box {
             Column {
@@ -121,20 +119,17 @@ private fun RecommendationCard(
                     }
                 }
             }
-            IconButton(
+            CarbonIconButton(
+                imageVector = CarbonIcons.Close,
+                contentDescription = stringResource(Res.string.recommendations_dismiss),
                 onClick = onDismiss,
+                tint = Carbon.theme.textSecondary,
+                iconSize = IconSizes.xs,
+                buttonSize = IconSizes.lg,
                 modifier =
                     Modifier
-                        .align(Alignment.TopEnd)
-                        .size(IconSizes.lg),
-            ) {
-                Icon(
-                    imageVector = CarbonIcons.Close,
-                    contentDescription = "Dismiss",
-                    tint = Carbon.theme.textSecondary,
-                    modifier = Modifier.size(IconSizes.xs),
-                )
-            }
+                        .align(Alignment.TopEnd),
+            )
         }
     }
 }
