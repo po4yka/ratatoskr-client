@@ -6,7 +6,8 @@ description:
   repositories, use cases, DTOs, mappers, or Carbon-based Compose UI. Covers
   the current shared-module DI rules, component retention pattern, Compose
   Resources, and the repo's valid Koin DSL exceptions.
-user-invocable: false
+metadata:
+  short-description: Build KMP features in this repo
 ---
 
 # Building KMP Features

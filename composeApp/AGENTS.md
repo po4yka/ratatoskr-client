@@ -1,4 +1,4 @@
-# composeApp/CLAUDE.md
+# composeApp/AGENTS.md
 
 Guidance for UI work in `composeApp/`.
 
