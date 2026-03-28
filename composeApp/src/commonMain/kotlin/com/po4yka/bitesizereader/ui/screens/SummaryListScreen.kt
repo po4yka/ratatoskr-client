@@ -196,7 +196,7 @@ fun SummaryListScreen(
         if (goalProgress != null && goalProgress.goal.isEnabled) {
             ReadingGoalCard(
                 goalProgress = goalProgress,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.xxs),
             )
         }
 
