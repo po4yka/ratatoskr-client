@@ -9,10 +9,10 @@ data class RequestInfoDto(
     @SerialName("id") val id: Long,
     @SerialName("type") val type: String? = null,
     @SerialName("status") val status: String? = null,
-    @SerialName("input_url") val inputUrl: String? = null,
-    @SerialName("normalized_url") val normalizedUrl: String? = null,
-    @SerialName("correlation_id") val correlationId: String? = null,
-    @SerialName("created_at") val createdAt: String? = null,
+    @SerialName("inputUrl") val inputUrl: String? = null,
+    @SerialName("normalizedUrl") val normalizedUrl: String? = null,
+    @SerialName("correlationId") val correlationId: String? = null,
+    @SerialName("createdAt") val createdAt: String? = null,
 )
 
 @Serializable
@@ -21,31 +21,31 @@ data class SourceInfoDto(
     @SerialName("title") val title: String? = null,
     @SerialName("domain") val domain: String? = null,
     @SerialName("author") val author: String? = null,
-    @SerialName("published_at") val publishedAt: String? = null,
-    @SerialName("http_status") val httpStatus: Int? = null,
-    @SerialName("image_url") val imageUrl: String? = null,
+    @SerialName("publishedAt") val publishedAt: String? = null,
+    @SerialName("httpStatus") val httpStatus: Int? = null,
+    @SerialName("imageUrl") val imageUrl: String? = null,
 )
 
 @Serializable
 data class ProcessingInfoDto(
     @SerialName("model") val model: String? = null,
-    @SerialName("tokens_used") val tokensUsed: Int? = null,
-    @SerialName("cost_usd") val costUsd: Double? = null,
-    @SerialName("latency_ms") val latencyMs: Int? = null,
-    @SerialName("crawl_latency_ms") val crawlLatencyMs: Int? = null,
-    @SerialName("llm_latency_ms") val llmLatencyMs: Int? = null,
+    @SerialName("tokensUsed") val tokensUsed: Int? = null,
+    @SerialName("costUsd") val costUsd: Double? = null,
+    @SerialName("latencyMs") val latencyMs: Int? = null,
+    @SerialName("crawlLatencyMs") val crawlLatencyMs: Int? = null,
+    @SerialName("llmLatencyMs") val llmLatencyMs: Int? = null,
 )
 
 @Serializable
 data class SummaryDetailDto(
     @SerialName("id") val id: Long,
-    @SerialName("request_id") val requestId: Long,
+    @SerialName("requestId") val requestId: Long,
     @SerialName("lang") val lang: String? = null,
-    @SerialName("is_read") val isRead: Boolean = false,
-    @SerialName("is_favorited") val isFavorited: Boolean = false,
+    @SerialName("isRead") val isRead: Boolean = false,
+    @SerialName("isFavorited") val isFavorited: Boolean = false,
     @SerialName("version") val version: Int? = null,
-    @SerialName("created_at") val createdAt: String,
-    @SerialName("json_payload") val jsonPayload: JsonElement? = null,
+    @SerialName("createdAt") val createdAt: String,
+    @SerialName("jsonPayload") val jsonPayload: JsonElement? = null,
 )
 
 @Serializable
@@ -64,8 +64,8 @@ data class UpdateSummaryRequestDto(
 @Serializable
 data class UpdateSummaryResponseDto(
     @SerialName("id") val id: Long,
-    @SerialName("is_read") val isRead: Boolean? = null,
-    @SerialName("updated_at") val updatedAt: String,
+    @SerialName("isRead") val isRead: Boolean? = null,
+    @SerialName("updatedAt") val updatedAt: String,
 )
 
 /**
@@ -81,16 +81,16 @@ data class SummaryContentDataDto(
  */
 @Serializable
 data class SummaryContentResponseDto(
-    @SerialName("summary_id") val summaryId: Long,
+    @SerialName("summaryId") val summaryId: Long,
     @SerialName("format") val format: String,
     @SerialName("content") val content: String,
-    @SerialName("content_type") val contentType: String,
-    @SerialName("retrieved_at") val retrievedAt: String,
-    @SerialName("request_id") val requestId: Long? = null,
+    @SerialName("contentType") val contentType: String,
+    @SerialName("retrievedAt") val retrievedAt: String,
+    @SerialName("requestId") val requestId: Long? = null,
     @SerialName("lang") val lang: String? = null,
-    @SerialName("source_url") val sourceUrl: String? = null,
+    @SerialName("sourceUrl") val sourceUrl: String? = null,
     @SerialName("title") val title: String? = null,
     @SerialName("domain") val domain: String? = null,
-    @SerialName("size_bytes") val sizeBytes: Int? = null,
-    @SerialName("checksum_sha256") val checksumSha256: String? = null,
+    @SerialName("sizeBytes") val sizeBytes: Int? = null,
+    @SerialName("checksumSha256") val checksumSha256: String? = null,
 )

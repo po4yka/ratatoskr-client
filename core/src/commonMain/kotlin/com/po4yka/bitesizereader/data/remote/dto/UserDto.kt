@@ -8,11 +8,11 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class UserDto(
-    @SerialName("id") val id: Long,
-    @SerialName("is_owner") val isOwner: Boolean,
+    @SerialName("userId") val id: Long,
+    @SerialName("isOwner") val isOwner: Boolean,
     @SerialName("username") val username: String? = null,
-    @SerialName("display_name") val displayName: String? = null,
-    @SerialName("photo_url") val photoUrl: String? = null,
-    @SerialName("client_id") val clientId: String? = null,
-    @SerialName("created_at") val createdAt: String? = null,
+    @SerialName("displayName") val displayName: String? = null,
+    @SerialName("photoUrl") val photoUrl: String? = null,
+    @SerialName("clientId") val clientId: String? = null,
+    @SerialName("createdAt") val createdAt: String? = null,
 )

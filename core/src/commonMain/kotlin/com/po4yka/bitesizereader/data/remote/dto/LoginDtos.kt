@@ -13,18 +13,19 @@ data class LoginDataDto(
     @SerialName("tokens") val tokens: TokensDto,
     @SerialName("user") val user: UserDto,
     @SerialName("preferences") val preferences: UserPreferencesDto? = null,
+    @SerialName("sessionId") val sessionId: Long? = null,
 )
 
 /**
- * User preferences matching OpenAPI UserPreferences schema.
+ * User preferences matching backend PreferencesData (camelCase aliases).
  */
 @Serializable
 data class UserPreferencesDto(
-    @SerialName("user_id") val userId: Long,
-    @SerialName("telegram_username") val telegramUsername: String? = null,
-    @SerialName("lang_preference") val langPreference: String? = "auto",
-    @SerialName("notification_settings") val notificationSettings: JsonObject? = null,
-    @SerialName("app_settings") val appSettings: JsonObject? = null,
+    @SerialName("userId") val userId: Long,
+    @SerialName("telegramUsername") val telegramUsername: String? = null,
+    @SerialName("langPreference") val langPreference: String? = "auto",
+    @SerialName("notificationSettings") val notificationSettings: JsonObject? = null,
+    @SerialName("appSettings") val appSettings: JsonObject? = null,
 )
 
 /**
