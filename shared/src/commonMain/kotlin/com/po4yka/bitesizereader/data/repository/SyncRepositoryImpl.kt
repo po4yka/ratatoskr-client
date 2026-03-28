@@ -5,8 +5,12 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.po4yka.bitesizereader.data.mappers.toDto
 import com.po4yka.bitesizereader.data.mappers.toSummaryEntity
+import com.po4yka.bitesizereader.data.remote.HighlightsApi
 import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.data.remote.SyncApi
+import com.po4yka.bitesizereader.data.remote.dto.CreateHighlightRequestDto
+import com.po4yka.bitesizereader.data.remote.dto.UpdateHighlightRequestDto
+import com.po4yka.bitesizereader.database.PendingOperationEntity
 import com.po4yka.bitesizereader.data.remote.dto.HighlightDto
 import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
@@ -65,6 +69,7 @@ class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,
     private val summariesApi: SummariesApi,
+    private val highlightsApi: HighlightsApi,
     private val networkMonitor: NetworkMonitor,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncRepository {
@@ -734,13 +739,20 @@ class SyncRepositoryImpl(
 
         logger.info { "Flushing ${pendingOps.size} pending operations" }
 
+        // Flush highlight operations via direct API calls
+        val highlightOps = pendingOps.filter { it.entityType == "highlight" }
+        for (highlightOp in highlightOps) {
+            try {
+                flushHighlightOperation(highlightOp)
+                database.databaseQueries.deletePendingOperation(highlightOp.id)
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                logger.warn { "Failed to sync highlight ${highlightOp.entityId}: ${e.message}" }
+            }
+        }
+
         val nonFeedbackOps = mutableListOf<Pair<Long, LocalChange>>()
         for (op in pendingOps) {
-            // Highlight operations cannot be synced yet (no backend API), skip them
-            if (op.entityType == "highlight") {
-                logger.debug { "Skipping highlight pending operation: ${op.action} for ${op.entityId}" }
-                continue
-            }
+            if (op.entityType == "highlight") continue
             val remoteId = op.entityId.toLongOrNull() ?: continue
             val change =
                 when (op.action) {
@@ -860,6 +872,78 @@ class SyncRepositoryImpl(
             }
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.warn(e) { "Failed to flush pending operations, will retry next sync" }
+        }
+    }
+
+    private suspend fun flushHighlightOperation(op: PendingOperationEntity) {
+        val highlightId = op.entityId
+        when (op.action) {
+            "create" -> {
+                val entity = database.databaseQueries.getHighlightById(highlightId).executeAsOneOrNull()
+                    ?: run {
+                        logger.warn { "Highlight $highlightId not found locally, skipping create sync" }
+                        return
+                    }
+                val summaryId = entity.summaryId.toLongOrNull()
+                    ?: run {
+                        logger.warn { "Invalid summaryId '${entity.summaryId}' for highlight $highlightId" }
+                        return
+                    }
+                val response = highlightsApi.createHighlight(
+                    summaryId = summaryId,
+                    request = CreateHighlightRequestDto(
+                        text = entity.text,
+                        startOffset = entity.nodeOffset,
+                        color = entity.color,
+                        note = entity.note,
+                    ),
+                )
+                if (response.success) {
+                    database.databaseQueries.updateHighlightSyncStatus("synced", highlightId)
+                } else {
+                    logger.warn { "Server rejected highlight create for $highlightId: ${response.error}" }
+                }
+            }
+            "update" -> {
+                val entity = database.databaseQueries.getHighlightById(highlightId).executeAsOneOrNull()
+                    ?: run {
+                        logger.warn { "Highlight $highlightId not found locally, skipping update sync" }
+                        return
+                    }
+                val summaryId = entity.summaryId.toLongOrNull()
+                    ?: run {
+                        logger.warn { "Invalid summaryId '${entity.summaryId}' for highlight $highlightId" }
+                        return
+                    }
+                val response = highlightsApi.updateHighlight(
+                    summaryId = summaryId,
+                    highlightId = highlightId,
+                    request = UpdateHighlightRequestDto(
+                        color = entity.color,
+                        note = entity.note,
+                    ),
+                )
+                if (response.success) {
+                    database.databaseQueries.updateHighlightSyncStatus("synced", highlightId)
+                } else {
+                    logger.warn { "Server rejected highlight update for $highlightId: ${response.error}" }
+                }
+            }
+            "delete" -> {
+                // For deletes, we need the summaryId but the highlight is already deleted locally.
+                // Parse summaryId from the payload if available, otherwise skip.
+                val payloadMap = op.payload?.let { parsePayload(it) }
+                val summaryId = (payloadMap?.get("summaryId") as? String)?.toLongOrNull()
+                if (summaryId == null) {
+                    logger.warn { "Cannot sync highlight delete for $highlightId: missing summaryId in payload" }
+                    return
+                }
+                val response = highlightsApi.deleteHighlight(summaryId, highlightId)
+                if (!response.success) {
+                    logger.warn { "Server rejected highlight delete for $highlightId: ${response.error}" }
+                }
+            }
+            else -> logger.warn { "Unknown highlight action: ${op.action}" }
         }
     }
 
