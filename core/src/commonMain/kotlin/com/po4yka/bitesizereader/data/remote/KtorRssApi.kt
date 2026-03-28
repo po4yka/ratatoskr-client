@@ -67,11 +67,16 @@ class KtorRssApi(private val client: HttpClient) : RssApi {
     override suspend fun importOpml(fileBytes: ByteArray): ApiResponseDto<RssOpmlImportResponseDto> {
         return client.submitFormWithBinaryData(
             url = "v1/rss/import/opml",
-            formData = formData {
-                append("file", fileBytes, Headers.build {
-                    append(HttpHeaders.ContentDisposition, "filename=\"subscriptions.opml\"")
-                })
-            },
+            formData =
+                formData {
+                    append(
+                        "file",
+                        fileBytes,
+                        Headers.build {
+                            append(HttpHeaders.ContentDisposition, "filename=\"subscriptions.opml\"")
+                        },
+                    )
+                },
         ).body()
     }
 }

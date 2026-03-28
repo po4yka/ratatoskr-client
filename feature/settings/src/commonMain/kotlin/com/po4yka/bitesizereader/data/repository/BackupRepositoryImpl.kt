@@ -28,8 +28,7 @@ class BackupRepositoryImpl(
         return requireNotNull(response.data) { "Backup $backupId not found" }.toDomain()
     }
 
-    override suspend fun downloadBackup(backupId: Int): ByteArray =
-        backupApi.downloadBackup(backupId)
+    override suspend fun downloadBackup(backupId: Int): ByteArray = backupApi.downloadBackup(backupId)
 
     override suspend fun deleteBackup(backupId: Int) {
         backupApi.deleteBackup(backupId)
@@ -50,13 +49,14 @@ class BackupRepositoryImpl(
         backupFrequency: String?,
         backupRetentionCount: Int?,
     ): BackupSchedule {
-        val response = backupApi.updateSchedule(
-            UpdateBackupScheduleRequestDto(
-                backupEnabled = backupEnabled,
-                backupFrequency = backupFrequency,
-                backupRetentionCount = backupRetentionCount,
-            ),
-        )
+        val response =
+            backupApi.updateSchedule(
+                UpdateBackupScheduleRequestDto(
+                    backupEnabled = backupEnabled,
+                    backupFrequency = backupFrequency,
+                    backupRetentionCount = backupRetentionCount,
+                ),
+            )
         return requireNotNull(response.data) { "Server returned no data for schedule update" }.schedule.toDomain()
     }
 }

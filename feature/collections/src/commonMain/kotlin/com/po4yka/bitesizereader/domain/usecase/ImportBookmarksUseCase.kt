@@ -13,12 +13,13 @@ class ImportBookmarksUseCase(private val repository: ImportExportRepository) {
         createTags: Boolean = true,
         targetCollectionId: Int? = null,
         skipDuplicates: Boolean = true,
-    ): ImportJob = repository.importBookmarks(
-        fileBytes = fileBytes,
-        fileName = fileName,
-        summarize = summarize,
-        createTags = createTags,
-        targetCollectionId = targetCollectionId,
-        skipDuplicates = skipDuplicates,
-    )
+    ): ImportJob =
+        repository.importBookmarks(
+            fileBytes = fileBytes,
+            fileName = fileName,
+            summarize = summarize,
+            createTags = createTags,
+            targetCollectionId = targetCollectionId,
+            skipDuplicates = skipDuplicates,
+        )
 }

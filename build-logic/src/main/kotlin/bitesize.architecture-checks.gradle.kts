@@ -2,7 +2,7 @@ import com.po4yka.bitesizereader.buildlogic.VerifyArchitectureBoundariesTask
 
 val verifyArchitectureBoundaries =
     tasks.register<VerifyArchitectureBoundariesTask>("verifyArchitectureBoundaries") {
-        rootDirectory.set(layout.projectDirectory)
+        projectRootPath.set(layout.projectDirectory.asFile.absolutePath)
 
         screenFiles.from(
             layout.projectDirectory

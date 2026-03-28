@@ -6,6 +6,9 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class UpdateTagUseCase(private val tagRepository: TagRepository) {
-    suspend operator fun invoke(tagId: Int, name: String? = null, color: String? = null): Tag =
-        tagRepository.updateTag(tagId = tagId, name = name, color = color)
+    suspend operator fun invoke(
+        tagId: Int,
+        name: String? = null,
+        color: String? = null,
+    ): Tag = tagRepository.updateTag(tagId = tagId, name = name, color = color)
 }

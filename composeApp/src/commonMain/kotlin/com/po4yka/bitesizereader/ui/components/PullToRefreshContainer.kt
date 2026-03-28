@@ -22,7 +22,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.Loading
 import kotlin.math.roundToInt
 

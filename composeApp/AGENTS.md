@@ -11,6 +11,7 @@ Guidance for UI work in `composeApp/`.
 
 - Prefer `*Screen(component: *Component)` over wiring navigation directly inside composables.
 - Read screen state from `component.viewModel.state.collectAsState()`.
+- Read routed-screen dependencies from the component or app-level providers, not `koinInject` inside the screen.
 - Keep navigation callbacks in the component layer; screens should call component methods or ViewModel intents, not mutate navigation stacks.
 - Complex UI should be decomposed into local components under `ui/components/`.
 
@@ -46,6 +47,8 @@ Prefer extending existing components before creating new abstractions. Useful an
 ## DI Exception
 
 `composeApp/src/commonMain/kotlin/com/po4yka/bitesizereader/di/ImageLoaderModule.kt` uses Koin DSL on purpose. Do not treat it as an annotations bug.
+
+The app-level `App.kt` provider for image URL transformation is also intentional. Reusable composables should consume that provider instead of resolving Koin directly.
 
 ## Icons
 

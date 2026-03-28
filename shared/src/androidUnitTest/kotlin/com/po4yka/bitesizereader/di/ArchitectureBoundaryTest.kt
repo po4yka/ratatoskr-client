@@ -73,9 +73,15 @@ class ArchitectureBoundaryTest {
             listOf(
                 repoRoot.resolve("shared/src/androidMain/kotlin/com/po4yka/bitesizereader/di/KoinInitializer.kt"),
                 repoRoot.resolve("shared/src/desktopMain/kotlin/com/po4yka/bitesizereader/di/KoinInitializer.kt"),
-                repoRoot.resolve("shared/src/iosArm64Main/kotlin/com/po4yka/bitesizereader/di/IosCommonModules.kt"),
-                repoRoot.resolve("shared/src/iosSimulatorArm64Main/kotlin/com/po4yka/bitesizereader/di/IosCommonModules.kt"),
-                repoRoot.resolve("shared/src/iosX64Main/kotlin/com/po4yka/bitesizereader/di/IosCommonModules.kt"),
+                repoRoot.resolve(
+                    "shared/src/iosArm64Main/kotlin/com/po4yka/bitesizereader/di/IosCommonModules.kt",
+                ),
+                repoRoot.resolve(
+                    "shared/src/iosSimulatorArm64Main/kotlin/com/po4yka/bitesizereader/di/IosCommonModules.kt",
+                ),
+                repoRoot.resolve(
+                    "shared/src/iosX64Main/kotlin/com/po4yka/bitesizereader/di/IosCommonModules.kt",
+                ),
             )
 
         val violations =

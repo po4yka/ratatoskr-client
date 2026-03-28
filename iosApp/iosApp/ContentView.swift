@@ -1,6 +1,5 @@
 import SwiftUI
 import ComposeApp
-import Shared
 
 /// Main content view hosting the shared Compose Multiplatform UI
 /// Main content view hosting the shared Compose Multiplatform UI
@@ -23,7 +22,7 @@ private struct ComposeRootView: UIViewControllerRepresentable {
     let rootComponent: RootComponent
 
     func makeUIViewController(context: Context) -> UIViewController {
-        MainViewController(rootComponent: rootComponent)
+        ComposeRootViewControllerFactory().make(rootComponent: rootComponent)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}

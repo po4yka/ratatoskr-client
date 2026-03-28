@@ -19,10 +19,10 @@ This is a **Kotlin Multiplatform + Compose Multiplatform** app that provides a s
 ### Architecture Philosophy
 
 **KMP + Compose Multiplatform UI:**
-- **Shared Code (80-90%)**: Business logic, networking, database, state management (Kotlin)
-- **Shared UI**: Compose Multiplatform screens rendered on Android, iOS, and Desktop (with platform hooks for auth/intents)
-- **Offline-First**: Local SQLite database with background sync to backend API
-- **Clean Architecture**: Domain-driven design with clear separation of concerns
+- **Shared Code (80-90%)**: Infrastructure in `core/`, feature logic in `feature/*`, bootstrap/navigation in `shared/`
+- **Shared UI**: Compose Multiplatform screens rendered on Android, iOS, and Desktop (with native host hooks where needed)
+- **Offline-First**: Local SQLite database with session-based sync to the backend API
+- **Boundary-Driven**: Domain/UI code stays free of transport DTOs and routed screens receive dependencies from components
 
 ## CI/CD
 
@@ -50,10 +50,10 @@ See **[docs/CICD.md](docs/CICD.md)** for complete documentation including setup,
 |----------|-----------|---------|
 | **Navigation** | [Decompose](https://github.com/arkivanov/Decompose) | Lifecycle-aware navigation and state preservation |
 | **Networking** | [Ktor Client 3.0](https://ktor.io/docs/client.html) | HTTP client with async/await support |
-| **Data Layer** | [Store 5](https://github.com/MobileNativeFoundation/Store) | Repository pattern with caching and sync |
+| **Data Layer** | Feature repositories + Ktor APIs | Repository pattern with local persistence and sync |
 | **Database** | [SQLDelight 2.0](https://cashapp.github.io/sqldelight/) | Type-safe SQL with coroutines support |
 | **Serialization** | [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) | JSON parsing and data classes |
-| **DI** | [Koin 3.5+](https://insert-koin.io/) | Dependency injection |
+| **DI** | [Koin 4.1+](https://insert-koin.io/) | Dependency injection |
 | **Coroutines** | [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) | Async/await and Flow streams |
 | **Date/Time** | [kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime) | ISO 8601 parsing and timezone handling |
 | **Logging** | [kotlin-logging](https://github.com/oshai/kotlin-logging) | Structured multiplatform logging |
@@ -64,7 +64,7 @@ See **[docs/CICD.md](docs/CICD.md)** for complete documentation including setup,
 
 - **Compose Multiplatform** - Shared UI rendered via `MainViewController`
 - **SwiftUI shell** - Hosts Compose UI and bridges Telegram login via native WebView
-- **SKIE** - Better Swift/Kotlin interop (suspend → async/await, Flow → AsyncSequence)
+- **SKIE** - Configured in Gradle but currently disabled for the active Kotlin version
 - **Keychain** - Secure JWT token storage
 - **Share Extension** - Submit URLs from Safari/other apps
 - **WidgetKit** - Home screen widget for recent summaries
@@ -74,7 +74,7 @@ See **[docs/CICD.md](docs/CICD.md)** for complete documentation including setup,
 - **Jetpack Compose** - Modern declarative UI (100% Compose)
 - **Material 3** - Material Design components
 - **Koin Android** - Activity/Composable injection
-- **EncryptedSharedPreferences** - Secure JWT storage
+- **Tink AEAD + DataStore** - Secure JWT storage
 - **WorkManager** - Background sync jobs
 - **App Widgets** - Home screen widget
 
@@ -82,39 +82,27 @@ See **[docs/CICD.md](docs/CICD.md)** for complete documentation including setup,
 
 ```
 bite-size-reader-client/
- shared/                          # KMP shared code (~70-80%)
-    src/
-       commonMain/kotlin/       # Shared Kotlin code
-          data/
-             local/          # SQLDelight database
-             remote/         # Ktor API clients
-             repository/     # Store-based repositories
-             mappers/        # DTO ↔ Domain mappers
-          domain/
-             model/          # Domain entities
-             repository/     # Repository interfaces
-             usecase/        # Business logic use cases
-          presentation/
-             navigation/     # Decompose navigation
-             viewmodel/      # Shared ViewModels (MVI)
-          di/                 # Koin modules
-          util/               # Extensions, helpers
-       androidMain/kotlin/     # Android-specific code
-       iosMain/kotlin/         # iOS-specific code
-       commonTest/kotlin/      # Shared tests
-    build.gradle.kts
+ core/                            # Cross-feature infrastructure and transport
+ feature/
+    auth/                         # Auth/session feature
+    collections/                  # Collections, tags, RSS, import/export
+    digest/                       # Digest and custom digest flows
+    settings/                     # Settings, stats, reading goals, account
+    summary/                      # Summary list/detail, search, submit URL, recommendations
+    sync/                         # Sync orchestration
+ shared/                          # Root navigation, Koin bootstrap, CocoaPods export glue
  composeApp/                      # Compose Multiplatform UI + Android app shell
-    src/androidMain/kotlin/     # Android-specific entrypoints
-    src/iosMain/kotlin/         # Compose UIViewController for iOS host
-    src/desktopMain/kotlin/     # Desktop preview entrypoint
-    src/commonMain/kotlin/      # Shared Compose UI/theme/navigation
+    src/androidMain/kotlin/      # Android-specific entrypoints
+    src/iosMain/kotlin/          # Compose UIViewController for iOS host
+    src/desktopMain/kotlin/      # Desktop preview entrypoint
+    src/commonMain/kotlin/       # Shared Compose UI/theme/navigation
  iosApp/                          # iOS app shell (SwiftUI hosting Compose)
     iosApp/
        Auth/                   # Native Telegram login sheet
        Config/                 # Platform config
        iOSApp.swift            # Entry point hosting Compose UI
-    ShareExtension/             # Share sheet extension (iOS)
-    RecentSummariesWidget/      # Home screen widget (iOS)
+    ShareExtension/             # Native share-extension source
+    RecentSummariesWidget/      # Native widget source
     Info.plist                  # Main app config
     Podfile                     # CocoaPods dependencies
  gradle/
@@ -127,7 +115,7 @@ bite-size-reader-client/
 
 This client connects to the [bite-size-reader](https://github.com/po4yka/bite-size-reader) FastAPI backend.
 
-**Base URL**: Configurable via `local.properties` (default development: `http://localhost:8000`)
+**Base URL**: Configurable via `local.properties` (default: `https://bitsizereaderapi.po4yka.com`)
 
 **API Version**: v1
 

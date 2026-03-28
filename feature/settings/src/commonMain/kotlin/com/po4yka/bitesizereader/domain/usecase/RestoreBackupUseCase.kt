@@ -6,6 +6,5 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class RestoreBackupUseCase(private val backupRepository: BackupRepository) {
-    suspend operator fun invoke(fileBytes: ByteArray): BackupRestoreResult =
-        backupRepository.restoreBackup(fileBytes)
+    suspend operator fun invoke(fileBytes: ByteArray): BackupRestoreResult = backupRepository.restoreBackup(fileBytes)
 }

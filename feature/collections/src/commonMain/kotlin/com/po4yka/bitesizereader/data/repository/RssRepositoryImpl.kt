@@ -17,7 +17,10 @@ class RssRepositoryImpl(
         return response.data?.feeds?.map { it.toDomain() } ?: emptyList()
     }
 
-    override suspend fun subscribe(url: String, categoryId: Int?): RssFeedSubscription {
+    override suspend fun subscribe(
+        url: String,
+        categoryId: Int?,
+    ): RssFeedSubscription {
         val response = rssApi.subscribe(RssSubscribeRequestDto(url = url, categoryId = categoryId))
         val data = requireNotNull(response.data) { "Server returned no data for RSS subscribe" }
         return RssFeedSubscription(
@@ -36,7 +39,11 @@ class RssRepositoryImpl(
         rssApi.unsubscribe(subscriptionId)
     }
 
-    override suspend fun listFeedItems(feedId: Int, limit: Int, offset: Int): List<RssFeedItem> {
+    override suspend fun listFeedItems(
+        feedId: Int,
+        limit: Int,
+        offset: Int,
+    ): List<RssFeedItem> {
         val response = rssApi.listFeedItems(feedId = feedId, limit = limit, offset = offset)
         return response.data?.items?.map { it.toDomain() } ?: emptyList()
     }

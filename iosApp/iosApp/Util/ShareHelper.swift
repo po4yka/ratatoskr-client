@@ -1,21 +1,7 @@
 import SwiftUI
-import Shared
 
 /// Helper for sharing content on iOS using UIActivityViewController
 struct ShareHelper {
-    /// Share a summary
-    static func shareSummary(_ summary: Summary) {
-        let shareText = buildShareText(for: summary)
-        let url = URL(string: summary.url)
-
-        var items: [Any] = [shareText]
-        if let url = url {
-            items.append(url)
-        }
-
-        share(items: items)
-    }
-
     /// Share plain text
     static func shareText(_ text: String) {
         share(items: [text])
@@ -60,37 +46,5 @@ struct ShareHelper {
         }
 
         rootViewController.present(activityViewController, animated: true)
-    }
-
-    /// Build shareable text from a summary
-    private static func buildShareText(for summary: Summary) -> String {
-        var text = ""
-
-        // Title
-        text += summary.title + "\n\n"
-
-        // TLDR
-        if !summary.tldr.isEmpty {
-            text += "Summary:\n" + summary.tldr + "\n\n"
-        }
-
-        // Key Points
-        if !summary.keyPoints.isEmpty {
-            text += "Key Points:\n"
-            for point in summary.keyPoints {
-                text += "• \(point)\n"
-            }
-            text += "\n"
-        }
-
-        // URL
-        text += "Read more: \(summary.url)\n"
-
-        // Tags
-        if !summary.topicTags.isEmpty {
-            text += "\nTags: " + summary.topicTags.map { "#\($0)" }.joined(separator: ", ")
-        }
-
-        return text
     }
 }

@@ -1,5 +1,5 @@
 import SwiftUI
-import Shared
+import ComposeApp
 import BackgroundTasks
 import WidgetKit
 import os.log
@@ -11,32 +11,30 @@ private let logger = Logger(subsystem: "com.po4yka.bitesizereader", category: "a
 struct iOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) var scenePhase
-    private let recentSummariesSnapshotPublisher = RecentSummariesSnapshotPublisher()
 
     var body: some Scene {
         WindowGroup {
             ContentView(rootComponent: appDelegate.rootComponent)
+                .onOpenURL { url in
+                    handleDeepLink(url)
+                }
         }
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .active:
-                appDelegate.lifecycle.onStart()
-                appDelegate.lifecycle.onResume()
+                appDelegate.host.onStart()
+                appDelegate.host.onResume()
                 checkForSharedURL()
                 refreshRecentSummariesWidget()
             case .inactive:
-                appDelegate.lifecycle.onPause()
-                appDelegate.lifecycle.onStop()
+                appDelegate.host.onPause()
+                appDelegate.host.onStop()
             case .background:
-                appDelegate.lifecycle.onPause()
-                appDelegate.lifecycle.onStop()
+                appDelegate.host.onPause()
+                appDelegate.host.onStop()
             @unknown default:
                 break
             }
-        }
-        .onOpenURL { url in
-            // Handle deep links from widget
-            handleDeepLink(url)
         }
     }
 
@@ -71,7 +69,7 @@ struct iOSApp: App {
     private func refreshRecentSummariesWidget() {
         Task {
             do {
-                _ = try await recentSummariesSnapshotPublisher.publish(limit: 3)
+                _ = try await appDelegate.host.refreshRecentSummaries(limit: 3)
                 WidgetCenter.shared.reloadTimelines(ofKind: AppGroupContract.recentSummariesWidgetKind)
             } catch {
                 logger.error("Could not refresh widget snapshot: \(error.localizedDescription)")
@@ -82,20 +80,22 @@ struct iOSApp: App {
 
 /// App delegate for initialization and background tasks
 class AppDelegate: NSObject, UIApplicationDelegate {
-    let lifecycle = ApplicationLifecycle()
-    let rootComponent: RootComponent
-    let koinHelper: KoinHelper
+    let host: IosAppHost
+    var rootComponent: RootComponent { host.rootComponent }
 
     // Background task identifier
     static let syncTaskIdentifier = "com.po4yka.bitesizereader.sync"
 
     override init() {
         // Initialize Koin
-        let koinApp = KoinInitializerKt.initKoin(modules: KoinInitializerKt.appModules(), appDeclaration: { _ in })
-        koinHelper = KoinHelper(koin: koinApp.koin)
-
-        // Create root navigation component using the shared lifecycle
-        rootComponent = RootComponent(componentContext: DefaultComponentContext(lifecycle: lifecycle))
+        _ =
+            KoinInitializerKt.doInitKoin(
+                configuration: PlatformConfiguration(),
+                modules: IosCommonModulesKt.appModules(),
+                appDeclaration: { _ in },
+                extraModules: []
+            )
+        host = IosAppHost()
 
         super.init()
 
@@ -110,7 +110,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        lifecycle.onDestroy()
+        host.onDestroy()
     }
 
     // MARK: - Background Tasks
@@ -147,17 +147,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Perform sync in background
         Task {
             do {
-                // Get SyncDataUseCase from Koin
-                guard let syncUseCase = koinHelper.koin.get(objCClass: SyncDataUseCase.self, qualifier: nil, parameters: nil) as? SyncDataUseCase else {
-                    logger.error("Could not get SyncDataUseCase from Koin")
-                    task.setTaskCompleted(success: false)
-                    return
-                }
-
-                // Execute sync (delta sync for background, not full sync)
-                // invoke() returns Unit and throws on error via SKIE interop
-                try await syncUseCase.invoke(forceFull: false)
-                _ = try await RecentSummariesSnapshotPublisher().publish(limit: 3)
+                try await host.runBackgroundSync(forceFull: false)
+                _ = try await host.refreshRecentSummaries(limit: 3)
                 WidgetCenter.shared.reloadTimelines(ofKind: AppGroupContract.recentSummariesWidgetKind)
 
                 logger.debug("Background sync completed successfully")
@@ -188,15 +179,5 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         #else
         logger.debug("Skipping schedule (simulator)")
         #endif
-    }
-}
-
-/// iOS lifecycle implementation that starts in the CREATED state.
-/// Subsequent state transitions (start, resume, pause, stop, destroy)
-/// are driven by SwiftUI's scenePhase and UIApplicationDelegate callbacks.
-class ApplicationLifecycle: LifecycleRegistry {
-    override init() {
-        super.init()
-        onCreate()
     }
 }

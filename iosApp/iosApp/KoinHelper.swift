@@ -1,11 +1,8 @@
 import Foundation
-import Shared
 
-/// Helper class to access Koin dependencies from Swift
+/// Placeholder for future Swift-side dependency helpers.
+///
+/// The app currently initializes dependencies from Kotlin and does not
+/// resolve Koin objects directly from Swift.
 class KoinHelper {
-    let koin: Koin_coreKoin
-
-    init(koin: Koin_coreKoin) {
-        self.koin = koin
-    }
 }

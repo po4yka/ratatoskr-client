@@ -28,24 +28,30 @@ class KtorImportExportApi(private val client: HttpClient) : ImportExportApi {
         targetCollectionId: Int?,
         skipDuplicates: Boolean,
     ): ApiResponseDto<ImportJobDto> {
-        val optionsJson = buildString {
-            append("{")
-            append("\"summarize\":$summarize,")
-            append("\"create_tags\":$createTags,")
-            append("\"skip_duplicates\":$skipDuplicates")
-            if (targetCollectionId != null) {
-                append(",\"target_collection_id\":$targetCollectionId")
+        val optionsJson =
+            buildString {
+                append("{")
+                append("\"summarize\":$summarize,")
+                append("\"create_tags\":$createTags,")
+                append("\"skip_duplicates\":$skipDuplicates")
+                if (targetCollectionId != null) {
+                    append(",\"target_collection_id\":$targetCollectionId")
+                }
+                append("}")
             }
-            append("}")
-        }
         return client.submitFormWithBinaryData(
             url = "v1/import",
-            formData = formData {
-                append("file", fileBytes, Headers.build {
-                    append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
-                })
-                append("options", optionsJson)
-            },
+            formData =
+                formData {
+                    append(
+                        "file",
+                        fileBytes,
+                        Headers.build {
+                            append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
+                        },
+                    )
+                    append("options", optionsJson)
+                },
         ).body()
     }
 

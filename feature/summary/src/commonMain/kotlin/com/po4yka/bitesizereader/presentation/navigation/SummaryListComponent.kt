@@ -25,7 +25,8 @@ class DefaultSummaryListComponent(
     private val onCreateDigest: () -> Unit,
 ) : SummaryListComponent, ComponentContext by componentContext {
     override val viewModel: SummaryListViewModel = retainedInstance { viewModelFactory() }
-    override val recommendationsViewModel: RecommendationsViewModel = retainedInstance { recommendationsViewModelFactory() }
+    override val recommendationsViewModel: RecommendationsViewModel =
+        retainedInstance { recommendationsViewModelFactory() }
 
     override fun onSummaryClicked(id: String) {
         onSummarySelected(id)

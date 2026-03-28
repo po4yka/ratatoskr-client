@@ -121,7 +121,9 @@ internal class PendingOperationFlusher(
                                 clientTimestamp = null,
                             )
                         "update_read" -> {
-                            val payload = PendingOperationPayloadParser.parseReadUpdatePayload(op.payload) ?: return@forEach
+                            val payload =
+                                PendingOperationPayloadParser.parseReadUpdatePayload(op.payload)
+                                    ?: return@forEach
                             LocalChange(
                                 entityType = op.entityType,
                                 id = remoteId,
@@ -226,7 +228,8 @@ internal class PendingOperationFlusher(
                     payload.summaryIdAsLong()
                         ?: run {
                             logger.warn {
-                                "Cannot sync highlight delete for $highlightId: invalid summaryId '${payload.summaryId}'"
+                                "Cannot sync highlight delete for $highlightId: " +
+                                    "invalid summaryId '${payload.summaryId}'"
                             }
                             return
                         }
@@ -263,8 +266,7 @@ private object PendingOperationPayloadParser {
     fun parseReadUpdatePayload(raw: String?): ReadUpdatePayload? =
         raw?.let { Json.decodeFromString<ReadUpdatePayload>(it) }
 
-    fun parseFeedbackPayload(raw: String?): FeedbackPayload? =
-        raw?.let { Json.decodeFromString<FeedbackPayload>(it) }
+    fun parseFeedbackPayload(raw: String?): FeedbackPayload? = raw?.let { Json.decodeFromString<FeedbackPayload>(it) }
 
     fun parseHighlightDeletePayload(raw: String?): HighlightDeletePayload? =
         raw?.let { Json.decodeFromString<HighlightDeletePayload>(it) }

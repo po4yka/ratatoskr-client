@@ -4,7 +4,7 @@ Project guidance for Codex when working in this repository.
 
 ## Project Snapshot
 
-- Kotlin Multiplatform app with shared business logic in `shared/`, shared Compose UI in `composeApp/`, and a SwiftUI host app in `iosApp/`.
+- Kotlin Multiplatform app with infrastructure in `core/`, feature modules under `feature/*`, a thin shared bootstrap/navigation shell in `shared/`, shared Compose UI in `composeApp/`, and a SwiftUI host app in `iosApp/`.
 - Active product areas include summaries, search, collections, reading goals, recommendations, stats, settings, digests, RSS, tags, rules, backup, and import/export flows.
 - Desktop exists as a development target for Compose work and hot reload, not as a production app.
 
@@ -56,21 +56,26 @@ client.id=android-app-v1.0
 api.timeout.seconds=30
 ```
 
-Shared runtime config is centralized in `shared/src/commonMain/kotlin/com/po4yka/bitesizereader/util/config/AppConfig.kt`.
+Shared runtime config is centralized in `core/src/commonMain/kotlin/com/po4yka/bitesizereader/util/config/AppConfig.kt`.
 
 ## Architecture
 
-- Shared code follows `data/`, `domain/`, `presentation/`, `di/`, and `util/` layering.
-- Navigation is Decompose-based. Components live in `shared/.../presentation/navigation` and own ViewModel creation.
+- Modules are split by responsibility:
+  - `core/` for cross-feature infrastructure, transport, persistence, shared domain models, config, and platform bindings
+  - `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, `feature/sync` for feature-owned repositories, use cases, state, ViewModels, and Decompose components
+  - `shared/` for Koin bootstrap, root/main navigation shells, and CocoaPods export glue
+  - `composeApp/` for Compose UI, Android entrypoints, desktop dev target, and the app-level image loading/provider glue
+- Navigation is Decompose-based. Components own routed-screen dependencies and ViewModel creation.
 - ViewModels extend `BaseViewModel` and are normally retained from components via `retainedInstance { get() }`.
 - Complex screens use nested state plus delegate collaborators rather than one oversized ViewModel. Current examples: `SettingsViewModel` and `SummaryDetailViewModel`.
-- Compose UI lives in `composeApp/src/commonMain/kotlin/.../ui`, with screens usually consuming a `*Component` instead of resolving navigation directly.
+- Compose UI lives in `composeApp/src/commonMain/kotlin/.../ui`, with screens consuming a `*Component` instead of resolving dependencies or navigation directly.
+- Domain contracts and UI code must not import `data.remote` APIs or DTOs. Transport types stay in data layers and are mapped to domain models before crossing a boundary.
 
 See `shared/AGENTS.md` for DI and shared-layer rules. See `composeApp/AGENTS.md` for UI rules.
 
 ## Dependency Injection
 
-Default rule in shared code:
+Default rule in `core/` and `feature/*` code:
 
 - `data/remote/` and `data/repository/`: `@Single`
 - `domain/usecase/`: `@Factory`
@@ -79,13 +84,13 @@ Default rule in shared code:
 
 Important exceptions already exist and are valid:
 
-- `shared/src/iosMain/.../di/IosModule.kt` uses Koin DSL because the generated `.module` extensions are not visible from `iosMain`.
+- `core/src/iosMain/.../di/IosModule.kt` uses Koin DSL because the generated `.module` extensions are not visible from `iosMain`.
 - `composeApp/src/commonMain/.../di/ImageLoaderModule.kt` uses DSL for UI-only wiring.
 - tests may use DSL to provide fakes and overrides.
 
 Do not "fix" those exceptions by force-converting them to annotations without understanding the source-set limitations.
 
-`shared/.../di/KoinInitializer.kt` is the entry point that stitches `commonModules()` and `platformModules()` together.
+`shared/.../di/KoinInitializer.kt` is the bootstrap entry point that stitches `commonModules()` and `platformModules()` together.
 
 ## Platform Notes
 
@@ -101,7 +106,7 @@ Do not "fix" those exceptions by force-converting them to annotations without un
 - Secure storage uses `KeychainSettings`.
 - Networking uses the Darwin Ktor engine.
 - App startup and background sync live in `iosApp/iosApp/iOSApp.swift`.
-- Share Extension and WidgetKit integration are native Swift targets around the shared app.
+- Share and widget source lives under `iosApp/ShareExtension` and `iosApp/RecentSummariesWidget`; keep their app-group and deep-link contracts aligned with the main app.
 
 ### Swift Interop
 
@@ -110,6 +115,7 @@ The SKIE plugin is configured in Gradle but currently disabled in `shared/build.
 ## Auth And Sync
 
 - HTTP auth is handled by Ktor `Auth` bearer refresh in `shared/.../data/remote/ApiClient.kt`.
+- HTTP auth is handled by Ktor `Auth` bearer refresh in `core/.../data/remote/ApiClient.kt`.
 - Token refresh calls `POST v1/auth/refresh` and updates `SecureStorage`.
 - Sync is session-based and implemented in `SyncRepositoryImpl`; use `SyncRepository`/use cases instead of ad hoc sync logic in UI layers.
 
@@ -118,8 +124,8 @@ The SKIE plugin is configured in Gradle but currently disabled in `shared/build.
 ### Add A Screen
 
 1. Add or extend state in `shared/.../presentation/state/`.
-2. Add a ViewModel in `shared/.../presentation/viewmodel/` extending `BaseViewModel`.
-3. Add a Decompose component in `shared/.../presentation/navigation/`.
+2. Add a ViewModel in the owning `feature/.../presentation/viewmodel/` module extending `BaseViewModel`.
+3. Add a Decompose component in the owning `feature/.../presentation/navigation/` module.
 4. Register the child in `MainComponent` or `DefaultRootComponent`.
 5. Add the Compose screen in `composeApp/.../ui/screens/`.
 6. Add strings in `composeApp/src/commonMain/composeResources/values/strings.xml` and `values-ru/strings.xml`.
@@ -127,10 +133,10 @@ The SKIE plugin is configured in Gradle but currently disabled in `shared/build.
 ### Add A Repository Flow
 
 1. Define the contract in `domain/repository/`.
-2. Add DTOs under `data/remote/dto/` if needed.
-3. Add mappers in `data/mappers/`.
-4. Add the implementation in `data/repository/` with `@Single(binds = [...])`.
-5. Keep API details in `data/remote/`; keep ViewModels free of transport concerns.
+2. Add DTOs under `core/.../data/remote/dto/` if the backend shape changes.
+3. Add feature-owned mappers in `data/mappers/`.
+4. Add the implementation in the owning feature `data/repository/` with `@Single(binds = [...])`.
+5. Keep API details in `core/.../data/remote/`; keep DTOs and API types out of domain and UI layers.
 
 ### Add Shared UI Behavior
 

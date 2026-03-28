@@ -19,7 +19,10 @@ class TagRepositoryImpl(
         return response.data?.tags?.map { it.toDomain() } ?: emptyList()
     }
 
-    override suspend fun createTag(name: String, color: String?): Tag {
+    override suspend fun createTag(
+        name: String,
+        color: String?,
+    ): Tag {
         val response = tagsApi.createTag(CreateTagRequestDto(name = name, color = color))
         return requireNotNull(response.data) { "Server returned no data for tag creation" }.toDomain()
     }
@@ -29,7 +32,11 @@ class TagRepositoryImpl(
         return requireNotNull(response.data) { "Tag $tagId not found" }.toDomain()
     }
 
-    override suspend fun updateTag(tagId: Int, name: String?, color: String?): Tag {
+    override suspend fun updateTag(
+        tagId: Int,
+        name: String?,
+        color: String?,
+    ): Tag {
         val response = tagsApi.updateTag(tagId, UpdateTagRequestDto(name = name, color = color))
         return requireNotNull(response.data) { "Server returned no data for tag update" }.toDomain()
     }
@@ -38,7 +45,10 @@ class TagRepositoryImpl(
         tagsApi.deleteTag(tagId)
     }
 
-    override suspend fun mergeTags(sourceTagIds: List<Int>, targetTagId: Int) {
+    override suspend fun mergeTags(
+        sourceTagIds: List<Int>,
+        targetTagId: Int,
+    ) {
         tagsApi.mergeTags(MergeTagsRequestDto(sourceTagIds = sourceTagIds, targetTagId = targetTagId))
     }
 
@@ -47,14 +57,18 @@ class TagRepositoryImpl(
         tagIds: List<Int>?,
         tagNames: List<String>?,
     ): List<Tag> {
-        val response = tagsApi.attachTags(
-            summaryId = summaryId,
-            request = AttachTagsRequestDto(tagIds = tagIds, tagNames = tagNames),
-        )
+        val response =
+            tagsApi.attachTags(
+                summaryId = summaryId,
+                request = AttachTagsRequestDto(tagIds = tagIds, tagNames = tagNames),
+            )
         return response.data?.tags?.map { it.toDomain() } ?: emptyList()
     }
 
-    override suspend fun detachTag(summaryId: Long, tagId: Int) {
+    override suspend fun detachTag(
+        summaryId: Long,
+        tagId: Int,
+    ) {
         tagsApi.detachTag(summaryId = summaryId, tagId = tagId)
     }
 }

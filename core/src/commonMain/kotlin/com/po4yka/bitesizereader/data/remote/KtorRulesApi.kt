@@ -42,7 +42,10 @@ class KtorRulesApi(private val client: HttpClient) : RulesApi {
             client.get("v1/rules/$ruleId").body()
         }
 
-    override suspend fun updateRule(ruleId: Int, request: UpdateRuleRequestDto): ApiResponseDto<RuleDto> {
+    override suspend fun updateRule(
+        ruleId: Int,
+        request: UpdateRuleRequestDto,
+    ): ApiResponseDto<RuleDto> {
         return client.patch("v1/rules/$ruleId") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -53,14 +56,21 @@ class KtorRulesApi(private val client: HttpClient) : RulesApi {
         return client.delete("v1/rules/$ruleId").body()
     }
 
-    override suspend fun testRule(ruleId: Int, request: TestRuleRequestDto): ApiResponseDto<TestRuleResponseDto> {
+    override suspend fun testRule(
+        ruleId: Int,
+        request: TestRuleRequestDto,
+    ): ApiResponseDto<TestRuleResponseDto> {
         return client.post("v1/rules/$ruleId/test") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
     }
 
-    override suspend fun getRuleLogs(ruleId: Int, limit: Int, offset: Int): ApiResponseDto<RuleLogListResponseDto> =
+    override suspend fun getRuleLogs(
+        ruleId: Int,
+        limit: Int,
+        offset: Int,
+    ): ApiResponseDto<RuleLogListResponseDto> =
         retryWithBackoff(RetryPolicy.DEFAULT) {
             client.get("v1/rules/$ruleId/logs") {
                 parameter("limit", limit)

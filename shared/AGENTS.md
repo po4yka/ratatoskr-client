@@ -1,27 +1,20 @@
 # shared/AGENTS.md
 
-Guidance for work inside the shared KMP module.
+Guidance for work inside the shared bootstrap/navigation module.
 
 ## Structure
 
-`shared/src/commonMain/kotlin/com/po4yka/bitesizereader/` is organized into:
+`shared/` is intentionally thin:
 
-- `data/local`: SQLDelight, secure storage contracts, platform-facing persistence helpers
-- `data/remote`: Ktor APIs, DTOs, gRPC client code, API client setup
-- `data/mappers`: DTO/domain conversions
-- `data/repository`: repository implementations
-- `domain/model`: domain entities and enums
-- `domain/repository`: repository contracts
-- `domain/usecase`: application use cases
-- `presentation/state`: screen state data classes and nested sub-states
-- `presentation/viewmodel`: `BaseViewModel` subclasses and delegate collaborators
-- `presentation/navigation`: Decompose components
-- `di`: Koin module scanners and initialization
-- `util`: config, error mapping, network, sharing, platform helpers
+- `presentation/navigation`: root and main Decompose shells that stitch feature components together
+- `di`: Koin bootstrap and expect/actual module aggregation
+- platform source sets: per-platform `commonModules()` or `platformModules()` wiring for the exported framework
+
+Business logic, repositories, use cases, and feature ViewModels now live in `core/` and `feature/*`, not in `shared/`.
 
 ## DI Rules
 
-Default shared-module rule set:
+Default rule set for code reached from `shared/`:
 
 - API implementations: `@Single`
 - repositories: `@Single`
@@ -29,32 +22,25 @@ Default shared-module rule set:
 - ViewModels and delegates: `@Factory`
 - scanners/providers: `@Module` classes with `@ComponentScan` or provider methods
 
-Use `binds = [...]` whenever an implementation backs a domain interface.
+Use `binds = [...]` whenever an implementation backs a domain interface. Do not reintroduce feature logic into `shared/`.
 
 ### Valid Exceptions
 
-- `shared/src/iosMain/.../di/IosModule.kt` uses DSL because generated `.module` extensions are not visible from `iosMain`.
+- `core/src/iosMain/.../di/IosModule.kt` uses DSL because generated `.module` extensions are not visible from `iosMain`.
 - tests may use DSL modules for verification and overrides.
 
 Do not document the shared layer as "annotations only"; the real rule is "annotations by default, DSL where source-set or test constraints require it".
 
-## ViewModel Pattern
+## Boundary Rules
 
-- Extend `BaseViewModel`.
-- Keep mutable state private and expose `asStateFlow()`.
-- Launch work on `viewModelScope`.
-- Let components own retention with `retainedInstance { get() }`.
-- For large screens, prefer delegates plus nested sub-states instead of one monolithic ViewModel.
-
-Current reference points:
-
-- `SettingsViewModel` + `TelegramLinkingDelegate` / `SyncSettingsDelegate` / `AccountSettingsDelegate`
-- `SummaryDetailViewModel` + `ReadingSessionDelegate` / `AudioDelegate` / `HighlightDelegate` / `FeedbackDelegate` / `CollectionDelegate`
+- `shared/` should depend on feature/public interfaces only; it should not own transport, DTO, or repository implementation code.
+- Routed screens get dependencies from Decompose components. Keep `koinInject` out of routed screen composables.
+- Domain contracts must not import `data.remote` APIs or DTOs.
 
 ## Sync And Auth
 
-- Auth refresh is implemented in `data/remote/ApiClient.kt`.
-- Sync orchestration lives in `data/repository/SyncRepositoryImpl.kt`.
+- Auth refresh is implemented in `core/.../data/remote/ApiClient.kt`.
+- Sync orchestration lives in `feature/sync/.../data/repository/SyncRepositoryImpl.kt`.
 - UI should talk through use cases and repositories, not manually call transport helpers.
 
 ## Platform Bindings

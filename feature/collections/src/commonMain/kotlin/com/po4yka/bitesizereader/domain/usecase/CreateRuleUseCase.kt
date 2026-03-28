@@ -15,13 +15,14 @@ class CreateRuleUseCase(private val ruleRepository: RuleRepository) {
         matchMode: String = "all",
         priority: Int = 0,
         description: String? = null,
-    ): AutomationRule = ruleRepository.createRule(
-        name = name,
-        eventType = eventType,
-        actions = actions,
-        conditions = conditions,
-        matchMode = matchMode,
-        priority = priority,
-        description = description,
-    )
+    ): AutomationRule =
+        ruleRepository.createRule(
+            name = name,
+            eventType = eventType,
+            actions = actions,
+            conditions = conditions,
+            matchMode = matchMode,
+            priority = priority,
+            description = description,
+        )
 }

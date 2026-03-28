@@ -1,16 +1,15 @@
 import SwiftUI
 import WidgetKit
-import Shared
 
 /// Widget view showing recent summaries
 struct RecentSummariesView: View {
     let entry: RecentSummariesEntry
 
     var body: some View {
-        if entry.summaries.isEmpty {
+        if entry.snapshot.summaries.isEmpty {
             EmptyStateView()
         } else {
-            SummariesListView(summaries: entry.summaries)
+            SummariesListView(summaries: entry.snapshot.summaries)
         }
     }
 }
@@ -37,7 +36,7 @@ private struct EmptyStateView: View {
 
 /// List of summaries
 private struct SummariesListView: View {
-    let summaries: [Summary]
+    let summaries: [RecentSummarySnapshotItem]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -65,32 +64,29 @@ private struct SummariesListView: View {
 
 /// Individual summary item
 private struct SummaryItemView: View {
-    let summary: Summary
+    let summary: RecentSummarySnapshotItem
 
     var body: some View {
-        Link(destination: createDeepLink(summaryId: summary.id)) {
+        Link(destination: summary.deepLink) {
             VStack(alignment: .leading, spacing: 6) {
-                // Title
                 Text(summary.title)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
                     .lineLimit(2)
 
-                // TLDR
-                Text(summary.tldr)
+                Text(summary.excerpt)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
 
-                // Metadata
                 HStack(spacing: 8) {
-                    // Reading time
-                    Label("\(summary.readingTimeMin) min", systemImage: "clock")
-                        .font(.caption2)
-                        .foregroundColor(.blue)
+                    if let readingTimeMinutes = summary.readingTimeMinutes {
+                        Label("\(readingTimeMinutes) min", systemImage: "clock")
+                            .font(.caption2)
+                            .foregroundColor(.blue)
+                    }
 
-                    // Domain
                     if let domain = summary.domain {
                         Label(domain, systemImage: "globe")
                             .font(.caption2)
@@ -106,74 +102,33 @@ private struct SummaryItemView: View {
             .cornerRadius(8)
         }
     }
-
-    /// Create deep link to open summary in app
-    private func createDeepLink(summaryId: Int32) -> URL {
-        // Using custom URL scheme
-        // The app will need to handle this URL scheme in iOSApp.swift
-        URL(string: "bitesizereader://summary/\(summaryId)")!
-    }
 }
 
 /// Preview for widget gallery
+@available(iOS 17.0, *)
 #Preview(as: .systemMedium) {
     RecentSummariesWidget()
 } timeline: {
-    let now = Instant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: Int64(Date().timeIntervalSince1970 * 1000))
-
     RecentSummariesEntry(
         date: Date(),
-        summaries: [
-            Summary(
-                id: 1,
-                requestId: 1,
-                title: "Understanding Compose Multiplatform",
-                url: "https://example.com/article",
-                domain: "example.com",
-                tldr: "A comprehensive guide to building cross-platform UIs with Compose.",
-                summary250: "Sample summary",
-                summary1000: nil,
-                keyIdeas: [],
-                topicTags: [],
-                answeredQuestions: [],
-                seoKeywords: [],
-                readingTimeMin: 5,
-                lang: "en",
-                entities: nil,
-                keyStats: [],
-                readability: nil,
-                isRead: false,
-                isFavorite: false,
-                createdAt: now,
-                updatedAt: nil,
-                syncStatus: SyncStatus.synced,
-                locallyModified: false
-            ),
-            Summary(
-                id: 2,
-                requestId: 2,
-                title: "iOS WidgetKit Best Practices",
-                url: "https://example.com/article2",
-                domain: "example.com",
-                tldr: "Learn how to create beautiful and performant widgets for iOS.",
-                summary250: "Sample summary 2",
-                summary1000: nil,
-                keyIdeas: [],
-                topicTags: [],
-                answeredQuestions: [],
-                seoKeywords: [],
-                readingTimeMin: 3,
-                lang: "en",
-                entities: nil,
-                keyStats: [],
-                readability: nil,
-                isRead: false,
-                isFavorite: false,
-                createdAt: now,
-                updatedAt: nil,
-                syncStatus: SyncStatus.synced,
-                locallyModified: false
-            )
-        ]
+        snapshot: RecentSummariesSnapshot(
+            generatedAtEpochSeconds: 0,
+            summaries: [
+                RecentSummarySnapshotItem(
+                    id: "1",
+                    title: "Understanding Compose Multiplatform",
+                    excerpt: "A comprehensive guide to building cross-platform UIs with Compose.",
+                    domain: "example.com",
+                    readingTimeMinutes: 5
+                ),
+                RecentSummarySnapshotItem(
+                    id: "2",
+                    title: "WidgetKit Best Practices",
+                    excerpt: "Learn how to build lightweight widgets backed by an app-group snapshot.",
+                    domain: "example.com",
+                    readingTimeMinutes: 3
+                ),
+            ]
+        )
     )
 }

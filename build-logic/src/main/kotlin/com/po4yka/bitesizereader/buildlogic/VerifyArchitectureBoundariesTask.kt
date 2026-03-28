@@ -3,17 +3,16 @@ package com.po4yka.bitesizereader.buildlogic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 
 abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
-    @get:InputDirectory
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val rootDirectory: DirectoryProperty
+    @get:Input
+    abstract val projectRootPath: Property<String>
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -35,7 +34,7 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
     @TaskAction
     fun verify() {
         val violations = mutableListOf<String>()
-        val projectPath = rootDirectory.get().asFile.toPath()
+        val projectPath = java.io.File(projectRootPath.get()).toPath()
 
         fun relativePath(file: java.io.File): String = projectPath.relativize(file.toPath()).toString().replace('\\', '/')
 

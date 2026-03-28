@@ -17,15 +17,16 @@ class UpdateRuleUseCase(private val ruleRepository: RuleRepository) {
         priority: Int? = null,
         description: String? = null,
         enabled: Boolean? = null,
-    ): AutomationRule = ruleRepository.updateRule(
-        ruleId = ruleId,
-        name = name,
-        eventType = eventType,
-        conditions = conditions,
-        actions = actions,
-        matchMode = matchMode,
-        priority = priority,
-        description = description,
-        enabled = enabled,
-    )
+    ): AutomationRule =
+        ruleRepository.updateRule(
+            ruleId = ruleId,
+            name = name,
+            eventType = eventType,
+            conditions = conditions,
+            actions = actions,
+            matchMode = matchMode,
+            priority = priority,
+            description = description,
+            enabled = enabled,
+        )
 }
