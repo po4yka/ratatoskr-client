@@ -30,9 +30,12 @@ dependencyResolutionManagement {
 rootProject.name = "BiteSizeReader"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include(":core")
+include(":androidApp")
 include(":composeApp")
-include(":shared")
+include(":core:common")
+include(":core:data")
+include(":core:navigation")
+include(":core:ui")
 include(":feature:auth")
 include(":feature:collections")
 include(":feature:digest")

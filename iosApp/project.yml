@@ -76,7 +76,6 @@ targets:
             -Pkotlin.native.cocoapods.platform="$PLATFORM_NAME" \
             -Pkotlin.native.cocoapods.archs="$ARCHS" \
             -Pkotlin.native.cocoapods.configuration="$CONFIGURATION"
-          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
     dependencies:
       - target: ShareExtension
         embed: true

@@ -50,10 +50,19 @@ import bitesizereader.composeapp.generated.resources.stats_current_streak
 import bitesizereader.composeapp.generated.resources.stats_error_default
 import bitesizereader.composeapp.generated.resources.stats_error_icon
 import bitesizereader.composeapp.generated.resources.stats_goal_achieved
+import bitesizereader.composeapp.generated.resources.stats_goal_label
+import bitesizereader.composeapp.generated.resources.stats_goal_type_daily
+import bitesizereader.composeapp.generated.resources.stats_goal_type_monthly
+import bitesizereader.composeapp.generated.resources.stats_goal_type_weekly
 import bitesizereader.composeapp.generated.resources.stats_goals_and_streaks
+import bitesizereader.composeapp.generated.resources.stats_hours_minutes_short
+import bitesizereader.composeapp.generated.resources.stats_hours_short
 import bitesizereader.composeapp.generated.resources.stats_languages
+import bitesizereader.composeapp.generated.resources.stats_minutes_seconds_short
+import bitesizereader.composeapp.generated.resources.stats_minutes_short
 import bitesizereader.composeapp.generated.resources.stats_overview
 import bitesizereader.composeapp.generated.resources.stats_read
+import bitesizereader.composeapp.generated.resources.stats_seconds_short
 import bitesizereader.composeapp.generated.resources.stats_this_month
 import bitesizereader.composeapp.generated.resources.stats_this_week
 import bitesizereader.composeapp.generated.resources.stats_title
@@ -307,7 +316,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
     val goalDesc =
         stringResource(
             Res.string.a11y_goal_progress,
-            goalProgress.goalType.replaceFirstChar { it.uppercase() },
+            goalTypeLabel(goalProgress.goalType),
             goalProgress.currentCount,
             goalProgress.targetCount,
             statusText,
@@ -329,8 +338,12 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val goalLabel =
-                "${goalProgress.goalType.replaceFirstChar { it.uppercase() }} goal: " +
-                    "${goalProgress.currentCount}/${goalProgress.targetCount}"
+                stringResource(
+                    Res.string.stats_goal_label,
+                    goalTypeLabel(goalProgress.goalType),
+                    goalProgress.currentCount,
+                    goalProgress.targetCount,
+                )
             Text(
                 text = goalLabel,
                 style = Carbon.typography.bodyCompact01,
@@ -580,7 +593,7 @@ private fun LanguageRow(
                 color = Carbon.theme.textPrimary,
             )
             Text(
-                text = "$count",
+                text = count.toString(),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
             )
@@ -620,22 +633,33 @@ private fun SectionDivider() {
     Spacer(modifier = Modifier.height(Spacing.lg))
 }
 
+@Composable
 private fun formatReadingTime(minutes: Int): String {
     val hours = minutes / MINUTES_PER_HOUR
     val mins = minutes % MINUTES_PER_HOUR
     return when {
-        hours > 0 && mins > 0 -> "${hours}h ${mins}m"
-        hours > 0 -> "${hours}h"
-        else -> "${mins}m"
+        hours > 0 && mins > 0 -> stringResource(Res.string.stats_hours_minutes_short, hours, mins)
+        hours > 0 -> stringResource(Res.string.stats_hours_short, hours)
+        else -> stringResource(Res.string.stats_minutes_short, mins)
     }
 }
 
+@Composable
 private fun formatAverageTime(minutes: Float): String {
     val totalMins = minutes.toInt()
     val secs = ((minutes - totalMins) * MINUTES_PER_HOUR).toInt()
     return when {
-        totalMins > 0 && secs > 0 -> "${totalMins}m ${secs}s"
-        totalMins > 0 -> "${totalMins}m"
-        else -> "${secs}s"
+        totalMins > 0 && secs > 0 -> stringResource(Res.string.stats_minutes_seconds_short, totalMins, secs)
+        totalMins > 0 -> stringResource(Res.string.stats_minutes_short, totalMins)
+        else -> stringResource(Res.string.stats_seconds_short, secs)
     }
 }
+
+@Composable
+private fun goalTypeLabel(goalType: String): String =
+    when (goalType.lowercase()) {
+        "daily" -> stringResource(Res.string.stats_goal_type_daily)
+        "weekly" -> stringResource(Res.string.stats_goal_type_weekly)
+        "monthly" -> stringResource(Res.string.stats_goal_type_monthly)
+        else -> goalType.replaceFirstChar { it.uppercase() }
+    }

@@ -21,9 +21,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.common_percent
+import bitesizereader.composeapp.generated.resources.reading_goal_completed
+import bitesizereader.composeapp.generated.resources.reading_goal_streak
+import bitesizereader.composeapp.generated.resources.reading_goal_today_progress
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.ReadingGoalProgress
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import org.jetbrains.compose.resources.stringResource
+
+private const val COMPLETED_SYMBOL = '\u2713'
 
 @Suppress("FunctionNaming")
 @Composable
@@ -64,7 +72,7 @@ fun ReadingGoalCard(
                 )
             }
             Text(
-                text = "${(goalProgress.progressFraction * 100).toInt()}%",
+                text = stringResource(Res.string.common_percent, (goalProgress.progressFraction * 100).toInt()),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textPrimary,
             )
@@ -76,7 +84,7 @@ fun ReadingGoalCard(
             val readMin = goalProgress.todayReadingSec / 60
             val targetMin = goalProgress.goal.dailyTargetMin
             Text(
-                text = "$readMin of $targetMin min today",
+                text = stringResource(Res.string.reading_goal_today_progress, readMin, targetMin),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textPrimary,
             )
@@ -91,7 +99,7 @@ fun ReadingGoalCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${goalProgress.goal.currentStreakDays} day streak",
+                        text = stringResource(Res.string.reading_goal_streak, goalProgress.goal.currentStreakDays),
                         style = Carbon.typography.label01,
                         color = Carbon.theme.textSecondary,
                     )
@@ -101,7 +109,7 @@ fun ReadingGoalCard(
 
         if (goalProgress.isCompletedToday) {
             Text(
-                text = "\u2713",
+                text = COMPLETED_SYMBOL.toString(),
                 style = Carbon.typography.heading02,
                 color = Carbon.theme.supportSuccess,
             )

@@ -3,9 +3,9 @@ package com.po4yka.bitesizereader.data.repository
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.SearchApi
 import com.po4yka.bitesizereader.database.Database
+import com.po4yka.bitesizereader.domain.model.DuplicateCheckResult
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.repository.SearchRepository
-import com.po4yka.bitesizereader.domain.usecase.DuplicateCheckResult
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock

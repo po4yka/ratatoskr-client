@@ -20,6 +20,11 @@
     <string name="summary_list_switch_to_list">Switch to list view</string>
     <string name="summary_list_refresh">Refresh</string>
     <string name="summary_list_offline">No internet connection</string>
+    <string name="summary_list_last_synced_stale">Last synced: %1$s, may be outdated</string>
+    <string name="summary_list_just_now">just now</string>
+    <string name="summary_list_minutes_ago">%1$dm ago</string>
+    <string name="summary_list_hours_ago">%1$dh ago</string>
+    <string name="summary_list_days_ago">%1$dd ago</string>
 
     <!-- Summary Detail Screen -->
     <string name="summary_detail_reading_offline">Reading offline</string>
@@ -41,6 +46,12 @@
     <string name="summary_detail_share">Share</string>
     <string name="summary_detail_summary">Summary</string>
     <string name="summary_detail_has_annotation">Has annotation</string>
+    <string name="summary_detail_date_format">%1$02d/%2$02d/%3$d</string>
+    <string name="processing_stage_queued">Queued</string>
+    <string name="processing_stage_extraction">Extracting</string>
+    <string name="processing_stage_summarization">Summarizing</string>
+    <string name="processing_stage_saving">Saving</string>
+    <string name="processing_stage_done">Done</string>
 
     <!-- Audio Player -->
     <string name="audio_generating">Generating narration...</string>
@@ -68,6 +79,15 @@
     <string name="stats_languages">Languages</string>
     <string name="stats_error_icon">Error</string>
     <string name="stats_goal_achieved">Achieved</string>
+    <string name="stats_goal_label">%1$s goal: %2$d/%3$d</string>
+    <string name="stats_goal_type_daily">Daily</string>
+    <string name="stats_goal_type_weekly">Weekly</string>
+    <string name="stats_goal_type_monthly">Monthly</string>
+    <string name="stats_minutes_short">%1$dm</string>
+    <string name="stats_hours_short">%1$dh</string>
+    <string name="stats_hours_minutes_short">%1$dh %2$dm</string>
+    <string name="stats_seconds_short">%1$ds</string>
+    <string name="stats_minutes_seconds_short">%1$dm %2$ds</string>
     <string name="stats_current_streak">%1$d-day streak</string>
     <string name="stats_best_streak">Best: %1$d days</string>
     <string name="stats_this_week">%1$d this week</string>
@@ -111,6 +131,9 @@
     <string name="settings_error_prefix">Error: %1$s</string>
     <string name="settings_sync_failed">Sync Failed: %1$s</string>
     <string name="settings_cache_size">Cache size: %1$s</string>
+    <string name="settings_cache_bytes">%1$d B</string>
+    <string name="settings_cache_kilobytes">%1$s KB</string>
+    <string name="settings_cache_megabytes">%1$s MB</string>
     <string name="settings_sync_failed_items">%1$d items failed to sync</string>
     <string name="settings_digest_icon">Digest</string>
     <string name="settings_language">Language</string>
@@ -118,6 +141,7 @@
     <string name="settings_language_auto">Auto</string>
     <string name="settings_language_english">English</string>
     <string name="settings_language_russian">Russian</string>
+    <string name="settings_unknown_username">Unknown</string>
     <string name="settings_digest_channels">Digest Channels</string>
     <string name="settings_digest_channels_description">Manage channel subscriptions and preferences</string>
     <string name="settings_cancel_sync">Cancel sync</string>
@@ -204,6 +228,9 @@
     <string name="collection_view_collaborators">Collaborators</string>
     <string name="collection_view_no_collaborators">No collaborators yet</string>
     <string name="collection_view_user">User #%1$d</string>
+    <string name="collection_view_role_owner">Owner</string>
+    <string name="collection_view_role_editor">Editor</string>
+    <string name="collection_view_role_viewer">Viewer</string>
     <string name="collection_view_remove">Remove</string>
     <string name="collection_view_invite_link">Invite Link</string>
     <string name="collection_view_create_invite_viewer">Create Invite Link (Viewer)</string>
@@ -215,9 +242,34 @@
     <string name="recommendations_title">Recommended for You</string>
     <string name="recommendations_dismiss">Dismiss</string>
 
+    <!-- Summary Card -->
+    <string name="summary_card_saved_article">Saved Article</string>
+    <string name="summary_card_favorited">Favorited</string>
+    <string name="summary_card_available_offline">Available offline</string>
+    <string name="summary_card_more_options">More options</string>
+    <string name="summary_card_mark_read">Mark as read</string>
+    <string name="summary_card_already_read">Already read</string>
+    <string name="summary_card_accessibility_read_article">Read article.</string>
+    <string name="summary_card_accessibility_unread_article">Unread article.</string>
+    <string name="summary_card_accessibility_source">Source: %1$s.</string>
+    <string name="summary_card_accessibility_favorited">Favorited.</string>
+    <string name="summary_card_accessibility_reading_time">%1$d minute read.</string>
+
     <!-- Filter Chips -->
     <string name="filter_chip_favorites">Favorites</string>
     <string name="filter_chip_archived">Archived</string>
+
+    <!-- Recent Searches -->
+    <string name="recent_searches_title">Recent Searches</string>
+    <string name="recent_searches_clear_all">Clear All</string>
+    <string name="recent_searches_remove">Remove %1$s from recent searches</string>
+
+    <!-- Sort Menu -->
+    <string name="sort_menu_description">Sort by %1$s</string>
+    <string name="sort_menu_selected">Selected</string>
+    <string name="sort_menu_newest">Newest first</string>
+    <string name="sort_menu_oldest">Oldest first</string>
+    <string name="sort_menu_alphabetical">A to Z</string>
 
     <!-- Developer Login -->
     <string name="auth_developer_user_id_label">User ID</string>
@@ -234,6 +286,7 @@
     <string name="delete_account_confirmation_warning">This action is permanent and cannot be undone. All your data, including summaries and settings, will be permanently deleted.</string>
     <string name="delete_account_confirmation_prompt">Type "%1$s" to confirm:</string>
     <string name="delete_account_confirmation_label">Confirmation</string>
+    <string name="delete_account_confirmation_keyword">DELETE</string>
     <string name="delete_account_deleting">Deleting...</string>
 
     <!-- Reading Settings -->
@@ -313,6 +366,135 @@ https://example.com/video</string>
     <string name="submit_url_error_network">No internet connection. Please check your network and try again.</string>
     <string name="submit_url_error_server">Something went wrong on our end. Please try again in a moment.</string>
     <string name="submit_url_error_view_library">View in library</string>
+    <string name="submit_url_processing_default_message">Processing...</string>
+    <string name="submit_url_request_status_pending">Pending</string>
+    <string name="submit_url_request_status_processing">Processing</string>
+    <string name="submit_url_request_status_completed">Completed</string>
+    <string name="submit_url_request_status_failed">Failed</string>
+
+    <!-- Progress Stages -->
+    <string name="progress_stages_submitted">Submitted</string>
+    <string name="progress_stages_processing_summary">Processing Summary</string>
+    <string name="progress_stages_ready">Ready</string>
+    <string name="progress_stages_failed">%1$s failed</string>
+    <string name="progress_stages_completed">%1$s completed</string>
+
+    <!-- Request History -->
+    <string name="request_history_count_singular">%1$d request</string>
+    <string name="request_history_count_plural">%1$d requests</string>
+    <string name="request_history_prompt">View your URL submission history</string>
+    <string name="request_history_loading">Loading requests...</string>
+    <string name="request_history_empty">No requests yet</string>
+    <string name="request_history_expand">Expand</string>
+    <string name="request_history_collapse">Collapse</string>
+    <string name="request_history_retry">Retry</string>
+    <string name="request_history_status_pending">Pending</string>
+    <string name="request_history_status_processing">Processing</string>
+    <string name="request_history_status_completed">Completed</string>
+    <string name="request_history_status_failed">Failed</string>
+
+    <!-- Sessions -->
+    <string name="sessions_title">Active Sessions</string>
+    <string name="sessions_count_singular">%1$d device</string>
+    <string name="sessions_count_plural">%1$d devices</string>
+    <string name="sessions_prompt">View your active sessions</string>
+    <string name="sessions_loading">Loading sessions...</string>
+    <string name="sessions_empty">No sessions found</string>
+    <string name="sessions_expand">Expand</string>
+    <string name="sessions_collapse">Collapse</string>
+    <string name="sessions_unknown_device">Unknown Device</string>
+    <string name="sessions_current">Current</string>
+    <string name="sessions_ip">IP: %1$s</string>
+    <string name="sessions_last_active">Last active: %1$s</string>
+
+    <!-- Insights -->
+    <string name="insights_title">Popular this month</string>
+    <string name="insights_fallback_source">Article</string>
+
+    <!-- Trending Topics -->
+    <string name="trending_topics_title">Trending Topics</string>
+
+    <!-- Error View -->
+    <string name="error_view_title">Oops! Something went wrong</string>
+
+    <!-- User Stats -->
+    <string name="user_stats_title">Your Statistics</string>
+    <string name="user_stats_loading">Loading stats...</string>
+    <string name="user_stats_favorite_topics">Favorite Topics</string>
+    <string name="user_stats_member_since">Member since</string>
+    <string name="user_stats_unavailable">Stats unavailable</string>
+    <string name="user_stats_average_minutes">%1$d min</string>
+    <string name="user_stats_topic_chip">%1$s (%2$d)</string>
+    <string name="user_stats_minutes_short">%1$d min</string>
+    <string name="user_stats_hours_short">%1$dh</string>
+    <string name="user_stats_hours_minutes_short">%1$dh %2$dm</string>
+
+    <!-- Reading Goal -->
+    <string name="reading_goal_today_progress">%1$d of %2$d min today</string>
+    <string name="reading_goal_streak">%1$d day streak</string>
+    <string name="reading_goal_completed">Completed</string>
+
+    <!-- Custom Digest View -->
+    <string name="custom_digest_view_default_title">Digest</string>
+    <string name="custom_digest_view_delete">Delete digest</string>
+    <string name="custom_digest_view_generating">Generating your digest...</string>
+    <string name="custom_digest_view_error">Error</string>
+    <string name="custom_digest_view_failed">Failed to generate digest</string>
+    <string name="custom_digest_view_not_found">Digest not found</string>
+
+    <!-- Digest Screen -->
+    <string name="digest_screen_tab_channels">Channels</string>
+    <string name="digest_screen_tab_preferences">Preferences</string>
+    <string name="digest_screen_tab_history">History</string>
+    <string name="digest_screen_subscriptions">Subscriptions (%1$d/%2$d)</string>
+    <string name="digest_screen_add_channel">Add Channel</string>
+    <string name="digest_screen_channel_username">Channel Username</string>
+    <string name="digest_screen_channel_placeholder">@channel_name</string>
+    <string name="digest_screen_delivery_time_placeholder">HH:MM</string>
+    <string name="digest_screen_timezone_placeholder">UTC</string>
+    <string name="digest_screen_hours_lookback_placeholder">24</string>
+    <string name="digest_screen_max_posts_placeholder">10</string>
+    <string name="digest_screen_min_relevance_placeholder">0.5</string>
+    <string name="digest_screen_subscribing">Subscribing...</string>
+    <string name="digest_screen_subscribe">Subscribe</string>
+    <string name="digest_screen_triggering">Triggering...</string>
+    <string name="digest_screen_trigger_now">Trigger Digest Now</string>
+    <string name="digest_screen_trigger_success">Digest triggered successfully!</string>
+    <string name="digest_screen_subscribed">Subscribed: %1$s</string>
+    <string name="digest_screen_unsubscribe">Unsubscribe</string>
+    <string name="digest_screen_delivery_time">Delivery Time</string>
+    <string name="digest_screen_timezone">Timezone</string>
+    <string name="digest_screen_hours_lookback">Hours Lookback</string>
+    <string name="digest_screen_max_posts">Max Posts Per Digest</string>
+    <string name="digest_screen_min_relevance">Min Relevance Score</string>
+    <string name="digest_screen_save_preferences">Save Preferences</string>
+    <string name="digest_screen_saving_preferences">Saving...</string>
+    <string name="digest_screen_no_history">No digest history yet</string>
+    <string name="digest_screen_load_more">Load More</string>
+    <string name="digest_screen_loading_more">Loading...</string>
+    <string name="digest_screen_history_channels_posts">%1$d channels, %2$d posts</string>
+    <string name="digest_screen_status_delivered">Delivered</string>
+    <string name="digest_screen_status_completed">Completed</string>
+    <string name="digest_screen_status_failed">Failed</string>
+    <string name="digest_screen_status_pending">Pending</string>
+
+    <!-- Shared Formats -->
+    <string name="common_percent">%1$d%%</string>
+
+    <!-- Swipeable Summary -->
+    <string name="swipeable_summary_archive">Archive</string>
+    <string name="swipeable_summary_archive_action">Archive article</string>
+    <string name="swipeable_summary_delete_action">Delete article</string>
+    <string name="swipeable_summary_mark_read_action">Mark as read</string>
+
+    <!-- Settings Sync -->
+    <string name="settings_sync_items_progress">%1$d / %2$d items</string>
+    <string name="settings_sync_items_processed">%1$d items</string>
+    <string name="settings_sync_batch_progress">Batch %1$d/%2$d</string>
+    <string name="settings_sync_batch_current">Batch %1$d</string>
+
+    <!-- Telegram Auth -->
+    <string name="telegram_auth_close">Close</string>
 
     <!-- Accessibility -->
     <string name="a11y_navigate_back">Navigate back</string>

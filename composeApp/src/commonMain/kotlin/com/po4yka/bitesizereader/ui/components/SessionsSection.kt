@@ -19,11 +19,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.sessions_collapse
+import bitesizereader.composeapp.generated.resources.sessions_count_plural
+import bitesizereader.composeapp.generated.resources.sessions_count_singular
+import bitesizereader.composeapp.generated.resources.sessions_current
+import bitesizereader.composeapp.generated.resources.sessions_empty
+import bitesizereader.composeapp.generated.resources.sessions_expand
+import bitesizereader.composeapp.generated.resources.sessions_ip
+import bitesizereader.composeapp.generated.resources.sessions_last_active
+import bitesizereader.composeapp.generated.resources.sessions_loading
+import bitesizereader.composeapp.generated.resources.sessions_prompt
+import bitesizereader.composeapp.generated.resources.sessions_title
+import bitesizereader.composeapp.generated.resources.sessions_unknown_device
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.bitesizereader.domain.model.Session
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Expandable section showing the user's active sessions.
@@ -41,7 +57,7 @@ fun SessionsSection(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                 .background(Carbon.theme.layer01),
     ) {
         // Header (clickable to expand/collapse)
@@ -50,22 +66,26 @@ fun SessionsSection(
                 Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onToggleExpanded)
-                    .padding(16.dp),
+                    .padding(Spacing.md),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column {
                 Text(
-                    text = "Active Sessions",
+                    text = stringResource(Res.string.sessions_title),
                     style = Carbon.typography.headingCompact01,
                     color = Carbon.theme.textPrimary,
                 )
                 Text(
                     text =
                         if (sessions.isNotEmpty()) {
-                            "${sessions.size} device${if (sessions.size != 1) "s" else ""}"
+                            if (sessions.size == 1) {
+                                stringResource(Res.string.sessions_count_singular, sessions.size)
+                            } else {
+                                stringResource(Res.string.sessions_count_plural, sessions.size)
+                            }
                         } else {
-                            "View your active sessions"
+                            stringResource(Res.string.sessions_prompt)
                         },
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
@@ -74,11 +94,16 @@ fun SessionsSection(
 
             Icon(
                 imageVector = CarbonIcons.ArrowLeft,
-                contentDescription = if (isExpanded) "Collapse" else "Expand",
+                contentDescription =
+                    if (isExpanded) {
+                        stringResource(Res.string.sessions_collapse)
+                    } else {
+                        stringResource(Res.string.sessions_expand)
+                    },
                 tint = Carbon.theme.iconSecondary,
                 modifier =
                     Modifier
-                        .size(16.dp)
+                        .size(IconSizes.xs)
                         .graphicsLayer {
                             // ArrowLeft points left; rotate to right (180) or down (90)
                             rotationZ = if (isExpanded) 90f else 180f
@@ -96,9 +121,9 @@ fun SessionsSection(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                        .padding(horizontal = Spacing.md)
+                        .padding(bottom = Spacing.md),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
                 when {
                     isLoading -> {
@@ -109,16 +134,16 @@ fun SessionsSection(
                         ) {
                             SmallLoading()
                             Text(
-                                text = "Loading sessions...",
+                                text = stringResource(Res.string.sessions_loading),
                                 style = Carbon.typography.label01,
                                 color = Carbon.theme.textSecondary,
-                                modifier = Modifier.padding(start = 8.dp),
+                                modifier = Modifier.padding(start = Spacing.xs),
                             )
                         }
                     }
                     sessions.isEmpty() -> {
                         Text(
-                            text = "No sessions found",
+                            text = stringResource(Res.string.sessions_empty),
                             style = Carbon.typography.bodyCompact01,
                             color = Carbon.theme.textSecondary,
                         )
@@ -144,10 +169,10 @@ private fun SessionItem(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                 .background(Carbon.theme.layer02)
-                .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+                .padding(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -155,27 +180,30 @@ private fun SessionItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = session.deviceInfo ?: session.clientId ?: "Unknown Device",
+                text = session.deviceInfo ?: session.clientId ?: stringResource(Res.string.sessions_unknown_device),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textPrimary,
             )
             if (session.isCurrent) {
                 Text(
-                    text = "Current",
+                    text = stringResource(Res.string.sessions_current),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textOnColor,
                     modifier =
                         Modifier
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(Dimensions.badgeCornerRadius))
                             .background(Carbon.theme.supportSuccess)
-                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                            .padding(
+                                horizontal = Dimensions.badgeHorizontalPadding,
+                                vertical = Dimensions.badgeVerticalPadding,
+                            ),
                 )
             }
         }
 
         session.ipAddress?.let { ip ->
             Text(
-                text = "IP: $ip",
+                text = stringResource(Res.string.sessions_ip, ip),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
@@ -183,7 +211,7 @@ private fun SessionItem(
 
         session.lastUsedAt?.let { lastUsed ->
             Text(
-                text = "Last active: ${formatSessionDate(lastUsed)}",
+                text = stringResource(Res.string.sessions_last_active, formatSessionDate(lastUsed)),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )

@@ -1,9 +1,8 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.model.Request
-import com.po4yka.bitesizereader.domain.repository.SummaryRepository
-import com.po4yka.bitesizereader.domain.usecase.GetRequestsUseCase
-import com.po4yka.bitesizereader.domain.usecase.RetryRequestUseCase
+import com.po4yka.bitesizereader.domain.port.ContentCachePort
+import com.po4yka.bitesizereader.domain.port.RequestOpsPort
 import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.presentation.state.SyncSettingsState
 import com.po4yka.bitesizereader.util.error.toAppError
@@ -15,16 +14,13 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
-@Factory
 class SyncSettingsDelegate(
     private val syncDataUseCase: SyncDataUseCase,
-    private val getRequestsUseCase: GetRequestsUseCase,
-    private val retryRequestUseCase: RetryRequestUseCase,
-    private val summaryRepository: SummaryRepository,
+    private val requestOpsPort: RequestOpsPort,
+    private val contentCachePort: ContentCachePort,
 ) {
     private var downloadJob: Job? = null
 
@@ -91,7 +87,7 @@ class SyncSettingsDelegate(
     ) {
         scope.launch {
             onState(currentState().copy(isLoadingRequests = true))
-            getRequestsUseCase()
+            requestOpsPort.getRequests()
                 .catch { throwable ->
                     logger.warn(throwable) { "Failed to load requests" }
                     onState(currentState().copy(isLoadingRequests = false))
@@ -125,7 +121,7 @@ class SyncSettingsDelegate(
         scope: CoroutineScope,
     ) {
         scope.launch {
-            runCatching { retryRequestUseCase(request) }
+            runCatching { requestOpsPort.retryRequest(request) }
                 .onSuccess {
                     logger.info { "Retried request for URL: ${request.url}" }
                 }
@@ -141,7 +137,7 @@ class SyncSettingsDelegate(
         onState: (SyncSettingsState) -> Unit,
     ) {
         scope.launch {
-            runCatching { summaryRepository.getCacheSize() }
+            runCatching { contentCachePort.getCacheSize() }
                 .onSuccess { size ->
                     onState(currentState().copy(cacheSize = size))
                 }
@@ -158,7 +154,7 @@ class SyncSettingsDelegate(
     ) {
         scope.launch {
             onState(currentState().copy(isClearingCache = true))
-            runCatching { summaryRepository.clearContentCache() }
+            runCatching { contentCachePort.clearContentCache() }
                 .onSuccess {
                     onState(currentState().copy(isClearingCache = false, cacheSize = 0L))
                     logger.info { "Content cache cleared" }

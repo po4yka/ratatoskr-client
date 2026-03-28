@@ -14,9 +14,9 @@ class ReadingGoalViewModel(
     private val getReadingGoalProgressUseCase: GetReadingGoalProgressUseCase,
     private val updateReadingGoalUseCase: UpdateReadingGoalUseCase,
     private val recalculateStreakUseCase: RecalculateStreakUseCase,
-) : BaseViewModel() {
+) : BaseViewModel(), ReadingGoalController {
     private val _state = MutableStateFlow(ReadingGoalState())
-    val state: StateFlow<ReadingGoalState> = _state.asStateFlow()
+    override val state: StateFlow<ReadingGoalState> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -29,14 +29,14 @@ class ReadingGoalViewModel(
         }
     }
 
-    fun setDailyTarget(minutes: Int) {
+    override fun setDailyTarget(minutes: Int) {
         _state.update { it.copy(editTarget = minutes) }
         viewModelScope.launch {
             updateReadingGoalUseCase.setTarget(minutes)
         }
     }
 
-    fun toggleEnabled() {
+    override fun toggleEnabled() {
         viewModelScope.launch {
             val current = _state.value.goalProgress?.goal?.isEnabled ?: false
             updateReadingGoalUseCase.setEnabled(!current)

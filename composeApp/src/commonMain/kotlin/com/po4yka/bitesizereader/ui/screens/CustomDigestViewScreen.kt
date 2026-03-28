@@ -12,22 +12,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.custom_digest_view_default_title
+import bitesizereader.composeapp.generated.resources.custom_digest_view_delete
+import bitesizereader.composeapp.generated.resources.custom_digest_view_error
+import bitesizereader.composeapp.generated.resources.custom_digest_view_failed
+import bitesizereader.composeapp.generated.resources.custom_digest_view_generating
+import bitesizereader.composeapp.generated.resources.custom_digest_view_not_found
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.loading.SmallLoading
 import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
 import com.po4yka.bitesizereader.domain.model.CustomDigestStatus
 import com.po4yka.bitesizereader.presentation.navigation.CustomDigestViewComponent
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod", "CyclomaticComplexMethod")
 @Composable
@@ -45,23 +53,20 @@ fun CustomDigestViewScreen(
                 .background(Carbon.theme.background),
     ) {
         ScreenHeader(
-            title = state.digest?.title ?: "Digest",
+            title = state.digest?.title ?: stringResource(Res.string.custom_digest_view_default_title),
             isDetailScreen = true,
             onBackClick = component::onBackClicked,
             actions = {
                 if (state.digest != null) {
-                    IconButton(
+                    CarbonIconButton(
+                        imageVector = CarbonIcons.TrashCan,
+                        contentDescription = stringResource(Res.string.custom_digest_view_delete),
                         onClick = {
                             viewModel.deleteDigest(component.digestId) { component.onBackClicked() }
                         },
-                    ) {
-                        Icon(
-                            imageVector = CarbonIcons.TrashCan,
-                            contentDescription = "Delete digest",
-                            tint = Carbon.theme.supportError,
-                            modifier = Modifier.size(IconSizes.md),
-                        )
-                    }
+                        tint = Carbon.theme.supportError,
+                        iconSize = IconSizes.md,
+                    )
                 }
             },
         )
@@ -86,7 +91,7 @@ fun CustomDigestViewScreen(
                     IndeterminateProgressBar(modifier = Modifier.fillMaxWidth())
                     Spacer(modifier = Modifier.height(Spacing.sm))
                     Text(
-                        text = "Generating your digest...",
+                        text = stringResource(Res.string.custom_digest_view_generating),
                         style = Carbon.typography.body01,
                         color = Carbon.theme.textSecondary,
                     )
@@ -117,13 +122,13 @@ fun CustomDigestViewScreen(
                 ) {
                     Icon(
                         imageVector = CarbonIcons.WarningAlt,
-                        contentDescription = "Error",
+                        contentDescription = stringResource(Res.string.custom_digest_view_error),
                         tint = Carbon.theme.supportError,
                         modifier = Modifier.size(IconSizes.xl),
                     )
                     Spacer(modifier = Modifier.height(Spacing.sm))
                     Text(
-                        text = "Failed to generate digest",
+                        text = stringResource(Res.string.custom_digest_view_failed),
                         style = Carbon.typography.heading03,
                         color = Carbon.theme.supportError,
                     )
@@ -144,7 +149,7 @@ fun CustomDigestViewScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "Digest not found",
+                        text = stringResource(Res.string.custom_digest_view_not_found),
                         style = Carbon.typography.bodyCompact01,
                         color = Carbon.theme.textSecondary,
                     )

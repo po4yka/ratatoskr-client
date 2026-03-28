@@ -1,19 +1,16 @@
-import java.util.Properties
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
+    id("bitesize.kmp.library")
     kotlin("native.cocoapods")
 }
 
 kotlin {
     cocoapods {
-        // Ensure the generated podspec matches the Podfile dependency name
         name = "ComposeApp"
         summary = "Compose Multiplatform UI for Bite-Size Reader"
         homepage = "https://github.com/po4yka/bite-size-reader-client"
@@ -23,34 +20,33 @@ kotlin {
         framework {
             baseName = "ComposeApp"
             isStatic = true
-            export(projects.shared)
+            export(projects.core.common)
+            export(projects.core.data)
+            export(projects.core.navigation)
+            export(projects.feature.auth)
+            export(projects.feature.collections)
+            export(projects.feature.digest)
+            export(projects.feature.settings)
+            export(projects.feature.summary)
+            export(projects.feature.sync)
+            export(libs.decompose.core)
+            export(libs.koin.core)
         }
-    }
-
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
-
-    jvm("desktop") {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-
-    // Enable ExpectActualClasses feature to suppress beta warnings
-    sourceSets.all {
-        languageSettings.enableLanguageFeature("ExpectActualClasses")
     }
 
     sourceSets {
         commonMain.dependencies {
-            // Compose Multiplatform
+            api(projects.core.common)
+            api(projects.core.data)
+            api(projects.core.navigation)
+            api(projects.feature.auth)
+            api(projects.feature.collections)
+            api(projects.feature.digest)
+            api(projects.feature.settings)
+            api(projects.feature.summary)
+            api(projects.feature.sync)
+            implementation(projects.core.ui)
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -59,45 +55,30 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(compose.materialIconsExtended)
 
-            // Shared module
-            implementation(projects.shared)
-
-            // Koin
             implementation(libs.koin.compose)
             implementation(libs.kotlin.logging)
-
-            // Decompose
             implementation(libs.decompose.core)
             implementation(libs.decompose.compose)
-
-            // Coil for image loading
+            implementation(libs.essenty.lifecycle.coroutines)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
-
-            // Carbon Design System
             implementation(libs.carbon.compose)
-
-            // Markdown Renderer
             implementation(libs.markdown.renderer)
             implementation(libs.markdown.renderer.m3)
             implementation(libs.markdown.renderer.coil3)
         }
 
         androidMain.dependencies {
-            // Compose
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-
-            // Koin for Android
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.startup)
+        }
 
-            // WorkManager for background sync
-            implementation(libs.androidx.work.runtime)
-
-            // Glance for widgets
-            implementation(libs.androidx.glance.appwidget)
-            implementation(libs.androidx.glance.material3)
+        androidUnitTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.koin.test)
+            implementation(libs.mockk)
         }
 
         val desktopMain by getting {
@@ -106,94 +87,8 @@ kotlin {
             }
         }
 
-        iosMain.dependencies {
-            // Must be api() for CocoaPods framework export to work properly
-            api(projects.shared)
-        }
-
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
     }
-}
-
-android {
-    namespace = "com.po4yka.bitesizereader"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        applicationId = "com.po4yka.bitesizereader"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0.0"
-
-        // Load configuration from local.properties
-        val localProperties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-        if (localPropertiesFile.exists()) {
-            localPropertiesFile.inputStream().use { localProperties.load(it) }
-        }
-
-        // BuildConfig fields
-        buildConfigField(
-            "String",
-            "API_BASE_URL",
-            "\"${localProperties.getProperty("api.base.url", "http://10.0.2.2:8000")}\"",
-        )
-        buildConfigField(
-            "String",
-            "CLIENT_ID",
-            "\"${localProperties.getProperty("client.id", "android-app-v1.0")}\"",
-        )
-        buildConfigField(
-            "int",
-            "API_TIMEOUT_SECONDS",
-            localProperties.getProperty("api.timeout.seconds", "30"),
-        )
-        buildConfigField(
-            "boolean",
-            "API_LOGGING_ENABLED",
-            localProperties.getProperty("api.logging.enabled", "true"),
-        )
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "/META-INF/INDEX.LIST"
-            excludes += "/META-INF/io.netty.versions.properties"
-        }
-    }
-
-    buildFeatures {
-        buildConfig = true
-    }
-
-    buildTypes {
-        getByName("debug") {
-            isDebuggable = true
-            isMinifyEnabled = false
-            applicationIdSuffix = ".debug"
-        }
-        getByName("release") {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
-        }
-    }
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
-dependencies {
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-    debugImplementation(compose.uiTooling)
 }

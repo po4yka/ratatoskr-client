@@ -11,9 +11,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Validate shared Kotlin code
+  # Validate active Kotlin modules
   validate-shared:
-    name: Validate Shared Module
+    name: Validate Kotlin Modules
     runs-on: ubuntu-latest
 
     steps:
@@ -35,15 +35,15 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run shared module tests
-        run: ./gradlew :shared:allTests --no-daemon
+      - name: Run Kotlin module tests
+        run: ./gradlew :core:common:allTests :core:data:allTests :core:navigation:allTests :core:ui:allTests :feature:auth:allTests :feature:collections:allTests :feature:digest:allTests :feature:settings:allTests :feature:summary:allTests :feature:sync:allTests --no-daemon
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: shared-test-results
-          path: shared/build/reports/tests/
+          name: kotlin-module-test-results
+          path: "**/build/reports/tests/"
           retention-days: 7
 
   # Build and test Android
@@ -73,7 +73,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Android debug APK
-        run: ./gradlew :composeApp:assembleDebug --no-daemon
+        run: ./gradlew :androidApp:assembleDebug --no-daemon
 
       - name: Run Android unit tests
         run: ./gradlew :composeApp:testDebugUnitTest --no-daemon
@@ -82,7 +82,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: android-debug-apk
-          path: composeApp/build/outputs/apk/debug/*.apk
+          path: androidApp/build/outputs/apk/debug/*.apk
           retention-days: 7
 
       - name: Upload Android test results
@@ -128,20 +128,20 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build iOS framework (Simulator Arm64)
-        run: ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64 --no-daemon
+        run: ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 --no-daemon
 
       - name: Build iOS framework (Device Arm64)
-        run: ./gradlew :shared:linkDebugFrameworkIosArm64 --no-daemon
+        run: ./gradlew :composeApp:linkDebugFrameworkIosArm64 --no-daemon
 
       - name: Run iOS tests
-        run: ./gradlew :shared:iosSimulatorArm64Test --no-daemon
+        run: ./gradlew :core:common:iosSimulatorArm64Test :core:data:iosSimulatorArm64Test :feature:auth:iosSimulatorArm64Test :feature:collections:iosSimulatorArm64Test :feature:digest:iosSimulatorArm64Test :feature:settings:iosSimulatorArm64Test :feature:summary:iosSimulatorArm64Test :feature:sync:iosSimulatorArm64Test --no-daemon
 
       - name: Upload iOS test results
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: ios-test-results
-          path: shared/build/reports/tests/
+          path: "**/build/reports/tests/"
           retention-days: 7
 
   # Code quality checks

@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.domain.repository
 
+import com.po4yka.bitesizereader.domain.model.DuplicateCheckResult
 import com.po4yka.bitesizereader.domain.model.Summary
-import com.po4yka.bitesizereader.domain.usecase.DuplicateCheckResult
 
 interface SearchRepository {
     suspend fun search(

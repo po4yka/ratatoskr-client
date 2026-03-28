@@ -148,7 +148,7 @@ private fun CollectionSelectionRow(
             }
         }
         Text(
-            text = "${collection.count}",
+            text = collection.count.toString(),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )

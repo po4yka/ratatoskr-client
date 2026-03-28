@@ -1,4 +1,4 @@
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
@@ -65,16 +65,12 @@ pluginManager.withPlugin("com.google.devtools.ksp") {
             }
     }
 
-    tasks.configureEach {
-        if (
-            name != "kspCommonMainKotlinMetadata" &&
-            (
-                name.startsWith("compile", ignoreCase = true) ||
-                    name.startsWith("ksp", ignoreCase = true)
-                )
-        ) {
-            dependsOn("kspCommonMainKotlinMetadata")
-        }
+    tasks.matching { it.name == "compileCommonMainKotlinMetadata" }.configureEach {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+
+    tasks.matching { it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata" }.configureEach {
+        dependsOn("kspCommonMainKotlinMetadata")
     }
 
     extensions.configure<KotlinMultiplatformExtension> {

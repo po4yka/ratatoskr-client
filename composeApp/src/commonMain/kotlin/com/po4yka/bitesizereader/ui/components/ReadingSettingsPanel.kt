@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import bitesizereader.composeapp.generated.resources.common_percent
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.ui.theme.Spacing
@@ -73,7 +74,7 @@ fun ReadingSettingsPanel(
                     modifier = Modifier.weight(0.55f),
                 )
                 Text(
-                    text = "${(preferences.fontSizeScale * 100).toInt()}%",
+                    text = stringResource(Res.string.common_percent, (preferences.fontSizeScale * 100).toInt()),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                     modifier = Modifier.weight(0.15f),
@@ -99,7 +100,7 @@ fun ReadingSettingsPanel(
                     modifier = Modifier.weight(0.55f),
                 )
                 Text(
-                    text = "${(preferences.lineSpacingScale * 100).toInt()}%",
+                    text = stringResource(Res.string.common_percent, (preferences.lineSpacingScale * 100).toInt()),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                     modifier = Modifier.weight(0.15f),

@@ -16,8 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.trending_topics_title
 import com.gabrieldrn.carbon.Carbon
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Section that displays trending topics as clickable chips.
@@ -38,19 +42,19 @@ fun TrendingTopicsSection(
             modifier
                 .fillMaxWidth()
                 .background(Carbon.theme.layer01)
-                .padding(16.dp),
+                .padding(Spacing.md),
     ) {
         Text(
-            text = "Trending Topics",
+            text = stringResource(Res.string.trending_topics_title),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
-            modifier = Modifier.padding(bottom = 12.dp),
+            modifier = Modifier.padding(bottom = Spacing.sm),
         )
 
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             topics.forEach { topic ->
                 TrendingTopicChip(
@@ -75,10 +79,10 @@ private fun TrendingTopicChip(
         color = Carbon.theme.textOnColor,
         modifier =
             modifier
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(Dimensions.chipCornerRadius))
                 .background(Carbon.theme.linkPrimary)
                 .clickable(onClick = onClick)
                 .semantics { role = Role.Button }
-                .padding(horizontal = 12.dp, vertical = 6.dp),
+                .padding(horizontal = Spacing.sm, vertical = Dimensions.badgeVerticalPadding + Spacing.xxs),
     )
 }

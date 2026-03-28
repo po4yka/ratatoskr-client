@@ -24,11 +24,19 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val shellFiles: ConfigurableFileCollection
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val featureFiles: ConfigurableFileCollection
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val legacyFiles: ConfigurableFileCollection
 
     init {
         group = "verification"
-        description = "Rejects direct DI in route composables and Koin-backed navigation components."
+        description = "Rejects direct DI in routed UI and cross-feature implementation imports."
     }
 
     @TaskAction
@@ -38,21 +46,55 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
 
         fun relativePath(file: java.io.File): String = projectPath.relativize(file.toPath()).toString().replace('\\', '/')
 
-        screenFiles.files
-            .sortedBy(::relativePath)
-            .forEach { file ->
-                if (ComposableDiPattern.containsMatchIn(file.readText())) {
-                    violations += "Composable DI: ${relativePath(file)} must not call koinInject() directly"
+        val screenSourceFiles =
+            screenFiles.files
+                .filter { it.exists() && it.extension == "kt" }
+                .sortedBy(::relativePath)
+                .map { file ->
+                    SourceFile(
+                        path = relativePath(file),
+                        content = file.readText(),
+                    )
                 }
-            }
+        violations += ArchitectureBoundaryRules.findComposableDiViolations(screenSourceFiles)
 
-        navigationFiles.files
-            .sortedBy(::relativePath)
-            .forEach { file ->
-                if (NavigationDiPattern.containsMatchIn(file.readText())) {
-                    violations += "Navigation DI: ${relativePath(file)} must not resolve dependencies from Koin directly"
+        val featureSourceFiles =
+            featureFiles.files
+                .filter { it.exists() && it.extension == "kt" }
+                .sortedBy(::relativePath)
+                .map { file ->
+                    SourceFile(
+                        path = relativePath(file),
+                        content = file.readText(),
+                    )
                 }
-            }
+        val featureTypeOwners = ArchitectureBoundaryRules.buildFeatureTypeOwners(featureSourceFiles)
+
+        val directDiSourceFiles =
+            (navigationFiles.files + shellFiles.files)
+                .filter { it.exists() && it.extension == "kt" }
+                .distinctBy(::relativePath)
+                .sortedBy(::relativePath)
+                .map { file ->
+                    SourceFile(
+                        path = relativePath(file),
+                        content = file.readText(),
+                    )
+                }
+        violations += ArchitectureBoundaryRules.findDirectDiViolations(directDiSourceFiles)
+
+        val shellSourceFiles =
+            shellFiles.files
+                .filter { it.exists() && it.extension == "kt" }
+                .sortedBy(::relativePath)
+                .map { file ->
+                    SourceFile(
+                        path = relativePath(file),
+                        content = file.readText(),
+                    )
+                }
+        violations += ArchitectureBoundaryRules.findShellBoundaryViolations(shellSourceFiles, featureTypeOwners)
+        violations += ArchitectureBoundaryRules.findFeatureBoundaryViolations(featureSourceFiles, featureTypeOwners)
 
         legacyFiles.files
             .filter { it.exists() }
@@ -71,8 +113,4 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
         }
     }
 
-    private companion object {
-        val ComposableDiPattern = Regex("""\bkoinInject\(""")
-        val NavigationDiPattern = Regex("""\bKoinComponent\b|\binject\(|org\.koin\.core\.component\.get""")
-    }
 }

@@ -1,8 +1,8 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.model.DigestFormat
+import com.po4yka.bitesizereader.domain.port.SummaryFeedPort
 import com.po4yka.bitesizereader.domain.usecase.CreateCustomDigestUseCase
-import com.po4yka.bitesizereader.domain.usecase.GetSummariesUseCase
 import com.po4yka.bitesizereader.presentation.state.CustomDigestCreateState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CustomDigestCreateViewModel(
-    private val getSummariesUseCase: GetSummariesUseCase,
+    private val summaryFeedPort: SummaryFeedPort,
     private val createCustomDigestUseCase: CreateCustomDigestUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(CustomDigestCreateState())
@@ -23,7 +23,7 @@ class CustomDigestCreateViewModel(
     fun loadSummaries() {
         viewModelScope.launch {
             _state.update { it.copy(isLoadingSummaries = true) }
-            getSummariesUseCase(page = 1, pageSize = 100).collect { summaries ->
+            summaryFeedPort.getSummaries(page = 1, pageSize = 100).collect { summaries ->
                 _state.update { it.copy(summaries = summaries, isLoadingSummaries = false) }
                 updateFiltered()
             }

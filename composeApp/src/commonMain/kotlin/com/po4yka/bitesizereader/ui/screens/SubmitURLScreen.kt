@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -51,12 +50,14 @@ import com.gabrieldrn.carbon.textinput.TextInput
 import com.gabrieldrn.carbon.textinput.TextInputState
 import com.po4yka.bitesizereader.domain.model.BatchUrlEntry
 import com.po4yka.bitesizereader.domain.model.BatchUrlStatus
+import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.domain.model.RequestStatus
 import com.po4yka.bitesizereader.presentation.navigation.SubmitURLComponent
 import com.po4yka.bitesizereader.presentation.state.SubmitURLState
 import com.po4yka.bitesizereader.presentation.state.SubmitUrlError
 import com.po4yka.bitesizereader.presentation.viewmodel.SubmitURLViewModel
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.ui.components.CarbonTextArea
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
@@ -90,8 +91,13 @@ import bitesizereader.composeapp.generated.resources.submit_url_mode_batch
 import bitesizereader.composeapp.generated.resources.submit_url_mode_single
 import bitesizereader.composeapp.generated.resources.submit_url_no_recent_requests
 import bitesizereader.composeapp.generated.resources.submit_url_processing
+import bitesizereader.composeapp.generated.resources.submit_url_processing_default_message
 import bitesizereader.composeapp.generated.resources.submit_url_processing_stage
 import bitesizereader.composeapp.generated.resources.submit_url_request_history
+import bitesizereader.composeapp.generated.resources.submit_url_request_status_completed
+import bitesizereader.composeapp.generated.resources.submit_url_request_status_failed
+import bitesizereader.composeapp.generated.resources.submit_url_request_status_pending
+import bitesizereader.composeapp.generated.resources.submit_url_request_status_processing
 import bitesizereader.composeapp.generated.resources.submit_url_show_history
 import bitesizereader.composeapp.generated.resources.submit_url_submit
 import bitesizereader.composeapp.generated.resources.submit_url_submit_anyway
@@ -106,6 +112,12 @@ import bitesizereader.composeapp.generated.resources.submit_url_error_network
 import bitesizereader.composeapp.generated.resources.submit_url_error_server
 import bitesizereader.composeapp.generated.resources.submit_url_error_view_library
 import bitesizereader.composeapp.generated.resources.settings_retry
+import bitesizereader.composeapp.generated.resources.common_percent
+import bitesizereader.composeapp.generated.resources.processing_stage_done
+import bitesizereader.composeapp.generated.resources.processing_stage_extraction
+import bitesizereader.composeapp.generated.resources.processing_stage_queued
+import bitesizereader.composeapp.generated.resources.processing_stage_saving
+import bitesizereader.composeapp.generated.resources.processing_stage_summarization
 import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod")
@@ -464,7 +476,7 @@ private fun BatchUrlEntryRow(
             }
             BatchUrlStatus.SUBMITTING -> {
                 Text(
-                    text = "${(entry.progress * 100).toInt()}%",
+                    text = stringResource(Res.string.common_percent, (entry.progress * 100).toInt()),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.linkPrimary,
                     modifier = Modifier.width(Spacing.xl),
@@ -559,14 +571,12 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
                 .padding(horizontal = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onBackClick) {
-            Icon(
-                imageVector = CarbonIcons.ArrowLeft,
-                contentDescription = stringResource(Res.string.submit_url_back),
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector = CarbonIcons.ArrowLeft,
+            contentDescription = stringResource(Res.string.submit_url_back),
+            onClick = onBackClick,
+            iconSize = IconSizes.md,
+        )
 
         Text(
             text = stringResource(Res.string.submit_url_title),
@@ -793,7 +803,7 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
         ) {
             SmallLoading()
             Text(
-                text = state.message ?: "Processing...",
+                text = state.message ?: stringResource(Res.string.submit_url_processing_default_message),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.textSecondary,
             )
@@ -803,13 +813,24 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
             text =
                 stringResource(
                     Res.string.submit_url_processing_stage,
-                    state.stage.name.lowercase().replaceFirstChar { it.uppercase() },
+                    processingStageLabel(state.stage),
                 ),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )
     }
 }
+
+@Composable
+private fun processingStageLabel(stage: ProcessingStage): String =
+    when (stage) {
+        ProcessingStage.UNSPECIFIED -> stringResource(Res.string.submit_url_processing_default_message)
+        ProcessingStage.QUEUED -> stringResource(Res.string.processing_stage_queued)
+        ProcessingStage.EXTRACTION -> stringResource(Res.string.processing_stage_extraction)
+        ProcessingStage.SUMMARIZATION -> stringResource(Res.string.processing_stage_summarization)
+        ProcessingStage.SAVING -> stringResource(Res.string.processing_stage_saving)
+        ProcessingStage.DONE -> stringResource(Res.string.processing_stage_done)
+    }
 
 @Suppress("FunctionNaming")
 @Composable
@@ -862,14 +883,12 @@ private fun RequestHistoryHeader(
             } else {
                 stringResource(Res.string.submit_url_show_history)
             }
-        IconButton(onClick = onToggle) {
-            Icon(
-                imageVector = if (showHistory) CarbonIcons.ChevronUp else CarbonIcons.ChevronDown,
-                contentDescription = historyDesc,
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector = if (showHistory) CarbonIcons.ChevronUp else CarbonIcons.ChevronDown,
+            contentDescription = historyDesc,
+            onClick = onToggle,
+            iconSize = IconSizes.md,
+        )
     }
 }
 
@@ -905,7 +924,13 @@ private fun RequestHistoryItem(
 
         Icon(
             imageVector = statusIcon,
-            contentDescription = request.status.name,
+            contentDescription =
+                when (request.status) {
+                    RequestStatus.COMPLETED -> stringResource(Res.string.submit_url_request_status_completed)
+                    RequestStatus.FAILED -> stringResource(Res.string.submit_url_request_status_failed)
+                    RequestStatus.PROCESSING -> stringResource(Res.string.submit_url_request_status_processing)
+                    RequestStatus.PENDING -> stringResource(Res.string.submit_url_request_status_pending)
+                },
             tint = statusColor,
             modifier = Modifier.size(IconSizes.sm),
         )
@@ -923,14 +948,12 @@ private fun RequestHistoryItem(
 
         // Retry button for failed requests
         if (request.status == RequestStatus.FAILED) {
-            IconButton(onClick = onRetry) {
-                Icon(
-                    imageVector = CarbonIcons.Renew,
-                    contentDescription = stringResource(Res.string.settings_retry),
-                    tint = Carbon.theme.iconPrimary,
-                    modifier = Modifier.size(IconSizes.sm),
-                )
-            }
+            CarbonIconButton(
+                imageVector = CarbonIcons.Renew,
+                contentDescription = stringResource(Res.string.settings_retry),
+                onClick = onRetry,
+                iconSize = IconSizes.sm,
+            )
         }
     }
 }

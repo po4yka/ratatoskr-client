@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,11 +19,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.sort_menu_alphabetical
+import bitesizereader.composeapp.generated.resources.sort_menu_description
+import bitesizereader.composeapp.generated.resources.sort_menu_newest
+import bitesizereader.composeapp.generated.resources.sort_menu_oldest
+import bitesizereader.composeapp.generated.resources.sort_menu_selected
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Sort options menu with trigger button and dropdown.
@@ -41,22 +47,19 @@ fun SortOptionsMenu(
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = modifier) {
-        IconButton(onClick = { expanded = true }) {
-            Icon(
-                imageVector = CarbonIcons.SortAscending,
-                contentDescription = "Sort by ${currentSortOrder.displayName()}",
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector = CarbonIcons.SortAscending,
+            contentDescription = stringResource(Res.string.sort_menu_description, currentSortOrder.displayName()),
+            onClick = { expanded = true },
+        )
 
-        DropdownMenu(
+        CarbonMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier =
                 Modifier
-                    .width(200.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .width(Dimensions.menuWidth)
+                    .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                     .background(Carbon.theme.layer01),
         ) {
             Column {
@@ -87,7 +90,7 @@ private fun SortOptionItem(
         modifier =
             modifier
                 .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -100,17 +103,18 @@ private fun SortOptionItem(
         if (isSelected) {
             Icon(
                 imageVector = CarbonIcons.Checkmark,
-                contentDescription = "Selected",
+                contentDescription = stringResource(Res.string.sort_menu_selected),
                 tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(IconSizes.xs),
             )
         }
     }
 }
 
+@Composable
 private fun SortOrder.displayName(): String =
     when (this) {
-        SortOrder.NEWEST -> "Newest first"
-        SortOrder.OLDEST -> "Oldest first"
-        SortOrder.ALPHABETICAL -> "A to Z"
+        SortOrder.NEWEST -> stringResource(Res.string.sort_menu_newest)
+        SortOrder.OLDEST -> stringResource(Res.string.sort_menu_oldest)
+        SortOrder.ALPHABETICAL -> stringResource(Res.string.sort_menu_alphabetical)
     }

@@ -5,9 +5,6 @@ source 'https://cdn.cocoapods.org'
 # Minimum iOS deployment target
 platform :ios, '15.0'
 
-# Use frameworks
-use_frameworks!
-
 # Inhibit all warnings from CocoaPods dependencies
 inhibit_all_warnings!
 

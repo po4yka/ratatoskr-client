@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,12 +45,12 @@ import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.presentation.navigation.SummaryListComponent
 import com.po4yka.bitesizereader.presentation.state.LayoutMode
 import com.po4yka.bitesizereader.presentation.state.SummaryListState
+import com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalController
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryListViewModel
-import com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalViewModel
 import com.po4yka.bitesizereader.ui.components.ContextualEmptyState
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.ui.components.EmptyStateType
 import com.po4yka.bitesizereader.ui.components.FilterChipsRow
-import com.po4yka.bitesizereader.ui.components.LocalReadingGoalViewModel
 import com.po4yka.bitesizereader.ui.components.PullToRefreshContainer
 import com.po4yka.bitesizereader.ui.components.ReadingGoalCard
 import com.po4yka.bitesizereader.ui.components.RecentSearchesSection
@@ -70,6 +69,11 @@ import com.po4yka.bitesizereader.ui.theme.Spacing
 import bitesizereader.composeapp.generated.resources.Res
 import bitesizereader.composeapp.generated.resources.summary_list_close_search
 import bitesizereader.composeapp.generated.resources.summary_list_create_digest
+import bitesizereader.composeapp.generated.resources.summary_list_days_ago
+import bitesizereader.composeapp.generated.resources.summary_list_hours_ago
+import bitesizereader.composeapp.generated.resources.summary_list_just_now
+import bitesizereader.composeapp.generated.resources.summary_list_last_synced_stale
+import bitesizereader.composeapp.generated.resources.summary_list_minutes_ago
 import bitesizereader.composeapp.generated.resources.summary_list_offline
 import bitesizereader.composeapp.generated.resources.summary_list_refresh
 import bitesizereader.composeapp.generated.resources.summary_list_search
@@ -94,8 +98,8 @@ fun SummaryListScreen(
 ) {
     val viewModel: SummaryListViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
-    val readingGoalViewModel: ReadingGoalViewModel = LocalReadingGoalViewModel.current
-    val readingGoalState by readingGoalViewModel.state.collectAsState()
+    val readingGoalController: ReadingGoalController = component.readingGoalController
+    val readingGoalState by readingGoalController.state.collectAsState()
     val recommendationsViewModel: RecommendationsViewModel = component.recommendationsViewModel
     val recommendationsState by recommendationsViewModel.state.collectAsState()
 
@@ -267,24 +271,20 @@ private fun SummaryListHeader(
         )
 
         // Add URL button
-        IconButton(onClick = onSubmitUrlClicked) {
-            Icon(
-                imageVector = CarbonIcons.Add,
-                contentDescription = stringResource(Res.string.summary_list_submit_url),
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector = CarbonIcons.Add,
+            contentDescription = stringResource(Res.string.summary_list_submit_url),
+            onClick = onSubmitUrlClicked,
+            iconSize = IconSizes.md,
+        )
 
         // Create Digest button
-        IconButton(onClick = onCreateDigestClicked) {
-            Icon(
-                imageVector = CarbonIcons.Document,
-                contentDescription = stringResource(Res.string.summary_list_create_digest),
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector = CarbonIcons.Document,
+            contentDescription = stringResource(Res.string.summary_list_create_digest),
+            onClick = onCreateDigestClicked,
+            iconSize = IconSizes.md,
+        )
 
         // Search toggle
         val searchDesc =
@@ -293,34 +293,30 @@ private fun SummaryListHeader(
             } else {
                 stringResource(Res.string.summary_list_search)
             }
-        IconButton(onClick = onToggleSearch) {
-            Icon(
-                imageVector = if (isSearchActive) CarbonIcons.Close else CarbonIcons.Search,
-                contentDescription = searchDesc,
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector = if (isSearchActive) CarbonIcons.Close else CarbonIcons.Search,
+            contentDescription = searchDesc,
+            onClick = onToggleSearch,
+            iconSize = IconSizes.md,
+        )
 
         // Layout toggle
-        IconButton(onClick = onToggleLayout) {
-            Icon(
-                imageVector =
-                    if (layoutMode == LayoutMode.LIST) {
-                        CarbonIcons.Grid
-                    } else {
-                        CarbonIcons.List
-                    },
-                contentDescription =
-                    if (layoutMode == LayoutMode.LIST) {
-                        stringResource(Res.string.summary_list_switch_to_grid)
-                    } else {
-                        stringResource(Res.string.summary_list_switch_to_list)
-                    },
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector =
+                if (layoutMode == LayoutMode.LIST) {
+                    CarbonIcons.Grid
+                } else {
+                    CarbonIcons.List
+                },
+            contentDescription =
+                if (layoutMode == LayoutMode.LIST) {
+                    stringResource(Res.string.summary_list_switch_to_grid)
+                } else {
+                    stringResource(Res.string.summary_list_switch_to_list)
+                },
+            onClick = onToggleLayout,
+            iconSize = IconSizes.md,
+        )
 
         // Sort menu
         SortOptionsMenu(
@@ -329,14 +325,12 @@ private fun SummaryListHeader(
         )
 
         // Refresh button
-        IconButton(onClick = onRefresh) {
-            Icon(
-                imageVector = CarbonIcons.Renew,
-                contentDescription = stringResource(Res.string.summary_list_refresh),
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector = CarbonIcons.Renew,
+            contentDescription = stringResource(Res.string.summary_list_refresh),
+            onClick = onRefresh,
+            iconSize = IconSizes.md,
+        )
     }
 }
 
@@ -513,12 +507,17 @@ private fun SyncStatusBanner(
     val showBanner = isOffline || isStale || syncError != null
 
     val offlineText = stringResource(Res.string.summary_list_offline)
+    val staleText =
+        stringResource(
+            Res.string.summary_list_last_synced_stale,
+            formatTimeSince(lastSyncTime ?: now),
+        )
     // Priority: offline > sync error > stale data
     val (backgroundColor, text) =
         when {
             isOffline -> Carbon.theme.supportWarning to offlineText
             syncError != null -> Carbon.theme.supportError to syncError
-            else -> Carbon.theme.supportWarning to "Last synced: ${formatTimeSince(lastSyncTime!!)} — may be outdated"
+            else -> Carbon.theme.supportWarning to staleText
         }
 
     AnimatedVisibility(
@@ -552,13 +551,14 @@ private fun SyncStatusBanner(
     }
 }
 
+@Composable
 private fun formatTimeSince(instant: Instant): String {
     val elapsed = Clock.System.now() - instant
     return when {
-        elapsed.inWholeMinutes < 1 -> "just now"
-        elapsed.inWholeMinutes < 60 -> "${elapsed.inWholeMinutes}m ago"
-        elapsed.inWholeHours < 24 -> "${elapsed.inWholeHours}h ago"
-        else -> "${elapsed.inWholeDays}d ago"
+        elapsed.inWholeMinutes < 1 -> stringResource(Res.string.summary_list_just_now)
+        elapsed.inWholeMinutes < 60 -> stringResource(Res.string.summary_list_minutes_ago, elapsed.inWholeMinutes)
+        elapsed.inWholeHours < 24 -> stringResource(Res.string.summary_list_hours_ago, elapsed.inWholeHours)
+        else -> stringResource(Res.string.summary_list_days_ago, elapsed.inWholeDays)
     }
 }
 

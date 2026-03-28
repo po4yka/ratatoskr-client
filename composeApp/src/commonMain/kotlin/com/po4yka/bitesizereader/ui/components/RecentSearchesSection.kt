@@ -9,18 +9,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.recent_searches_clear_all
+import bitesizereader.composeapp.generated.resources.recent_searches_remove
+import bitesizereader.composeapp.generated.resources.recent_searches_title
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Section that displays recent search queries with ability to reuse or delete them.
@@ -42,7 +47,7 @@ fun RecentSearchesSection(
             modifier
                 .fillMaxWidth()
                 .background(Carbon.theme.layer01)
-                .padding(16.dp),
+                .padding(Spacing.md),
     ) {
         // Header with Clear All button
         Row(
@@ -51,26 +56,21 @@ fun RecentSearchesSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Recent Searches",
+                text = stringResource(Res.string.recent_searches_title),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
 
-            TextButton(
+            CarbonTextButton(
+                label = stringResource(Res.string.recent_searches_clear_all),
                 onClick = onClearAll,
-            ) {
-                Text(
-                    text = "Clear All",
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.linkPrimary,
-                )
-            }
+            )
         }
 
         // Search items
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
         ) {
             searches.forEach { query ->
                 RecentSearchItem(
@@ -97,20 +97,20 @@ private fun RecentSearchItem(
                 .fillMaxWidth()
                 .clickable(onClick = onClick)
                 .semantics { role = Role.Button }
-                .padding(vertical = 8.dp),
+                .padding(vertical = Spacing.xs),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = CarbonIcons.Search,
                 contentDescription = null,
                 tint = Carbon.theme.iconSecondary,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(IconSizes.xs),
             )
 
             Text(
@@ -120,16 +120,13 @@ private fun RecentSearchItem(
             )
         }
 
-        IconButton(
+        CarbonIconButton(
+            imageVector = CarbonIcons.Close,
+            contentDescription = stringResource(Res.string.recent_searches_remove, query),
             onClick = onDelete,
-            modifier = Modifier.size(32.dp),
-        ) {
-            Icon(
-                imageVector = CarbonIcons.Close,
-                contentDescription = "Remove $query from recent searches",
-                tint = Carbon.theme.iconSecondary,
-                modifier = Modifier.size(16.dp),
-            )
-        }
+            buttonSize = Dimensions.compactIconButtonSize,
+            iconSize = IconSizes.xs,
+            tint = Carbon.theme.iconSecondary,
+        )
     }
 }

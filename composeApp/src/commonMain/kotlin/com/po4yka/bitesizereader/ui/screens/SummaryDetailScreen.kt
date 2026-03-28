@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -65,6 +64,7 @@ import com.po4yka.bitesizereader.presentation.navigation.SummaryDetailComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.AddToCollectionDialog
 import com.po4yka.bitesizereader.ui.components.AnnotationDialog
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.ui.components.FeedbackDialog
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
@@ -93,7 +93,14 @@ import bitesizereader.composeapp.generated.resources.audio_paused
 import bitesizereader.composeapp.generated.resources.audio_play_narration
 import bitesizereader.composeapp.generated.resources.audio_playing
 import bitesizereader.composeapp.generated.resources.audio_stop_narration
+import bitesizereader.composeapp.generated.resources.custom_digest_create_read_time
+import bitesizereader.composeapp.generated.resources.processing_stage_done
+import bitesizereader.composeapp.generated.resources.processing_stage_extraction
+import bitesizereader.composeapp.generated.resources.processing_stage_queued
+import bitesizereader.composeapp.generated.resources.processing_stage_saving
+import bitesizereader.composeapp.generated.resources.processing_stage_summarization
 import bitesizereader.composeapp.generated.resources.summary_detail_add_to_collection
+import bitesizereader.composeapp.generated.resources.summary_detail_date_format
 import bitesizereader.composeapp.generated.resources.summary_detail_exit_highlight_mode
 import bitesizereader.composeapp.generated.resources.summary_detail_favorite
 import bitesizereader.composeapp.generated.resources.summary_detail_has_annotation
@@ -205,8 +212,7 @@ fun SummaryDetailScreen(
                         if (state.feedback.resummarizeStage == ProcessingStage.UNSPECIFIED) {
                             stringResource(Res.string.summary_detail_re_summarizing)
                         } else {
-                            state.feedback.resummarizeStage.name.replace('_', ' ').lowercase()
-                                .replaceFirstChar { it.uppercase() }
+                            processingStageLabel(state.feedback.resummarizeStage)
                         },
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
@@ -338,6 +344,17 @@ fun SummaryDetailScreen(
     }
 }
 
+@Composable
+private fun processingStageLabel(stage: ProcessingStage): String =
+    when (stage) {
+        ProcessingStage.UNSPECIFIED -> stringResource(Res.string.summary_detail_re_summarizing)
+        ProcessingStage.QUEUED -> stringResource(Res.string.processing_stage_queued)
+        ProcessingStage.EXTRACTION -> stringResource(Res.string.processing_stage_extraction)
+        ProcessingStage.SUMMARIZATION -> stringResource(Res.string.processing_stage_summarization)
+        ProcessingStage.SAVING -> stringResource(Res.string.processing_stage_saving)
+        ProcessingStage.DONE -> stringResource(Res.string.processing_stage_done)
+    }
+
 @Suppress("FunctionNaming")
 @Composable
 private fun AudioPlayerRow(
@@ -377,14 +394,13 @@ private fun AudioPlayerRow(
                 } else {
                     stringResource(Res.string.audio_play_narration)
                 }
-            IconButton(onClick = onPlayPause, modifier = Modifier.size(IconSizes.sm)) {
-                Icon(
-                    imageVector = if (isPlaying) CarbonIcons.PauseFilled else CarbonIcons.PlayFilled,
-                    contentDescription = playPauseDesc,
-                    tint = Carbon.theme.iconPrimary,
-                    modifier = Modifier.size(IconSizes.sm),
-                )
-            }
+            CarbonIconButton(
+                imageVector = if (isPlaying) CarbonIcons.PauseFilled else CarbonIcons.PlayFilled,
+                contentDescription = playPauseDesc,
+                onClick = onPlayPause,
+                buttonSize = IconSizes.sm,
+                iconSize = IconSizes.sm,
+            )
         }
 
         val generatingText = stringResource(Res.string.audio_generating)
@@ -410,14 +426,14 @@ private fun AudioPlayerRow(
         )
 
         if (isActive && !isLoading) {
-            IconButton(onClick = onStop, modifier = Modifier.size(IconSizes.sm)) {
-                Icon(
-                    imageVector = CarbonIcons.Close,
-                    contentDescription = stringResource(Res.string.audio_stop_narration),
-                    tint = Carbon.theme.iconSecondary,
-                    modifier = Modifier.size(IconSizes.sm),
-                )
-            }
+            CarbonIconButton(
+                imageVector = CarbonIcons.Close,
+                contentDescription = stringResource(Res.string.audio_stop_narration),
+                onClick = onStop,
+                tint = Carbon.theme.iconSecondary,
+                buttonSize = IconSizes.sm,
+                iconSize = IconSizes.sm,
+            )
         }
     }
 }
@@ -801,11 +817,16 @@ private fun ArticleHeader(summary: Summary) {
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
         )
+        val createdAtLabel = formatDate(summary.createdAt)
+        val readTimeLabel = summary.readingTimeMin?.let { stringResource(Res.string.custom_digest_create_read_time, it) }
         Text(
             text =
                 buildString {
-                    append(formatDate(summary.createdAt))
-                    summary.readingTimeMin?.let { append(" | $it min read") }
+                    append(createdAtLabel)
+                    readTimeLabel?.let {
+                        append(" | ")
+                        append(it)
+                    }
                 },
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
@@ -889,11 +910,15 @@ private fun buildMarkdownTypography(
     )
 }
 
+@Composable
 private fun formatDate(instant: Instant): String {
     val civilDate = civilFromDays((instant.epochSeconds / 86400).toInt())
-    val monthNames =
-        listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-    return "${monthNames[civilDate.month - 1]} ${civilDate.day.toString().padStart(2, '0')}, ${civilDate.year}"
+    return stringResource(
+        Res.string.summary_detail_date_format,
+        civilDate.month,
+        civilDate.day,
+        civilDate.year,
+    )
 }
 
 private data class CivilDate(val year: Int, val month: Int, val day: Int)

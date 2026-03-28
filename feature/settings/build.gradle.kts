@@ -9,10 +9,9 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core)
-            implementation(projects.feature.auth)
-            implementation(projects.feature.summary)
-            implementation(projects.feature.sync)
+            api(projects.core.common)
+            implementation(projects.core.data)
+            implementation(projects.core.navigation)
             implementation(libs.decompose.core)
             implementation(libs.essenty.lifecycle.coroutines)
             implementation(libs.essenty.instancekeeper)

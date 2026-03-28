@@ -13,10 +13,13 @@ import platform.UIKit.UIViewController
  * so iOS uses this explicit factory instead.
  */
 class ComposeRootViewControllerFactory {
+    private val compositionRoot = iosCompositionRoot()
+
     fun make(rootComponent: RootComponent): UIViewController =
         ComposeUIViewController {
             App(
                 rootComponent = rootComponent,
+                imageUrlTransformer = compositionRoot.imageUrlTransformer(),
                 modifier = Modifier.fillMaxSize(),
             )
         }

@@ -19,10 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.insights_fallback_source
+import bitesizereader.composeapp.generated.resources.insights_title
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.Spacing
 import com.po4yka.bitesizereader.util.extractDomain
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming")
 @Composable
@@ -39,9 +44,9 @@ fun InsightsSection(
                 .fillMaxWidth()
                 .background(Carbon.theme.layer01)
                 .padding(vertical = Spacing.md),
-    ) {
-        Text(
-            text = "Popular this month",
+        ) {
+            Text(
+            text = stringResource(Res.string.insights_title),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
             modifier =
@@ -77,8 +82,8 @@ private fun InsightCard(
     Column(
         modifier =
             modifier
-                .width(200.dp)
-                .clip(RoundedCornerShape(4.dp))
+                .width(Dimensions.recommendationCardWidth)
+                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
                 .background(Carbon.theme.layer02)
                 .clickable(onClick = onClick)
                 .padding(Spacing.sm),
@@ -91,7 +96,7 @@ private fun InsightCard(
                     Modifier
                         .fillMaxWidth()
                         .height(100.dp)
-                        .clip(RoundedCornerShape(4.dp)),
+                        .clip(RoundedCornerShape(Dimensions.cardCornerRadius)),
             )
             Spacer(modifier = Modifier.height(Spacing.xs))
         }
@@ -104,10 +109,10 @@ private fun InsightCard(
             overflow = TextOverflow.Ellipsis,
         )
 
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(Spacing.xxs))
 
         Text(
-            text = extractDomain(summary.sourceUrl) ?: "Article",
+            text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.insights_fallback_source),
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
             maxLines = 1,

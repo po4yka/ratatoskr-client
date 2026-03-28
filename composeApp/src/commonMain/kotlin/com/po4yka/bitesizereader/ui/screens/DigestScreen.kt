@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,10 +42,49 @@ import com.po4yka.bitesizereader.presentation.state.DigestPreferencesState
 import com.po4yka.bitesizereader.presentation.state.DigestTab
 import com.po4yka.bitesizereader.presentation.state.DigestTriggerState
 import com.po4yka.bitesizereader.presentation.viewmodel.DigestViewModel
+import com.po4yka.bitesizereader.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.digest_screen_add_channel
+import bitesizereader.composeapp.generated.resources.digest_screen_channel_placeholder
+import bitesizereader.composeapp.generated.resources.digest_screen_channel_username
+import bitesizereader.composeapp.generated.resources.digest_screen_delivery_time
+import bitesizereader.composeapp.generated.resources.digest_screen_delivery_time_placeholder
+import bitesizereader.composeapp.generated.resources.digest_screen_history_channels_posts
+import bitesizereader.composeapp.generated.resources.digest_screen_hours_lookback
+import bitesizereader.composeapp.generated.resources.digest_screen_hours_lookback_placeholder
+import bitesizereader.composeapp.generated.resources.digest_screen_load_more
+import bitesizereader.composeapp.generated.resources.digest_screen_loading_more
+import bitesizereader.composeapp.generated.resources.digest_screen_max_posts
+import bitesizereader.composeapp.generated.resources.digest_screen_max_posts_placeholder
+import bitesizereader.composeapp.generated.resources.digest_screen_min_relevance
+import bitesizereader.composeapp.generated.resources.digest_screen_min_relevance_placeholder
+import bitesizereader.composeapp.generated.resources.digest_screen_no_history
+import bitesizereader.composeapp.generated.resources.digest_screen_saving_preferences
+import bitesizereader.composeapp.generated.resources.digest_screen_save_preferences
+import bitesizereader.composeapp.generated.resources.digest_screen_status_completed
+import bitesizereader.composeapp.generated.resources.digest_screen_status_delivered
+import bitesizereader.composeapp.generated.resources.digest_screen_status_failed
+import bitesizereader.composeapp.generated.resources.digest_screen_status_pending
+import bitesizereader.composeapp.generated.resources.digest_screen_subscribe
+import bitesizereader.composeapp.generated.resources.digest_screen_subscribed
+import bitesizereader.composeapp.generated.resources.digest_screen_subscriptions
+import bitesizereader.composeapp.generated.resources.digest_screen_subscribing
+import bitesizereader.composeapp.generated.resources.digest_screen_tab_channels
+import bitesizereader.composeapp.generated.resources.digest_screen_tab_history
+import bitesizereader.composeapp.generated.resources.digest_screen_tab_preferences
+import bitesizereader.composeapp.generated.resources.digest_screen_timezone
+import bitesizereader.composeapp.generated.resources.digest_screen_timezone_placeholder
+import bitesizereader.composeapp.generated.resources.digest_screen_trigger_now
+import bitesizereader.composeapp.generated.resources.digest_screen_trigger_success
+import bitesizereader.composeapp.generated.resources.digest_screen_triggering
+import bitesizereader.composeapp.generated.resources.digest_screen_unsubscribe
+import bitesizereader.composeapp.generated.resources.settings_digest_channels
+import bitesizereader.composeapp.generated.resources.submit_url_back
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod")
 @Composable
@@ -106,16 +144,14 @@ private fun DigestHeader(onBackClick: () -> Unit) {
                 .padding(horizontal = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onBackClick) {
-            Icon(
-                imageVector = CarbonIcons.ArrowLeft,
-                contentDescription = "Back",
-                tint = Carbon.theme.iconPrimary,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
+        CarbonIconButton(
+            imageVector = CarbonIcons.ArrowLeft,
+            contentDescription = stringResource(Res.string.submit_url_back),
+            onClick = onBackClick,
+            iconSize = IconSizes.md,
+        )
         Text(
-            text = "Digest Channels",
+            text = stringResource(Res.string.settings_digest_channels),
             style = Carbon.typography.heading03,
             color = Carbon.theme.textPrimary,
         )
@@ -138,9 +174,9 @@ private fun DigestTabBar(
             val isSelected = tab == selectedTab
             val label =
                 when (tab) {
-                    DigestTab.CHANNELS -> "Channels"
-                    DigestTab.PREFERENCES -> "Preferences"
-                    DigestTab.HISTORY -> "History"
+                    DigestTab.CHANNELS -> stringResource(Res.string.digest_screen_tab_channels)
+                    DigestTab.PREFERENCES -> stringResource(Res.string.digest_screen_tab_preferences)
+                    DigestTab.HISTORY -> stringResource(Res.string.digest_screen_tab_history)
                 }
             Column(
                 modifier =
@@ -250,7 +286,7 @@ private fun ChannelSlotUsage(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
         Text(
-            text = "Subscriptions ($usedSlots/$maxSlots)",
+            text = stringResource(Res.string.digest_screen_subscriptions, usedSlots, maxSlots),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
@@ -281,15 +317,15 @@ private fun AddChannelForm(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
-            text = "Add Channel",
+            text = stringResource(Res.string.digest_screen_add_channel),
             style = Carbon.typography.headingCompact01,
             color = Carbon.theme.textPrimary,
         )
         TextInput(
-            label = "Channel Username",
+            label = stringResource(Res.string.digest_screen_channel_username),
             value = username,
             onValueChange = onUsernameChanged,
-            placeholderText = "@channel_name",
+            placeholderText = stringResource(Res.string.digest_screen_channel_placeholder),
             state = if (isSubscribing) TextInputState.Disabled else TextInputState.Enabled,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -301,7 +337,12 @@ private fun AddChannelForm(
             )
         }
         Button(
-            label = if (isSubscribing) "Subscribing..." else "Subscribe",
+            label =
+                if (isSubscribing) {
+                    stringResource(Res.string.digest_screen_subscribing)
+                } else {
+                    stringResource(Res.string.digest_screen_subscribe)
+                },
             onClick = onSubscribe,
             isEnabled = !isSubscribing && username.isNotBlank(),
             buttonType = ButtonType.Primary,
@@ -321,7 +362,12 @@ private fun TriggerDigestSection(
     Column {
         Spacer(modifier = Modifier.height(Spacing.md))
         Button(
-            label = if (isTriggering) "Triggering..." else "Trigger Digest Now",
+            label =
+                if (isTriggering) {
+                    stringResource(Res.string.digest_screen_triggering)
+                } else {
+                    stringResource(Res.string.digest_screen_trigger_now)
+                },
             onClick = onTrigger,
             isEnabled = !isTriggering,
             buttonType = ButtonType.Secondary,
@@ -330,7 +376,7 @@ private fun TriggerDigestSection(
         if (triggerSuccess) {
             Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
-                text = "Digest triggered successfully!",
+                text = stringResource(Res.string.digest_screen_trigger_success),
                 style = Carbon.typography.bodyCompact01,
                 color = Carbon.theme.supportSuccess,
             )
@@ -369,23 +415,20 @@ private fun DigestChannelRow(
             )
             channel.subscribedAt?.let {
                 Text(
-                    text = "Subscribed: $it",
+                    text = stringResource(Res.string.digest_screen_subscribed, it),
                     style = Carbon.typography.label01,
                     color = Carbon.theme.textSecondary,
                 )
             }
         }
-        IconButton(
+        CarbonIconButton(
+            imageVector = CarbonIcons.Close,
+            contentDescription = stringResource(Res.string.digest_screen_unsubscribe),
             onClick = onUnsubscribe,
             enabled = !isLoading,
-        ) {
-            Icon(
-                imageVector = CarbonIcons.Close,
-                contentDescription = "Unsubscribe",
-                tint = Carbon.theme.supportError,
-                modifier = Modifier.size(IconSizes.sm),
-            )
-        }
+            tint = Carbon.theme.supportError,
+            iconSize = IconSizes.sm,
+        )
     }
 }
 
@@ -428,46 +471,46 @@ private fun DigestPreferencesForm(
 
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         TextInput(
-            label = "Delivery Time",
+            label = stringResource(Res.string.digest_screen_delivery_time),
             value = preferences.editedDeliveryTime ?: preferences.preferences.deliveryTime,
             onValueChange = viewModel::onDeliveryTimeChanged,
-            placeholderText = "HH:MM",
+            placeholderText = stringResource(Res.string.digest_screen_delivery_time_placeholder),
             state = inputState,
             modifier = Modifier.fillMaxWidth(),
         )
 
         TextInput(
-            label = "Timezone",
+            label = stringResource(Res.string.digest_screen_timezone),
             value = preferences.editedTimezone ?: preferences.preferences.timezone,
             onValueChange = viewModel::onTimezoneChanged,
-            placeholderText = "UTC",
+            placeholderText = stringResource(Res.string.digest_screen_timezone_placeholder),
             state = inputState,
             modifier = Modifier.fillMaxWidth(),
         )
 
         TextInput(
-            label = "Hours Lookback",
+            label = stringResource(Res.string.digest_screen_hours_lookback),
             value = preferences.editedHoursLookback ?: preferences.preferences.hoursLookback.toString(),
             onValueChange = viewModel::onHoursLookbackChanged,
-            placeholderText = "24",
+            placeholderText = stringResource(Res.string.digest_screen_hours_lookback_placeholder),
             state = inputState,
             modifier = Modifier.fillMaxWidth(),
         )
 
         TextInput(
-            label = "Max Posts Per Digest",
+            label = stringResource(Res.string.digest_screen_max_posts),
             value = preferences.editedMaxPosts ?: preferences.preferences.maxPostsPerDigest.toString(),
             onValueChange = viewModel::onMaxPostsChanged,
-            placeholderText = "10",
+            placeholderText = stringResource(Res.string.digest_screen_max_posts_placeholder),
             state = inputState,
             modifier = Modifier.fillMaxWidth(),
         )
 
         TextInput(
-            label = "Min Relevance Score",
+            label = stringResource(Res.string.digest_screen_min_relevance),
             value = preferences.editedMinRelevance ?: preferences.preferences.minRelevanceScore.toString(),
             onValueChange = viewModel::onMinRelevanceChanged,
-            placeholderText = "0.5",
+            placeholderText = stringResource(Res.string.digest_screen_min_relevance_placeholder),
             state = inputState,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -489,7 +532,12 @@ private fun DigestPreferencesForm(
         }
 
         Button(
-            label = if (preferences.isSaving) "Saving..." else "Save Preferences",
+            label =
+                if (preferences.isSaving) {
+                    stringResource(Res.string.digest_screen_saving_preferences)
+                } else {
+                    stringResource(Res.string.digest_screen_save_preferences)
+                },
             onClick = viewModel::savePreferences,
             isEnabled = !preferences.isSaving,
             buttonType = ButtonType.Primary,
@@ -520,7 +568,7 @@ private fun HistoryTab(
         } else if (history.items.isEmpty()) {
             item {
                 Text(
-                    text = "No digest history yet",
+                    text = stringResource(Res.string.digest_screen_no_history),
                     style = Carbon.typography.bodyCompact01,
                     color = Carbon.theme.textSecondary,
                     modifier = Modifier.padding(Spacing.md),
@@ -537,7 +585,12 @@ private fun HistoryTab(
             if (history.hasMore) {
                 item {
                     Button(
-                        label = if (history.isLoading) "Loading..." else "Load More",
+                        label =
+                            if (history.isLoading) {
+                                stringResource(Res.string.digest_screen_loading_more)
+                            } else {
+                                stringResource(Res.string.digest_screen_load_more)
+                            },
                         onClick = { viewModel.loadHistory(loadMore = true) },
                         isEnabled = !history.isLoading,
                         buttonType = ButtonType.Ghost,
@@ -585,7 +638,13 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
 
         Icon(
             imageVector = statusIcon,
-            contentDescription = item.status,
+            contentDescription =
+                when (item.status) {
+                    "delivered" -> stringResource(Res.string.digest_screen_status_delivered)
+                    "completed" -> stringResource(Res.string.digest_screen_status_completed)
+                    "failed" -> stringResource(Res.string.digest_screen_status_failed)
+                    else -> stringResource(Res.string.digest_screen_status_pending)
+                },
             tint = statusColor,
             modifier = Modifier.size(IconSizes.sm),
         )
@@ -599,7 +658,7 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
                 color = Carbon.theme.textPrimary,
             )
             Text(
-                text = "${item.channelCount} channels, ${item.postCount} posts",
+                text = stringResource(Res.string.digest_screen_history_channels_posts, item.channelCount, item.postCount),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )

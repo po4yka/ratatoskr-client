@@ -1,7 +1,6 @@
 package com.po4yka.bitesizereader.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,16 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,11 +20,25 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import bitesizereader.composeapp.generated.resources.Res
+import bitesizereader.composeapp.generated.resources.custom_digest_create_read_time
+import bitesizereader.composeapp.generated.resources.summary_card_accessibility_favorited
+import bitesizereader.composeapp.generated.resources.summary_card_accessibility_read_article
+import bitesizereader.composeapp.generated.resources.summary_card_accessibility_reading_time
+import bitesizereader.composeapp.generated.resources.summary_card_accessibility_source
+import bitesizereader.composeapp.generated.resources.summary_card_accessibility_unread_article
+import bitesizereader.composeapp.generated.resources.summary_card_available_offline
+import bitesizereader.composeapp.generated.resources.summary_card_favorited
+import bitesizereader.composeapp.generated.resources.summary_card_saved_article
+import bitesizereader.composeapp.generated.resources.summary_detail_mark_read
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.bitesizereader.ui.theme.Dimensions
 import com.po4yka.bitesizereader.ui.theme.IconSizes
+import com.po4yka.bitesizereader.ui.theme.Spacing
 import com.po4yka.bitesizereader.util.extractDomain
+import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod", "LongParameterList")
 @Composable
@@ -45,23 +51,41 @@ fun SummaryGridCard(
     onAddToCollectionClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val readStatus = if (summary.isRead) "Read" else "Unread"
-    val source = extractDomain(summary.sourceUrl) ?: "Saved Article"
-    val favoriteStatus = if (summary.isFavorited) ", Favorited" else ""
-    val readingTime = summary.readingTimeMin?.let { ", $it minute read" } ?: ""
-    val cardDescription = "${summary.title}. $readStatus article from $source$favoriteStatus$readingTime"
+    val source = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.summary_card_saved_article)
+    val cardDescription =
+        buildString {
+            append(summary.title)
+            append(". ")
+            append(
+                if (summary.isRead) {
+                    stringResource(Res.string.summary_card_accessibility_read_article)
+                } else {
+                    stringResource(Res.string.summary_card_accessibility_unread_article)
+                },
+            )
+            append(" ")
+            append(stringResource(Res.string.summary_card_accessibility_source, source))
+            if (summary.isFavorited) {
+                append(" ")
+                append(stringResource(Res.string.summary_card_accessibility_favorited))
+            }
+            summary.readingTimeMin?.let {
+                append(" ")
+                append(stringResource(Res.string.summary_card_accessibility_reading_time, it))
+            }
+        }
 
-    Column(
+    CarbonLayerCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .background(Carbon.theme.layer01)
-                .clickable(onClick = onClick)
-                .padding(8.dp)
                 .semantics { contentDescription = cardDescription },
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        onClick = onClick,
     ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(Spacing.xs),
+            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+        ) {
         // Hero image
         if (summary.imageUrl != null) {
             ProxiedImage(
@@ -71,7 +95,7 @@ fun SummaryGridCard(
                     Modifier
                         .fillMaxWidth()
                         .height(100.dp)
-                        .clip(RoundedCornerShape(4.dp)),
+                        .clip(RoundedCornerShape(Dimensions.cardCornerRadius)),
             )
         }
 
@@ -88,104 +112,24 @@ fun SummaryGridCard(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
-
-            var menuExpanded by remember { mutableStateOf(false) }
-
-            Box {
-                IconButton(onClick = { menuExpanded = true }) {
-                    Icon(
-                        imageVector = CarbonIcons.OverflowMenuVertical,
-                        contentDescription = "More options",
-                        tint = Carbon.theme.iconSecondary,
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false },
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(if (summary.isFavorited) "Unfavorite" else "Favorite") },
-                        onClick = {
-                            menuExpanded = false
-                            onFavoriteClick()
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector =
-                                    if (summary.isFavorited) {
-                                        CarbonIcons.FavoriteFilled
-                                    } else {
-                                        CarbonIcons.Favorite
-                                    },
-                                contentDescription = null,
-                                tint =
-                                    if (summary.isFavorited) {
-                                        Carbon.theme.supportError
-                                    } else {
-                                        Carbon.theme.iconSecondary
-                                    },
-                                modifier = Modifier.size(IconSizes.xs),
-                            )
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(if (summary.isRead) "Already read" else "Mark as read") },
-                        onClick = {
-                            menuExpanded = false
-                            if (!summary.isRead) onMarkReadClick()
-                        },
-                        enabled = !summary.isRead,
-                        leadingIcon = {
-                            Icon(
-                                imageVector = CarbonIcons.CheckmarkFilled,
-                                contentDescription = null,
-                                modifier = Modifier.size(IconSizes.xs),
-                            )
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Add to collection") },
-                        onClick = {
-                            menuExpanded = false
-                            onAddToCollectionClick()
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = CarbonIcons.Folder,
-                                contentDescription = null,
-                                modifier = Modifier.size(IconSizes.xs),
-                            )
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Delete", color = Carbon.theme.supportError) },
-                        onClick = {
-                            menuExpanded = false
-                            onDeleteClick()
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = CarbonIcons.TrashCan,
-                                contentDescription = null,
-                                tint = Carbon.theme.supportError,
-                                modifier = Modifier.size(IconSizes.xs),
-                            )
-                        },
-                    )
-                }
-            }
+            SummaryOverflowMenu(
+                summary = summary,
+                onFavoriteClick = onFavoriteClick,
+                onMarkReadClick = onMarkReadClick,
+                onAddToCollectionClick = onAddToCollectionClick,
+                onDeleteClick = onDeleteClick,
+            )
         }
 
         // Status indicators
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xxs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (summary.isFullContentCached) {
                 Icon(
                     imageVector = CarbonIcons.Download,
-                    contentDescription = "Available offline",
+                    contentDescription = stringResource(Res.string.summary_card_available_offline),
                     tint = Carbon.theme.iconSecondary,
                     modifier = Modifier.size(IconSizes.xs),
                 )
@@ -193,7 +137,7 @@ fun SummaryGridCard(
             if (summary.isFavorited) {
                 Icon(
                     imageVector = CarbonIcons.FavoriteFilled,
-                    contentDescription = "Favorited",
+                    contentDescription = stringResource(Res.string.summary_card_favorited),
                     tint = Carbon.theme.supportError,
                     modifier = Modifier.size(IconSizes.xs),
                 )
@@ -209,7 +153,7 @@ fun SummaryGridCard(
                 ) {
                     Icon(
                         imageVector = CarbonIcons.Checkmark,
-                        contentDescription = "Read",
+                        contentDescription = stringResource(Res.string.summary_detail_mark_read),
                         tint = Carbon.theme.textOnColor,
                         modifier = Modifier.size(IconSizes.xs),
                     )
@@ -222,12 +166,16 @@ fun SummaryGridCard(
             text =
                 buildString {
                     append(source)
-                    summary.readingTimeMin?.let { append(" | $it min") }
+                    summary.readingTimeMin?.let {
+                        append(" | ")
+                        append(stringResource(Res.string.custom_digest_create_read_time, it))
+                    }
                 },
             style = Carbon.typography.label01,
             color = Carbon.theme.textSecondary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+        }
     }
 }

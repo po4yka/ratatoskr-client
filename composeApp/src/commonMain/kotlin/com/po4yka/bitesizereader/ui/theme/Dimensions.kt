@@ -33,6 +33,9 @@ object Dimensions {
     /** 40.dp - Default icon-only button hit target */
     val iconButtonSize = 40.dp
 
+    /** 32.dp - Compact icon-only button hit target for dense toolbars and inline actions */
+    val compactIconButtonSize = 32.dp
+
     /** 20.dp - Checkbox visual size */
     val checkboxSize = 20.dp
 
@@ -47,6 +50,21 @@ object Dimensions {
 
     /** 1.dp - Shared subtle border width */
     val borderWidth = 1.dp
+
+    /** 200.dp - Shared dropdown menu width */
+    val menuWidth = 200.dp
+
+    /** 8.dp - Corner radius for status pills */
+    val badgeCornerRadius = 8.dp
+
+    /** 6.dp - Horizontal padding for compact status pills */
+    val badgeHorizontalPadding = 6.dp
+
+    /** 2.dp - Vertical padding for compact status pills */
+    val badgeVerticalPadding = 2.dp
+
+    /** 24.dp - Shared stage indicator size */
+    val stageIndicatorSize = 24.dp
 
     /** 200.dp - Width of a recommendation card in the horizontal strip */
     val recommendationCardWidth = 200.dp
