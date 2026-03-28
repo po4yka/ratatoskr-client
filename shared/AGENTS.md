@@ -1,4 +1,4 @@
-# shared/CLAUDE.md
+# shared/AGENTS.md
 
 Guidance for work inside the shared KMP module.
 

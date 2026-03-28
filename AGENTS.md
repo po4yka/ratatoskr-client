@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-Guidance for Claude Code when working in this repository.
+Project guidance for Codex when working in this repository.
 
 ## Project Snapshot
 
@@ -66,7 +66,7 @@ Shared runtime config is centralized in `shared/src/commonMain/kotlin/com/po4yka
 - Complex screens use nested state plus delegate collaborators rather than one oversized ViewModel. Current examples: `SettingsViewModel` and `SummaryDetailViewModel`.
 - Compose UI lives in `composeApp/src/commonMain/kotlin/.../ui`, with screens usually consuming a `*Component` instead of resolving navigation directly.
 
-See `shared/CLAUDE.md` for DI and shared-layer rules. See `composeApp/CLAUDE.md` for UI rules.
+See `shared/AGENTS.md` for DI and shared-layer rules. See `composeApp/AGENTS.md` for UI rules.
 
 ## Dependency Injection
 
