@@ -1,7 +1,5 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,11 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bitesizereader.composeapp.generated.resources.Res
@@ -38,35 +34,41 @@ fun InsightsSection(
 ) {
     if (insights.isEmpty()) return
 
-    Column(
+    CarbonLayerCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
-                .padding(vertical = Spacing.md),
-        ) {
-            Text(
-            text = stringResource(Res.string.insights_title),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+                .padding(horizontal = Spacing.md, vertical = Spacing.xxs),
+    ) {
+        Column(
             modifier =
                 Modifier
-                    .padding(horizontal = Spacing.md)
-                    .padding(bottom = Spacing.sm),
-        )
-
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = Spacing.md),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                    .fillMaxWidth()
+                    .padding(vertical = Spacing.md),
         ) {
-            items(
-                items = insights,
-                key = { it.id },
-            ) { summary ->
-                InsightCard(
-                    summary = summary,
-                    onClick = { onSummaryClick(summary.id) },
-                )
+            Text(
+                text = stringResource(Res.string.insights_title),
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+                modifier =
+                    Modifier
+                        .padding(horizontal = Spacing.md)
+                        .padding(bottom = Spacing.sm),
+            )
+
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = Spacing.md),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                items(
+                    items = insights,
+                    key = { it.id },
+                ) { summary ->
+                    InsightCard(
+                        summary = summary,
+                        onClick = { onSummaryClick(summary.id) },
+                    )
+                }
             }
         }
     }
@@ -79,44 +81,42 @@ private fun InsightCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            modifier
-                .width(Dimensions.recommendationCardWidth)
-                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
-                .background(Carbon.theme.layer02)
-                .clickable(onClick = onClick)
-                .padding(Spacing.sm),
+    CarbonLayerCard(
+        modifier = modifier.width(Dimensions.recommendationCardWidth),
+        onClick = onClick,
+        backgroundColor = Carbon.theme.layer02,
     ) {
-        if (summary.imageUrl != null) {
-            ProxiedImage(
-                imageUrl = summary.imageUrl!!,
-                contentDescription = null,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .clip(RoundedCornerShape(Dimensions.cardCornerRadius)),
-            )
-            Spacer(modifier = Modifier.height(Spacing.xs))
+        Column {
+            if (summary.imageUrl != null) {
+                ProxiedImage(
+                    imageUrl = summary.imageUrl!!,
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                )
+            }
+
+            Column(modifier = Modifier.padding(Spacing.sm)) {
+                Text(
+                    text = summary.title,
+                    style = Carbon.typography.headingCompact01,
+                    color = Carbon.theme.textPrimary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Spacer(modifier = Modifier.height(Spacing.xxs))
+
+                Text(
+                    text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.insights_fallback_source),
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.textSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
-
-        Text(
-            text = summary.title,
-            style = Carbon.typography.headingCompact01,
-            color = Carbon.theme.textPrimary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        Spacer(modifier = Modifier.height(Spacing.xxs))
-
-        Text(
-            text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.insights_fallback_source),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
     }
 }

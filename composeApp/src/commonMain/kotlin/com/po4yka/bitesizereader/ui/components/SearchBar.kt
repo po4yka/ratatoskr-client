@@ -2,9 +2,12 @@ package com.po4yka.bitesizereader.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,25 +32,29 @@ import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming")
 @Composable
-fun SummarySearchBar(
+fun CarbonSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
-    onClose: () -> Unit,
+    placeholder: String,
     modifier: Modifier = Modifier,
+    searchIconContentDescription: String? = null,
+    onClearQuery: (() -> Unit)? = null,
+    backgroundColor: androidx.compose.ui.graphics.Color = Carbon.theme.layer02,
+    trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
+    val clearQuery = onClearQuery ?: { onQueryChange("") }
 
     Row(
         modifier =
             modifier
-                .fillMaxWidth()
-                .background(Carbon.theme.layer01)
-                .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                .background(backgroundColor)
+                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = CarbonIcons.Search,
-            contentDescription = stringResource(Res.string.summary_list_search),
+            contentDescription = searchIconContentDescription,
             tint = Carbon.theme.iconSecondary,
             modifier = Modifier.size(IconSizes.sm),
         )
@@ -72,7 +79,7 @@ fun SummarySearchBar(
             decorationBox = { innerTextField ->
                 if (query.isEmpty()) {
                     Text(
-                        text = stringResource(Res.string.search_placeholder),
+                        text = placeholder,
                         style = Carbon.typography.bodyCompact01,
                         color = Carbon.theme.textPlaceholder,
                     )
@@ -85,11 +92,41 @@ fun SummarySearchBar(
             CarbonIconButton(
                 imageVector = CarbonIcons.Close,
                 contentDescription = stringResource(Res.string.search_clear),
-                onClick = { onQueryChange("") },
+                onClick = clearQuery,
                 buttonSize = Dimensions.compactIconButtonSize,
                 iconSize = IconSizes.xs,
             )
         }
+
+        trailingContent()
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+fun SummarySearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(Carbon.theme.layer01)
+                .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CarbonSearchField(
+            query = query,
+            onQueryChange = onQueryChange,
+            placeholder = stringResource(Res.string.search_placeholder),
+            modifier = Modifier.weight(1f),
+            searchIconContentDescription = stringResource(Res.string.summary_list_search),
+        )
+
+        Spacer(modifier = Modifier.width(Spacing.xs))
 
         CarbonIconButton(
             imageVector = CarbonIcons.Close,

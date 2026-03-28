@@ -1,21 +1,16 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import bitesizereader.composeapp.generated.resources.Res
 import bitesizereader.composeapp.generated.resources.trending_topics_title
 import com.gabrieldrn.carbon.Carbon
@@ -37,30 +32,36 @@ fun TrendingTopicsSection(
 ) {
     if (topics.isEmpty()) return
 
-    Column(
+    CarbonLayerCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
-                .padding(Spacing.md),
+                .padding(horizontal = Spacing.md, vertical = Spacing.xxs),
     ) {
-        Text(
-            text = stringResource(Res.string.trending_topics_title),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
-            modifier = Modifier.padding(bottom = Spacing.sm),
-        )
-
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(Spacing.md),
         ) {
-            topics.forEach { topic ->
-                TrendingTopicChip(
-                    topic = topic,
-                    onClick = { onTopicClick(topic) },
-                )
+            Text(
+                text = stringResource(Res.string.trending_topics_title),
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+                modifier = Modifier.padding(bottom = Spacing.sm),
+            )
+
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+            ) {
+                topics.forEach { topic ->
+                    TrendingTopicChip(
+                        topic = topic,
+                        onClick = { onTopicClick(topic) },
+                    )
+                }
             }
         }
     }
@@ -73,16 +74,16 @@ private fun TrendingTopicChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = topic,
-        style = Carbon.typography.bodyCompact01,
-        color = Carbon.theme.textOnColor,
-        modifier =
-            modifier
-                .clip(RoundedCornerShape(Dimensions.chipCornerRadius))
-                .background(Carbon.theme.linkPrimary)
-                .clickable(onClick = onClick)
-                .semantics { role = Role.Button }
-                .padding(horizontal = Spacing.sm, vertical = Dimensions.badgeVerticalPadding + Spacing.xxs),
+    CarbonSelectableChip(
+        label = topic,
+        selected = true,
+        onClick = onClick,
+        modifier = modifier,
+        role = Role.Button,
+        contentPadding =
+            PaddingValues(
+                horizontal = Spacing.sm,
+                vertical = Dimensions.badgeVerticalPadding + Spacing.xxs,
+            ),
     )
 }
