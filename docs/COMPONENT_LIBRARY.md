@@ -125,7 +125,9 @@ fun MyComponent(
 
 ## File Location
 
-All components: `composeApp/src/commonMain/kotlin/.../ui/components/`
+Shared components: `core/ui/src/commonMain/kotlin/.../core/ui/components/`
+
+Feature-specific UI should live with the owning feature module, not under `composeApp`.
 
 ---
 

@@ -1,11 +1,8 @@
 package com.po4yka.bitesizereader.data.remote
 
 import com.po4yka.bitesizereader.data.local.SecureStorage
-import com.po4yka.bitesizereader.data.mappers.toAuthTokens
 import com.po4yka.bitesizereader.data.remote.dto.ApiResponseDto
-import com.po4yka.bitesizereader.data.remote.dto.TokenRefreshResponseDto
 import com.po4yka.bitesizereader.util.config.AppConfig
-import kotlin.time.Clock
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.auth.Auth
@@ -29,6 +26,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -157,18 +156,15 @@ class ApiClient(
                                             setBody(mapOf("refresh_token" to refreshToken))
                                         }
                                     val responseText = response.bodyAsText()
-                                    val parsed: ApiResponseDto<TokenRefreshResponseDto> =
+                                    val parsed: ApiResponseDto<ApiTokenRefreshResponseDto> =
                                         Json.decodeFromString(responseText)
 
                                     if (parsed.success && parsed.data != null) {
-                                        val tokens =
-                                            parsed.data.toAuthTokens(
-                                                currentTime = Clock.System.now(),
-                                                refreshToken = refreshToken,
-                                            )
-                                        secureStorage.saveAccessToken(tokens.accessToken)
-                                        secureStorage.saveRefreshToken(tokens.refreshToken)
-                                        BearerTokens(tokens.accessToken, tokens.refreshToken)
+                                        val refreshedAccessToken = parsed.data.tokens.accessToken
+                                        val refreshedRefreshToken = parsed.data.tokens.refreshToken ?: refreshToken
+                                        secureStorage.saveAccessToken(refreshedAccessToken)
+                                        secureStorage.saveRefreshToken(refreshedRefreshToken)
+                                        BearerTokens(refreshedAccessToken, refreshedRefreshToken)
                                     } else {
                                         logger.error {
                                             "Token refresh failed (success=${parsed.success})"
@@ -192,3 +188,14 @@ class ApiClient(
             }
         }
 }
+
+@Serializable
+private data class ApiTokenRefreshResponseDto(
+    @SerialName("tokens") val tokens: ApiRefreshedTokensDto,
+)
+
+@Serializable
+private data class ApiRefreshedTokensDto(
+    @SerialName("accessToken") val accessToken: String,
+    @SerialName("refreshToken") val refreshToken: String? = null,
+)

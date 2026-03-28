@@ -6,8 +6,8 @@ import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.domain.model.SummaryFeedback
-import com.po4yka.bitesizereader.domain.port.ContentCachePort
-import com.po4yka.bitesizereader.domain.port.SummaryFeedPort
+import com.po4yka.bitesizereader.feature.summary.api.ContentCachePort
+import com.po4yka.bitesizereader.feature.summary.api.SummaryFeedPort
 import kotlinx.coroutines.flow.Flow
 
 interface SummaryRepository : SummaryFeedPort, ContentCachePort {

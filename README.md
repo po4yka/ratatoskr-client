@@ -28,7 +28,7 @@ This is a **Kotlin Multiplatform + Compose Multiplatform** app that provides a s
 
 This project features **comprehensive CI/CD automation** using GitHub Actions:
 
--  **Automated Testing**: All PRs run tests for Android, iOS, and shared code
+-  **Automated Testing**: All PRs run Android, iOS, and modular KMP test suites
 -  **Multi-Platform Builds**: Parallel builds on Ubuntu (Android) and macOS (iOS)
 -  **Automated Releases**: Tag-based releases with automatic APK/IPA generation
 -  **Code Quality**: Linting, security scanning, and dependency checks
@@ -89,16 +89,16 @@ bite-size-reader-client/
     src/commonMain/kotlin/       # Shared Compose UI/theme/navigation
  core/
     common/                       # Shared domain, config, base presentation primitives
-    data/                         # Transport, SQLDelight, persistence, sync extensions
+    data/                         # Shared networking/bootstrap, SQLDelight, persistence, secure storage
     navigation/                   # Route contracts and navigator interfaces
     ui/                           # Shared non-feature UI primitives
  feature/
-    auth/                         # Auth/session feature
+    auth/                         # Auth/session contracts, APIs, and flows
     collections/                  # Collections, tags, RSS, import/export
     digest/                       # Digest and custom digest flows
     settings/                     # Settings, stats, reading goals, account
     summary/                      # Summary list/detail, search, submit URL, recommendations
-    sync/                         # Sync orchestration
+    sync/                         # Sync orchestration and public sync contracts
  iosApp/                          # iOS app shell (SwiftUI hosting Compose)
     iosApp/
        Auth/                   # Native Telegram login sheet

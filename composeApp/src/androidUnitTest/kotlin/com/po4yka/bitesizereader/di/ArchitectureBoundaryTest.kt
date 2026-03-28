@@ -58,7 +58,7 @@ class ArchitectureBoundaryTest {
     @Test
     fun `all platform bootstraps list the same split modules`() {
         val repoRoot = findRepoRoot()
-        val expectedModules =
+        val expectedGeneratedModules =
             listOf(
                 "com_po4yka_bitesizereader_di_CoreCommonModule",
                 "com_po4yka_bitesizereader_di_NetworkModule",
@@ -69,12 +69,6 @@ class ArchitectureBoundaryTest {
                 "com_po4yka_bitesizereader_di_SettingsFeatureModule",
                 "com_po4yka_bitesizereader_di_SummaryFeatureModule",
                 "com_po4yka_bitesizereader_di_SyncFeatureModule",
-                "authFeatureBindingsModule",
-                "collectionsFeatureBindingsModule",
-                "digestFeatureBindingsModule",
-                "settingsFeatureBindingsModule",
-                "summaryFeatureBindingsModule",
-                "syncFeatureBindingsModule",
             )
 
         val bootstrapFiles =
@@ -95,7 +89,7 @@ class ArchitectureBoundaryTest {
         val violations =
             bootstrapFiles.mapNotNull { path ->
                 val content = path.readText()
-                val missing = expectedModules.filterNot(content::contains)
+                val missing = expectedGeneratedModules.filterNot(content::contains)
                 if (missing.isEmpty()) {
                     null
                 } else {
@@ -106,6 +100,39 @@ class ArchitectureBoundaryTest {
         assertTrue(
             violations.isEmpty(),
             "Platform bootstrap module lists drifted:\n${violations.joinToString("\n")}",
+        )
+    }
+
+    @Test
+    fun `appModules aggregates generated and binding modules`() {
+        val repoRoot = findRepoRoot()
+        val content =
+            repoRoot.resolve("composeApp/src/commonMain/kotlin/com/po4yka/bitesizereader/di/AppModules.kt")
+                .readText()
+
+        val expectedEntries =
+            listOf(
+                "GeneratedAppModules.coreCommon",
+                "GeneratedAppModules.network",
+                "GeneratedAppModules.database",
+                "GeneratedAppModules.auth",
+                "GeneratedAppModules.collections",
+                "GeneratedAppModules.digest",
+                "GeneratedAppModules.settings",
+                "GeneratedAppModules.summary",
+                "GeneratedAppModules.sync",
+                "authFeatureBindingsModule",
+                "collectionsFeatureBindingsModule",
+                "digestFeatureBindingsModule",
+                "settingsFeatureBindingsModule",
+                "summaryFeatureBindingsModule",
+                "syncFeatureBindingsModule",
+            )
+
+        val missing = expectedEntries.filterNot(content::contains)
+        assertTrue(
+            missing.isEmpty(),
+            "AppModules aggregation drifted; missing ${missing.joinToString()}",
         )
     }
 
@@ -184,7 +211,12 @@ class ArchitectureBoundaryTest {
         val IMPORT_PATTERN = Regex("""(?m)^\s*import\s+([A-Za-z0-9_.* ]+)""")
         val TYPE_DECLARATION_PATTERN =
             Regex(
-                """(?m)^\s*(?:@[A-Za-z0-9_().,\s:"]+\s*)*(?:(?:public|internal|private|sealed|data|enum|annotation|expect|actual|abstract|open|value|inline|fun)\s+)*(?:class|interface|object|typealias)\s+([A-Za-z_][A-Za-z0-9_]*)""",
+                """
+                (?m)^\s*
+                (?:@[A-Za-z0-9_().,\s:"]+\s*)*
+                (?:(?:public|internal|private|sealed|data|enum|annotation|expect|actual|abstract|open|value|inline|fun)\s+)*
+                (?:class|interface|object|typealias)\s+([A-Za-z_][A-Za-z0-9_]*)
+                """.trimIndent(),
             )
     }
 }

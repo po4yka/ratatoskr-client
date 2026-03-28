@@ -1,9 +1,9 @@
 package com.po4yka.bitesizereader.di
 
 import com.po4yka.bitesizereader.data.repository.SyncRepositoryImpl
-import com.po4yka.bitesizereader.domain.repository.SyncRepository
-import com.po4yka.bitesizereader.sync.PendingOperationHandler
-import com.po4yka.bitesizereader.sync.SyncItemApplier
+import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandler
+import com.po4yka.bitesizereader.feature.sync.api.SyncItemApplier
+import com.po4yka.bitesizereader.feature.sync.domain.repository.SyncRepository
 import org.koin.dsl.bind
 import org.koin.dsl.module
 

@@ -1,9 +1,9 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
 import com.po4yka.bitesizereader.domain.model.Request
-import com.po4yka.bitesizereader.domain.port.ContentCachePort
-import com.po4yka.bitesizereader.domain.port.RequestOpsPort
-import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
+import com.po4yka.bitesizereader.feature.summary.api.ContentCachePort
+import com.po4yka.bitesizereader.feature.summary.api.RequestOpsPort
+import com.po4yka.bitesizereader.feature.sync.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.presentation.state.SyncSettingsState
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage

@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.domain.usecase
 
 import com.po4yka.bitesizereader.domain.repository.SummaryRepository
-import com.po4yka.bitesizereader.domain.repository.SyncContentPrefetcher
+import com.po4yka.bitesizereader.feature.sync.domain.repository.SyncContentPrefetcher
 import org.koin.core.annotation.Single
 
 @Single(binds = [SyncContentPrefetcher::class])

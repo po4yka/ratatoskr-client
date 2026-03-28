@@ -3,7 +3,8 @@ package com.po4yka.bitesizereader.ios
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.po4yka.bitesizereader.app.AppCompositionRoot
-import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
+import com.po4yka.bitesizereader.feature.sync.domain.usecase.SyncDataUseCase
+import com.po4yka.bitesizereader.navigation.AppRoute
 import com.po4yka.bitesizereader.presentation.navigation.RootComponent
 
 /**
@@ -36,6 +37,10 @@ class IosAppBridge(
 
     fun onDestroy() {
         lifecycle.onDestroy()
+    }
+
+    fun open(route: AppRoute) {
+        rootComponent.open(route)
     }
 
     suspend fun runBackgroundSync(forceFull: Boolean = false) {

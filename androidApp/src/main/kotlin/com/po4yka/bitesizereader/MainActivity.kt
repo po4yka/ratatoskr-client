@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.arkivanov.decompose.retainedComponent
-import com.po4yka.bitesizereader.app.AppCompositionRoot
+import com.po4yka.bitesizereader.app.assembleAppCompositionRoot
 import org.koin.android.ext.android.getKoin
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val compositionRoot = AppCompositionRoot(getKoin())
+        val compositionRoot = assembleAppCompositionRoot(getKoin())
         val root = retainedComponent { compositionRoot.createRoot(it) }
 
         setContent {

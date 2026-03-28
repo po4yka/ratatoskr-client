@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
-import com.po4yka.bitesizereader.sync.SyncItemApplier
+import com.po4yka.bitesizereader.feature.sync.api.SyncItemApplier
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals

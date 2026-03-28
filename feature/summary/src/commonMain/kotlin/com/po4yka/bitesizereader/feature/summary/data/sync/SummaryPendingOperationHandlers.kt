@@ -7,9 +7,9 @@ import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.UpdateHighlightRequestDto
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.database.PendingOperationEntity
-import com.po4yka.bitesizereader.domain.repository.LocalChange
-import com.po4yka.bitesizereader.sync.PendingOperationHandler
-import com.po4yka.bitesizereader.sync.PendingOperationHandlingResult
+import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandler
+import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandlingResult
+import com.po4yka.bitesizereader.feature.sync.domain.repository.LocalChange
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json

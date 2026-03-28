@@ -1,6 +1,6 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import com.po4yka.bitesizereader.domain.repository.CollectionRepository
+import com.po4yka.bitesizereader.feature.collections.domain.repository.CollectionRepository
 import com.po4yka.bitesizereader.domain.usecase.CreateCollectionUseCase
 import com.po4yka.bitesizereader.presentation.state.CollectionsState
 import io.github.oshai.kotlinlogging.KotlinLogging

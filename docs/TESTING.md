@@ -26,8 +26,8 @@ Bite-Size Reader uses a comprehensive testing strategy with multiple test types:
 
 | Test Type | Coverage | Tools | Location |
 |-----------|----------|-------|----------|
-| **Unit Tests** | ~70% | JUnit, MockK, Turbine | `shared/src/commonTest/` |
-| **Integration Tests** | ~40% | JUnit, MockK | `shared/src/commonTest/` |
+| **Unit Tests** | ~70% | JUnit, MockK, Turbine | `core/*/src/commonTest/`, `feature/*/src/commonTest/` |
+| **Integration Tests** | ~40% | JUnit, MockK | `core/*/src/commonTest/`, `feature/*/src/commonTest/` |
 | **UI Tests** | ~20% | Compose Testing, XCTest | `composeApp/`, `iosApp/` |
 | **E2E Tests** | Planned | Maestro, XCUITest | TBD |
 
@@ -69,28 +69,30 @@ Bite-Size Reader uses a comprehensive testing strategy with multiple test types:
 ### All Tests
 
 ```bash
-# Run all tests (Android + Shared)
+# Run all tests
 ./gradlew test
 
-# Run only shared tests
-./gradlew :shared:test
+# Run KMP module tests
+./gradlew :core:common:allTests :core:data:allTests
+./gradlew :feature:auth:allTests :feature:collections:allTests :feature:digest:allTests
+./gradlew :feature:settings:allTests :feature:summary:allTests :feature:sync:allTests
 
 # Run Android tests
 ./gradlew :composeApp:testDebugUnitTest
 
 # Run with coverage
 ./gradlew koverHtmlReportDebug
-open shared/build/reports/kover/htmlDebug/index.html
+open build/reports/kover/
 ```
 
 ### Specific Test Classes
 
 ```bash
 # Run specific test class
-./gradlew :shared:testDebugUnitTest --tests SummaryListViewModelTest
+./gradlew :composeApp:testDebugUnitTest --tests SummaryListViewModelTest
 
 # Run specific test method
-./gradlew :shared:testDebugUnitTest --tests "SummaryListViewModelTest.loadSummaries updates state with summaries"
+./gradlew :composeApp:testDebugUnitTest --tests "SummaryListViewModelTest.loadSummaries updates state with summaries"
 ```
 
 ### iOS Tests
@@ -306,7 +308,7 @@ fun `state flow emits multiple values`() = runTest {
 
 ```bash
 ./gradlew koverHtmlReportDebug
-open shared/build/reports/kover/htmlDebug/index.html
+open build/reports/kover/
 ```
 
 ### Coverage Goals

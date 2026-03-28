@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.presentation.viewmodel
 
-import com.po4yka.bitesizereader.domain.repository.CollectionRepository
-import com.po4yka.bitesizereader.domain.usecase.AddToCollectionUseCase
+import com.po4yka.bitesizereader.feature.collections.domain.repository.CollectionRepository
+import com.po4yka.bitesizereader.feature.collections.domain.usecase.AddToCollectionUseCase
 import com.po4yka.bitesizereader.presentation.state.CollectionDialogState
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage

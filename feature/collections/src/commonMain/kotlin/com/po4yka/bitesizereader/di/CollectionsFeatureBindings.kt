@@ -2,17 +2,20 @@ package com.po4yka.bitesizereader.di
 
 import com.po4yka.bitesizereader.feature.collections.data.sync.SummaryTagSyncItemApplier
 import com.po4yka.bitesizereader.feature.collections.data.sync.TagSyncItemApplier
+import com.po4yka.bitesizereader.feature.collections.navigation.CollectionsRoutes
+import com.po4yka.bitesizereader.feature.collections.ui.screens.CollectionsScreen
+import com.po4yka.bitesizereader.feature.collections.ui.screens.CollectionViewScreen
+import com.po4yka.bitesizereader.feature.sync.api.SyncItemApplier
+import com.po4yka.bitesizereader.navigation.AppRoute
 import com.po4yka.bitesizereader.navigation.MainChildDescriptor
 import com.po4yka.bitesizereader.navigation.MainNavigator
-import com.po4yka.bitesizereader.navigation.MainRoute
 import com.po4yka.bitesizereader.navigation.MainRouteEntry
-import com.po4yka.bitesizereader.navigation.MainScreen
 import com.po4yka.bitesizereader.navigation.MainTab
 import com.po4yka.bitesizereader.presentation.navigation.DefaultCollectionViewComponent
 import com.po4yka.bitesizereader.presentation.navigation.DefaultCollectionsComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.CollectionViewViewModel
 import com.po4yka.bitesizereader.presentation.viewmodel.CollectionsViewModel
-import com.po4yka.bitesizereader.sync.SyncItemApplier
+import org.koin.core.Koin
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -37,65 +40,78 @@ val collectionsFeatureBindingsModule =
         }
         single { TagSyncItemApplier(database = get()) } bind SyncItemApplier::class
         single { SummaryTagSyncItemApplier(database = get()) } bind SyncItemApplier::class
-        single {
-            val koin = getKoin()
-            CollectionsRouteEntry(viewModelFactory = { koin.get<CollectionsViewModel>() })
-        } bind MainRouteEntry::class
-        single {
-            val koin = getKoin()
-            CollectionViewRouteEntry(viewModelFactory = { koin.get<CollectionViewViewModel>() })
-        } bind MainRouteEntry::class
     }
+
+fun collectionsRouteEntries(
+    koin: Koin,
+    summaryDetailRoute: (String) -> AppRoute,
+): List<MainRouteEntry> =
+    listOf(
+        CollectionsRouteEntry(viewModelFactory = { koin.get<CollectionsViewModel>() }),
+        CollectionViewRouteEntry(
+            viewModelFactory = { koin.get<CollectionViewViewModel>() },
+            summaryDetailRoute = summaryDetailRoute,
+        ),
+    )
 
 private class CollectionsRouteEntry(
     private val viewModelFactory: () -> CollectionsViewModel,
 ) : MainRouteEntry {
-    override val screen: MainScreen = MainScreen.COLLECTIONS
     override val tab: MainTab = MainTab.COLLECTIONS
-    override val defaultRoute: MainRoute = MainRoute.Collections
+    override val defaultRoute: AppRoute = CollectionsRoutes.list()
 
     override fun create(
-        route: MainRoute,
+        route: AppRoute,
         componentContext: com.arkivanov.decompose.ComponentContext,
         navigator: MainNavigator,
     ): MainChildDescriptor? =
-        (route as? MainRoute.Collections)?.let {
+        route.takeIf {
+            it.featureId == CollectionsRoutes.FEATURE_ID && it.screenId == CollectionsRoutes.SCREEN_LIST
+        }?.let {
+            val collectionsComponent =
+                DefaultCollectionsComponent(
+                    componentContext = componentContext,
+                    viewModelFactory = viewModelFactory,
+                    onCollectionSelected = { collectionId -> navigator.open(CollectionsRoutes.view(collectionId)) },
+                )
             MainChildDescriptor(
-                screen = screen,
-                component =
-                    DefaultCollectionsComponent(
-                        componentContext = componentContext,
-                        viewModelFactory = viewModelFactory,
-                        onCollectionSelected = navigator::openCollectionView,
-                    ),
+                route = route,
+                tab = tab,
+                component = collectionsComponent,
+                render = { CollectionsScreen(component = collectionsComponent) },
             )
         }
 }
 
 private class CollectionViewRouteEntry(
     private val viewModelFactory: () -> CollectionViewViewModel,
+    private val summaryDetailRoute: (String) -> AppRoute,
 ) : MainRouteEntry {
-    override val screen: MainScreen = MainScreen.COLLECTION_VIEW
     override val tab: MainTab? = null
-    override val defaultRoute: MainRoute? = null
+    override val defaultRoute: AppRoute? = null
 
     override fun create(
-        route: MainRoute,
+        route: AppRoute,
         componentContext: com.arkivanov.decompose.ComponentContext,
         navigator: MainNavigator,
     ): MainChildDescriptor? =
-        (route as? MainRoute.CollectionView)?.let {
+        route.takeIf {
+            it.featureId == CollectionsRoutes.FEATURE_ID && it.screenId == CollectionsRoutes.SCREEN_VIEW
+        }?.let {
+            val collectionViewComponent =
+                DefaultCollectionViewComponent(
+                    componentContext = componentContext,
+                    viewModelFactory = viewModelFactory,
+                    collectionId = requireNotNull(route.argument),
+                    onBack = navigator::goBack,
+                    onNavigateToSummary = { summaryId -> navigator.open(summaryDetailRoute(summaryId)) },
+                    onCollectionDeleted = navigator::goBack,
+                )
             MainChildDescriptor(
-                screen = screen,
-                component =
-                    DefaultCollectionViewComponent(
-                        componentContext = componentContext,
-                        viewModelFactory = viewModelFactory,
-                        collectionId = it.collectionId,
-                        onBack = navigator::goBack,
-                        onNavigateToSummary = navigator::openSummaryDetail,
-                        onCollectionDeleted = navigator::goBack,
-                    ),
+                route = route,
+                tab = tab,
+                component = collectionViewComponent,
+                render = { CollectionViewScreen(component = collectionViewComponent) },
             )
         }
 }

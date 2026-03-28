@@ -128,13 +128,13 @@ fun cancelOperation() {
 
 | File | Location |
 |------|----------|
-| ViewModel | `shared/.../presentation/viewmodel/` |
+| ViewModel | `feature/<name>/.../presentation/viewmodel/` |
 | State class | Same file as ViewModel (or separate if complex) |
-| BaseViewModel | `shared/.../presentation/viewmodel/BaseViewModel.kt` |
+| BaseViewModel | `core/common/.../presentation/viewmodel/BaseViewModel.kt` |
 
 ## Example: SettingsViewModel
 
-See `shared/.../presentation/viewmodel/SettingsViewModel.kt` for a complete example with:
+See `feature/settings/.../presentation/viewmodel/SettingsViewModel.kt` for a complete example with:
 - Multiple use cases
 - Flow observation (`observeSyncProgress`)
 - Cancellation support (`cancelSync`)

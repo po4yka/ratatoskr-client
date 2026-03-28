@@ -79,7 +79,7 @@ const val LOCAL_NETWORK_URL = "http://192.168.1.100:8000"
 **Implementation**:
 
 ```kotlin
-// shared/src/commonMain/kotlin/config/ApiConfig.kt
+// core/common/src/commonMain/kotlin/com/po4yka/bitesizereader/util/config/AppConfig.kt
 object ApiConfig {
     enum class Environment {
         PRODUCTION,
@@ -812,7 +812,7 @@ python -m app.cli.summary --url "https://example.com/test-article"
 Test API integration with mock server:
 
 ```kotlin
-// shared/src/commonTest/kotlin/ApiIntegrationTest.kt
+// feature/<name>/src/commonTest/kotlin/.../ApiIntegrationTest.kt
 class ApiIntegrationTest {
     private lateinit var mockEngine: MockEngine
     private lateinit var apiClient: HttpClient

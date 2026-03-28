@@ -77,16 +77,16 @@ For hot reload development, the project includes a **desktop target** with stub 
 
 ### Desktop-Specific Files
 
-**Shared Module** (`shared/src/desktopMain/`):
+**Core Modules** (`core/common/src/desktopMain/`, `core/data/src/desktopMain/`):
 - `Platform.desktop.kt` - Platform information
-- `data/local/DatabaseDriverFactory.kt` - In-memory SQLite database
-- `data/local/SecureStorageImpl.kt` - In-memory storage (not secure, dev only)
+- `data/local/DatabaseDriverFactory.kt` - Desktop SQLite driver
+- `data/local/DesktopSecureStorage.kt` - Desktop storage implementation
 - `util/share/DesktopShareManager.kt` - Console-based sharing
 - `util/network/DesktopNetworkMonitor.kt` - Always-connected stub
 
 **ComposeApp Module** (`composeApp/src/desktopMain/`):
 - `main.kt` - Desktop entry point with Koin initialization
-- `di/DesktopModule.kt` - Desktop-specific dependency injection
+- `di/KoinInitializer.kt` - Desktop-specific Koin bootstrap
 
 ### Development Notes
 

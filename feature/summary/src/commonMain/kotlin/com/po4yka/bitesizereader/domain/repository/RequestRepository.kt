@@ -1,7 +1,7 @@
 package com.po4yka.bitesizereader.domain.repository
 
 import com.po4yka.bitesizereader.domain.model.Request
-import com.po4yka.bitesizereader.domain.port.RequestOpsPort
+import com.po4yka.bitesizereader.feature.summary.api.RequestOpsPort
 import kotlinx.coroutines.flow.Flow
 
 interface RequestRepository : RequestOpsPort {

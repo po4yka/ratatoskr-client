@@ -5,11 +5,11 @@ import com.po4yka.bitesizereader.domain.usecase.ArchiveSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.DeleteSummaryUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetAvailableTagsUseCase
 import com.po4yka.bitesizereader.domain.usecase.GetFilteredSummariesUseCase
-import com.po4yka.bitesizereader.domain.usecase.LogoutUseCase
 import com.po4yka.bitesizereader.domain.usecase.MarkSummaryAsReadUseCase
 import com.po4yka.bitesizereader.domain.usecase.SearchSummariesUseCase
-import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
+import com.po4yka.bitesizereader.feature.auth.api.AuthSessionPort
+import com.po4yka.bitesizereader.feature.sync.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.presentation.state.LayoutMode
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
@@ -46,7 +46,7 @@ class SummaryListViewModel(
     searchHistoryManager: SearchHistoryManager,
     private val syncDataUseCase: SyncDataUseCase,
     toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    private val logoutUseCase: LogoutUseCase,
+    private val authSessionPort: AuthSessionPort,
     private val networkMonitor: NetworkMonitor,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : BaseViewModel(dispatcher) {
@@ -129,7 +129,7 @@ class SummaryListViewModel(
                 logger.info { "Sync completed successfully" }
             } catch (_: AppError.SessionExpiredError) {
                 logger.warn { "Session expired, triggering re-authentication" }
-                logoutUseCase()
+                authSessionPort.logout()
             } catch (e: Exception) {
                 val appError = e.toAppError()
                 _state.update { it.copy(syncError = appError.userMessage()) }
@@ -154,6 +154,9 @@ class SummaryListViewModel(
                 syncDataUseCase()
                 _state.update { it.copy(syncError = null) }
                 logger.info { "Refresh sync completed" }
+            } catch (_: AppError.SessionExpiredError) {
+                logger.warn { "Session expired during refresh, triggering re-authentication" }
+                authSessionPort.logout()
             } catch (e: Exception) {
                 val appError = e.toAppError()
                 _state.update { it.copy(syncError = appError.userMessage()) }

@@ -7,7 +7,7 @@ Last updated: 2026-03-28
 Bite-Size Reader is a Kotlin Multiplatform app with:
 
 - `core/common` for cross-feature domain models, config, errors, base presentation primitives, and platform abstractions
-- `core/data` for transport, persistence, SQLDelight, DTOs, mappers, and sync extension contracts
+- `core/data` for shared networking/bootstrap, persistence, SQLDelight, secure storage, and generic API wrappers
 - `core/navigation` for route contracts and navigation interfaces
 - `core/ui` for shared non-feature UI primitives
 - `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, `feature/sync` for feature-owned repositories, use cases, state, ViewModels, and Decompose components
@@ -15,7 +15,7 @@ Bite-Size Reader is a Kotlin Multiplatform app with:
 - `androidApp/` for Android application entrypoints, widgets, and workers
 - `iosApp/` for the SwiftUI host app plus native share/widget source
 
-`shared/` is legacy and off-graph.
+Legacy migration residue remains in the repo but is off-graph.
 
 ## Dependency Direction
 
@@ -27,7 +27,11 @@ Allowed direction:
 
 Additional rules:
 
-- Feature modules may depend on `core/*` and, where justified, another feature's public contracts.
+- Feature modules may depend on `core/*` and only these cross-feature public contracts:
+  - `feature/summary` -> `feature/auth`, `feature/collections`, `feature/sync`
+  - `feature/collections` -> `feature/sync`
+  - `feature/digest` -> `feature/summary`
+  - `feature/settings` -> `feature/auth`, `feature/summary`, `feature/sync`
 - Feature modules must not import another feature's `data` or `presentation` packages.
 - `composeApp` shell code must not import feature implementation types from `data` or `presentation`.
 - `core/*` must not depend on feature modules.
@@ -40,7 +44,7 @@ These rules are mandatory:
 - UI code must not import transport DTOs.
 - Routed screen dependencies come from Decompose components, not `koinInject` inside the screen.
 - Reusable composables consume app-level providers or explicit parameters, not Koin directly.
-- Transport types stay in `core/data/.../data/remote`; feature data layers map them to domain models before returning them.
+- Transport types stay in the owning feature `data/remote` packages; feature data layers map them to domain models before returning them.
 
 ## Dependency Injection
 
@@ -93,3 +97,9 @@ iOS:
 Swift interop:
 
 - SKIE is configured in Gradle but currently disabled because the active Kotlin version is ahead of the supported SKIE version.
+
+## Build Tooling
+
+- AGP 9 / Kotlin Multiplatform plugin migration is deferred.
+- Current architecture acceptance criteria do not require replacing the legacy Android library plugin wiring yet.
+- See [BUILD_MIGRATION_DEFERRED.md](BUILD_MIGRATION_DEFERRED.md) for the scoped follow-up note.

@@ -47,7 +47,7 @@ This document outlines performance optimizations implemented in the Bite-Size Re
 
 ### 1. Database Indices (November 2025)
 
-**Location**: `shared/src/commonMain/sqldelight/com/po4yka/bitesizereader/database/Summary.sq`
+**Location**: `core/data/src/commonMain/sqldelight/com/po4yka/bitesizereader/database/Summary.sq`
 
 Added composite indices for common query patterns:
 
@@ -78,7 +78,7 @@ CREATE INDEX IF NOT EXISTS idx_summary_syncStatus_locallyModified
 
 ### 2. Lazy Dependency Injection (November 2025)
 
-**Location**: `shared/src/commonMain/kotlin/com/po4yka/bitesizereader/di/`
+**Location**: `core/data/src/commonMain/kotlin/com/po4yka/bitesizereader/di/`
 
 Converted all singleton dependencies to lazy initialization:
 
@@ -119,7 +119,7 @@ startKoin {
 
 ### 3. ViewModel Lifecycle Management (November 2025)
 
-**Location**: `shared/src/commonMain/kotlin/com/po4yka/bitesizereader/presentation/viewmodel/`
+**Location**: `core/common/src/commonMain/kotlin/com/po4yka/bitesizereader/presentation/viewmodel/`
 
 Introduced `BaseViewModel` with proper lifecycle management:
 
@@ -164,7 +164,7 @@ deinit {
 
 ### 4. Performance Monitoring Utilities (November 2025)
 
-**Location**: `shared/src/commonMain/kotlin/com/po4yka/bitesizereader/util/performance/`
+**Location**: Performance-sensitive code is now spread across `core/data`, `core/common`, and the owning `feature/*` modules.
 
 Comprehensive performance tracking utilities:
 

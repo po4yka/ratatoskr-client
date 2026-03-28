@@ -140,10 +140,10 @@ class SyncRepositoryImpl(
 
 | File | Location |
 |------|----------|
-| Interfaces | `shared/.../domain/repository/` |
-| Implementations | `shared/.../data/repository/` |
-| DTOs | `shared/.../data/remote/dto/` |
-| Mappers | `shared/.../data/mappers/` |
+| Interfaces | `feature/<name>/.../domain/repository/` |
+| Implementations | `feature/<name>/.../data/repository/` |
+| DTOs | `feature/<name>/.../data/remote/dto/` |
+| Mappers | `feature/<name>/.../data/mappers/` |
 
 ---
 

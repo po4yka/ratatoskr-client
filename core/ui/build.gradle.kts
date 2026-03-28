@@ -6,9 +6,14 @@ plugins {
     id("bitesize.kmp.library")
 }
 
+compose.resources {
+    publicResClass = true
+}
+
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            api(projects.core.common)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -17,6 +22,9 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+            implementation(libs.carbon.compose)
+            implementation(libs.markdown.renderer)
+            implementation(libs.markdown.renderer.coil3)
         }
     }
 }

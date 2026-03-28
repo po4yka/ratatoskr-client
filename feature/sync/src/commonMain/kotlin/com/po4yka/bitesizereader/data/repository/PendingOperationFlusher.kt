@@ -2,10 +2,10 @@ package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.database.Database
 import com.po4yka.bitesizereader.database.PendingOperationEntity
-import com.po4yka.bitesizereader.domain.repository.ApplyResult
-import com.po4yka.bitesizereader.domain.repository.LocalChange
-import com.po4yka.bitesizereader.sync.PendingOperationHandler
-import com.po4yka.bitesizereader.sync.PendingOperationHandlingResult
+import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandler
+import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandlingResult
+import com.po4yka.bitesizereader.feature.sync.domain.repository.ApplyResult
+import com.po4yka.bitesizereader.feature.sync.domain.repository.LocalChange
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}

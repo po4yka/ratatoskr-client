@@ -20,7 +20,7 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val navigationFiles: ConfigurableFileCollection
+    abstract val sourceFiles: ConfigurableFileCollection
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -32,11 +32,15 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val legacyFiles: ConfigurableFileCollection
+    abstract val buildFiles: ConfigurableFileCollection
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val docFiles: ConfigurableFileCollection
 
     init {
         group = "verification"
-        description = "Rejects direct DI in routed UI and cross-feature implementation imports."
+        description = "Rejects direct DI in routed UI, illegal module edges, and stale legacy docs references."
     }
 
     @TaskAction
@@ -46,33 +50,9 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
 
         fun relativePath(file: java.io.File): String = projectPath.relativize(file.toPath()).toString().replace('\\', '/')
 
-        val screenSourceFiles =
-            screenFiles.files
-                .filter { it.exists() && it.extension == "kt" }
-                .sortedBy(::relativePath)
-                .map { file ->
-                    SourceFile(
-                        path = relativePath(file),
-                        content = file.readText(),
-                    )
-                }
-        violations += ArchitectureBoundaryRules.findComposableDiViolations(screenSourceFiles)
-
-        val featureSourceFiles =
-            featureFiles.files
-                .filter { it.exists() && it.extension == "kt" }
-                .sortedBy(::relativePath)
-                .map { file ->
-                    SourceFile(
-                        path = relativePath(file),
-                        content = file.readText(),
-                    )
-                }
-        val featureTypeOwners = ArchitectureBoundaryRules.buildFeatureTypeOwners(featureSourceFiles)
-
-        val directDiSourceFiles =
-            (navigationFiles.files + shellFiles.files)
-                .filter { it.exists() && it.extension == "kt" }
+        fun load(files: Set<java.io.File>, extension: String): List<SourceFile> =
+            files
+                .filter { it.exists() && it.extension == extension }
                 .distinctBy(::relativePath)
                 .sortedBy(::relativePath)
                 .map { file ->
@@ -81,27 +61,28 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
                         content = file.readText(),
                     )
                 }
-        violations += ArchitectureBoundaryRules.findDirectDiViolations(directDiSourceFiles)
 
-        val shellSourceFiles =
-            shellFiles.files
-                .filter { it.exists() && it.extension == "kt" }
-                .sortedBy(::relativePath)
-                .map { file ->
-                    SourceFile(
-                        path = relativePath(file),
-                        content = file.readText(),
-                    )
-                }
+        val screenSourceFiles = load(screenFiles.files, "kt")
+        violations += ArchitectureBoundaryRules.findComposableDiViolations(screenSourceFiles)
+
+        val allSourceFiles = load(sourceFiles.files, "kt")
+        violations += ArchitectureBoundaryRules.findDirectDiViolations(allSourceFiles)
+        violations += ArchitectureBoundaryRules.findComposeAppFeatureUiViolations(allSourceFiles)
+        violations += ArchitectureBoundaryRules.findDiManagedRouteRegistrationViolations(allSourceFiles)
+        violations += ArchitectureBoundaryRules.findRawAppRouteCreationViolations(allSourceFiles)
+
+        val featureSourceFiles = load(featureFiles.files, "kt")
+        val featureTypeOwners = ArchitectureBoundaryRules.buildFeatureTypeOwners(featureSourceFiles)
+        val shellSourceFiles = load(shellFiles.files, "kt")
         violations += ArchitectureBoundaryRules.findShellBoundaryViolations(shellSourceFiles, featureTypeOwners)
+        violations += ArchitectureBoundaryRules.findShellRouteUiImportViolations(shellSourceFiles)
         violations += ArchitectureBoundaryRules.findFeatureBoundaryViolations(featureSourceFiles, featureTypeOwners)
 
-        legacyFiles.files
-            .filter { it.exists() }
-            .sortedBy(::relativePath)
-            .forEach { file ->
-                violations += "Legacy DI: ${relativePath(file)} should be removed after feature module extraction"
-            }
+        val buildSourceFiles = load(buildFiles.files, "kts")
+        violations += ArchitectureBoundaryRules.findModuleDependencyViolations(buildSourceFiles)
+
+        val docsSourceFiles = load(docFiles.files, "md")
+        violations += ArchitectureBoundaryRules.findLegacyDocsViolations(docsSourceFiles)
 
         if (violations.isNotEmpty()) {
             throw GradleException(
@@ -112,5 +93,4 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
             )
         }
     }
-
 }

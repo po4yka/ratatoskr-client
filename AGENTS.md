@@ -6,7 +6,7 @@ Project guidance for Codex when working in this repository.
 
 - Kotlin Multiplatform app with shared infrastructure in `core/`, feature modules under `feature/*`, a Compose shell in `composeApp/`, an Android application host in `androidApp/`, and a SwiftUI host app in `iosApp/`.
 - Active Kotlin modules are `core/common`, `core/data`, `core/navigation`, `core/ui`, `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, and `feature/sync`.
-- `shared/` is a legacy migration directory and is not part of the active Gradle graph.
+- Legacy migration residue may still exist in the repo, but it is not part of the active Gradle graph.
 - Desktop exists as a development target for Compose work and hot reload, not as a production app.
 
 ## Build And Run
@@ -61,16 +61,17 @@ Shared runtime config is centralized in `core/common/src/commonMain/kotlin/com/p
 
 - Modules are split by responsibility:
   - `core/common` for cross-feature domain models, config, errors, base ViewModel primitives, and platform abstractions
-  - `core/data` for transport, persistence, SQLDelight, DTOs, mappers, sync extension contracts, and platform data bindings
+  - `core/data` for shared networking/bootstrap, persistence, SQLDelight, secure storage, generic API wrappers, and platform data bindings
   - `core/navigation` for route contracts and navigation-facing interfaces
   - `core/ui` for shared non-feature UI primitives
-  - `feature/*` for feature-owned repositories, use cases, state, ViewModels, and Decompose components
+  - `feature/*` for feature-owned repositories, use cases, route factories, transport APIs/DTOs/mappers, state, ViewModels, and Decompose components
   - `composeApp/` for shared Compose UI, navigation shell composition, CocoaPods export, and the desktop dev target
   - `androidApp/` for Android activity/app/widget/worker entrypoints
 - Navigation is Decompose-based. Feature components own routed-screen dependencies and retained ViewModel creation.
 - Compose UI lives in `composeApp/src/commonMain/kotlin/.../ui`, with screens consuming a `*Component` or app-level provider instead of resolving Koin directly.
 - Domain contracts and UI code must not import `data.remote` APIs or DTOs.
 - One feature may depend on another feature's public contracts only. Do not import another feature's `data` or `presentation` packages.
+- Current public feature edges include `summary -> auth/collections/sync`, `collections -> sync`, `digest -> summary`, and `settings -> auth/summary/sync`.
 
 See `composeApp/AGENTS.md` for UI rules. See `docs/ARCHITECTURE.md` for the current dependency rules.
 
@@ -130,19 +131,19 @@ The SKIE plugin is configured in Gradle but currently disabled in `composeApp/bu
 2. Add a ViewModel in the owning `feature/.../presentation/viewmodel/` module extending `BaseViewModel`.
 3. Add a Decompose component in the owning `feature/.../presentation/navigation/` module.
 4. Register the route entry or binding in the owning feature module, then connect it through the `composeApp` shell if needed.
-5. Add the Compose screen in `composeApp/.../ui/screens/`.
-6. Add strings in `composeApp/src/commonMain/composeResources/values/strings.xml` and `values-ru/strings.xml`.
+5. Add the Compose screen in the owning feature module under `feature/.../feature/<name>/ui/screens/`.
+6. Add shared strings and assets under `core/ui/src/commonMain/composeResources/`.
 
 ### Add A Repository Flow
 
 1. Define the contract in `domain/repository/`.
-2. Add DTOs under `core/data/.../data/remote/dto/` if the backend shape changes.
-3. Add feature-owned mappers in `data/mappers/`.
+2. Add DTOs under the owning feature module `data/remote/dto/` if the backend shape changes.
+3. Add feature-owned mappers in the owning feature `data/mappers/`.
 4. Add the implementation in the owning feature `data/repository/` with `@Single(binds = [...])`.
-5. Keep API details in `core/data/.../data/remote/`; keep DTOs and API types out of domain and UI layers.
+5. Keep API details in the owning feature `data/remote/`; keep DTOs and API types out of domain and UI layers.
 
 ### Add Shared UI Behavior
 
-- Prefer project components in `composeApp/.../ui/components/` before inventing new patterns.
+- Prefer project components in `core/ui/.../components/` before inventing new patterns.
 - Use Compose Resources instead of hardcoded UI text.
 - Keep accessibility semantics in mind; the repo already uses headings and live regions in screens such as `SummaryListScreen`.
