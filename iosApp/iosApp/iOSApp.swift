@@ -88,13 +88,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     override init() {
         // Initialize Koin
-        _ =
-            KoinInitializerKt.doInitKoin(
-                configuration: PlatformConfiguration(),
-                modules: IosCommonModulesKt.appModules(),
-                appDeclaration: { _ in },
-                extraModules: []
-            )
+        IosKoinBootstrap().start()
         host = IosAppHost()
 
         super.init()
