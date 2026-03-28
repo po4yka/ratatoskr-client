@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,8 +50,10 @@ import com.po4yka.bitesizereader.presentation.state.TelegramLinkState
 import com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalController
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import com.po4yka.bitesizereader.domain.model.Request
+import com.po4yka.bitesizereader.ui.components.CarbonLayerCard
 import com.po4yka.bitesizereader.ui.components.DeleteAccountDialog
 import com.po4yka.bitesizereader.ui.components.CarbonIconButton
+import com.po4yka.bitesizereader.ui.components.CarbonSelectableChip
 import com.po4yka.bitesizereader.ui.components.RequestHistorySection
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.SessionsSection
@@ -274,7 +278,7 @@ private fun SettingsContent(
             onLanguageChanged = onLanguageChanged,
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
             text = stringResource(Res.string.settings_reading_goals),
@@ -289,7 +293,7 @@ private fun SettingsContent(
             onTargetChanged = onGoalTargetChanged,
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
             text = stringResource(Res.string.settings_data_management),
@@ -319,7 +323,7 @@ private fun SettingsContent(
             onRetryRequest = onRetryRequest,
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
             text = stringResource(Res.string.settings_security),
@@ -335,14 +339,38 @@ private fun SettingsContent(
             onToggleExpanded = onToggleSessions,
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         LegalSection()
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         DangerZoneSection(
             onDeleteAccount = onShowDeleteConfirmation,
+        )
+    }
+}
+
+@Suppress("FunctionNaming")
+@Composable
+private fun SettingsSectionCard(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    contentPadding: PaddingValues = PaddingValues(Spacing.md),
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(Spacing.sm),
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    CarbonLayerCard(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding),
+            verticalArrangement = verticalArrangement,
+            content = content,
         )
     }
 }
@@ -353,7 +381,7 @@ private fun LegalSection() {
     val uriHandler = LocalUriHandler.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = stringResource(Res.string.settings_legal),
@@ -362,24 +390,21 @@ private fun LegalSection() {
             modifier = Modifier.semantics { heading() },
         )
 
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Carbon.theme.layer01),
+        SettingsSectionCard(
+            contentPadding = PaddingValues(0.dp),
+            verticalArrangement = Arrangement.Top,
         ) {
             LegalRow(
                 label = stringResource(Res.string.privacy_policy),
                 onClick = { uriHandler.openUri("https://bitsizereaderapi.po4yka.com/web/privacy.html") },
             )
 
-            androidx.compose.foundation.layout.Box(
+            Spacer(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(1.dp)
+                        .padding(horizontal = Spacing.md)
+                        .height(Dimensions.borderWidth)
                         .background(Carbon.theme.borderSubtle00),
             )
 
@@ -403,15 +428,15 @@ private fun LegalRow(
                 .fillMaxWidth()
                 .semantics { role = Role.Button }
                 .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 14.dp),
+                .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Icon(
             imageVector = CarbonIcons.Document,
             contentDescription = null,
             tint = Carbon.theme.iconSecondary,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(IconSizes.sm),
         )
         Text(
             text = label,
@@ -426,7 +451,7 @@ private fun LegalRow(
 @Composable
 private fun DangerZoneSection(onDeleteAccount: () -> Unit) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = stringResource(Res.string.settings_danger_zone),
@@ -435,14 +460,8 @@ private fun DangerZoneSection(onDeleteAccount: () -> Unit) {
             modifier = Modifier.semantics { heading() },
         )
 
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Carbon.theme.layer01)
-                    .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        SettingsSectionCard(
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             Text(
                 text = stringResource(Res.string.settings_delete_account),
@@ -472,14 +491,8 @@ private fun AccountBindingCard(
     onBeginLink: () -> Unit,
     onUnlink: () -> Unit,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .background(Carbon.theme.layer01)
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+    SettingsSectionCard(
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = stringResource(Res.string.settings_telegram_account),
@@ -552,14 +565,8 @@ private fun LinkNonceCard(
     onCheckStatus: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .background(Carbon.theme.layer01)
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    SettingsSectionCard(
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
         Text(
             text = stringResource(Res.string.settings_linking_code),
@@ -576,7 +583,7 @@ private fun LinkNonceCard(
                 text = nonce,
                 style = Carbon.typography.heading03,
                 color = Carbon.theme.textPrimary,
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(vertical = Spacing.xs),
             )
         }
         Text(
@@ -586,7 +593,7 @@ private fun LinkNonceCard(
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             Button(
                 label = stringResource(Res.string.settings_check_status),
@@ -614,14 +621,8 @@ private fun SyncCard(
     onImport: () -> Unit,
     onCancelSync: () -> Unit,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .background(Carbon.theme.layer01)
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+    SettingsSectionCard(
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = stringResource(Res.string.settings_synchronization),
@@ -666,14 +667,8 @@ private fun CacheManagementCard(
     isClearing: Boolean,
     onClearCache: () -> Unit,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .background(Carbon.theme.layer01)
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+    SettingsSectionCard(
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = stringResource(Res.string.settings_cached_content),
@@ -848,14 +843,8 @@ private fun LanguagePreferenceCard(
     isSaving: Boolean,
     onLanguageChanged: (String) -> Unit,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .background(Carbon.theme.layer01)
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+    SettingsSectionCard(
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = stringResource(Res.string.settings_language),
@@ -907,54 +896,48 @@ private fun LanguageChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val backgroundColor = if (isSelected) Carbon.theme.linkPrimary else Carbon.theme.layer02
-    val textColor = if (isSelected) Carbon.theme.textOnColor else Carbon.theme.textPrimary
-
-    Text(
-        text = label,
-        style = Carbon.typography.label01,
-        color = if (isEnabled) textColor else Carbon.theme.textDisabled,
-        modifier =
-            modifier
-                .semantics { role = Role.Button }
-                .background(backgroundColor)
-                .clickable(enabled = isEnabled && !isSelected, onClick = onClick)
-                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+    CarbonSelectableChip(
+        label = label,
+        selected = isSelected,
+        enabled = isEnabled,
+        onClick = onClick,
+        modifier = modifier,
     )
 }
 
 @Suppress("FunctionNaming")
 @Composable
 private fun DigestNavigationRow(onClick: () -> Unit) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .background(Carbon.theme.layer01)
-                .semantics { role = Role.Button }
-                .clickable(onClick = onClick)
-                .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    CarbonLayerCard(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
     ) {
-        Icon(
-            imageVector = CarbonIcons.Notification,
-            contentDescription = stringResource(Res.string.settings_digest_icon),
-            tint = Carbon.theme.iconPrimary,
-            modifier = Modifier.size(24.dp),
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = stringResource(Res.string.settings_digest_channels),
-                style = Carbon.typography.headingCompact01,
-                color = Carbon.theme.textPrimary,
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(Spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        ) {
+            Icon(
+                imageVector = CarbonIcons.Notification,
+                contentDescription = stringResource(Res.string.settings_digest_icon),
+                tint = Carbon.theme.iconPrimary,
+                modifier = Modifier.size(IconSizes.md),
             )
-            Text(
-                text = stringResource(Res.string.settings_digest_channels_description),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(Res.string.settings_digest_channels),
+                    style = Carbon.typography.headingCompact01,
+                    color = Carbon.theme.textPrimary,
+                )
+                Text(
+                    text = stringResource(Res.string.settings_digest_channels_description),
+                    style = Carbon.typography.bodyCompact01,
+                    color = Carbon.theme.textSecondary,
+                )
+            }
         }
     }
 }
@@ -983,14 +966,8 @@ private fun ReadingGoalsCard(
     val goal = readingGoalState.goalProgress?.goal
     val isEnabled = goal?.isEnabled ?: false
 
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .background(Carbon.theme.layer01)
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+    SettingsSectionCard(
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
@@ -1028,23 +1005,16 @@ private fun ReadingGoalsCard(
             )
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 val targets = listOf(5, 10, 15, 20, 30, 45, 60)
                 targets.forEach { minutes ->
-                    val isSelected = goal.dailyTargetMin == minutes
-                    val bgColor = if (isSelected) Carbon.theme.linkPrimary else Carbon.theme.layer02
-                    val textColor = if (isSelected) Carbon.theme.textOnColor else Carbon.theme.textPrimary
-                    Text(
-                        text = stringResource(Res.string.user_stats_minutes_short, minutes),
-                        style = Carbon.typography.label01,
-                        color = textColor,
-                        modifier =
-                            Modifier
-                                .background(bgColor)
-                                .clickable(enabled = isEnabled && !isSelected) { onTargetChanged(minutes) }
-                                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+                    CarbonSelectableChip(
+                        label = stringResource(Res.string.user_stats_minutes_short, minutes),
+                        selected = goal.dailyTargetMin == minutes,
+                        enabled = isEnabled,
+                        onClick = { onTargetChanged(minutes) },
                     )
                 }
             }

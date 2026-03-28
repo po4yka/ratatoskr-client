@@ -1,6 +1,5 @@
 package com.po4yka.bitesizereader.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,42 +41,48 @@ fun RecentSearchesSection(
 ) {
     if (searches.isEmpty()) return
 
-    Column(
+    CarbonLayerCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
-                .padding(Spacing.md),
+                .padding(horizontal = Spacing.md, vertical = Spacing.xxs),
     ) {
-        // Header with Clear All button
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(Res.string.recent_searches_title),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
-            )
-
-            CarbonTextButton(
-                label = stringResource(Res.string.recent_searches_clear_all),
-                onClick = onClearAll,
-            )
-        }
-
-        // Search items
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(Spacing.md),
         ) {
-            searches.forEach { query ->
-                RecentSearchItem(
-                    query = query,
-                    onClick = { onSearchClick(query) },
-                    onDelete = { onDeleteSearch(query) },
+            // Header with Clear All button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(Res.string.recent_searches_title),
+                    style = Carbon.typography.label01,
+                    color = Carbon.theme.textSecondary,
                 )
+
+                CarbonTextButton(
+                    label = stringResource(Res.string.recent_searches_clear_all),
+                    onClick = onClearAll,
+                )
+            }
+
+            // Search items
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
+            ) {
+                searches.forEach { query ->
+                    RecentSearchItem(
+                        query = query,
+                        onClick = { onSearchClick(query) },
+                        onDelete = { onDeleteSearch(query) },
+                    )
+                }
             }
         }
     }

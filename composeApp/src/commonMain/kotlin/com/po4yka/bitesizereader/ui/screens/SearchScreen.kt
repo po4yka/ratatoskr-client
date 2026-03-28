@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,14 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,11 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.gabrieldrn.carbon.Carbon
 import com.gabrieldrn.carbon.button.Button
@@ -48,6 +38,7 @@ import com.po4yka.bitesizereader.presentation.state.SearchMode
 import com.po4yka.bitesizereader.presentation.state.SearchState
 import com.po4yka.bitesizereader.presentation.viewmodel.SearchViewModel
 import com.po4yka.bitesizereader.ui.components.CarbonIconButton
+import com.po4yka.bitesizereader.ui.components.CarbonSearchField
 import com.po4yka.bitesizereader.ui.components.CarbonSelectableChip
 import com.po4yka.bitesizereader.ui.components.ContextualEmptyState
 import com.po4yka.bitesizereader.ui.components.EmptyStateType
@@ -57,9 +48,9 @@ import com.po4yka.bitesizereader.ui.components.SummaryCard
 import com.po4yka.bitesizereader.ui.components.TrendingTopicsSection
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.ui.theme.Dimensions
+import com.po4yka.bitesizereader.ui.theme.IconSizes
 import com.po4yka.bitesizereader.ui.theme.Spacing
 import bitesizereader.composeapp.generated.resources.Res
-import bitesizereader.composeapp.generated.resources.search_clear
 import bitesizereader.composeapp.generated.resources.search_filter_all
 import bitesizereader.composeapp.generated.resources.search_filter_read
 import bitesizereader.composeapp.generated.resources.search_filter_unread
@@ -167,7 +158,7 @@ private fun SearchScreenHeader(
                 imageVector = CarbonIcons.Filter,
                 contentDescription = stringResource(Res.string.search_toggle_filters),
                 onClick = onFilterClick,
-                iconSize = 20.dp,
+                iconSize = IconSizes.sm,
             )
         }
 
@@ -190,8 +181,6 @@ private fun SearchInputRow(
     onClearQuery: () -> Unit,
     onModeToggle: () -> Unit,
 ) {
-    val focusManager = LocalFocusManager.current
-
     Row(
         modifier =
             Modifier
@@ -199,96 +188,56 @@ private fun SearchInputRow(
                 .padding(horizontal = Spacing.md)
                 .padding(bottom = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
+        CarbonSearchField(
+            query = query,
+            onQueryChange = onQueryChange,
+            onClearQuery = onClearQuery,
+            placeholder = stringResource(Res.string.search_placeholder),
+            modifier = Modifier.weight(1f),
+        )
+
         Row(
-            modifier =
-                Modifier
-                    .weight(1f)
-                    .background(Carbon.theme.layer02)
-                    .padding(horizontal = Spacing.sm, vertical = Spacing.xs + 2.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = CarbonIcons.Search,
-                contentDescription = null,
-                tint = Carbon.theme.iconSecondary,
-                modifier = Modifier.size(20.dp),
-            )
-
-            BasicTextField(
-                value = query,
-                onValueChange = onQueryChange,
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .padding(horizontal = Spacing.sm),
-                singleLine = true,
-                textStyle =
-                    Carbon.typography.bodyCompact01.copy(
-                        color = Carbon.theme.textPrimary,
-                    ),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions =
-                    KeyboardActions(
-                        onSearch = { focusManager.clearFocus() },
-                    ),
-                decorationBox = { innerTextField ->
-                    if (query.isEmpty()) {
-                        Text(
-                            text = stringResource(Res.string.search_placeholder),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textPlaceholder,
-                        )
+            SearchModeChip(
+                label = stringResource(Res.string.search_mode_text),
+                isSelected = searchMode == SearchMode.FULLTEXT,
+                onClick = {
+                    if (searchMode != SearchMode.FULLTEXT) {
+                        onModeToggle()
                     }
-                    innerTextField()
                 },
             )
-
-            if (query.isNotEmpty()) {
-                CarbonIconButton(
-                    imageVector = CarbonIcons.Close,
-                    contentDescription = stringResource(Res.string.search_clear),
-                    onClick = onClearQuery,
-                    modifier = Modifier.size(24.dp),
-                    tint = Carbon.theme.iconSecondary,
-                    buttonSize = 24.dp,
-                    iconSize = 16.dp,
-                )
-            }
+            SearchModeChip(
+                label = stringResource(Res.string.search_mode_ai),
+                isSelected = searchMode == SearchMode.SEMANTIC,
+                onClick = {
+                    if (searchMode != SearchMode.SEMANTIC) {
+                        onModeToggle()
+                    }
+                },
+            )
         }
-
-        Spacer(modifier = Modifier.width(Spacing.xs))
-
-        SearchModeChip(
-            mode = searchMode,
-            onClick = onModeToggle,
-        )
     }
 }
 
 @Suppress("FunctionNaming")
 @Composable
 private fun SearchModeChip(
-    mode: SearchMode,
+    label: String,
+    isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val label =
-        when (mode) {
-            SearchMode.FULLTEXT -> stringResource(Res.string.search_mode_text)
-            SearchMode.SEMANTIC -> stringResource(Res.string.search_mode_ai)
-        }
-
-    Text(
-        text = label,
-        style = Carbon.typography.label01,
-        color = Carbon.theme.textOnColor,
-        modifier =
-            modifier
-                .semantics { role = Role.Button }
-                .background(Carbon.theme.linkPrimary)
-                .clickable(onClick = onClick)
-                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+    CarbonSelectableChip(
+        label = label,
+        selected = isSelected,
+        onClick = onClick,
+        role = Role.RadioButton,
+        modifier = modifier,
     )
 }
 
