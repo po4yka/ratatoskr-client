@@ -14,14 +14,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 class DefaultRootComponent(
     componentContext: ComponentContext,
-) : RootComponent, ComponentContext by componentContext, KoinComponent {
+) : RootComponent, ComponentContext by componentContext {
+    private val navigationRegistry = DefaultNavigationRegistry.fromKoin()
     private val navigation = StackNavigation<Config>()
-    private val authRepository: AuthRepository by inject()
+    private val authRepository: AuthRepository = navigationRegistry.authRepository
 
     // Use lifecycle-bound coroutine scope from Decompose/Essenty
     // Must use Main dispatcher for navigation operations
@@ -83,12 +82,18 @@ class DefaultRootComponent(
         when (config) {
             is Config.Auth ->
                 RootComponent.Child.Auth(
-                    DefaultAuthComponent(componentContext) {
+                    navigationRegistry.authComponentFactory.create(componentContext) {
                         navigation.replaceCurrent(Config.Main)
                     },
                 )
 
-            is Config.Main -> RootComponent.Child.Main(DefaultMainComponent(componentContext))
+            is Config.Main ->
+                RootComponent.Child.Main(
+                    DefaultMainComponent(
+                        componentContext = componentContext,
+                        navigationRegistry = navigationRegistry,
+                    ),
+                )
         }
 
     @Serializable

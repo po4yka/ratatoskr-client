@@ -500,7 +500,7 @@ CREATE TABLE summaryTagEntity (
 );
 CREATE INDEX summaryTag_tagId ON summaryTagEntity(tagId);
 
-getAllTags:
+getAllTagEntities:
 SELECT * FROM tagEntity ORDER BY name ASC;
 
 getTagById:

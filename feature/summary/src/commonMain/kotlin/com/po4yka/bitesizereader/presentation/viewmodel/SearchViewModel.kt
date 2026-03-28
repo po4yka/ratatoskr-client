@@ -19,13 +19,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
 private const val DEFAULT_PAGE = 1
 
-@Factory
 class SearchViewModel(
     private val searchSummariesUseCase: SearchSummariesUseCase,
     private val semanticSearchUseCase: SemanticSearchUseCase,

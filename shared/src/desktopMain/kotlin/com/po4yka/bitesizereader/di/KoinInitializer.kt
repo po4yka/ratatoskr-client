@@ -14,11 +14,14 @@ actual fun KoinApplication.platformExtras(configuration: PlatformConfiguration) 
     // No-op for desktop
 }
 
-actual fun commonModules(): List<Module> =
+actual fun appModules(): List<Module> =
     listOf(
         NetworkModule().module,
         DatabaseModule().module,
-        RepositoryModule().module,
-        UseCaseModule().module,
-        ViewModelModule().module,
-    )
+        AuthFeatureModule().module,
+        CollectionsFeatureModule().module,
+        DigestFeatureModule().module,
+        SettingsFeatureModule().module,
+        SummaryFeatureModule().module,
+        SyncFeatureModule().module,
+    ) + featureBindingModules()

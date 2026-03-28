@@ -60,7 +60,7 @@ class AuthRepositoryImpl(
             )
         val response = authApi.loginWithTelegram(request)
         if (response.success && response.data != null) {
-            val authTokens = response.data.toDomain()
+            val authTokens = requireNotNull(response.data).toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
             if (authTokens.refreshToken.isNotEmpty()) {
                 secureStorage.saveRefreshToken(authTokens.refreshToken)
@@ -86,7 +86,7 @@ class AuthRepositoryImpl(
             )
         val response = authApi.secretLogin(request)
         if (response.success && response.data != null) {
-            val authTokens = response.data.toDomain()
+            val authTokens = requireNotNull(response.data).toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
             if (authTokens.refreshToken.isNotEmpty()) {
                 secureStorage.saveRefreshToken(authTokens.refreshToken)
@@ -113,7 +113,7 @@ class AuthRepositoryImpl(
             return try {
                 val response = authApi.getCurrentUser()
                 if (response.success && response.data != null) {
-                    _currentUser.value = response.data.toDomain()
+                    _currentUser.value = requireNotNull(response.data).toDomain()
                     _currentUser.value
                 } else {
                     null
@@ -139,8 +139,9 @@ class AuthRepositoryImpl(
             return try {
                 val response = authApi.refreshToken(TokenRefreshRequestDto(refreshToken))
                 if (response.success && response.data != null) {
+                    val refreshData = requireNotNull(response.data)
                     val authTokens =
-                        response.data.toAuthTokens(
+                        refreshData.toAuthTokens(
                             currentTime = Clock.System.now(),
                             refreshToken = refreshToken,
                         )
@@ -181,7 +182,7 @@ class AuthRepositoryImpl(
             )
         val response = authApi.loginWithApple(request)
         if (response.success && response.data != null) {
-            val loginData = response.data
+            val loginData = requireNotNull(response.data)
             val authTokens = loginData.toAuthTokens()
             secureStorage.saveAccessToken(authTokens.accessToken)
             if (authTokens.refreshToken.isNotEmpty()) {
@@ -206,7 +207,7 @@ class AuthRepositoryImpl(
             )
         val response = authApi.loginWithGoogle(request)
         if (response.success && response.data != null) {
-            val loginData = response.data
+            val loginData = requireNotNull(response.data)
             val authTokens = loginData.toAuthTokens()
             secureStorage.saveAccessToken(authTokens.accessToken)
             if (authTokens.refreshToken.isNotEmpty()) {
@@ -235,7 +236,7 @@ class AuthRepositoryImpl(
     override suspend fun listSessions(): List<Session> {
         val response = authApi.listSessions()
         if (response.success && response.data != null) {
-            return response.data.sessions.map { it.toDomain() }
+            return requireNotNull(response.data).sessions.map { it.toDomain() }
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Failed to list sessions")
         }

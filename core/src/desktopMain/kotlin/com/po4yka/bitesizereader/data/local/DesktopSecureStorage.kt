@@ -1,5 +1,6 @@
 package com.po4yka.bitesizereader.data.local
 
+import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.MapSettings
 import com.russhwolf.settings.coroutines.toSuspendSettings
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -17,6 +18,7 @@ private val logger = KotlinLogging.logger {}
  * - OS keychain integration (macOS Keychain, Windows Credential Manager)
  * - Encrypted file storage with hardware-backed keys
  */
+@OptIn(ExperimentalSettingsApi::class)
 class DesktopSecureStorage : SecureStorage {
     private val settings = MapSettings().toSuspendSettings()
 

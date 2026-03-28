@@ -1,6 +1,7 @@
 import SwiftUI
 import Shared
 import BackgroundTasks
+import WidgetKit
 import os.log
 
 /// Logger for iOS app events
@@ -10,6 +11,7 @@ private let logger = Logger(subsystem: "com.po4yka.bitesizereader", category: "a
 struct iOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) var scenePhase
+    private let recentSummariesSnapshotPublisher = RecentSummariesSnapshotPublisher()
 
     var body: some Scene {
         WindowGroup {
@@ -20,8 +22,8 @@ struct iOSApp: App {
             case .active:
                 appDelegate.lifecycle.onStart()
                 appDelegate.lifecycle.onResume()
-                // Check for shared URL from Share Extension when app becomes active
                 checkForSharedURL()
+                refreshRecentSummariesWidget()
             case .inactive:
                 appDelegate.lifecycle.onPause()
                 appDelegate.lifecycle.onStop()
@@ -40,18 +42,9 @@ struct iOSApp: App {
 
     /// Check if Share Extension saved a URL to shared storage
     private func checkForSharedURL() {
-        if let sharedDefaults = UserDefaults(suiteName: "group.com.po4yka.bitesizereader"),
-           let sharedURL = sharedDefaults.string(forKey: "sharedURL") {
-
+        if let sharedURL = AppGroupStore.consumeSharedURL() {
             logger.debug("Found shared URL: \(sharedURL)")
-
-            // Navigate to Submit URL screen with prefilled URL
             appDelegate.rootComponent.navigateToSubmitUrl(prefilledUrl: sharedURL)
-
-            // Clear the shared URL so it's only processed once
-            sharedDefaults.removeObject(forKey: "sharedURL")
-            sharedDefaults.removeObject(forKey: "sharedURLTimestamp")
-            sharedDefaults.synchronize()
         }
     }
 
@@ -65,12 +58,24 @@ struct iOSApp: App {
             return
         }
 
-        if url.host == "summary",
-           let summaryId = url.pathComponents.last {
+        if url.host == "summary", let summaryId = url.pathComponents.last {
             logger.debug("Opening summary with ID: \(summaryId)")
             appDelegate.rootComponent.navigateToSummaryDetail(summaryId: summaryId)
+        } else if url.host == "submit-url" || url.host == "share" {
+            checkForSharedURL()
         } else {
             logger.warning("Could not parse summary ID from URL: \(url)")
+        }
+    }
+
+    private func refreshRecentSummariesWidget() {
+        Task {
+            do {
+                _ = try await recentSummariesSnapshotPublisher.publish(limit: 3)
+                WidgetCenter.shared.reloadTimelines(ofKind: AppGroupContract.recentSummariesWidgetKind)
+            } catch {
+                logger.error("Could not refresh widget snapshot: \(error.localizedDescription)")
+            }
         }
     }
 }
@@ -86,7 +91,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     override init() {
         // Initialize Koin
-        let koinApp = KoinInitializerKt.initKoin(appDeclaration: { _ in })
+        let koinApp = KoinInitializerKt.initKoin(modules: KoinInitializerKt.appModules(), appDeclaration: { _ in })
         koinHelper = KoinHelper(koin: koinApp.koin)
 
         // Create root navigation component using the shared lifecycle
@@ -152,6 +157,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 // Execute sync (delta sync for background, not full sync)
                 // invoke() returns Unit and throws on error via SKIE interop
                 try await syncUseCase.invoke(forceFull: false)
+                _ = try await RecentSummariesSnapshotPublisher().publish(limit: 3)
+                WidgetCenter.shared.reloadTimelines(ofKind: AppGroupContract.recentSummariesWidgetKind)
 
                 logger.debug("Background sync completed successfully")
                 task.setTaskCompleted(success: true)

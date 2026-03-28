@@ -22,24 +22,25 @@ expect fun platformModules(configuration: PlatformConfiguration): List<Module>
 expect fun KoinApplication.platformExtras(configuration: PlatformConfiguration)
 
 /**
- * Common modules using KSP-generated .module extensions.
+ * App modules using KSP-generated .module extensions.
  *
  * This is expect/actual because KSP generates .module extensions into platform-specific
  * source sets (androidMain, desktopMain, etc.), not into commonMain. The metadata KSP
  * (kspCommonMainMetadata) does not produce these extensions when modules use @ComponentScan.
  */
-expect fun commonModules(): List<Module>
+expect fun appModules(): List<Module>
 
 /**
  * Initialize Koin with shared modules and platform-specific bindings.
  */
 fun initKoin(
     configuration: PlatformConfiguration = PlatformConfiguration(),
+    modules: List<Module> = appModules(),
     appDeclaration: KoinAppDeclaration = {},
     extraModules: List<Module> = emptyList(),
 ): KoinApplication =
     startKoin {
-        setupKoin(configuration, extraModules)
+        setupKoin(configuration = configuration, modules = modules, extraModules = extraModules)
         appDeclaration()
     }
 
@@ -49,10 +50,11 @@ fun initKoin(
  */
 fun KoinApplication.setupKoin(
     configuration: PlatformConfiguration = PlatformConfiguration(),
+    modules: List<Module> = appModules(),
     extraModules: List<Module> = emptyList(),
 ) {
     platformExtras(configuration)
-    modules(platformModules(configuration) + commonModules() + extraModules)
+    modules(platformModules(configuration) + modules + extraModules)
     properties(
         mapOf(
             "api.base.url" to AppConfig.Api.baseUrl,

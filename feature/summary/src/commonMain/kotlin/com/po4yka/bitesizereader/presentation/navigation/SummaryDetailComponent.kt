@@ -5,8 +5,6 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.bitesizereader.domain.model.FeedbackIssue
 import com.po4yka.bitesizereader.domain.model.FeedbackRating
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 interface SummaryDetailComponent {
     val viewModel: SummaryDetailViewModel
@@ -33,12 +31,13 @@ interface SummaryDetailComponent {
 
 class DefaultSummaryDetailComponent(
     componentContext: ComponentContext,
+    private val viewModelFactory: () -> SummaryDetailViewModel,
     override val summaryId: String,
     private val onBack: () -> Unit,
-) : SummaryDetailComponent, ComponentContext by componentContext, KoinComponent {
+) : SummaryDetailComponent, ComponentContext by componentContext {
     override val viewModel: SummaryDetailViewModel =
         retainedInstance {
-            get<SummaryDetailViewModel>().also { it.loadSummary(summaryId) }
+            viewModelFactory().also { it.loadSummary(summaryId) }
         }
 
     override fun onBackClicked() {

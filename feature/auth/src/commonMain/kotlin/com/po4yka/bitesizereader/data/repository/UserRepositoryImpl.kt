@@ -19,7 +19,7 @@ class UserRepositoryImpl(
         try {
             val response = userApi.getTelegramLinkStatus()
             if (response.success && response.data != null) {
-                return response.data.toDomain()
+                return requireNotNull(response.data).toDomain()
             } else {
                 throw response.error?.let { Exception(it.message) }
                     ?: Exception("Failed to get link status")
@@ -36,7 +36,7 @@ class UserRepositoryImpl(
     override suspend fun unlinkTelegram(): TelegramLinkStatus {
         val response = userApi.unlinkTelegram()
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Failed to unlink Telegram")
         }
@@ -45,7 +45,7 @@ class UserRepositoryImpl(
     override suspend fun beginTelegramLink(): String {
         val response = userApi.beginTelegramLink()
         if (response.success && response.data != null) {
-            return response.data.nonce
+            return requireNotNull(response.data).nonce
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Failed to begin linking")
         }
@@ -58,7 +58,7 @@ class UserRepositoryImpl(
         val request = TelegramLinkCompleteRequestDto(nonce, telegramAuth.toDto())
         val response = userApi.completeTelegramLink(request)
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Failed to complete linking")
         }

@@ -2,10 +2,10 @@ package com.po4yka.bitesizereader.data.repository
 
 import com.po4yka.bitesizereader.data.mappers.toDomain
 import com.po4yka.bitesizereader.data.remote.DigestApi
-import com.po4yka.bitesizereader.data.remote.dto.ResolveChannelResponseDto
 import com.po4yka.bitesizereader.domain.model.DigestHistoryItem
 import com.po4yka.bitesizereader.domain.model.DigestPreferences
 import com.po4yka.bitesizereader.domain.model.DigestSubscriptionInfo
+import com.po4yka.bitesizereader.domain.model.ResolvedChannel
 import com.po4yka.bitesizereader.domain.repository.DigestRepository
 import org.koin.core.annotation.Single
 
@@ -28,9 +28,9 @@ class DigestRepositoryImpl(
         return response.data?.toDomain() ?: DigestSubscriptionInfo()
     }
 
-    override suspend fun resolveChannel(channelUsername: String): ResolveChannelResponseDto {
+    override suspend fun resolveChannel(channelUsername: String): ResolvedChannel {
         val response = api.resolveChannel(channelUsername)
-        return response.data ?: error("Failed to resolve channel")
+        return requireNotNull(response.data) { "Failed to resolve channel" }.toDomain()
     }
 
     override suspend fun getPreferences(): DigestPreferences {

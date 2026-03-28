@@ -50,6 +50,7 @@ import com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalViewModel
 import com.po4yka.bitesizereader.presentation.viewmodel.SettingsViewModel
 import com.po4yka.bitesizereader.domain.model.Request
 import com.po4yka.bitesizereader.ui.components.DeleteAccountDialog
+import com.po4yka.bitesizereader.ui.components.LocalReadingGoalViewModel
 import com.po4yka.bitesizereader.ui.components.RequestHistorySection
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.SessionsSection
@@ -110,7 +111,6 @@ import bitesizereader.composeapp.generated.resources.settings_unlink_telegram
 import bitesizereader.composeapp.generated.resources.privacy_policy
 import bitesizereader.composeapp.generated.resources.terms_of_service
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 /**
  * Settings screen using Carbon Design System
@@ -120,7 +120,7 @@ import org.koin.compose.koinInject
 fun SettingsScreen(component: SettingsComponent) {
     val viewModel: SettingsViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
-    val readingGoalViewModel: ReadingGoalViewModel = koinInject()
+    val readingGoalViewModel: ReadingGoalViewModel = LocalReadingGoalViewModel.current
     val readingGoalState by readingGoalViewModel.state.collectAsState()
 
     val onRetryLinkStatus = remember<() -> Unit>(viewModel) { viewModel::loadLinkStatus }

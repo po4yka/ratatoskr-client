@@ -2,6 +2,7 @@ package com.po4yka.bitesizereader.di
 
 import coil3.ImageLoader
 import coil3.PlatformContext
+import coil3.annotation.ExperimentalCoilApi
 import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import coil3.network.ktor3.KtorNetworkFetcherFactory
@@ -17,6 +18,7 @@ val imageLoaderModule =
         }
     }
 
+@OptIn(ExperimentalCoilApi::class)
 fun getImageLoader(
     context: PlatformContext,
     httpClient: HttpClient,

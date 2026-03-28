@@ -2,12 +2,12 @@ package com.po4yka.bitesizereader.presentation.navigation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.po4yka.bitesizereader.presentation.viewmodel.RecommendationsViewModel
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryListViewModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 interface SummaryListComponent {
     val viewModel: SummaryListViewModel
+    val recommendationsViewModel: RecommendationsViewModel
 
     fun onSummaryClicked(id: String)
 
@@ -18,11 +18,14 @@ interface SummaryListComponent {
 
 class DefaultSummaryListComponent(
     componentContext: ComponentContext,
+    private val viewModelFactory: () -> SummaryListViewModel,
+    private val recommendationsViewModelFactory: () -> RecommendationsViewModel,
     private val onSummarySelected: (String) -> Unit,
     private val onSubmitUrl: () -> Unit,
     private val onCreateDigest: () -> Unit,
-) : SummaryListComponent, ComponentContext by componentContext, KoinComponent {
-    override val viewModel: SummaryListViewModel = retainedInstance { get() }
+) : SummaryListComponent, ComponentContext by componentContext {
+    override val viewModel: SummaryListViewModel = retainedInstance { viewModelFactory() }
+    override val recommendationsViewModel: RecommendationsViewModel = retainedInstance { recommendationsViewModelFactory() }
 
     override fun onSummaryClicked(id: String) {
         onSummarySelected(id)

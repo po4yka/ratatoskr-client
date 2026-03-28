@@ -62,17 +62,18 @@ import com.po4yka.bitesizereader.domain.model.HighlightColor
 import com.po4yka.bitesizereader.domain.model.ProcessingStage
 import com.po4yka.bitesizereader.domain.model.ReadingPreferences
 import com.po4yka.bitesizereader.domain.model.Summary
+import com.po4yka.bitesizereader.presentation.navigation.SummaryDetailComponent
 import com.po4yka.bitesizereader.presentation.viewmodel.SummaryDetailViewModel
 import com.po4yka.bitesizereader.ui.components.AddToCollectionDialog
 import com.po4yka.bitesizereader.ui.components.AnnotationDialog
 import com.po4yka.bitesizereader.ui.components.FeedbackDialog
-import com.po4yka.bitesizereader.ui.components.ResummarizeConfirmDialog
-import com.po4yka.bitesizereader.domain.usecase.GetProxiedImageUrlUseCase
 import com.po4yka.bitesizereader.ui.components.ErrorView
 import com.po4yka.bitesizereader.ui.components.HeaderIconButton
+import com.po4yka.bitesizereader.ui.components.LocalImageUrlTransformer
 import com.po4yka.bitesizereader.ui.components.ProxiedImage
 import com.po4yka.bitesizereader.ui.components.ProxiedImageTransformer
 import com.po4yka.bitesizereader.ui.components.ReadingSettingsPanel
+import com.po4yka.bitesizereader.ui.components.ResummarizeConfirmDialog
 import com.po4yka.bitesizereader.ui.components.ScreenHeader
 import com.po4yka.bitesizereader.ui.components.TagChip
 import com.po4yka.bitesizereader.ui.icons.CarbonIcons
@@ -114,22 +115,16 @@ import bitesizereader.composeapp.generated.resources.summary_detail_unfavorite
 import bitesizereader.composeapp.generated.resources.summary_detail_unknown_source
 import kotlin.time.Instant
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 /** Summary detail screen using Carbon Design System */
 @Suppress("FunctionNaming")
 @Composable
 fun SummaryDetailScreen(
-    viewModel: SummaryDetailViewModel,
-    summaryId: String,
-    onBackClick: () -> Unit,
-    onShareClick: () -> Unit,
+    component: SummaryDetailComponent,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel: SummaryDetailViewModel = component.viewModel
     val state by viewModel.state.collectAsState()
-    LaunchedEffect(summaryId) {
-        viewModel.loadSummary(summaryId)
-    }
 
     Column(
         modifier =
@@ -140,7 +135,7 @@ fun SummaryDetailScreen(
         // Header
         SummaryDetailHeader(
             summary = state.summary,
-            onBackClick = onBackClick,
+            onBackClick = component::onBackClicked,
             onShareClick = { viewModel.exportSummary() },
             onFavoriteClick = { viewModel.toggleFavorite() },
             onAddToCollectionClick = { viewModel.showAddToCollection() },
@@ -247,7 +242,7 @@ fun SummaryDetailScreen(
             state.error != null -> {
                 ErrorView(
                     message = state.error!!,
-                    onRetry = { viewModel.loadSummary(summaryId) },
+                    onRetry = { viewModel.loadSummary(component.summaryId) },
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -597,8 +592,8 @@ private fun SummaryDetailContent(
         }
     }
 
-    val getProxiedImageUrlUseCase = koinInject<GetProxiedImageUrlUseCase>()
-    val imageTransformer = remember { ProxiedImageTransformer(getProxiedImageUrlUseCase) }
+    val imageUrlTransformer = LocalImageUrlTransformer.current
+    val imageTransformer = remember(imageUrlTransformer) { ProxiedImageTransformer(imageUrlTransformer) }
 
     Column(modifier = modifier.fillMaxSize()) {
         ProgressBar(

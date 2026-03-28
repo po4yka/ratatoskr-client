@@ -132,7 +132,7 @@ class SummaryRepositoryImpl(
     override suspend fun getSummaryByUrl(url: String): Summary? {
         val response = api.getSummaryByUrl(url)
         return if (response.success && response.data != null) {
-            response.data.toDomain()
+            requireNotNull(response.data).toDomain()
         } else {
             null
         }
@@ -201,7 +201,10 @@ class SummaryRepositoryImpl(
         return try {
             val response = api.getContent(remoteId)
             if (response.success && response.data != null) {
-                val articleContent = MarkdownSanitizer.sanitize(response.data.content.content)
+                val articleContent =
+                    MarkdownSanitizer.sanitize(
+                        requireNotNull(response.data).content.content,
+                    )
                 database.databaseQueries.updateSummaryFullContent(
                     fullContent = articleContent,
                     cachedAt = Clock.System.now(),

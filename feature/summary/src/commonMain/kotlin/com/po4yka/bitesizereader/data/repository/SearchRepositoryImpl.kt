@@ -63,7 +63,7 @@ class SearchRepositoryImpl(
         return try {
             val response = api.getTrendingTopics()
             if (response.success && response.data != null) {
-                response.data.tags.map { it.tag }
+                requireNotNull(response.data).tags.map { it.tag }
             } else {
                 logger.error { "Failed to fetch trending topics: ${response.error}" }
                 emptyList()

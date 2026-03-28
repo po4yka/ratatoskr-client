@@ -2,6 +2,7 @@ package com.po4yka.bitesizereader
 
 import android.app.Application
 import com.po4yka.bitesizereader.di.PlatformConfiguration
+import com.po4yka.bitesizereader.di.appModules
 import com.po4yka.bitesizereader.di.imageLoaderModule
 import com.po4yka.bitesizereader.di.setupKoin
 import com.po4yka.bitesizereader.worker.WorkManagerInitializer
@@ -17,6 +18,7 @@ class BiteSizeReaderApp : Application(), KoinStartup {
         KoinConfiguration {
             setupKoin(
                 configuration = PlatformConfiguration(),
+                modules = appModules(),
                 extraModules = listOf(imageLoaderModule),
             )
             androidContext(this@BiteSizeReaderApp)

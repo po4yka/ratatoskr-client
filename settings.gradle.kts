@@ -1,4 +1,6 @@
 pluginManagement {
+    includeBuild("build-logic")
+
     repositories {
         google {
             mavenContent {
@@ -28,5 +30,12 @@ dependencyResolutionManagement {
 rootProject.name = "BiteSizeReader"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+include(":core")
 include(":composeApp")
 include(":shared")
+include(":feature:auth")
+include(":feature:collections")
+include(":feature:digest")
+include(":feature:settings")
+include(":feature:summary")
+include(":feature:sync")

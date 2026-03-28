@@ -14,18 +14,17 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import com.mikepenz.markdown.model.ImageData
 import com.mikepenz.markdown.model.ImageTransformer
-import com.po4yka.bitesizereader.domain.usecase.GetProxiedImageUrlUseCase
 
 /**
  * An [ImageTransformer] that rewrites image URLs through the app's image proxy
  * before loading them with Coil, matching the behavior of [ProxiedImage].
  */
 class ProxiedImageTransformer(
-    private val getProxiedImageUrlUseCase: GetProxiedImageUrlUseCase,
+    private val imageUrlTransformer: (String) -> String,
 ) : ImageTransformer {
     @Composable
     override fun transform(link: String): ImageData {
-        val proxiedUrl = getProxiedImageUrlUseCase(link)
+        val proxiedUrl = imageUrlTransformer(link)
         val model =
             ImageRequest.Builder(LocalPlatformContext.current)
                 .data(proxiedUrl)

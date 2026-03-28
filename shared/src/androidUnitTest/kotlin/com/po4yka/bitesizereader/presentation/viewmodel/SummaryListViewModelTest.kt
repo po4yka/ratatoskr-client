@@ -17,6 +17,9 @@ import com.po4yka.bitesizereader.domain.usecase.SyncDataUseCase
 import com.po4yka.bitesizereader.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.bitesizereader.domain.model.ReadFilter
 import com.po4yka.bitesizereader.domain.model.SortOrder
+import com.po4yka.bitesizereader.domain.model.SyncState
+import com.po4yka.bitesizereader.util.network.NetworkMonitor
+import com.po4yka.bitesizereader.util.network.NetworkStatus
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -51,6 +54,7 @@ class SummaryListViewModelTest {
     private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase = mockk()
     private val syncDataUseCase: SyncDataUseCase = mockk()
     private val logoutUseCase: LogoutUseCase = mockk()
+    private val networkMonitor: NetworkMonitor = mockk()
     private lateinit var searchHistoryManager: SearchHistoryManager
     private lateinit var viewModel: SummaryListViewModel
 
@@ -73,12 +77,14 @@ class SummaryListViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         coEvery { syncDataUseCase() } returns Unit
+        every { syncDataUseCase.syncState } returns flowOf(SyncState(lastSyncTime = null, lastSyncHash = null))
         coEvery { getAvailableTagsUseCase() } returns listOf("tech", "news")
         coEvery { getTrendingTopicsUseCase() } returns listOf("Tech", "Science")
         coEvery { getRecentSearchesUseCase() } returns emptyList()
         coEvery { saveSearchQueryUseCase(any()) } returns Unit
         coEvery { deleteSearchQueryUseCase(any()) } returns Unit
         coEvery { clearSearchHistoryUseCase() } returns Unit
+        every { networkMonitor.networkStatus } returns flowOf(NetworkStatus.CONNECTED)
         every {
             getFilteredSummariesUseCase(
                 page = any(),
@@ -110,6 +116,7 @@ class SummaryListViewModelTest {
                 syncDataUseCase = syncDataUseCase,
                 toggleFavoriteUseCase = toggleFavoriteUseCase,
                 logoutUseCase = logoutUseCase,
+                networkMonitor = networkMonitor,
                 dispatcher = testDispatcher,
             )
     }

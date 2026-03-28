@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
@@ -32,7 +31,6 @@ private val urlRegex = Regex("^https?://[\\w\\-]+(\\.[\\w\\-]+)+(:\\d+)?(/.*)?$"
 
 private fun isValidUrl(url: String): Boolean = urlRegex.matches(url.trim())
 
-@Factory
 class SubmitURLViewModel(
     private val processingService: ProcessingService,
     private val getRequestsUseCase: GetRequestsUseCase,
