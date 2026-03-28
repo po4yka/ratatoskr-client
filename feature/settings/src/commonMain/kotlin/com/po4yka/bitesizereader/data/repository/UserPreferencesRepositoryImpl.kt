@@ -23,7 +23,7 @@ class UserPreferencesRepositoryImpl(
         logger.debug { "Fetching user preferences" }
         val response = userPreferencesApi.getPreferences()
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw IllegalStateException(response.error?.message ?: "Failed to fetch preferences")
         }
@@ -37,7 +37,7 @@ class UserPreferencesRepositoryImpl(
             )
         val response = userPreferencesApi.updatePreferences(request)
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw IllegalStateException(response.error?.message ?: "Failed to update preferences")
         }
@@ -47,7 +47,7 @@ class UserPreferencesRepositoryImpl(
         logger.debug { "Fetching user stats" }
         val response = userPreferencesApi.getStats()
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw IllegalStateException(response.error?.message ?: "Failed to fetch user stats")
         }
@@ -57,7 +57,7 @@ class UserPreferencesRepositoryImpl(
         logger.debug { "Fetching user streak" }
         val response = userPreferencesApi.getStreak()
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw IllegalStateException(response.error?.message ?: "Failed to fetch streak")
         }
@@ -67,7 +67,7 @@ class UserPreferencesRepositoryImpl(
         logger.debug { "Fetching user goals" }
         val response = userPreferencesApi.getGoals()
         if (response.success && response.data != null) {
-            return response.data.map { it.toDomain() }
+            return requireNotNull(response.data).map { it.toDomain() }
         } else {
             throw IllegalStateException(response.error?.message ?: "Failed to fetch goals")
         }
@@ -77,7 +77,7 @@ class UserPreferencesRepositoryImpl(
         logger.debug { "Fetching user goals progress" }
         val response = userPreferencesApi.getGoalsProgress()
         if (response.success && response.data != null) {
-            return response.data.map { it.toDomain() }
+            return requireNotNull(response.data).map { it.toDomain() }
         } else {
             throw IllegalStateException(response.error?.message ?: "Failed to fetch goals progress")
         }
@@ -91,7 +91,7 @@ class UserPreferencesRepositoryImpl(
         val request = CreateGoalRequestDto(goalType = goalType, targetCount = targetCount)
         val response = userPreferencesApi.createGoal(request)
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw IllegalStateException(response.error?.message ?: "Failed to create goal")
         }

@@ -10,11 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
-@Factory
 class RecommendationsViewModel(
     private val getRecommendationsUseCase: GetRecommendationsUseCase,
     private val refreshRecommendationsUseCase: RefreshRecommendationsUseCase,

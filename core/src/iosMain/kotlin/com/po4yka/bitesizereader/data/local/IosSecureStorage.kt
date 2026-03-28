@@ -1,8 +1,11 @@
 package com.po4yka.bitesizereader.data.local
 
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.ExperimentalSettingsImplementation
 import com.russhwolf.settings.KeychainSettings
 import com.russhwolf.settings.coroutines.toSuspendSettings
 
+@OptIn(ExperimentalSettingsApi::class, ExperimentalSettingsImplementation::class)
 class IosSecureStorage : SecureStorage {
     private val settings = KeychainSettings(service = SERVICE_NAME).toSuspendSettings()
 

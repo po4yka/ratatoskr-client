@@ -3,8 +3,6 @@ package com.po4yka.bitesizereader.presentation.navigation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.bitesizereader.presentation.viewmodel.SubmitURLViewModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 interface SubmitURLComponent {
     val viewModel: SubmitURLViewModel
@@ -16,11 +14,12 @@ interface SubmitURLComponent {
 
 class DefaultSubmitURLComponent(
     componentContext: ComponentContext,
+    private val viewModelFactory: () -> SubmitURLViewModel,
     private val prefilledUrl: String?,
     private val onBack: () -> Unit,
     private val onNavigateToSummary: (String) -> Unit,
-) : SubmitURLComponent, ComponentContext by componentContext, KoinComponent {
-    override val viewModel: SubmitURLViewModel = retainedInstance { get() }
+) : SubmitURLComponent, ComponentContext by componentContext {
+    override val viewModel: SubmitURLViewModel = retainedInstance { viewModelFactory() }
 
     init {
         if (!prefilledUrl.isNullOrBlank()) {

@@ -10,7 +10,7 @@ import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
 @Module
-@ComponentScan("com.po4yka.bitesizereader.data.remote")
+@ComponentScan("com.po4yka.bitesizereader")
 class NetworkModule {
     @Single
     fun provideHttpClient(

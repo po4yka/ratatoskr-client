@@ -10,12 +10,15 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.instancekeeper.retainedInstance
+import com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalViewModel
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
 interface MainComponent {
     val childStack: Value<ChildStack<*, Child>>
+    val readingGoalViewModel: ReadingGoalViewModel
 
     fun navigateToTab(tab: Tab)
 
@@ -60,187 +63,74 @@ interface MainComponent {
     }
 }
 
-class DefaultMainComponent(
+internal class DefaultMainComponent(
     componentContext: ComponentContext,
+    private val navigationRegistry: DefaultNavigationRegistry = DefaultNavigationRegistry.fromKoin(),
 ) : MainComponent, ComponentContext by componentContext {
-    private val navigation = StackNavigation<Config>()
+    private val navigation = StackNavigation<MainRoute>()
+    override val readingGoalViewModel: ReadingGoalViewModel =
+        retainedInstance { navigationRegistry.createReadingGoalViewModel() }
+
+    private val navigator =
+        object : MainNavigator {
+            override fun goBack() {
+                navigation.pop()
+            }
+
+            override fun openSummaryDetail(summaryId: String) {
+                navigation.push(MainRoute.SummaryDetail(summaryId))
+            }
+
+            override fun openSubmitUrl(prefilledUrl: String) {
+                navigation.push(MainRoute.SubmitURL(prefilledUrl.ifBlank { null }))
+            }
+
+            override fun openCustomDigestCreate() {
+                navigation.push(MainRoute.CustomDigestCreate)
+            }
+
+            override fun openCustomDigestView(digestId: String) {
+                navigation.push(MainRoute.CustomDigestView(digestId))
+            }
+
+            override fun openCollectionView(collectionId: String) {
+                logger.info { "Navigate to collection view: $collectionId" }
+                navigation.push(MainRoute.CollectionView(collectionId))
+            }
+
+            override fun openDigest() {
+                navigation.push(MainRoute.Digest)
+            }
+        }
+
+    private val featureRegistry = MainFeatureRegistry(navigationRegistry.createMainFeatureEntries(navigator))
 
     override val childStack: Value<ChildStack<*, MainComponent.Child>> =
         childStack(
             source = navigation,
-            serializer = Config.serializer(),
-            initialConfiguration = Config.SummaryList(),
+            serializer = MainRoute.serializer(),
+            initialConfiguration = MainRoute.SummaryList(),
             handleBackButton = true,
-            childFactory = ::createChild,
+            childFactory = featureRegistry::createChild,
         )
 
-    private fun createChild(
-        config: Config,
-        componentContext: ComponentContext,
-    ): MainComponent.Child =
-        when (config) {
-            is Config.SummaryList ->
-                MainComponent.Child.SummaryList(
-                    DefaultSummaryListComponent(
-                        componentContext = componentContext,
-                        onSummarySelected = { id -> navigateToSummaryDetail(id) },
-                        onSubmitUrl = { navigateToSubmitUrl("") },
-                        onCreateDigest = { navigateToCustomDigestCreate() },
-                    ),
-                )
-            is Config.SummaryDetail ->
-                MainComponent.Child.SummaryDetail(
-                    DefaultSummaryDetailComponent(
-                        componentContext = componentContext,
-                        summaryId = config.summaryId,
-                        onBack = { navigation.pop() },
-                    ),
-                )
-            is Config.Collections ->
-                MainComponent.Child.Collections(
-                    DefaultCollectionsComponent(
-                        componentContext = componentContext,
-                        onCollectionSelected = { collectionId -> navigateToCollectionView(collectionId) },
-                    ),
-                )
-            is Config.CollectionView ->
-                MainComponent.Child.CollectionView(
-                    DefaultCollectionViewComponent(
-                        componentContext = componentContext,
-                        collectionId = config.collectionId,
-                        onBack = { navigation.pop() },
-                        onNavigateToSummary = { summaryId -> navigation.push(Config.SummaryDetail(summaryId)) },
-                        onCollectionDeleted = { navigation.pop() },
-                    ),
-                )
-            is Config.Stats ->
-                MainComponent.Child.Stats(
-                    DefaultStatsComponent(componentContext = componentContext),
-                )
-            is Config.Settings ->
-                MainComponent.Child.Settings(
-                    DefaultSettingsComponent(
-                        componentContext = componentContext,
-                        onDigest = { navigateToDigest() },
-                    ),
-                )
-            is Config.Search ->
-                MainComponent.Child.Search(
-                    DefaultSearchComponent(
-                        componentContext = componentContext,
-                        onSummarySelected = { id -> navigateToSummaryDetail(id) },
-                    ),
-                )
-            is Config.SubmitURL ->
-                MainComponent.Child.SubmitURL(
-                    DefaultSubmitURLComponent(
-                        componentContext = componentContext,
-                        prefilledUrl = config.prefilledUrl,
-                        onBack = { navigation.pop() },
-                        onNavigateToSummary = { summaryId ->
-                            navigation.pop()
-                            navigateToSummaryDetail(summaryId)
-                        },
-                    ),
-                )
-            is Config.Digest ->
-                MainComponent.Child.Digest(
-                    DefaultDigestComponent(
-                        componentContext = componentContext,
-                        onBack = { navigation.pop() },
-                    ),
-                )
-            is Config.CustomDigestCreate ->
-                MainComponent.Child.CustomDigestCreate(
-                    DefaultCustomDigestCreateComponent(
-                        componentContext = componentContext,
-                        onBack = { navigation.pop() },
-                        onDigestCreated = { digestId ->
-                            navigation.pop()
-                            navigation.push(Config.CustomDigestView(digestId))
-                        },
-                    ),
-                )
-            is Config.CustomDigestView ->
-                MainComponent.Child.CustomDigestView(
-                    DefaultCustomDigestViewComponent(
-                        componentContext = componentContext,
-                        digestId = config.digestId,
-                        onBack = { navigation.pop() },
-                    ),
-                )
-        }
-
     override fun navigateToSubmitUrl(prefilledUrl: String) {
-        navigation.push(Config.SubmitURL(prefilledUrl.ifBlank { null }))
+        navigator.openSubmitUrl(prefilledUrl)
     }
 
     override fun navigateToSummaryDetail(summaryId: String) {
-        navigation.push(Config.SummaryDetail(summaryId))
-    }
-
-    private fun navigateToDigest() {
-        navigation.push(Config.Digest)
+        navigator.openSummaryDetail(summaryId)
     }
 
     override fun navigateToCustomDigestCreate() {
-        navigation.push(Config.CustomDigestCreate)
+        navigator.openCustomDigestCreate()
     }
 
     override fun navigateToCustomDigestView(digestId: String) {
-        navigation.push(Config.CustomDigestView(digestId))
-    }
-
-    private fun navigateToCollectionView(collectionId: String) {
-        logger.info { "Navigate to collection view: $collectionId" }
-        navigation.push(Config.CollectionView(collectionId = collectionId))
+        navigator.openCustomDigestView(digestId)
     }
 
     override fun navigateToTab(tab: MainComponent.Tab) {
-        val config =
-            when (tab) {
-                MainComponent.Tab.SUMMARY_LIST -> Config.SummaryList()
-                MainComponent.Tab.SEARCH -> Config.Search
-                MainComponent.Tab.COLLECTIONS -> Config.Collections
-                MainComponent.Tab.STATS -> Config.Stats
-                MainComponent.Tab.SETTINGS -> Config.Settings
-            }
-        navigation.bringToFront(config)
-    }
-
-    @kotlinx.serialization.Serializable
-    sealed interface Config {
-        @kotlinx.serialization.Serializable
-        data class SummaryList(val collectionId: String? = null) : Config
-
-        @kotlinx.serialization.Serializable
-        data class SummaryDetail(val summaryId: String) : Config
-
-        @kotlinx.serialization.Serializable
-        data object Collections : Config
-
-        @kotlinx.serialization.Serializable
-        data class CollectionView(val collectionId: String) : Config
-
-        @kotlinx.serialization.Serializable
-        data object Stats : Config
-
-        @kotlinx.serialization.Serializable
-        data object Settings : Config
-
-        @kotlinx.serialization.Serializable
-        data object Search : Config
-
-        @kotlinx.serialization.Serializable
-        data class SubmitURL(val prefilledUrl: String? = null) : Config
-
-        @kotlinx.serialization.Serializable
-        data object Digest : Config
-
-        @kotlinx.serialization.Serializable
-        data object CustomDigestCreate : Config
-
-        @kotlinx.serialization.Serializable
-        data class CustomDigestView(val digestId: String) : Config
+        navigation.bringToFront(featureRegistry.routeForTab(tab))
     }
 }

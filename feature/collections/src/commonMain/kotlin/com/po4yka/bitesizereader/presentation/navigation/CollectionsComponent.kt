@@ -3,8 +3,6 @@ package com.po4yka.bitesizereader.presentation.navigation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.bitesizereader.presentation.viewmodel.CollectionsViewModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 interface CollectionsComponent {
     val viewModel: CollectionsViewModel
@@ -14,9 +12,10 @@ interface CollectionsComponent {
 
 class DefaultCollectionsComponent(
     componentContext: ComponentContext,
+    private val viewModelFactory: () -> CollectionsViewModel,
     private val onCollectionSelected: (String) -> Unit,
-) : CollectionsComponent, ComponentContext by componentContext, KoinComponent {
-    override val viewModel: CollectionsViewModel = retainedInstance { get() }
+) : CollectionsComponent, ComponentContext by componentContext {
+    override val viewModel: CollectionsViewModel = retainedInstance { viewModelFactory() }
 
     override fun onCollectionClicked(id: String) {
         onCollectionSelected(id)

@@ -2,6 +2,7 @@ package com.po4yka.bitesizereader.domain.usecase
 
 import com.po4yka.bitesizereader.domain.model.SyncProgress
 import com.po4yka.bitesizereader.domain.model.SyncState
+import com.po4yka.bitesizereader.domain.repository.SyncContentPrefetcher
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
@@ -14,7 +15,7 @@ private val logger = KotlinLogging.logger {}
 @Factory
 class SyncDataUseCase(
     private val repository: SyncRepository,
-    private val prefetchContentUseCase: PrefetchContentUseCase,
+    private val contentPrefetcher: SyncContentPrefetcher,
 ) {
     /**
      * Observable progress of current sync operation (null if no sync in progress).
@@ -36,7 +37,7 @@ class SyncDataUseCase(
         repository.sync(forceFull = forceFull)
         // Prefetch content for recent unread articles after successful sync
         try {
-            prefetchContentUseCase()
+            contentPrefetcher.prefetchRecentContent()
         } catch (e: CancellationException) {
             throw e
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {

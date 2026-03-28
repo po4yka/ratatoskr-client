@@ -1,6 +1,6 @@
 package com.po4yka.bitesizereader.domain.repository
 
-import com.po4yka.bitesizereader.data.remote.dto.ImportJobDto
+import com.po4yka.bitesizereader.domain.model.ImportJob
 
 interface ImportExportRepository {
     suspend fun importBookmarks(
@@ -10,11 +10,11 @@ interface ImportExportRepository {
         createTags: Boolean = true,
         targetCollectionId: Int? = null,
         skipDuplicates: Boolean = true,
-    ): ImportJobDto
+    ): ImportJob
 
-    suspend fun getImportJob(jobId: Int): ImportJobDto
+    suspend fun getImportJob(jobId: Int): ImportJob
 
-    suspend fun listImportJobs(): List<ImportJobDto>
+    suspend fun listImportJobs(): List<ImportJob>
 
     suspend fun deleteImportJob(jobId: Int)
 

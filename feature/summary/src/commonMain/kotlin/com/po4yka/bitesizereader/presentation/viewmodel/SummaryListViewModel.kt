@@ -31,13 +31,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
 private const val LOAD_MORE_THRESHOLD = 5
 
-@Factory
 class SummaryListViewModel(
     private val getFilteredSummariesUseCase: GetFilteredSummariesUseCase,
     private val searchSummariesUseCase: SearchSummariesUseCase,

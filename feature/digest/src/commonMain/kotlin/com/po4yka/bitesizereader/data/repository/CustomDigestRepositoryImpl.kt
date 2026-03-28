@@ -69,7 +69,7 @@ class CustomDigestRepositoryImpl(
                     throw Exception("Failed to create digest: ${response.error?.message}")
                 }
 
-                val dto = response.data
+                val dto = requireNotNull(response.data)
                 val serverCreatedAt = parseInstant(dto.createdAt, now)
                 val serverStatus = dto.status
                 database.databaseQueries.insertCustomDigest(

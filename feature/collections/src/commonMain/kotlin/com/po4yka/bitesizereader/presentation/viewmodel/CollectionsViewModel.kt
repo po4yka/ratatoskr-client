@@ -12,11 +12,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}
 
-@Factory
 class CollectionsViewModel(
     private val collectionRepository: CollectionRepository,
     private val createCollectionUseCase: CreateCollectionUseCase,

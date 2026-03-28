@@ -3,8 +3,6 @@ package com.po4yka.bitesizereader.presentation.navigation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.bitesizereader.presentation.viewmodel.SearchViewModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 interface SearchComponent {
     val viewModel: SearchViewModel
@@ -14,9 +12,10 @@ interface SearchComponent {
 
 class DefaultSearchComponent(
     componentContext: ComponentContext,
+    private val viewModelFactory: () -> SearchViewModel,
     private val onSummarySelected: (String) -> Unit,
-) : SearchComponent, ComponentContext by componentContext, KoinComponent {
-    override val viewModel: SearchViewModel = retainedInstance { get() }
+) : SearchComponent, ComponentContext by componentContext {
+    override val viewModel: SearchViewModel = retainedInstance { viewModelFactory() }
 
     override fun onSummaryClicked(id: String) {
         onSummarySelected(id)

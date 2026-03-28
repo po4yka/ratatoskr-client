@@ -1,6 +1,6 @@
 package com.po4yka.bitesizereader.domain.usecase
 
-import com.po4yka.bitesizereader.data.remote.dto.ImportJobDto
+import com.po4yka.bitesizereader.domain.model.ImportJob
 import com.po4yka.bitesizereader.domain.repository.ImportExportRepository
 import org.koin.core.annotation.Factory
 
@@ -13,7 +13,7 @@ class ImportBookmarksUseCase(private val repository: ImportExportRepository) {
         createTags: Boolean = true,
         targetCollectionId: Int? = null,
         skipDuplicates: Boolean = true,
-    ): ImportJobDto = repository.importBookmarks(
+    ): ImportJob = repository.importBookmarks(
         fileBytes = fileBytes,
         fileName = fileName,
         summarize = summarize,

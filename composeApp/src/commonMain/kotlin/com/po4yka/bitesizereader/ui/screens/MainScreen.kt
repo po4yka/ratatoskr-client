@@ -28,6 +28,7 @@ import bitesizereader.composeapp.generated.resources.nav_search
 import bitesizereader.composeapp.generated.resources.nav_settings
 import bitesizereader.composeapp.generated.resources.nav_stats
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.Alignment
@@ -40,6 +41,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.presentation.navigation.MainComponent
+import com.po4yka.bitesizereader.ui.components.LocalReadingGoalViewModel
 
 /** Minimum width to switch from bottom-bar to side navigation rail layout. */
 private val EXPANDED_WIDTH_THRESHOLD = 600.dp
@@ -87,7 +89,10 @@ fun MainScreen(
 
                 // Content area
                 Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                    ScreenContent(childStack = childStack)
+                    ScreenContent(
+                        childStack = childStack,
+                        readingGoalViewModel = component.readingGoalViewModel,
+                    )
                 }
             }
         } else {
@@ -98,8 +103,11 @@ fun MainScreen(
                         Modifier
                             .weight(1f)
                             .fillMaxWidth(),
-                ) {
-                    ScreenContent(childStack = childStack)
+                    ) {
+                    ScreenContent(
+                        childStack = childStack,
+                        readingGoalViewModel = component.readingGoalViewModel,
+                    )
                 }
 
                 if (showNav) {
@@ -113,38 +121,39 @@ fun MainScreen(
     }
 }
 
-@Suppress("FunctionNaming")
 @Composable
-private fun ScreenContent(childStack: ChildStack<*, MainComponent.Child>) {
-    Children(
-        stack = childStack,
-        modifier = Modifier.fillMaxSize(),
-        animation = stackAnimation(fade()),
-    ) { child ->
-        when (val instance = child.instance) {
-            is MainComponent.Child.SummaryList -> SummaryListScreen(component = instance.component)
-            is MainComponent.Child.SummaryDetail ->
-                SummaryDetailScreen(
-                    viewModel = instance.component.viewModel,
-                    summaryId = instance.component.summaryId,
-                    onBackClick = instance.component::onBackClicked,
-                    onShareClick = { },
-                )
-            is MainComponent.Child.Search -> SearchScreen(component = instance.component)
-            is MainComponent.Child.Collections ->
-                CollectionsScreen(component = instance.component)
-            is MainComponent.Child.CollectionView ->
-                CollectionViewScreen(component = instance.component)
-            is MainComponent.Child.Stats -> StatsScreen(component = instance.component)
-            is MainComponent.Child.Settings -> SettingsScreen(component = instance.component)
-            is MainComponent.Child.SubmitURL ->
-                SubmitURLScreen(component = instance.component)
-            is MainComponent.Child.Digest ->
-                DigestScreen(component = instance.component)
-            is MainComponent.Child.CustomDigestCreate ->
-                CustomDigestCreateScreen(component = instance.component)
-            is MainComponent.Child.CustomDigestView ->
-                CustomDigestViewScreen(component = instance.component)
+private fun ScreenContent(
+    childStack: ChildStack<*, MainComponent.Child>,
+    readingGoalViewModel: com.po4yka.bitesizereader.presentation.viewmodel.ReadingGoalViewModel,
+) {
+    CompositionLocalProvider(
+        LocalReadingGoalViewModel provides readingGoalViewModel,
+    ) {
+        Children(
+            stack = childStack,
+            modifier = Modifier.fillMaxSize(),
+            animation = stackAnimation(fade()),
+        ) { child ->
+            when (val instance = child.instance) {
+                is MainComponent.Child.SummaryList -> SummaryListScreen(component = instance.component)
+                is MainComponent.Child.SummaryDetail ->
+                    SummaryDetailScreen(component = instance.component)
+                is MainComponent.Child.Search -> SearchScreen(component = instance.component)
+                is MainComponent.Child.Collections ->
+                    CollectionsScreen(component = instance.component)
+                is MainComponent.Child.CollectionView ->
+                    CollectionViewScreen(component = instance.component)
+                is MainComponent.Child.Stats -> StatsScreen(component = instance.component)
+                is MainComponent.Child.Settings -> SettingsScreen(component = instance.component)
+                is MainComponent.Child.SubmitURL ->
+                    SubmitURLScreen(component = instance.component)
+                is MainComponent.Child.Digest ->
+                    DigestScreen(component = instance.component)
+                is MainComponent.Child.CustomDigestCreate ->
+                    CustomDigestCreateScreen(component = instance.component)
+                is MainComponent.Child.CustomDigestView ->
+                    CustomDigestViewScreen(component = instance.component)
+            }
         }
     }
 }

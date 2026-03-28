@@ -30,7 +30,7 @@ class CollectionRepositoryImpl(
         flow {
             val response = api.listCollections()
             if (response.success && response.data != null) {
-                val collections = response.data.collections.map { it.toDomain() }
+                val collections = requireNotNull(response.data).collections.map { it.toDomain() }
                 emit(collections)
             } else {
                 throw Exception("Failed to fetch collections: ${response.error}")
@@ -41,7 +41,7 @@ class CollectionRepositoryImpl(
         val intId = id.toIntOrNull() ?: return null
         val response = api.getCollection(intId)
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw Exception("Failed to get collection $id: ${response.error}")
         }
@@ -57,10 +57,11 @@ class CollectionRepositoryImpl(
                 ?: throw IllegalArgumentException("Invalid collection ID: $collectionId")
         val response = api.listItems(intId, limit, offset)
         if (response.success && response.data != null) {
+            val items = requireNotNull(response.data).items
             // CollectionItem only contains summary_id. Look up full summary data
             // from the local database (offline-first). Items not yet synced locally
             // are skipped with a warning.
-            return response.data.items.mapNotNull { item ->
+            return items.mapNotNull { item ->
                 val summaryId = item.summaryId.toString()
                 val entity = database.databaseQueries.getSummaryById(summaryId).executeAsOneOrNull()
                 if (entity != null) {
@@ -88,7 +89,7 @@ class CollectionRepositoryImpl(
             )
         val response = api.updateCollection(intId, request)
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw Exception("Failed to update collection: ${response.error}")
         }
@@ -106,7 +107,7 @@ class CollectionRepositoryImpl(
         val intId = id.toIntOrNull() ?: throw IllegalArgumentException("Invalid collection ID: $id")
         val response = api.getAcl(intId)
         if (response.success && response.data != null) {
-            return response.data.acl.map { it.toDomain() }
+            return requireNotNull(response.data).acl.map { it.toDomain() }
         } else {
             throw Exception("Failed to get ACL for collection $id: ${response.error}")
         }
@@ -153,7 +154,7 @@ class CollectionRepositoryImpl(
             )
         val response = api.createInvite(intId, request)
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw Exception("Failed to create invite link: ${response.error}")
         }
@@ -184,7 +185,7 @@ class CollectionRepositoryImpl(
         val request = CollectionCreateRequest(name = name, description = description)
         val response = api.createCollection(request)
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return requireNotNull(response.data).toDomain()
         } else {
             throw Exception("Failed to create collection: ${response.error}")
         }

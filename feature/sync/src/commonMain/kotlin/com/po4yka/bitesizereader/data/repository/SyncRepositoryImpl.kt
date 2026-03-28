@@ -4,17 +4,10 @@ import kotlin.concurrent.Volatile
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.po4yka.bitesizereader.data.mappers.toDto
-import com.po4yka.bitesizereader.data.mappers.toSummaryEntity
 import com.po4yka.bitesizereader.data.remote.HighlightsApi
 import com.po4yka.bitesizereader.data.remote.SummariesApi
 import com.po4yka.bitesizereader.data.remote.SyncApi
-import com.po4yka.bitesizereader.data.remote.dto.CreateHighlightRequestDto
-import com.po4yka.bitesizereader.data.remote.dto.UpdateHighlightRequestDto
 import com.po4yka.bitesizereader.database.PendingOperationEntity
-import com.po4yka.bitesizereader.data.remote.dto.HighlightDto
-import com.po4yka.bitesizereader.data.remote.dto.SubmitFeedbackRequestDto
-import com.po4yka.bitesizereader.data.remote.dto.SyncSummaryTagDto
-import com.po4yka.bitesizereader.data.remote.dto.SyncTagDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncItemDto
 import com.po4yka.bitesizereader.data.remote.dto.SyncSessionRequestDto
@@ -29,11 +22,6 @@ import com.po4yka.bitesizereader.domain.repository.LocalChange
 import com.po4yka.bitesizereader.domain.repository.SyncRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.doubleOrNull
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.longOrNull
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -75,6 +63,30 @@ class SyncRepositoryImpl(
     private val networkMonitor: NetworkMonitor,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncRepository {
+    private val syncItemApplierRegistry =
+        SyncItemApplierRegistry(
+            appliers =
+                listOf(
+                    SummarySyncItemApplier(database),
+                    HighlightSyncItemApplier(database),
+                    TagSyncItemApplier(database),
+                    SummaryTagSyncItemApplier(database),
+                ),
+        )
+
+    private val pendingOperationFlusher =
+        PendingOperationFlusher(
+            database = database,
+            summariesApi = summariesApi,
+            highlightsApi = highlightsApi,
+            applyChanges = ::applyChanges,
+            onConflictCount = { conflicts ->
+                _syncProgress.update { current ->
+                    current?.copy(errorCount = (current.errorCount) + conflicts)
+                }
+            },
+        )
+
     // ========================================================================
     // Progress Tracking
     // ========================================================================
@@ -183,7 +195,7 @@ class SyncRepositoryImpl(
         val request: SyncSessionRequestDto? = null
         val response = api.createSession(request)
         if (response.success && response.data != null) {
-            val data = response.data
+            val data = requireNotNull(response.data)
             logger.info { "Created sync session: ${data.sessionId}, defaultLimit=${data.defaultLimit}" }
             val expiresAt =
                 data.expiresAt?.let {
@@ -216,7 +228,7 @@ class SyncRepositoryImpl(
         val session = createSyncSessionInternal()
 
         // Flush pending operations before sync
-        flushPendingOperations(session.sessionId)
+        pendingOperationFlusher.flush(session.sessionId)
 
         val metadata = database.databaseQueries.getSyncMetadata().executeAsOneOrNull()
         val lastSyncCursor = metadata?.syncToken?.toLongOrNull() ?: 0L
@@ -380,8 +392,9 @@ class SyncRepositoryImpl(
                 currentBatch = batchNumber,
             )
 
-            if (result.nextCursor != null) {
-                cursor = result.nextCursor
+            val nextCursor = result.nextCursor
+            if (nextCursor != null) {
+                cursor = nextCursor
             }
 
             // Guard: break if cursor did not advance (prevents infinite loop)
@@ -465,8 +478,9 @@ class SyncRepositoryImpl(
         val request = limit?.let { SyncSessionRequestDto(limit = it) }
         val response = api.createSession(request)
         if (response.success && response.data != null) {
-            logger.info { "Created sync session: ${response.data.sessionId}" }
-            return response.data.sessionId
+            val data = requireNotNull(response.data)
+            logger.info { "Created sync session: ${data.sessionId}" }
+            return data.sessionId
         } else {
             throw IllegalStateException(response.error?.message ?: "Failed to create sync session")
         }
@@ -485,7 +499,7 @@ class SyncRepositoryImpl(
             throw IllegalStateException(response.error?.message ?: "Full sync failed")
         }
 
-        val data = response.data
+        val data = requireNotNull(response.data)
         logger.info { "Full sync received ${data.items.size} items, hasMore=${data.hasMore}" }
 
         // Track processing results
@@ -563,14 +577,14 @@ class SyncRepositoryImpl(
             )
         }
 
-        val response = deltaSyncResult.response
+        val response = requireNotNull(deltaSyncResult.response)
 
         if (!response.success || response.data == null) {
             logger.error { "Delta sync failed: ${response.error}" }
             throw IllegalStateException(response.error?.message ?: "Delta sync failed")
         }
 
-        val data = response.data
+        val data = requireNotNull(response.data)
         logger.info {
             "Delta sync received: created=${data.created.size}, " +
                 "updated=${data.updated.size}, deleted=${data.deleted.size}, hasMore=${data.hasMore}"
@@ -606,7 +620,7 @@ class SyncRepositoryImpl(
                     when (item.entityType) {
                         "summary" -> database.databaseQueries.deleteSummary(item.idAsString)
                         "highlight" -> database.databaseQueries.deleteHighlightById(item.idAsString)
-                        "tag" -> item.idAsLong?.toInt()?.let { database.databaseQueries.deleteTag(it) }
+                        "tag" -> item.idAsLong?.let { database.databaseQueries.deleteTag(it) }
                         "summary_tag" -> {
                             // Summary-tag associations are cleaned up via tag delete cascade
                         }
@@ -670,7 +684,7 @@ class SyncRepositoryImpl(
             throw IllegalStateException(response.error?.message ?: "Apply changes failed")
         }
 
-        val data = response.data
+        val data = requireNotNull(response.data)
         logger.info { "Applied ${data.applied.size} changes, ${data.conflicts.size} conflicts" }
 
         return ApplyResult(
@@ -696,337 +710,6 @@ class SyncRepositoryImpl(
      * @return true if item was processed successfully, false if there was an error
      */
     private fun processSyncItem(item: SyncItemDto): Boolean {
-        return when (item.entityType) {
-            "summary" -> {
-                val entity = item.summary?.toSummaryEntity(item.idAsLong ?: 0L)
-                if (entity != null) {
-                    database.databaseQueries.insertSummary(entity)
-                    true
-                } else {
-                    false
-                }
-            }
-            "highlight" -> {
-                try {
-                    val highlightData = item.highlight
-                    if (highlightData == null) {
-                        logger.warn { "Highlight sync item ${item.idAsString} has no highlight payload, skipping" }
-                        false
-                    } else {
-                        val dto =
-                            kotlinx.serialization.json.Json.decodeFromJsonElement(
-                                HighlightDto.serializer(),
-                                highlightData,
-                            )
-                        database.databaseQueries.upsertHighlight(
-                            id = dto.id,
-                            summary_id = dto.summaryId,
-                            text = dto.text,
-                            start_offset = dto.startOffset?.toLong(),
-                            end_offset = dto.endOffset?.toLong(),
-                            color = dto.color,
-                            note = dto.note,
-                            created_at = dto.createdAt,
-                            updated_at = dto.updatedAt,
-                        )
-                        true
-                    }
-                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                    logger.error(e) { "Failed to process highlight sync item ${item.idAsString}" }
-                    false
-                }
-            }
-            "tag" -> {
-                try {
-                    val tagData = item.tag
-                    if (tagData == null) {
-                        logger.warn { "Tag sync item ${item.idAsString} has no tag payload, skipping" }
-                        false
-                    } else {
-                        val dto =
-                            kotlinx.serialization.json.Json.decodeFromJsonElement(
-                                SyncTagDto.serializer(),
-                                tagData,
-                            )
-                        if (!dto.isDeleted) {
-                            database.databaseQueries.insertOrReplaceTag(
-                                id = dto.id,
-                                name = dto.name,
-                                color = dto.color,
-                                summaryCount = 0,
-                                createdAt = dto.createdAt,
-                                updatedAt = dto.updatedAt,
-                                syncStatus = "synced",
-                            )
-                        }
-                        true
-                    }
-                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                    logger.error(e) { "Failed to process tag sync item ${item.idAsString}" }
-                    false
-                }
-            }
-            "summary_tag" -> {
-                try {
-                    val stData = item.summaryTag
-                    if (stData == null) {
-                        logger.warn { "SummaryTag sync item ${item.idAsString} has no payload, skipping" }
-                        false
-                    } else {
-                        val dto =
-                            kotlinx.serialization.json.Json.decodeFromJsonElement(
-                                SyncSummaryTagDto.serializer(),
-                                stData,
-                            )
-                        database.databaseQueries.insertSummaryTag(
-                            summaryId = dto.summaryId.toString(),
-                            tagId = dto.tagId,
-                        )
-                        true
-                    }
-                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                    logger.error(e) { "Failed to process summary_tag sync item ${item.idAsString}" }
-                    false
-                }
-            }
-            else -> {
-                logger.debug { "Skipping entity type not needed on mobile: ${item.entityType}" }
-                true
-            }
-        }
-    }
-
-    private suspend fun flushPendingOperations(sessionId: String) {
-        val pendingOps = database.databaseQueries.selectAllPendingOperations().executeAsList()
-        if (pendingOps.isEmpty()) return
-
-        logger.info { "Flushing ${pendingOps.size} pending operations" }
-
-        // Flush highlight operations via direct API calls
-        val highlightOps = pendingOps.filter { it.entityType == "highlight" }
-        for (highlightOp in highlightOps) {
-            try {
-                flushHighlightOperation(highlightOp)
-                database.databaseQueries.deletePendingOperation(highlightOp.id)
-            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                logger.warn { "Failed to sync highlight ${highlightOp.entityId}: ${e.message}" }
-            }
-        }
-
-        val nonFeedbackOps = mutableListOf<Pair<Long, LocalChange>>()
-        for (op in pendingOps) {
-            if (op.entityType == "highlight") continue
-            val remoteId = op.entityId.toLongOrNull() ?: continue
-            val change =
-                when (op.action) {
-                    "delete" ->
-                        LocalChange(
-                            entityType = op.entityType,
-                            id = remoteId,
-                            action = "delete",
-                            lastSeenVersion = 0,
-                            payload = null,
-                            clientTimestamp = null,
-                        )
-                    "update_read" -> {
-                        val payloadMap = op.payload?.let { parsePayload(it) }
-                        LocalChange(
-                            entityType = op.entityType,
-                            id = remoteId,
-                            action = "update",
-                            lastSeenVersion = 0,
-                            payload = payloadMap,
-                            clientTimestamp = null,
-                        )
-                    }
-                    "toggle_favorite" ->
-                        LocalChange(
-                            entityType = op.entityType,
-                            id = remoteId,
-                            action = "update",
-                            lastSeenVersion = 0,
-                            payload = mapOf("toggle_favorite" to true),
-                            clientTimestamp = null,
-                        )
-                    "submit_feedback" -> {
-                        // Handle feedback separately - direct API call, not via applyChanges
-                        null
-                    }
-                    else -> {
-                        logger.warn { "Unknown pending operation action: ${op.action}" }
-                        null
-                    }
-                }
-            if (change != null) {
-                nonFeedbackOps.add(op.id to change)
-            }
-        }
-        val changes = nonFeedbackOps.map { it.second }
-
-        // Flush feedback operations separately
-        val feedbackOps = pendingOps.filter { it.action == "submit_feedback" }
-        for (feedbackOp in feedbackOps) {
-            try {
-                val payloadMap = feedbackOp.payload?.let { parsePayload(it) } ?: continue
-                val remoteId = feedbackOp.entityId.toLongOrNull() ?: continue
-                val rating = (payloadMap["rating"] as? String) ?: continue
-                val issuesList =
-                    (payloadMap["issues"] as? String)
-                        ?.split(",")
-                        ?.filter { it.isNotBlank() }
-                        ?: emptyList()
-                val comment = payloadMap["comment"] as? String
-                val response =
-                    summariesApi.submitFeedback(
-                        remoteId,
-                        SubmitFeedbackRequestDto(
-                            rating = rating,
-                            issues = issuesList,
-                            comment = comment,
-                        ),
-                    )
-                if (!response.success) {
-                    logger.warn { "Server rejected feedback for ${feedbackOp.entityId}: ${response.error}" }
-                    continue
-                }
-                database.databaseQueries.updateFeedbackSyncStatus(
-                    syncStatus = "synced",
-                    summaryId = feedbackOp.entityId,
-                )
-                database.databaseQueries.deletePendingOperation(feedbackOp.id)
-            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                logger.warn { "Failed to sync feedback for ${feedbackOp.entityId}: ${e.message}" }
-            }
-        }
-
-        if (changes.isEmpty()) {
-            return
-        }
-
-        try {
-            val result = applyChanges(sessionId, changes)
-            // Only delete the non-feedback ops that were processed by applyChanges.
-            // Feedback ops are handled separately above and deleted individually on success.
-            nonFeedbackOps.forEach { (id, _) ->
-                database.databaseQueries.deletePendingOperation(id)
-            }
-            // Also clear legacy pending deletes table
-            database.databaseQueries.deleteAllPendingDeletes()
-            if (result.conflicts.isNotEmpty()) {
-                // Server wins: conflicting local changes are discarded.
-                // The server version will overwrite local data on the next delta sync.
-                logger.warn {
-                    "${result.conflicts.size} pending operation(s) rejected by server (server wins):"
-                }
-                result.conflicts.forEach { conflict ->
-                    logger.warn {
-                        "  conflict: entity=${conflict.entityType}#${conflict.id} " +
-                            "reason=${conflict.reason} " +
-                            "clientVersion=${conflict.clientVersion} serverVersion=${conflict.serverVersion}"
-                    }
-                }
-                _syncProgress.update { current ->
-                    current?.copy(errorCount = (current.errorCount) + result.conflicts.size)
-                }
-            }
-            logger.info {
-                "Successfully flushed ${changes.size} pending operations " +
-                    "(applied=${result.appliedCount}, conflicts=${result.conflicts.size})"
-            }
-        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-            logger.warn(e) { "Failed to flush pending operations, will retry next sync" }
-        }
-    }
-
-    private suspend fun flushHighlightOperation(op: PendingOperationEntity) {
-        val highlightId = op.entityId
-        when (op.action) {
-            "create" -> {
-                val entity = database.databaseQueries.getHighlightById(highlightId).executeAsOneOrNull()
-                    ?: run {
-                        logger.warn { "Highlight $highlightId not found locally, skipping create sync" }
-                        return
-                    }
-                val summaryId = entity.summaryId.toLongOrNull()
-                    ?: run {
-                        logger.warn { "Invalid summaryId '${entity.summaryId}' for highlight $highlightId" }
-                        return
-                    }
-                val response = highlightsApi.createHighlight(
-                    summaryId = summaryId,
-                    request = CreateHighlightRequestDto(
-                        text = entity.text,
-                        startOffset = entity.nodeOffset,
-                        color = entity.color,
-                        note = entity.note,
-                    ),
-                )
-                if (response.success) {
-                    database.databaseQueries.updateHighlightSyncStatus("synced", highlightId)
-                } else {
-                    logger.warn { "Server rejected highlight create for $highlightId: ${response.error}" }
-                }
-            }
-            "update" -> {
-                val entity = database.databaseQueries.getHighlightById(highlightId).executeAsOneOrNull()
-                    ?: run {
-                        logger.warn { "Highlight $highlightId not found locally, skipping update sync" }
-                        return
-                    }
-                val summaryId = entity.summaryId.toLongOrNull()
-                    ?: run {
-                        logger.warn { "Invalid summaryId '${entity.summaryId}' for highlight $highlightId" }
-                        return
-                    }
-                val response = highlightsApi.updateHighlight(
-                    summaryId = summaryId,
-                    highlightId = highlightId,
-                    request = UpdateHighlightRequestDto(
-                        color = entity.color,
-                        note = entity.note,
-                    ),
-                )
-                if (response.success) {
-                    database.databaseQueries.updateHighlightSyncStatus("synced", highlightId)
-                } else {
-                    logger.warn { "Server rejected highlight update for $highlightId: ${response.error}" }
-                }
-            }
-            "delete" -> {
-                // For deletes, we need the summaryId but the highlight is already deleted locally.
-                // Parse summaryId from the payload if available, otherwise skip.
-                val payloadMap = op.payload?.let { parsePayload(it) }
-                val summaryId = (payloadMap?.get("summaryId") as? String)?.toLongOrNull()
-                if (summaryId == null) {
-                    logger.warn { "Cannot sync highlight delete for $highlightId: missing summaryId in payload" }
-                    return
-                }
-                val response = highlightsApi.deleteHighlight(summaryId, highlightId)
-                if (!response.success) {
-                    logger.warn { "Server rejected highlight delete for $highlightId: ${response.error}" }
-                }
-            }
-            else -> logger.warn { "Unknown highlight action: ${op.action}" }
-        }
-    }
-
-    private fun parsePayload(json: String): Map<String, Any?> {
-        return try {
-            val jsonObject =
-                kotlinx.serialization.json.Json.parseToJsonElement(json)
-                    .jsonObject
-            jsonObject.mapValues { (_, value) ->
-                when {
-                    value is JsonPrimitive && value.isString -> value.content
-                    value is JsonPrimitive -> {
-                        value.booleanOrNull ?: value.longOrNull ?: value.doubleOrNull ?: value.content
-                    }
-                    else -> value.toString()
-                }
-            }
-        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-            logger.warn(e) { "Failed to parse pending operation payload: $json" }
-            emptyMap()
-        }
+        return syncItemApplierRegistry.apply(item)
     }
 }

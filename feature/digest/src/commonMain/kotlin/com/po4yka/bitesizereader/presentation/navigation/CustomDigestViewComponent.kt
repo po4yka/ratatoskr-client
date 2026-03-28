@@ -3,8 +3,6 @@ package com.po4yka.bitesizereader.presentation.navigation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.bitesizereader.presentation.viewmodel.CustomDigestViewViewModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 interface CustomDigestViewComponent {
     val viewModel: CustomDigestViewViewModel
@@ -15,12 +13,13 @@ interface CustomDigestViewComponent {
 
 class DefaultCustomDigestViewComponent(
     componentContext: ComponentContext,
+    private val viewModelFactory: () -> CustomDigestViewViewModel,
     override val digestId: String,
     private val onBack: () -> Unit,
-) : CustomDigestViewComponent, ComponentContext by componentContext, KoinComponent {
+) : CustomDigestViewComponent, ComponentContext by componentContext {
     override val viewModel: CustomDigestViewViewModel =
         retainedInstance {
-            get<CustomDigestViewViewModel>().also { it.loadDigest(digestId) }
+            viewModelFactory().also { it.loadDigest(digestId) }
         }
 
     override fun onBackClicked() {

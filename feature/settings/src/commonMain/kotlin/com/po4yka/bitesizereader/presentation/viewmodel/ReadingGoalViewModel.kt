@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
 
-@Factory
 class ReadingGoalViewModel(
     private val getReadingGoalProgressUseCase: GetReadingGoalProgressUseCase,
     private val updateReadingGoalUseCase: UpdateReadingGoalUseCase,

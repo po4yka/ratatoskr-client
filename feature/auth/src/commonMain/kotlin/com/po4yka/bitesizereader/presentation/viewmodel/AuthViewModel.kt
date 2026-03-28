@@ -17,11 +17,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
-import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
-@Single
 class AuthViewModel(
     private val loginWithTelegramUseCase: LoginWithTelegramUseCase,
     private val loginWithSecretUseCase: LoginWithSecretUseCase,
