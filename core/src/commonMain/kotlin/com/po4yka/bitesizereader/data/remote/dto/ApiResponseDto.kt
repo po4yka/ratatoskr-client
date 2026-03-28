@@ -46,7 +46,5 @@ data class PaginationDto(
     /** Current offset from start */
     @SerialName("offset") val offset: Int,
     /** Whether more items are available */
-    @SerialName("has_more") val hasMore: Boolean,
-    /** Cursor for next page (if using cursor-based pagination) */
-    @SerialName("next_cursor") val nextCursor: Int? = null,
+    @SerialName("hasMore") val hasMore: Boolean,
 )

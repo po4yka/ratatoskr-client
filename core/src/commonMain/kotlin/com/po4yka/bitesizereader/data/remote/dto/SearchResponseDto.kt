@@ -5,18 +5,18 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SearchResultDto(
-    @SerialName("request_id") val requestId: Long,
-    @SerialName("summary_id") val summaryId: Long,
+    @SerialName("requestId") val requestId: Long,
+    @SerialName("summaryId") val summaryId: Long,
     @SerialName("url") val url: String? = null,
     @SerialName("title") val title: String? = null,
     @SerialName("domain") val domain: String? = null,
     @SerialName("snippet") val snippet: String? = null,
     @SerialName("tldr") val tldr: String? = null,
-    @SerialName("published_at") val publishedAt: String? = null,
-    @SerialName("created_at") val createdAt: String? = null,
-    @SerialName("relevance_score") val relevanceScore: Double? = null,
-    @SerialName("topic_tags") val topicTags: List<String> = emptyList(),
-    @SerialName("is_read") val isRead: Boolean = false,
+    @SerialName("publishedAt") val publishedAt: String? = null,
+    @SerialName("createdAt") val createdAt: String? = null,
+    @SerialName("relevanceScore") val relevanceScore: Double? = null,
+    @SerialName("topicTags") val topicTags: List<String> = emptyList(),
+    @SerialName("isRead") val isRead: Boolean = false,
 )
 
 @Serializable
@@ -31,13 +31,13 @@ data class TrendingTopicDto(
     @SerialName("tag") val tag: String,
     @SerialName("count") val count: Int,
     @SerialName("trend") val trend: String? = null,
-    @SerialName("percentage_change") val percentageChange: Double? = null,
+    @SerialName("percentageChange") val percentageChange: Double? = null,
 )
 
 @Serializable
 data class TrendingTopicsDataDto(
     @SerialName("tags") val tags: List<TrendingTopicDto>,
-    @SerialName("time_range") val timeRange: TimeRangeDto? = null,
+    @SerialName("timeRange") val timeRange: TimeRangeDto? = null,
 )
 
 @Serializable
@@ -48,10 +48,10 @@ data class TimeRangeDto(
 
 @Serializable
 data class RelatedSummaryDto(
-    @SerialName("summary_id") val summaryId: Long,
+    @SerialName("summaryId") val summaryId: Long,
     @SerialName("title") val title: String,
     @SerialName("tldr") val tldr: String,
-    @SerialName("created_at") val createdAt: String,
+    @SerialName("createdAt") val createdAt: String,
 )
 
 @Serializable

@@ -10,15 +10,15 @@ import kotlinx.serialization.Serializable
 data class CollectionDto(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
-    @SerialName("created_at") val createdAt: String,
+    @SerialName("createdAt") val createdAt: String,
     @SerialName("description") val description: String? = null,
-    @SerialName("parent_id") val parentId: Int? = null,
+    @SerialName("parentId") val parentId: Int? = null,
     @SerialName("position") val position: Int? = null,
-    @SerialName("updated_at") val updatedAt: String? = null,
-    @SerialName("server_version") val serverVersion: Int? = null,
-    @SerialName("is_shared") val isShared: Boolean = false,
-    @SerialName("share_count") val shareCount: Int? = null,
-    @SerialName("item_count") val itemCount: Int? = null,
+    @SerialName("updatedAt") val updatedAt: String? = null,
+    @SerialName("serverVersion") val serverVersion: Int? = null,
+    @SerialName("isShared") val isShared: Boolean = false,
+    @SerialName("shareCount") val shareCount: Int? = null,
+    @SerialName("itemCount") val itemCount: Int? = null,
     @SerialName("children") val children: List<CollectionDto>? = null,
     @SerialName("acl_summary") val aclSummary: AclSummaryDto? = null,
 )
@@ -57,9 +57,9 @@ data class CollectionItemCreateRequest(
 
 @Serializable
 data class CollectionItemDto(
-    @SerialName("collection_id") val collectionId: Int,
-    @SerialName("summary_id") val summaryId: Int,
-    @SerialName("created_at") val createdAt: String,
+    @SerialName("collectionId") val collectionId: Int,
+    @SerialName("summaryId") val summaryId: Int,
+    @SerialName("createdAt") val createdAt: String,
     @SerialName("position") val position: Int? = null,
 )
 
@@ -143,16 +143,16 @@ data class SuccessResponse(
 @Serializable
 data class CollectionMoveResponse(
     @SerialName("id") val id: Int,
-    @SerialName("parent_id") val parentId: Int? = null,
+    @SerialName("parentId") val parentId: Int? = null,
     @SerialName("position") val position: Int,
-    @SerialName("updated_at") val updatedAt: String? = null,
+    @SerialName("updatedAt") val updatedAt: String? = null,
 )
 
 // CollectionItemsMoveResponseEnvelope removed. Use CollectionItemsMoveResponse directly.
 
 @Serializable
 data class CollectionItemsMoveResponse(
-    @SerialName("moved_summary_ids") val movedSummaryIds: List<Long>,
+    @SerialName("movedSummaryIds") val movedSummaryIds: List<Long>,
 )
 
 // CollectionAclResponseEnvelope removed. Use CollectionAclResponse directly.
@@ -166,10 +166,10 @@ data class CollectionAclResponse(
 data class CollectionAclEntry(
     @SerialName("role") val role: String,
     @SerialName("status") val status: String,
-    @SerialName("created_at") val createdAt: String,
-    @SerialName("updated_at") val updatedAt: String,
-    @SerialName("user_id") val userId: Int? = null,
-    @SerialName("invited_by") val invitedBy: Int? = null,
+    @SerialName("createdAt") val createdAt: String,
+    @SerialName("updatedAt") val updatedAt: String,
+    @SerialName("userId") val userId: Int? = null,
+    @SerialName("invitedBy") val invitedBy: Int? = null,
 )
 
 // CollectionInviteResponseEnvelope removed. Use CollectionInviteResponse directly.
@@ -178,5 +178,5 @@ data class CollectionAclEntry(
 data class CollectionInviteResponse(
     @SerialName("token") val token: String,
     @SerialName("role") val role: String,
-    @SerialName("expires_at") val expiresAt: String? = null,
+    @SerialName("expiresAt") val expiresAt: String? = null,
 )

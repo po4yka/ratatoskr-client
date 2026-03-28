@@ -10,5 +10,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TokenRefreshResponseDto(
     @SerialName("tokens") val tokens: TokensDto,
-    @SerialName("session_id") val sessionId: Long? = null,
+    @SerialName("sessionId") val sessionId: Long? = null,
 )
