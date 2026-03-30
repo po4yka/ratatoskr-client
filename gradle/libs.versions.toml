@@ -2,7 +2,7 @@
 # Build & Gradle
 agp = "9.0.1"
 kotlin = "2.3.10"
-composeMultiplatform = "1.10.2"
+composeMultiplatform = "1.10.3"
 composeHotReload = "1.0.0"
 
 # Android SDK
