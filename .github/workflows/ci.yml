@@ -42,7 +42,7 @@ jobs:
 
       - name: Upload lint results
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: lint-results
           path: |
@@ -130,7 +130,7 @@ jobs:
       # Upload artifacts
       - name: Upload Android Debug APK
         if: matrix.platform == 'android'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: android-debug-apk-${{ github.sha }}
           path: androidApp/build/outputs/apk/debug/*.apk
@@ -138,7 +138,7 @@ jobs:
 
       - name: Upload Android Release APK
         if: matrix.platform == 'android' && hashFiles('androidApp/build/outputs/apk/release/*.apk') != ''
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: android-release-apk-${{ github.sha }}
           path: androidApp/build/outputs/apk/release/*.apk
@@ -146,7 +146,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.platform }}-${{ github.sha }}
           path: |
@@ -180,7 +180,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage-reports-${{ github.sha }}
@@ -231,7 +231,7 @@ jobs:
 
       - name: Upload security report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: security-report
           path: build/reports/
