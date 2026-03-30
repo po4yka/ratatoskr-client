@@ -145,14 +145,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload APK as artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: android-release-apk
           path: androidApp/build/outputs/apk/release/*.apk
           retention-days: 30
 
       - name: Upload AAB as artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: hashFiles('androidApp/build/outputs/bundle/release/*.aab') != ''
         with:
           name: android-release-bundle
@@ -222,7 +222,7 @@ jobs:
             -output ComposeApp.xcframework
 
       - name: Upload XCFramework
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: composeapp-xcframework
           path: ComposeApp.xcframework
@@ -312,7 +312,7 @@ jobs:
 
       - name: Upload IPA as artifact
         if: hashFiles('${{ runner.temp }}/export/*.ipa') != ''
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ios-release-ipa
           path: ${{ runner.temp }}/export/*.ipa
