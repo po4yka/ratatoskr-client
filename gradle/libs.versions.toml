@@ -24,7 +24,7 @@ desugar-jdk-libs = "2.0.3"
 # KMP Core Libraries
 ktor = "3.4.2"
 sqldelight = "2.3.2"
-decompose = "3.4.0"
+decompose = "3.5.0"
 essenty = "2.5.0"
 koin = "4.2.0"
 koin-annotations = "2.3.1"
