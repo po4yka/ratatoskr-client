@@ -52,6 +52,17 @@ private const val TRANSACTION_CHUNK_SIZE = 25
 /** Timeout for the entire sync operation (5 minutes) */
 private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 
+internal fun shouldCleanupStaleSummariesAfterFullSync(
+    resumeCursor: Long?,
+    observedCompleteDataset: Boolean,
+): Boolean = resumeCursor == null && observedCompleteDataset
+
+internal fun syncCheckpointToken(
+    nextCursor: Long?,
+    serverVersion: Long?,
+    fallbackToken: String?,
+): String? = (nextCursor ?: serverVersion)?.toString() ?: fallbackToken
+
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,
@@ -259,6 +270,7 @@ class SyncRepositoryImpl(
         var cursor: Long? = resumeCursor
         var previousCursor: Long? = null
         var batchNumber = 0
+        var observedCompleteDataset = false
         val totalBatches = totalItems?.let { (it + DEFAULT_BATCH_SIZE - 1) / DEFAULT_BATCH_SIZE }
 
         try {
@@ -277,8 +289,9 @@ class SyncRepositoryImpl(
 
             // Guard: break if server says hasMore but provides no cursor to advance
             if (hasMore && cursor == null) {
-                logger.warn { "Server reports hasMore=true but returned null cursor, stopping" }
-                hasMore = false
+                throw IllegalStateException("Full sync response has hasMore=true without a next cursor")
+            } else if (!hasMore) {
+                observedCompleteDataset = true
             }
 
             updateProgress(
@@ -304,10 +317,11 @@ class SyncRepositoryImpl(
 
                 // Guard: break if cursor did not advance (prevents infinite loop)
                 if (hasMore && (cursor == null || cursor == previousCursor)) {
-                    logger.warn {
-                        "Cursor did not advance (was=$previousCursor, now=$cursor), breaking sync loop"
-                    }
-                    break
+                    throw IllegalStateException(
+                        "Full sync cursor did not advance (was=$previousCursor, now=$cursor)",
+                    )
+                } else if (!hasMore) {
+                    observedCompleteDataset = true
                 }
 
                 updateProgress(
@@ -324,8 +338,15 @@ class SyncRepositoryImpl(
                 }
             }
 
-            // Remove stale summaries not present on server
-            cleanupStaleSummaries(receivedIds)
+            if (shouldCleanupStaleSummariesAfterFullSync(resumeCursor, observedCompleteDataset)) {
+                // Remove stale summaries not present on server
+                cleanupStaleSummaries(receivedIds)
+            } else {
+                logger.info {
+                    "Skipping stale summary cleanup after full sync: " +
+                        "resumeCursor=$resumeCursor, observedCompleteDataset=$observedCompleteDataset"
+                }
+            }
 
             // Validate integrity
             validateSyncIntegrity(totalItems, totalCreated)
@@ -387,10 +408,7 @@ class SyncRepositoryImpl(
 
             // Guard: break if cursor did not advance (prevents infinite loop)
             if (hasMore && cursor == previousCursor) {
-                logger.warn {
-                    "Delta sync cursor did not advance (stuck at $cursor), breaking sync loop"
-                }
-                break
+                throw IllegalStateException("Delta sync cursor did not advance (stuck at $cursor)")
             }
 
             // Note: Delta sync saves checkpoint in deltaSync() method itself
@@ -514,7 +532,7 @@ class SyncRepositoryImpl(
         database.transaction {
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
-                syncToken = data.nextCursor?.toString(),
+                syncToken = syncCheckpointToken(data.nextCursor, data.serverVersion, currentMetadata?.syncToken),
                 fullSyncInProgress = currentFullSyncInProgress,
             )
         }
@@ -622,7 +640,7 @@ class SyncRepositoryImpl(
         database.transaction {
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
-                syncToken = data.newCursor?.toString(),
+                syncToken = syncCheckpointToken(data.newCursor, data.serverVersion, since.toString()),
                 fullSyncInProgress = 0,
             )
         }

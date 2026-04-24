@@ -3,9 +3,19 @@ import ComposeApp
 import BackgroundTasks
 import WidgetKit
 import os.log
+import Foundation
 
 /// Logger for iOS app events
 private let logger = Logger(subsystem: "com.po4yka.bitesizereader", category: "app")
+
+private extension URL {
+    var redactedForLogging: String {
+        var components = URLComponents(url: self, resolvingAgainstBaseURL: false)
+        components?.query = nil
+        components?.fragment = nil
+        return components?.string ?? "\(scheme ?? "unknown")://\(host ?? "")\(path)"
+    }
+}
 
 @main
 struct iOSApp: App {
@@ -41,14 +51,14 @@ struct iOSApp: App {
     /// Check if Share Extension saved a URL to shared storage
     private func checkForSharedURL() {
         if let sharedURL = AppGroupStore.consumeSharedURL() {
-            logger.debug("Found shared URL: \(sharedURL)")
+            logger.debug("Found shared URL")
             appDelegate.host.openSharedUrl(url: sharedURL)
         }
     }
 
     /// Handle deep links from widget
     private func handleDeepLink(_ url: URL) {
-        logger.debug("Received deep link: \(url)")
+        logger.debug("Received deep link: \(url.redactedForLogging)")
 
         // Parse widget deep link: bitesizereader://summary/{id}
         guard url.scheme == "bitesizereader" else {
@@ -62,7 +72,7 @@ struct iOSApp: App {
         } else if url.host == "submit-url" || url.host == "share" {
             checkForSharedURL()
         } else {
-            logger.warning("Could not parse summary ID from URL: \(url)")
+            logger.warning("Could not parse summary ID from URL: \(url.redactedForLogging)")
         }
     }
 
@@ -132,24 +142,43 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Schedule next sync
         scheduleBackgroundSync()
 
+        let completionLock = NSLock()
+        var didComplete = false
+        var syncTask: Task<Void, Never>?
+
+        func completeTask(success: Bool) {
+            completionLock.lock()
+            defer { completionLock.unlock() }
+
+            guard !didComplete else { return }
+            didComplete = true
+            task.setTaskCompleted(success: success)
+        }
+
         // Set expiration handler
         task.expirationHandler = {
             logger.warning("Task expired before completion")
-            task.setTaskCompleted(success: false)
+            syncTask?.cancel()
+            completeTask(success: false)
         }
 
         // Perform sync in background
-        Task {
+        syncTask = Task {
             do {
                 try await host.runBackgroundSync(forceFull: false)
+                try Task.checkCancellation()
                 _ = try await host.refreshRecentSummaries(limit: 3)
+                try Task.checkCancellation()
                 WidgetCenter.shared.reloadTimelines(ofKind: AppGroupContract.recentSummariesWidgetKind)
 
                 logger.debug("Background sync completed successfully")
-                task.setTaskCompleted(success: true)
+                completeTask(success: true)
+            } catch is CancellationError {
+                logger.warning("Background sync cancelled")
+                completeTask(success: false)
             } catch {
                 logger.error("Background sync error: \(error)")
-                task.setTaskCompleted(success: false)
+                completeTask(success: false)
             }
         }
     }

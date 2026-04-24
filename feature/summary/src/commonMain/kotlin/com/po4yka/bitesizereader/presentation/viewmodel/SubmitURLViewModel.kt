@@ -31,6 +31,13 @@ private val urlRegex = Regex("^https?://[\\w\\-]+(\\.[\\w\\-]+)+(:\\d+)?(/.*)?$"
 
 private fun isValidUrl(url: String): Boolean = urlRegex.matches(url.trim())
 
+private fun String.redactQueryAndFragment(): String {
+    val queryStart = indexOf('?').takeIf { it >= 0 } ?: length
+    val fragmentStart = indexOf('#').takeIf { it >= 0 } ?: length
+    val sensitiveStart = minOf(queryStart, fragmentStart)
+    return take(sensitiveStart)
+}
+
 class SubmitURLViewModel(
     private val processingService: ProcessingService,
     private val getRequestsUseCase: GetRequestsUseCase,
@@ -230,7 +237,7 @@ class SubmitURLViewModel(
             val result = checkDuplicateUrlUseCase(url)
             if (result.isDuplicate) result.existingSummaryId else null
         } catch (e: Exception) {
-            logger.warn(e) { "Failed to check duplicate for $url, proceeding with submit" }
+            logger.warn(e) { "Failed to check duplicate for ${url.redactQueryAndFragment()}, proceeding with submit" }
             null
         }
 

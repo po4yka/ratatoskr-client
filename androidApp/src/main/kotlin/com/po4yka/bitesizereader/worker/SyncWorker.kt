@@ -34,9 +34,38 @@ class SyncWorker(
         } catch (e: AppError.TimeoutError) {
             logger.warn(e) { "Sync worker: request timed out, will retry with backoff" }
             Result.retry()
-        } catch (e: Exception) {
-            logger.error(e) { "Sync worker failed, will retry with backoff" }
+        } catch (e: AppError.RateLimitError) {
+            logger.warn(e) { "Sync worker: rate limited, will retry with backoff" }
             Result.retry()
+        } catch (e: AppError.ServerError) {
+            if (e.code == HTTP_REQUEST_TIMEOUT || e.code == HTTP_TOO_MANY_REQUESTS || e.code >= HTTP_SERVER_ERROR) {
+                logger.warn(e) { "Sync worker: retryable server error ${e.code}, will retry with backoff" }
+                Result.retry()
+            } else {
+                logger.warn(e) { "Sync worker stopped: non-retryable server error ${e.code}" }
+                Result.failure()
+            }
+        } catch (e: AppError.AuthError) {
+            logger.warn(e) { "Sync worker stopped: authentication failed" }
+            Result.failure()
+        } catch (e: AppError.ValidationError) {
+            logger.warn(e) { "Sync worker stopped: validation failed" }
+            Result.failure()
+        } catch (e: AppError.NotFoundError) {
+            logger.warn(e) { "Sync worker stopped: resource not found" }
+            Result.failure()
+        } catch (e: AppError.ConflictError) {
+            logger.warn(e) { "Sync worker stopped: unresolved conflict" }
+            Result.failure()
+        } catch (e: Exception) {
+            logger.error(e) { "Sync worker stopped: non-retryable sync failure" }
+            Result.failure()
         }
+    }
+
+    private companion object {
+        const val HTTP_REQUEST_TIMEOUT = 408
+        const val HTTP_TOO_MANY_REQUESTS = 429
+        const val HTTP_SERVER_ERROR = 500
     }
 }

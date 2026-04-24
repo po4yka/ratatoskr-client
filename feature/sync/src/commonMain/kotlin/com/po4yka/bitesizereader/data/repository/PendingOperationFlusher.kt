@@ -7,6 +7,7 @@ import com.po4yka.bitesizereader.feature.sync.api.PendingOperationHandlingResult
 import com.po4yka.bitesizereader.feature.sync.domain.repository.ApplyResult
 import com.po4yka.bitesizereader.feature.sync.domain.repository.LocalChange
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CancellationException
 
 private val logger = KotlinLogging.logger {}
 
@@ -104,8 +105,11 @@ internal class PendingOperationFlusher(
                 "Successfully flushed ${changes.size} pending operations " +
                     "(applied=${result.appliedCount}, conflicts=${result.conflicts.size})"
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-            logger.warn(e) { "Failed to flush pending operations, will retry next sync" }
+            logger.warn(e) { "Failed to flush pending operations, aborting sync so local changes remain authoritative" }
+            throw e
         }
     }
 }

@@ -113,7 +113,14 @@ private fun parseTelegramAuthData(url: String): TelegramAuthData? {
             hash = hash,
         )
     } catch (e: Exception) {
-        logger.error(e) { "Failed to parse Telegram auth data from URL: $url" }
+        logger.error(e) { "Failed to parse Telegram auth data from callback: ${url.redactQueryAndFragment()}" }
         return null
     }
+}
+
+private fun String.redactQueryAndFragment(): String {
+    val queryStart = indexOf('?').takeIf { it >= 0 } ?: length
+    val fragmentStart = indexOf('#').takeIf { it >= 0 } ?: length
+    val sensitiveStart = minOf(queryStart, fragmentStart)
+    return take(sensitiveStart)
 }
