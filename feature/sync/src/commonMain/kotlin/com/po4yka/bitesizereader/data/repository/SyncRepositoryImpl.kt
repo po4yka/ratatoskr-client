@@ -480,7 +480,7 @@ class SyncRepositoryImpl(
         cursor: Long?,
     ): SyncResult {
         logger.info { "Starting full sync with sessionId=$sessionId, limit=$limit, cursor=$cursor" }
-        val response = api.fullSync(sessionId, limit)
+        val response = api.fullSync(sessionId, limit, cursor)
 
         if (!response.success || response.data == null) {
             logger.error { "Full sync failed: ${response.error}" }

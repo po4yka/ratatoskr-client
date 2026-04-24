@@ -83,7 +83,7 @@ object AppConfig {
         const val VERSION = "0.1.0"
 
         /** Client identifier for API authentication */
-        const val CLIENT_ID = "bitesizereader-mobile-v1"
+        var clientId: String = "bitesizereader-mobile-v1"
 
         /** Support email */
         const val SUPPORT_EMAIL = "support@bitesizereader.example.com"
@@ -117,6 +117,7 @@ object AppConfig {
     fun initializeFromProperties(properties: Map<String, Any>) {
         properties["api.base.url"]?.let { Api.baseUrl = it.toString() }
         properties["api.logging.enabled"]?.let { Api.loggingEnabled = it.toString().toBoolean() }
+        properties["client.id"]?.let { App.clientId = it.toString() }
         properties["telegram.bot.username"]?.let { Telegram.botUsername = it.toString() }
         properties["telegram.bot.id"]?.let { Telegram.botId = it.toString() }
     }

@@ -57,7 +57,7 @@ class AuthRepositoryImpl(
                 firstName = authData.firstName,
                 lastName = authData.lastName,
                 photoUrl = authData.photoUrl,
-                clientId = AppConfig.App.CLIENT_ID,
+                clientId = AppConfig.App.clientId,
             )
         val response = authApi.loginWithTelegram(request)
         if (response.success && response.data != null) {
