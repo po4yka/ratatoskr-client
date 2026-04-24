@@ -32,6 +32,7 @@ interface SyncApi {
     suspend fun fullSync(
         sessionId: String,
         limit: Int? = null,
+        cursor: Long? = null,
     ): ApiResponseDto<FullSyncResponseDto>
 
     /** Fetch delta sync (changes since cursor). Returns [DeltaSyncResult] with null response on 304. */

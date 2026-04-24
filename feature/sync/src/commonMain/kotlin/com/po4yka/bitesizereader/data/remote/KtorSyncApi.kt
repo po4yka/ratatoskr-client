@@ -36,11 +36,13 @@ class KtorSyncApi(private val client: HttpClient) : SyncApi {
     override suspend fun fullSync(
         sessionId: String,
         limit: Int?,
+        cursor: Long?,
     ): ApiResponseDto<FullSyncResponseDto> =
         retryWithBackoff(RetryPolicy.DEFAULT) {
             client.get("v1/sync/full") {
                 parameter("session_id", sessionId)
                 limit?.let { parameter("limit", it) }
+                cursor?.let { parameter("cursor", it) }
             }.body()
         }
 

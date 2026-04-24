@@ -39,7 +39,7 @@ android {
         buildConfigField(
             "boolean",
             "API_LOGGING_ENABLED",
-            localProperties.getProperty("api.logging.enabled", "true"),
+            localProperties.getProperty("api.logging.enabled", "false"),
         )
     }
 
