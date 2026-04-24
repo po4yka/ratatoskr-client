@@ -21,6 +21,7 @@ import com.po4yka.bitesizereader.feature.auth.util.UrlDecoder
 import com.po4yka.bitesizereader.core.ui.components.CarbonIconButton
 import com.po4yka.bitesizereader.domain.model.TelegramAuthData
 import com.po4yka.bitesizereader.util.config.AppConfig
+import com.po4yka.bitesizereader.util.redactQueryAndFragment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.compose.resources.stringResource
 
@@ -116,11 +117,4 @@ private fun parseTelegramAuthData(url: String): TelegramAuthData? {
         logger.error(e) { "Failed to parse Telegram auth data from callback: ${url.redactQueryAndFragment()}" }
         return null
     }
-}
-
-private fun String.redactQueryAndFragment(): String {
-    val queryStart = indexOf('?').takeIf { it >= 0 } ?: length
-    val fragmentStart = indexOf('#').takeIf { it >= 0 } ?: length
-    val sensitiveStart = minOf(queryStart, fragmentStart)
-    return take(sensitiveStart)
 }

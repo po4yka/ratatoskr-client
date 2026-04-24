@@ -1,8 +1,10 @@
 # API Configuration
 api.base.url=https://bitsizereaderapi.po4yka.com
+# Optional Android release override. Must be HTTPS when set.
+# api.release.base.url=https://bitsizereaderapi.po4yka.com
 client.id=android-app-v1.0
 api.timeout.seconds=30
-api.logging.enabled=true
+api.logging.enabled=false
 
 # Android Signing Configuration (Release)
 # key.store.file=release.keystore
