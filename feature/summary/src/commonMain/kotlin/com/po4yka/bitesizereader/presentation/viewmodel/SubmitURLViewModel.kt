@@ -14,6 +14,7 @@ import com.po4yka.bitesizereader.presentation.state.SubmitUrlError
 import com.po4yka.bitesizereader.util.error.AppError
 import com.po4yka.bitesizereader.util.error.toAppError
 import com.po4yka.bitesizereader.util.error.userMessage
+import com.po4yka.bitesizereader.util.redactQueryAndFragment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,13 +31,6 @@ private val logger = KotlinLogging.logger {}
 private val urlRegex = Regex("^https?://[\\w\\-]+(\\.[\\w\\-]+)+(:\\d+)?(/.*)?$")
 
 private fun isValidUrl(url: String): Boolean = urlRegex.matches(url.trim())
-
-private fun String.redactQueryAndFragment(): String {
-    val queryStart = indexOf('?').takeIf { it >= 0 } ?: length
-    val fragmentStart = indexOf('#').takeIf { it >= 0 } ?: length
-    val sensitiveStart = minOf(queryStart, fragmentStart)
-    return take(sensitiveStart)
-}
 
 class SubmitURLViewModel(
     private val processingService: ProcessingService,

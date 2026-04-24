@@ -49,6 +49,8 @@ Use the workspace, not just `iosApp.xcodeproj`, when CocoaPods integration matte
 
 ```properties
 api.base.url=https://bitsizereaderapi.po4yka.com
+# Optional Android release override. Must use HTTPS when set.
+api.release.base.url=https://bitsizereaderapi.po4yka.com
 api.logging.enabled=false
 telegram.bot.username=bitesizereader_bot
 telegram.bot.id=
@@ -56,7 +58,7 @@ client.id=android-app-v1.0
 api.timeout.seconds=30
 ```
 
-Shared runtime config is centralized in `shared/src/commonMain/kotlin/com/po4yka/bitesizereader/util/config/AppConfig.kt`.
+Shared runtime config is centralized in `core/common/src/commonMain/kotlin/com/po4yka/bitesizereader/util/config/AppConfig.kt`.
 
 ## Architecture
 
