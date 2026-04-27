@@ -61,7 +61,7 @@ multiplatform-settings = "1.3.0"
 carbon = "0.7.0"
 
 # Markdown
-markdown-renderer = "0.39.2"
+markdown-renderer = "0.40.2"
 
 [libraries]
 # Kotlin
