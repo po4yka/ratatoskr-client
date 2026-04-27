@@ -1,7 +1,7 @@
 [versions]
 # Build & Gradle
 agp = "9.0.1"
-kotlin = "2.3.20"
+kotlin = "2.3.21"
 composeMultiplatform = "1.10.3"
 composeHotReload = "1.0.0"
 
