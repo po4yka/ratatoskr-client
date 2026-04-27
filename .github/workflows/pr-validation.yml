@@ -128,10 +128,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build iOS framework (Simulator Arm64)
-        run: ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 --no-daemon
+        run: ./gradlew :composeApp:linkPodDebugFrameworkIosSimulatorArm64 --no-daemon
 
       - name: Build iOS framework (Device Arm64)
-        run: ./gradlew :composeApp:linkDebugFrameworkIosArm64 --no-daemon
+        run: ./gradlew :composeApp:linkPodDebugFrameworkIosArm64 --no-daemon
 
       - name: Run iOS tests
         run: ./gradlew :core:common:iosSimulatorArm64Test :core:data:iosSimulatorArm64Test :feature:auth:iosSimulatorArm64Test :feature:collections:iosSimulatorArm64Test :feature:digest:iosSimulatorArm64Test :feature:settings:iosSimulatorArm64Test :feature:summary:iosSimulatorArm64Test :feature:sync:iosSimulatorArm64Test --no-daemon

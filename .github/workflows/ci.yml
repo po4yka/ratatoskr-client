@@ -120,8 +120,8 @@ jobs:
       - name: Build iOS frameworks
         if: matrix.platform == 'ios'
         run: |
-          ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 --no-daemon
-          ./gradlew :composeApp:linkDebugFrameworkIosArm64 --no-daemon
+          ./gradlew :composeApp:linkPodDebugFrameworkIosSimulatorArm64 --no-daemon
+          ./gradlew :composeApp:linkPodDebugFrameworkIosArm64 --no-daemon
 
       - name: Run iOS tests
         if: matrix.platform == 'ios'
