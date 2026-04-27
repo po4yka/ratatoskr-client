@@ -54,7 +54,7 @@ jobs:
           CODE_SIGNING_ALLOWED=NO
 
     - name: Build KMP Framework
-      run: ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
+      run: ./gradlew :composeApp:linkPodDebugFrameworkIosSimulatorArm64
 
     - name: Build iOS App
       run: |
