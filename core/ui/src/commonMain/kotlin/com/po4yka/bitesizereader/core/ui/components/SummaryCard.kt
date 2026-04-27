@@ -96,7 +96,10 @@ fun SummaryCard(
                     Text(
                         text =
                             buildString {
-                                append(extractDomain(summary.sourceUrl) ?: stringResource(Res.string.summary_card_saved_article))
+                                append(
+                                    extractDomain(summary.sourceUrl)
+                                        ?: stringResource(Res.string.summary_card_saved_article),
+                                )
                                 summary.readingTimeMin?.let {
                                     append(" | ")
                                     append(stringResource(Res.string.custom_digest_create_read_time, it))

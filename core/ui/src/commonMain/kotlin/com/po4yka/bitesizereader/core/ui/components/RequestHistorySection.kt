@@ -229,27 +229,43 @@ private fun StatusBadge(
     val (text, backgroundColor, textColor) =
         when (status) {
             RequestStatus.PENDING ->
-                Triple(stringResource(Res.string.request_history_status_pending), Carbon.theme.layer02, Carbon.theme.textSecondary)
+                Triple(
+                    stringResource(Res.string.request_history_status_pending),
+                    Carbon.theme.layer02,
+                    Carbon.theme.textSecondary,
+                )
             RequestStatus.PROCESSING ->
-                Triple(stringResource(Res.string.request_history_status_processing), Carbon.theme.linkPrimary, Carbon.theme.textOnColor)
+                Triple(
+                    stringResource(Res.string.request_history_status_processing),
+                    Carbon.theme.linkPrimary,
+                    Carbon.theme.textOnColor,
+                )
             RequestStatus.COMPLETED ->
-                Triple(stringResource(Res.string.request_history_status_completed), Carbon.theme.supportSuccess, Carbon.theme.textOnColor)
+                Triple(
+                    stringResource(Res.string.request_history_status_completed),
+                    Carbon.theme.supportSuccess,
+                    Carbon.theme.textOnColor,
+                )
             RequestStatus.FAILED ->
-                Triple(stringResource(Res.string.request_history_status_failed), Carbon.theme.supportError, Carbon.theme.textOnColor)
+                Triple(
+                    stringResource(Res.string.request_history_status_failed),
+                    Carbon.theme.supportError,
+                    Carbon.theme.textOnColor,
+                )
         }
 
     Text(
         text = text,
         style = Carbon.typography.label01,
         color = textColor,
-            modifier =
-                modifier
-                    .clip(RoundedCornerShape(Dimensions.badgeCornerRadius))
-                    .background(backgroundColor)
-                    .padding(
-                        horizontal = Dimensions.badgeHorizontalPadding,
-                        vertical = Dimensions.badgeVerticalPadding,
-                    ),
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(Dimensions.badgeCornerRadius))
+                .background(backgroundColor)
+                .padding(
+                    horizontal = Dimensions.badgeHorizontalPadding,
+                    vertical = Dimensions.badgeVerticalPadding,
+                ),
     )
 }
 

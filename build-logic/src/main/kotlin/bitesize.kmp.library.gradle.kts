@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.LibraryExtension
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
@@ -41,9 +42,19 @@ extensions.configure<LibraryExtension> {
         minSdk = 24
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+val desugarJdkLibs = extensions.getByType<VersionCatalogsExtension>()
+    .named("libs")
+    .findLibrary("desugar-jdk-libs")
+    .get()
+
+dependencies {
+    add("coreLibraryDesugaring", desugarJdkLibs)
 }
 
 pluginManager.withPlugin("com.google.devtools.ksp") {

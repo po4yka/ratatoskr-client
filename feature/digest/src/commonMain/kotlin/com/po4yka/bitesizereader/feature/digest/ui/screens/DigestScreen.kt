@@ -99,8 +99,7 @@ fun DigestScreen(
 
             override fun unsubscribe(username: String) = viewModel.unsubscribe(username)
 
-            override fun onNewChannelUsernameChanged(username: String) =
-                viewModel.onNewChannelUsernameChanged(username)
+            override fun onNewChannelUsernameChanged(username: String) = viewModel.onNewChannelUsernameChanged(username)
 
             override fun subscribe() = viewModel.subscribe()
 
@@ -710,7 +709,12 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
                 color = Carbon.theme.textPrimary,
             )
             Text(
-                text = stringResource(Res.string.digest_screen_history_channels_posts, item.channelCount, item.postCount),
+                text =
+                    stringResource(
+                        Res.string.digest_screen_history_channels_posts,
+                        item.channelCount,
+                        item.postCount,
+                    ),
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
