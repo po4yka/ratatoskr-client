@@ -57,7 +57,7 @@ fun UserStatsCard(
                 .background(Carbon.theme.layer01)
                 .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
-        ) {
+    ) {
         Text(
             text = stringResource(Res.string.user_stats_title),
             style = Carbon.typography.headingCompact01,

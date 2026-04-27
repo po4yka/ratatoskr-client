@@ -817,7 +817,10 @@ private fun ArticleHeader(summary: Summary) {
             color = Carbon.theme.textSecondary,
         )
         val createdAtLabel = formatDate(summary.createdAt)
-        val readTimeLabel = summary.readingTimeMin?.let { stringResource(Res.string.custom_digest_create_read_time, it) }
+        val readTimeLabel =
+            summary.readingTimeMin?.let {
+                stringResource(Res.string.custom_digest_create_read_time, it)
+            }
         Text(
             text =
                 buildString {

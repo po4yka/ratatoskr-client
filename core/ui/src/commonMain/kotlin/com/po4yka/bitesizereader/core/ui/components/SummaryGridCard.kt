@@ -86,96 +86,96 @@ fun SummaryGridCard(
             modifier = Modifier.fillMaxWidth().padding(Spacing.xs),
             verticalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
-        // Hero image
-        if (summary.imageUrl != null) {
-            ProxiedImage(
-                imageUrl = summary.imageUrl!!,
-                contentDescription = null,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .clip(RoundedCornerShape(Dimensions.cardCornerRadius)),
-            )
-        }
-
-        // Title + overflow menu row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Top,
-        ) {
-            Text(
-                text = summary.title,
-                style = Carbon.typography.headingCompact01,
-                color = Carbon.theme.textPrimary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f),
-            )
-            SummaryOverflowMenu(
-                summary = summary,
-                onFavoriteClick = onFavoriteClick,
-                onMarkReadClick = onMarkReadClick,
-                onAddToCollectionClick = onAddToCollectionClick,
-                onDeleteClick = onDeleteClick,
-            )
-        }
-
-        // Status indicators
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xxs),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (summary.isFullContentCached) {
-                Icon(
-                    imageVector = CarbonIcons.Download,
-                    contentDescription = stringResource(Res.string.summary_card_available_offline),
-                    tint = Carbon.theme.iconSecondary,
-                    modifier = Modifier.size(IconSizes.xs),
-                )
-            }
-            if (summary.isFavorited) {
-                Icon(
-                    imageVector = CarbonIcons.FavoriteFilled,
-                    contentDescription = stringResource(Res.string.summary_card_favorited),
-                    tint = Carbon.theme.supportError,
-                    modifier = Modifier.size(IconSizes.xs),
-                )
-            }
-            if (summary.isRead) {
-                Box(
+            // Hero image
+            if (summary.imageUrl != null) {
+                ProxiedImage(
+                    imageUrl = summary.imageUrl!!,
+                    contentDescription = null,
                     modifier =
                         Modifier
-                            .size(20.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(Carbon.theme.supportSuccess),
-                    contentAlignment = Alignment.Center,
-                ) {
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .clip(RoundedCornerShape(Dimensions.cardCornerRadius)),
+                )
+            }
+
+            // Title + overflow menu row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Text(
+                    text = summary.title,
+                    style = Carbon.typography.headingCompact01,
+                    color = Carbon.theme.textPrimary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                )
+                SummaryOverflowMenu(
+                    summary = summary,
+                    onFavoriteClick = onFavoriteClick,
+                    onMarkReadClick = onMarkReadClick,
+                    onAddToCollectionClick = onAddToCollectionClick,
+                    onDeleteClick = onDeleteClick,
+                )
+            }
+
+            // Status indicators
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xxs),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (summary.isFullContentCached) {
                     Icon(
-                        imageVector = CarbonIcons.Checkmark,
-                        contentDescription = stringResource(Res.string.summary_detail_mark_read),
-                        tint = Carbon.theme.textOnColor,
+                        imageVector = CarbonIcons.Download,
+                        contentDescription = stringResource(Res.string.summary_card_available_offline),
+                        tint = Carbon.theme.iconSecondary,
                         modifier = Modifier.size(IconSizes.xs),
                     )
                 }
-            }
-        }
-
-        // Source and reading time
-        Text(
-            text =
-                buildString {
-                    append(source)
-                    summary.readingTimeMin?.let {
-                        append(" | ")
-                        append(stringResource(Res.string.custom_digest_create_read_time, it))
+                if (summary.isFavorited) {
+                    Icon(
+                        imageVector = CarbonIcons.FavoriteFilled,
+                        contentDescription = stringResource(Res.string.summary_card_favorited),
+                        tint = Carbon.theme.supportError,
+                        modifier = Modifier.size(IconSizes.xs),
+                    )
+                }
+                if (summary.isRead) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(20.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Carbon.theme.supportSuccess),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = CarbonIcons.Checkmark,
+                            contentDescription = stringResource(Res.string.summary_detail_mark_read),
+                            tint = Carbon.theme.textOnColor,
+                            modifier = Modifier.size(IconSizes.xs),
+                        )
                     }
-                },
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+                }
+            }
+
+            // Source and reading time
+            Text(
+                text =
+                    buildString {
+                        append(source)
+                        summary.readingTimeMin?.let {
+                            append(" | ")
+                            append(stringResource(Res.string.custom_digest_create_read_time, it))
+                        }
+                    },
+                style = Carbon.typography.label01,
+                color = Carbon.theme.textSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }

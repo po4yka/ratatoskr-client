@@ -30,7 +30,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import bitesizereader.core.ui.generated.resources.Res
 import bitesizereader.core.ui.generated.resources.summary_card_accessibility_favorited
 import bitesizereader.core.ui.generated.resources.summary_card_accessibility_read_article
@@ -45,7 +44,6 @@ import com.gabrieldrn.carbon.Carbon
 import com.po4yka.bitesizereader.domain.model.Summary
 import com.po4yka.bitesizereader.core.ui.icons.CarbonIcons
 import com.po4yka.bitesizereader.core.ui.theme.Dimensions
-import com.po4yka.bitesizereader.core.ui.theme.IconSizes
 import com.po4yka.bitesizereader.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt

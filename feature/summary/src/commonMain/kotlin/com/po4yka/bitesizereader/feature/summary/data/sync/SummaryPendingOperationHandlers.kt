@@ -23,7 +23,9 @@ internal class SummaryPendingOperationHandler : PendingOperationHandler {
     override suspend fun handle(operation: PendingOperationEntity): PendingOperationHandlingResult {
         val remoteId = operation.entityId.toLongOrNull()
         if (remoteId == null) {
-            logger.warn { "Dropping malformed summary pending operation ${operation.id}: bad entityId '${operation.entityId}'" }
+            logger.warn {
+                "Dropping malformed summary pending operation ${operation.id}: bad entityId '${operation.entityId}'"
+            }
             return PendingOperationHandlingResult.Completed()
         }
 
@@ -86,7 +88,9 @@ internal class SummaryFeedbackPendingOperationHandler(
                     }
             val remoteId = operation.entityId.toLongOrNull()
             if (remoteId == null) {
-                logger.warn { "Dropping malformed feedback operation ${operation.id}: bad entityId '${operation.entityId}'" }
+                logger.warn {
+                    "Dropping malformed feedback operation ${operation.id}: bad entityId '${operation.entityId}'"
+                }
                 return PendingOperationHandlingResult.Completed()
             }
 
