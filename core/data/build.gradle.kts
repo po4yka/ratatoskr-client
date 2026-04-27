@@ -82,8 +82,25 @@ sqldelight {
 wire {
     kotlin {
         explicitStreamingCalls = true
+        out = layout.buildDirectory.dir("generated/source/wire").get().asFile.path
     }
     sourcePath {
         srcDir("src/commonMain/proto")
     }
+}
+
+kotlin {
+    sourceSets {
+        commonMain {
+            kotlin.srcDir(layout.buildDirectory.dir("generated/source/wire"))
+        }
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+    dependsOn("generateProtos")
+}
+
+tasks.matching { it.name.startsWith("ksp") || it.name.startsWith("ktlint") }.configureEach {
+    dependsOn("generateProtos")
 }
