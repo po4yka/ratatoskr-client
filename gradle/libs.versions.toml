@@ -22,7 +22,7 @@ datastore = "1.2.1"
 desugar-jdk-libs = "2.0.3"
 
 # KMP Core Libraries
-ktor = "3.4.2"
+ktor = "3.4.3"
 sqldelight = "2.3.2"
 decompose = "3.5.0"
 essenty = "2.5.0"
