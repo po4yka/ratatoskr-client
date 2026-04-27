@@ -79,14 +79,16 @@ val verifyArchitectureBoundaries =
         buildFiles.from(
             layout.projectDirectory.file("composeApp/build.gradle.kts"),
             layout.projectDirectory.file("androidApp/build.gradle.kts"),
-            layout.projectDirectory
-                .dir("core")
-                .asFileTree
-                .matching { include("**/build.gradle.kts") },
-            layout.projectDirectory
-                .dir("feature")
-                .asFileTree
-                .matching { include("**/build.gradle.kts") },
+            layout.projectDirectory.file("core/common/build.gradle.kts"),
+            layout.projectDirectory.file("core/data/build.gradle.kts"),
+            layout.projectDirectory.file("core/navigation/build.gradle.kts"),
+            layout.projectDirectory.file("core/ui/build.gradle.kts"),
+            layout.projectDirectory.file("feature/auth/build.gradle.kts"),
+            layout.projectDirectory.file("feature/collections/build.gradle.kts"),
+            layout.projectDirectory.file("feature/digest/build.gradle.kts"),
+            layout.projectDirectory.file("feature/settings/build.gradle.kts"),
+            layout.projectDirectory.file("feature/summary/build.gradle.kts"),
+            layout.projectDirectory.file("feature/sync/build.gradle.kts"),
         )
 
         docFiles.from(
