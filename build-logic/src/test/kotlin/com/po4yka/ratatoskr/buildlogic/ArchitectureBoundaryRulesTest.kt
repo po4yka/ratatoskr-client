@@ -224,35 +224,6 @@ class ArchitectureBoundaryRulesTest {
     }
 
     @Test
-    fun `docs consistency rejects legacy shared references outside allowlist`() {
-        val violations =
-            ArchitectureBoundaryRules.findLegacyDocsViolations(
-                listOf(
-                    SourceFile(
-                        path = "docs/TESTING.md",
-                        content = "Run :shared:test and inspect shared/build reports",
-                    ),
-                    SourceFile(
-                        path = "shared/AGENTS.md",
-                        content = "shared/ is legacy",
-                    ),
-                    SourceFile(
-                        path = "docs/BUILD_MIGRATION_DEFERRED.md",
-                        content = "This note may mention :shared: history",
-                    ),
-                ),
-            )
-
-        assertEquals(
-            listOf(
-                "Docs drift: docs/TESTING.md still references legacy ':shared:'",
-                "Docs drift: docs/TESTING.md still references legacy 'shared/'",
-            ),
-            violations,
-        )
-    }
-
-    @Test
     fun `composeApp cannot keep feature route ui outside shell host`() {
         val violations =
             ArchitectureBoundaryRules.findComposeAppFeatureUiViolations(

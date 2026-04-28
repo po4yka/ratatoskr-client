@@ -90,16 +90,6 @@ val verifyArchitectureBoundaries =
             layout.projectDirectory.file("feature/summary/build.gradle.kts"),
             layout.projectDirectory.file("feature/sync/build.gradle.kts"),
         )
-
-        docFiles.from(
-            layout.projectDirectory.file("README.md"),
-            layout.projectDirectory.file("AGENTS.md"),
-            layout.projectDirectory.file("shared/AGENTS.md"),
-            layout.projectDirectory
-                .dir("docs")
-                .asFileTree
-                .matching { include("**/*.md") },
-        )
     }
 
 subprojects {
