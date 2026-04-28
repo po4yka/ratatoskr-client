@@ -31,12 +31,19 @@ assignees: ''
 
 ## Environment
 
-**Platform**: <!-- Android / iOS / Both -->
+**Platform**: <!-- Android / iOS / Desktop / Both -->
 
 **Device Information**:
-- Device: <!-- e.g., Pixel 7, iPhone 15 Pro -->
-- OS Version: <!-- e.g., Android 14, iOS 17.0 -->
+- Device: <!-- e.g., Pixel 7, iPhone 15 Pro, Linux desktop -->
+- OS Version: <!-- e.g., Android 14, iOS 17.0, macOS 14.5 -->
 - App Version: <!-- e.g., 0.1.0 -->
+- Build flavor: <!-- debug / release -->
+
+**Build environment** (only required for build-time bugs):
+- Kotlin: <!-- from gradle/libs.versions.toml — currently 2.3.20 -->
+- Gradle: <!-- from gradle/wrapper/gradle-wrapper.properties — currently 9.4.1 -->
+- AGP: <!-- from build-logic/build.gradle.kts — currently 9.0.1 -->
+- JDK: <!-- e.g., Temurin 17.0.10 -->
 
 **For Android**:
 - Android API Level: <!-- e.g., API 34 -->
@@ -45,6 +52,12 @@ assignees: ''
 **For iOS**:
 - iOS Version: <!-- e.g., 17.0.1 -->
 - Device Model: <!-- e.g., iPhone 15 Pro -->
+- Xcode version: <!-- e.g., 15.4 -->
+
+**For sync / auth bugs**, also include:
+- Network condition: <!-- WiFi / cellular / offline / VPN / proxy -->
+- Backend URL: <!-- value of api.base.url in local.properties -->
+- Whether the failure reproduces against `https://api.ratatoskr.po4yka.com` vs a local backend
 
 ## Logs/Error Messages
 

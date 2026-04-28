@@ -62,6 +62,11 @@ assignees: ''
 - [ ] 3G
 - [ ] Slow network
 
+**Reproducibility**:
+- [ ] Reproducible on Desktop (Compose hot reload) — this isolates the issue from platform host code
+- [ ] Reproducible only on physical device
+- [ ] Reproducible only on emulator/simulator
+
 ## Profiling Data
 
 <!-- If you have profiling data (Android Profiler, Instruments, etc.), attach or describe it -->

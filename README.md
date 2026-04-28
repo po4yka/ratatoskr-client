@@ -3,332 +3,261 @@
 [![PR Validation](https://github.com/po4yka/ratatoskr-client/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/po4yka/ratatoskr-client/actions/workflows/pr-validation.yml)
 [![CI](https://github.com/po4yka/ratatoskr-client/actions/workflows/ci.yml/badge.svg)](https://github.com/po4yka/ratatoskr-client/actions/workflows/ci.yml)
 [![Code Quality](https://github.com/po4yka/ratatoskr-client/actions/workflows/code-quality.yml/badge.svg)](https://github.com/po4yka/ratatoskr-client/actions/workflows/code-quality.yml)
+[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](LICENSE)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.3.20-7F52FF.svg?logo=kotlin)](gradle/libs.versions.toml)
+[![JDK](https://img.shields.io/badge/JDK-17-orange.svg?logo=openjdk)](https://openjdk.org/projects/jdk/17/)
 
-Compose Multiplatform client for [Ratatoskr](https://github.com/po4yka/ratatoskr) - a service that summarizes web articles and YouTube videos using LLM.
+Compose Multiplatform client for [Ratatoskr](https://github.com/po4yka/ratatoskr) — a service that summarizes web articles and YouTube videos using LLM. Sharing ~80–90% of business logic and UI code between Android and iOS, with a Desktop hot-reload target for UI iteration.
+
+<!-- Screenshots: TODO populate after marketing capture.
+     Replace this comment with three side-by-side images:
+       docs/img/screenshot-android.png   (1170×2532 portrait, Android home)
+       docs/img/screenshot-ios.png       (1170×2532 portrait, iOS home)
+       docs/img/screenshot-desktop.png   (1440×900 landscape, Desktop preview)
+-->
 
 ## Overview
 
-This is a **Kotlin Multiplatform + Compose Multiplatform** app that provides a shared UI stack across Android, iOS, and Desktop while sharing ~80-90% of business logic code. The app allows users to:
+Browse and read AI-generated summaries of articles and YouTube videos:
 
-- Browse and read saved article/video summaries
-- Submit new URLs for AI-powered summarization
-- Search summaries by topic, content, or tags
-- Work offline with automatic sync
-- Track reading progress and organize content
+- Submit URLs for AI-powered summarization
+- Search by topic, content, or tags
+- Work offline with automatic delta sync
+- Track reading progress, organize into collections
+- Telegram-based authentication (no separate account needed)
 
-### Architecture Philosophy
+### Architecture philosophy
 
-**KMP + Compose Multiplatform UI:**
-- **Shared Code (80-90%)**: Infrastructure in `core/*`, feature logic in `feature/*`, navigation contracts in `core/navigation`, and shell composition in `composeApp/`
-- **Shared UI**: Compose Multiplatform screens rendered on Android, iOS, and Desktop (with native host hooks where needed)
-- **Offline-First**: Local SQLite database with session-based sync to the backend API
-- **Boundary-Driven**: Domain/UI code stays free of transport DTOs and routed screens receive dependencies from components
+- **Shared (~80–90%)**: infrastructure in `core/*`, feature logic in
+  `feature/*`, navigation contracts in `core/navigation`, shell
+  composition in `composeApp/`.
+- **Shared UI**: Compose Multiplatform screens render on Android, iOS,
+  and Desktop with native host hooks where the platform demands it.
+- **Offline-first**: SQLite (SQLDelight) cache fronted by session-based
+  delta sync against the FastAPI backend.
+- **Boundary-driven**: domain/UI code stays free of transport DTOs;
+  routed screens receive dependencies from Decompose components, not
+  `koinInject()`.
+
+For the rules in detail, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## CI/CD
 
-This project features **comprehensive CI/CD automation** using GitHub Actions:
+GitHub Actions runs Android builds (Ubuntu) and iOS builds (macOS) in
+parallel on every PR; main-branch CI runs the same plus Detekt,
+ktlint, Kover coverage, and dependency security scans. Releases are
+tag-driven (`git tag v1.0.0 && git push --tags`) and produce APK +
+IPA artefacts. Add the `skip-ios` label to a PR to skip the macOS
+runner for Android-only changes.
 
--  **Automated Testing**: All PRs run Android, iOS, and modular KMP test suites
--  **Multi-Platform Builds**: Parallel builds on Ubuntu (Android) and macOS (iOS)
--  **Automated Releases**: Tag-based releases with automatic APK/IPA generation
--  **Code Quality**: Linting, security scanning, and dependency checks
--  **Dependabot**: Automatic dependency updates with grouped PRs
--  **Cost Optimized**: Conditional builds and smart caching reduce CI minutes by ~60%
-
-**Quick Start:**
-- PRs automatically validate on both platforms
-- Add `skip-ios` label to skip expensive macOS builds for Android-only changes
-- Create releases: `git tag v1.0.0 && git push --tags`
-
-See **[docs/CICD.md](docs/CICD.md)** for complete documentation including setup, secrets configuration, and troubleshooting.
+See [`docs/CICD.md`](docs/CICD.md) for the full setup, secret
+configuration, and troubleshooting.
 
 ## Tech Stack
 
-### Shared Kotlin Multiplatform (commonMain)
+### Shared (commonMain)
 
 | Category | Technology | Purpose |
-|----------|-----------|---------|
-| **Navigation** | [Decompose](https://github.com/arkivanov/Decompose) | Lifecycle-aware navigation and state preservation |
-| **Networking** | [Ktor Client 3.0](https://ktor.io/docs/client.html) | HTTP client with async/await support |
-| **Data Layer** | Feature repositories + Ktor APIs | Repository pattern with local persistence and sync |
-| **Database** | [SQLDelight 2.0](https://cashapp.github.io/sqldelight/) | Type-safe SQL with coroutines support |
-| **Serialization** | [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) | JSON parsing and data classes |
-| **DI** | [Koin 4.1+](https://insert-koin.io/) | Dependency injection |
-| **Coroutines** | [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) | Async/await and Flow streams |
-| **Date/Time** | [kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime) | ISO 8601 parsing and timezone handling |
-| **Logging** | [kotlin-logging](https://github.com/oshai/kotlin-logging) | Structured multiplatform logging |
-| **Icons** | Custom Carbon Icons | IBM Carbon Design System icons as ImageVectors |
-| **Dev Tools** | [Compose Hot Reload](https://github.com/JetBrains/compose-hot-reload) | Instant UI updates without restarts |
+|---|---|---|
+| Navigation | [Decompose](https://github.com/arkivanov/Decompose) | Lifecycle-aware navigation, retained ViewModels |
+| Networking | [Ktor Client](https://ktor.io/docs/client.html) | HTTP with bearer-token auto-refresh |
+| Persistence | [SQLDelight](https://cashapp.github.io/sqldelight/) | Type-safe SQL with coroutines |
+| DI | [Koin](https://insert-koin.io/) (annotations + DSL) | Compile-time DI graph |
+| Serialization | [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) | JSON wire format |
+| Concurrency | [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) | `Flow`, `StateFlow`, structured concurrency |
+| Date/Time | [kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime) | ISO 8601, timezone-correct |
+| Logging | [kotlin-logging](https://github.com/oshai/kotlin-logging) | Structured logging facade |
+| UI Kit | [Carbon Compose](https://github.com/gabrieldrn/Carbon) | IBM Carbon Design System tokens |
+| Hot Reload | [Compose Hot Reload](https://github.com/JetBrains/compose-hot-reload) | Desktop dev loop |
 
-### iOS (Compose Multiplatform host)
+### Android (androidApp + Android actuals)
 
-- **Compose Multiplatform** - Shared UI rendered via `MainViewController`
-- **SwiftUI shell** - Hosts Compose UI and bridges Telegram login via native WebView
-- **SKIE** - Configured in Gradle but currently disabled for the active Kotlin version
-- **Keychain** - Secure JWT token storage
-- **Share Extension** - Submit URLs from Safari/other apps
-- **WidgetKit** - Home screen widget for recent summaries
+- **Jetpack Compose** UI (M3 + Carbon)
+- **Tink AEAD + DataStore** secure JWT storage (see [`docs/SECURITY.md`](docs/SECURITY.md))
+- **OkHttp** Ktor engine
+- **WorkManager** background sync
+- **Glance** home-screen widget
 
-### Android (Jetpack Compose)
+### iOS (iosApp + iOS actuals)
 
-- **Jetpack Compose** - Modern declarative UI (100% Compose)
-- **Material 3** - Material Design components
-- **Koin Android** - Activity/Composable injection
-- **Tink AEAD + DataStore** - Secure JWT storage
-- **WorkManager** - Background sync jobs
-- **App Widgets** - Home screen widget
+- **SwiftUI** shell hosts the `ComposeApp` framework
+- **KeychainSettings** secure JWT storage
+- **Darwin** Ktor engine
+- **Background Tasks** for sync
+- **WidgetKit** home-screen widget
+- **Share Extension** for URL submission from any app
+- **SKIE** configured but disabled for the active Kotlin version
+
+### Desktop
+
+Development-only target for Compose hot reload. Not shipped as a
+production app.
+
+## Prerequisites
+
+| Tool | Minimum version | Notes |
+|---|---|---|
+| JDK | **17** | LTS, Temurin recommended |
+| Gradle | **9.4.1** (via wrapper) | `./gradlew` resolves automatically |
+| Android Gradle Plugin | **9.0.1** | Wired in `build-logic/` |
+| Kotlin | **2.3.20** | KMP + KSP |
+| Compose Multiplatform | **1.10.3** | UI framework |
+| Android `compileSdk` / `minSdk` | **36 / 24** | Modern devices, API 24+ |
+| Android Studio | Ladybug+ (2024.2.1) | For IDE workflow |
+| Xcode | **15+** | For iOS builds (macOS only) |
+| CocoaPods | recent stable | iOS framework integration |
+| `xcodegen` (optional) | recent stable | If regenerating `iosApp.xcodeproj` from `project.yml` |
+
+The mobile client also requires a running [`po4yka/ratatoskr`](https://github.com/po4yka/ratatoskr)
+backend instance — see [`docs/DEVELOPMENT.md#running-the-backend-locally`](docs/DEVELOPMENT.md#running-the-backend-locally).
+
+## Platform feature matrix
+
+| Feature | Android | iOS | Desktop |
+|---|:---:|:---:|:---:|
+| Summary list, detail, search | ✅ | ✅ | ✅ (preview) |
+| Submit URL → poll status → display summary | ✅ | ✅ | ✅ |
+| Telegram auth (login widget + OAuth) | ✅ | ✅ | ❌ |
+| Offline cache + delta sync | ✅ | ✅ | ⚠️ in-memory only |
+| Background sync | ✅ WorkManager | ✅ Background Tasks | ❌ |
+| Home-screen widget | ✅ Glance | ✅ WidgetKit | ❌ |
+| Share-sheet URL submission | ✅ Share Intent | ✅ Share Extension | ❌ |
+| Secure token storage | ✅ Tink + DataStore | ✅ Keychain | ⚠️ in-memory dev only |
+| Ratatoskr launcher icon | ✅ | ✅ | n/a |
+
+Desktop is a development convenience for UI iteration, not a
+production target. See [`docs/COMPOSE_HOT_RELOAD.md`](docs/COMPOSE_HOT_RELOAD.md).
 
 ## Project Structure
 
 ```
 ratatoskr-client/
- androidApp/                      # Android app host, widgets, workers, manifest/resources
- composeApp/                      # Compose Multiplatform UI + navigation shell + CocoaPods export
-    src/iosMain/kotlin/          # Compose UIViewController for iOS host
-    src/desktopMain/kotlin/      # Desktop preview entrypoint
-    src/commonMain/kotlin/       # Shared Compose UI/theme/navigation
- core/
-    common/                       # Shared domain, config, base presentation primitives
-    data/                         # Shared networking/bootstrap, SQLDelight, persistence, secure storage
-    navigation/                   # Route contracts and navigator interfaces
-    ui/                           # Shared non-feature UI primitives
- feature/
-    auth/                         # Auth/session contracts, APIs, and flows
-    collections/                  # Collections, tags, RSS, import/export
-    digest/                       # Digest and custom digest flows
-    settings/                     # Settings, stats, reading goals, account
-    summary/                      # Summary list/detail, search, submit URL, recommendations
-    sync/                         # Sync orchestration and public sync contracts
- iosApp/                          # iOS app shell (SwiftUI hosting Compose)
-    iosApp/
-       Auth/                   # Native Telegram login sheet
-       Config/                 # Platform config
-       iOSApp.swift            # Entry point hosting Compose UI
-    ShareExtension/             # Native share-extension source
-    RecentSummariesWidget/      # Native widget source
-    Info.plist                  # Main app config
-    Podfile                     # CocoaPods dependencies
- gradle/
-    libs.versions.toml          # Version catalog
- README.md                        # This file
- docs/                            # Reference documentation
+├── androidApp/              # Android Application class, MainActivity, Glance widgets, WorkManager workers
+├── composeApp/              # Compose shell, navigation graph, CocoaPods export, Desktop dev target
+├── core/
+│   ├── common/              # Cross-feature domain primitives, AppConfig, BaseViewModel, error types
+│   ├── data/                # Ktor ApiClient, SQLDelight, SecureStorage actuals, generic API wrappers
+│   ├── navigation/          # Route contracts (RootNavigation, MainNavigation)
+│   └── ui/                  # Shared Compose components, RatatoskrTheme, CarbonIcons, Compose Resources
+├── feature/
+│   ├── auth/                # Telegram login screen, JWT exchange, login session
+│   ├── collections/         # Folders, tags, RSS, OPML import/export
+│   ├── digest/              # Channel digest subscriptions, custom digests
+│   ├── settings/            # Settings, stats, reading goals, account
+│   ├── summary/             # List/detail, search, submit URL, recommendations
+│   └── sync/                # Sync orchestration + per-entity appliers contract
+├── iosApp/                  # SwiftUI host, ShareExtension, RecentSummariesWidget, project.yml
+├── build-logic/             # Convention plugins (ratatoskr.kmp.library, ratatoskr.android.application, ...)
+├── gradle/libs.versions.toml
+└── docs/                    # Reference documentation
 ```
+
+A feature module never imports another feature's `data/` or
+`presentation/` packages — only the public domain contracts. See
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full
+dependency-direction rules.
 
 ## Backend API
 
-The client talks to the FastAPI backend at [`po4yka/ratatoskr`](https://github.com/po4yka/ratatoskr). Default base URL: `https://api.ratatoskr.po4yka.com` (override via `api.base.url` in `local.properties`). See [`docs/API.md`](docs/API.md) for endpoint contracts, error codes, and Kotlin transport-layer wiring.
+The client talks to the FastAPI backend at [`po4yka/ratatoskr`](https://github.com/po4yka/ratatoskr).
+Default base URL: `https://api.ratatoskr.po4yka.com` (override via
+`api.base.url` in `local.properties`). See [`docs/API.md`](docs/API.md)
+for endpoint contracts, error codes, and Kotlin transport-layer wiring.
 
-## Getting Started
+## Quickstart
 
-### Prerequisites
-
-#### Development Tools
-
-- **Xcode 15+** (for iOS development, macOS only)
-- **Android Studio Ladybug+** (2024.2.1 or later)
-- **JDK 17+** (for Gradle)
-- **CocoaPods** (for iOS dependencies)
-
-#### Backend Service
-
-The mobile client requires the [`po4yka/ratatoskr`](https://github.com/po4yka/ratatoskr) FastAPI backend. See [`docs/DEVELOPMENT.md#running-the-backend-locally`](docs/DEVELOPMENT.md#running-the-backend-locally) for the Docker setup, environment variables, and verification steps.
-
-### Clone Repository
-
-```bash
-git clone https://github.com/po4yka/ratatoskr-client.git
-cd ratatoskr-client
-```
-
-### Configuration
-
-Create `local.properties` in project root:
+After cloning the repo, drop a `local.properties` in the root:
 
 ```properties
-# Backend API base URL
 api.base.url=http://localhost:8000
-
-# Telegram Bot Token (for auth verification)
-telegram.bot.token=YOUR_BOT_TOKEN_HERE
-
-# Client ID (identifies this app to backend)
 client.id=ratatoskr-android-v1.0
+telegram.bot.username=ratatoskr_client_bot
+telegram.bot.id=
 ```
 
-**Note**: Do NOT commit `local.properties` - it's in `.gitignore`.
+(Use `http://10.0.2.2:8000` instead of `localhost` for the Android
+emulator. `local.properties` is gitignored.)
 
-### Build & Run
-
-#### Desktop (Hot Reload for UI Development)
-
-```bash
-# Run with Compose Hot Reload for rapid UI development
-./gradlew :composeApp:runDesktop
-
-# Edit any Compose UI file and see changes instantly!
-```
-
-**Note**: Desktop target is for development only. See [docs/COMPOSE_HOT_RELOAD.md](docs/COMPOSE_HOT_RELOAD.md) for details.
-
-#### Android
+### Android
 
 ```bash
-# Open in Android Studio
-open -a "Android Studio" .
-
-# Or build from command line
-./gradlew :androidApp:assembleDebug
-
-# Install on connected device/emulator
 ./gradlew :androidApp:installDebug
 ```
 
-#### iOS
+### iOS
 
 ```bash
-# Install CocoaPods dependencies
-cd iosApp
-pod install
-cd ..
-
-# Open Xcode workspace
-open iosApp/iosApp.xcworkspace
-
-# Or build from command line
-xcodebuild -workspace iosApp/iosApp.xcworkspace \
-           -scheme iosApp \
-           -configuration Debug \
-           -sdk iphonesimulator
+cd iosApp && pod install && cd ..
+xcodebuild -workspace iosApp/iosApp.xcworkspace -scheme iosApp \
+  -configuration Debug -sdk iphonesimulator
+# Or open iosApp/iosApp.xcworkspace in Xcode
 ```
 
-### Running Tests
+### Desktop (hot reload)
 
 ```bash
-# Run the module tests you changed
+./gradlew :composeApp:hotRunDesktop
+```
+
+### Tests
+
+```bash
 ./gradlew :core:common:allTests :core:data:allTests
 ./gradlew :feature:summary:allTests :feature:settings:allTests
-
-# Android tests
 ./gradlew :composeApp:testDebugUnitTest
+./gradlew detekt ktlintCheck
 ```
 
-## Development
-
-### Code Style
-
-- **Kotlin**: [Official Kotlin style guide](https://kotlinlang.org/docs/coding-conventions.html)
-- **Swift**: [Swift API Design Guidelines](https://swift.org/documentation/api-design-guidelines/)
-- **Formatting**: Use IDE auto-formatting (Cmd+Opt+L / Ctrl+Alt+L)
-
-### Dependency Management
-
-All versions are managed in `gradle/libs.versions.toml`:
-
-```toml
-[versions]
-kotlin = "2.2.20"
-ktor = "3.0.2"
-sqldelight = "2.0.2"
-decompose = "3.2.0"
-store = "5.1.0"
-koin = "3.5.6"
-
-[libraries]
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-# ... more dependencies
-```
-
-### Adding Dependencies
-
-1. Add version to `[versions]` section in `libs.versions.toml`
-2. Add library to `[libraries]` section
-3. Reference in `build.gradle.kts`: `implementation(libs.ktor.client.core)`
-
-### Architecture Patterns
-
-The MVI / Repository / Decompose patterns the project uses are documented in [`docs/ARCHITECTURE.md#implementation-patterns`](docs/ARCHITECTURE.md#implementation-patterns), with annotated snippets straight from the codebase.
-
-## Key Features
-
-### Offline-First Architecture
-
-- **Local SQLite Database**: All summaries cached locally
-- **Background Sync**: Automatic delta sync on app launch
-- **Optimistic Updates**: Instant UI updates with background sync
-- **Conflict Resolution**: Server wins for reads, local changes uploaded
-
-### Telegram Authentication
-
-1. User taps "Login with Telegram"
-2. Opens Telegram Login Widget (WebView on iOS, Custom Tab on Android)
-3. User authorizes in Telegram app
-4. Callback receives auth data
-5. App exchanges auth data for JWT tokens
-6. Tokens stored securely (Keychain/Tink AEAD + DataStore)
-
-### URL Submission Flow
-
-1. User pastes URL or shares from another app
-2. Client validates URL format
-3. POST to `/v1/requests` with URL
-4. Receive `request_id`
-5. Poll `/v1/requests/{id}/status` every 2 seconds
-6. Show progress: content_extraction → llm_summarization → validation → done
-7. Fetch final summary and display
-
-### Search
-
-- **Local FTS**: SQLite FTS5 for offline search
-- **Remote API**: Full-corpus search on backend
-- **Merged Results**: Combine local + remote with deduplication
-- **Topic Tags**: Filter by hashtags (#technology, #ai, etc.)
-
-## Performance
-
-### Optimizations
-
-- **Lazy Loading**: Pagination (20 items per page)
-- **Image Caching**: Coil (Android) / Kingfisher (iOS) for thumbnails
-- **Database Indexing**: Indexes on `is_read`, `created_at`, FTS
-- **Memory Management**: Weak references, proper lifecycle handling
-- **Background Sync**: WorkManager (Android) / Background Tasks (iOS)
-
-### Benchmarks
-
-- **App Launch**: <2 seconds cold start
-- **Summary List**: 60 FPS scrolling with 1000+ items
-- **Search**: <200ms for local FTS, <500ms for remote
-- **Sync**: <5 seconds for 100 summaries delta sync
-
-## Troubleshooting
-
-See [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) for build, runtime, API, and logging troubleshooting (with platform-specific notes).
+For the full development guide (IDE setup, debugging, code-quality
+workflow), see [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 ## Documentation
 
-See [docs/INDEX.md](docs/INDEX.md) for the complete documentation index.
-
-### Quick Links
+See [`docs/INDEX.md`](docs/INDEX.md) for the complete documentation
+index. Most-used entry points:
 
 | Topic | Document |
-|-------|----------|
-| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
-| Sync Strategy | [docs/SYNC_STRATEGY.md](docs/SYNC_STRATEGY.md) |
-| API Reference | [docs/API.md](docs/API.md) |
-| Authentication | [docs/AUTHENTICATION.md](docs/AUTHENTICATION.md) |
-| ViewModel Guide | [docs/VIEWMODEL_GUIDE.md](docs/VIEWMODEL_GUIDE.md) |
-| Use Case Guide | [docs/USE_CASE_GUIDE.md](docs/USE_CASE_GUIDE.md) |
-| Component Library | [docs/COMPONENT_LIBRARY.md](docs/COMPONENT_LIBRARY.md) |
-| CI/CD | [docs/CICD.md](docs/CICD.md) |
+|---|---|
+| System architecture and module dependency rules | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Backend API contracts and Ktor wiring | [`docs/API.md`](docs/API.md) |
+| Telegram auth setup (BotFather, deep links, WebView actuals) | [`docs/AUTHENTICATION.md`](docs/AUTHENTICATION.md) |
+| Offline sync strategy | [`docs/SYNC_STRATEGY.md`](docs/SYNC_STRATEGY.md) |
+| Secure storage / threat model | [`docs/SECURITY.md`](docs/SECURITY.md) |
+| Build, runtime, and API troubleshooting | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| ViewModel pattern, use cases, repository pattern | [`docs/VIEWMODEL_GUIDE.md`](docs/VIEWMODEL_GUIDE.md), [`docs/USE_CASE_GUIDE.md`](docs/USE_CASE_GUIDE.md), [`docs/REPOSITORY_PATTERNS.md`](docs/REPOSITORY_PATTERNS.md) |
+| Compose component catalog | [`docs/COMPONENT_LIBRARY.md`](docs/COMPONENT_LIBRARY.md) |
+| CI/CD workflows | [`docs/CICD.md`](docs/CICD.md) |
 
-For AI-assisted development guidance, see [CLAUDE.md](CLAUDE.md).
+For AI-assisted development, the project ships skill files at
+`.claude/skills/building-kmp-features/` and `.codex/skills/building-kmp-features/`
+(content-equivalent). They cover the file map, DI rules, and screen
+patterns in a form agents can follow directly.
+
+## Contributing
+
+Contributions are welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md)
+for the dev-environment quickstart, commit-message style, PR
+checklist, and architecture rules. The
+[`.github/pull_request_template.md`](.github/pull_request_template.md)
+is auto-filled when you open a PR.
+
+By participating you agree to abide by the project's
+[Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Security
+
+Found a vulnerability? Please report it privately per
+[`SECURITY.md`](SECURITY.md) — do **not** open a public issue.
+
+For the engineering-side threat model, secure-storage choices, and
+the security checklist, see [`docs/SECURITY.md`](docs/SECURITY.md).
 
 ## License
 
-BSD 3-Clause License - see [LICENSE](./LICENSE) file.
+BSD 3-Clause License — see [LICENSE](LICENSE).
 
 Copyright (c) 2025, Nikita Pochaev
 
 ## Related Projects
 
-- **Backend Service**: [ratatoskr](https://github.com/po4yka/ratatoskr) - FastAPI backend with Telegram bot
+- **Backend service**: [`po4yka/ratatoskr`](https://github.com/po4yka/ratatoskr) — FastAPI backend with Telegram bot

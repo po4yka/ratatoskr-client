@@ -37,7 +37,18 @@ Example: I'm always frustrated when [...] -->
 
 - [ ] Android
 - [ ] iOS
-- [ ] Both
+- [ ] Desktop (dev target)
+- [ ] All
+
+## Scope
+
+<!-- Helps with triage. Pick the closest fit. -->
+
+- [ ] Affects a specific feature module (which? `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, `feature/sync`)
+- [ ] Affects core infrastructure (which? `core/common`, `core/data`, `core/navigation`, `core/ui`)
+- [ ] Affects the shell host (`composeApp/`)
+- [ ] Affects platform host code (`androidApp/`, `iosApp/`)
+- [ ] Cross-cutting (multiple of the above)
 
 ## Priority
 
