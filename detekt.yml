@@ -283,7 +283,7 @@ naming:
     excludeClassPattern: '$^'
   InvalidPackageDeclaration:
     active: true
-    rootPackage: 'com.po4yka.bitesizereader'
+    rootPackage: 'com.po4yka.ratatoskr'
     requireRootInDeclaration: false
   LambdaParameterNaming:
     active: false

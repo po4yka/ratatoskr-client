@@ -1,7 +1,7 @@
 # OpenAPI Specifications
 
 The canonical OpenAPI specs live in the **backend repository**:
-[bite-size-reader/docs/openapi/](https://github.com/nickolay-p/bite-size-reader/tree/main/docs/openapi)
+[ratatoskr/docs/openapi/](https://github.com/nickolay-p/ratatoskr/tree/main/docs/openapi)
 
 ## Viewing the API docs
 

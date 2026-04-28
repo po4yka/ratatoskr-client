@@ -1,11 +1,11 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'ComposeApp'
     spec.version                  = '1.0.0'
-    spec.homepage                 = 'https://github.com/po4yka/bite-size-reader-client'
+    spec.homepage                 = 'https://github.com/po4yka/ratatoskr-client'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
     spec.license                  = ''
-    spec.summary                  = 'Compose Multiplatform UI for Bite-Size Reader'
+    spec.summary                  = 'Compose Multiplatform UI for Ratatoskr Client'
     spec.vendored_frameworks      = 'build/cocoapods/framework/ComposeApp.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target    = '15.0'

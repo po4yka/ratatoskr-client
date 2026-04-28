@@ -1,6 +1,6 @@
 # Security Guidelines
 
-Security best practices for the Bite-Size Reader mobile client.
+Security best practices for the Ratatoskr mobile client.
 
 ## Table of Contents
 
@@ -140,7 +140,7 @@ class AndroidSecureTokenStorage(private val context: Context) : SecureTokenStora
 import Security
 
 class KeychainTokenStorage {
-    private let service = "com.bitesizereader.tokens"
+    private let service = "com.po4yka.ratatoskr.tokens"
 
     func saveAccessToken(_ token: String) {
         save(key: "access_token", value: token)
@@ -299,7 +299,7 @@ actual class DatabaseDriverFactory(private val context: Context) {
         )
 
         val database = context.openOrCreateDatabase(
-            "bite_reader.db",
+            "ratatoskr.db",
             Context.MODE_PRIVATE,
             null,
             supportFactory.create()
@@ -308,7 +308,7 @@ actual class DatabaseDriverFactory(private val context: Context) {
         return AndroidSqliteDriver(
             schema = Database.Schema,
             context = context,
-            name = "bite_reader.db",
+            name = "ratatoskr.db",
             factory = supportFactory
         )
     }
@@ -343,7 +343,7 @@ actual class DatabaseDriverFactory(private val context: Context) {
     }
 
     companion object {
-        private const val KEY_ALIAS = "bite_reader_db_key"
+        private const val KEY_ALIAS = "ratatoskr_db_key"
     }
 }
 ```
@@ -414,7 +414,7 @@ val httpClient = HttpClient(OkHttp) {
                 certificatePinner(
                     CertificatePinner.Builder()
                         .add(
-                            "api.bite-size-reader.com",
+                            "api.ratatoskr.po4yka.com",
                             "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
                         )
                         .build()
@@ -617,8 +617,8 @@ SELECT * FROM Summary WHERE id = ?;
 -renamesourcefileattribute SourceFile
 
 # Keep models for serialization
--keep class com.bitesizereader.data.remote.dto.** { *; }
--keep class com.bitesizereader.domain.model.** { *; }
+-keep class com.po4yka.ratatoskr.data.remote.dto.** { *; }
+-keep class com.po4yka.ratatoskr.domain.model.** { *; }
 
 # Obfuscate everything else
 -repackageclasses 'o'

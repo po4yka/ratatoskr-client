@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">BiteSizeReader</string>
+    <string name="app_name">Ratatoskr</string>
     <string name="shortcut_submit_short">Submit URL</string>
     <string name="shortcut_submit_long">Submit New URL</string>
     <string name="shortcut_search_short">Search</string>
     <string name="shortcut_search_long">Search Summaries</string>
 
     <!-- Authentication -->
-    <string name="auth_title">Bite-Size Reader</string>
+    <string name="auth_title">Ratatoskr</string>
     <string name="auth_subtitle">AI summaries of web articles</string>
     <string name="auth_login_button">Login with Telegram</string>
     <string name="auth_logging_in">Logging in...</string>

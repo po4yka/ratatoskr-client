@@ -1,6 +1,6 @@
 # Backend Integration Guide
 
-Complete guide for integrating the Bite-Size Reader mobile client with the FastAPI backend.
+Complete guide for integrating the Ratatoskr mobile client with the FastAPI backend.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ Complete guide for integrating the Bite-Size Reader mobile client with the FastA
 
 ## Backend Overview
 
-The mobile client connects to the [bite-size-reader](https://github.com/po4yka/bite-size-reader) FastAPI backend service.
+The mobile client connects to the [ratatoskr](https://github.com/po4yka/ratatoskr) FastAPI backend service.
 
 ### Backend Features
 
@@ -37,7 +37,7 @@ JWT_SECRET_KEY=<32+ character secret>
 
 # Mobile API Configuration
 ALLOWED_ORIGINS=http://localhost:3000,https://your-app.com
-ALLOWED_CLIENT_IDS=android-app-v1.0,ios-app-v1.0  # Optional
+ALLOWED_CLIENT_IDS=ratatoskr-android-v1.0,ratatoskr-ios-v1.0  # Optional
 
 # User Authorization
 ALLOWED_USER_IDS=123456789,987654321
@@ -56,12 +56,12 @@ Configure the base URL based on environment:
 
 **Production**:
 ```kotlin
-const val PRODUCTION_BASE_URL = "https://api.bite-size-reader.com"
+const val PRODUCTION_BASE_URL = "https://api.ratatoskr.po4yka.com"
 ```
 
 **Staging**:
 ```kotlin
-const val STAGING_BASE_URL = "https://staging-api.bite-size-reader.com"
+const val STAGING_BASE_URL = "https://staging-api.ratatoskr.po4yka.com"
 ```
 
 **Local Development**:
@@ -79,7 +79,7 @@ const val LOCAL_NETWORK_URL = "http://192.168.1.100:8000"
 **Implementation**:
 
 ```kotlin
-// core/common/src/commonMain/kotlin/com/po4yka/bitesizereader/util/config/AppConfig.kt
+// core/common/src/commonMain/kotlin/com/po4yka/ratatoskr/util/config/AppConfig.kt
 object ApiConfig {
     enum class Environment {
         PRODUCTION,
@@ -91,8 +91,8 @@ object ApiConfig {
 
     val baseUrl: String
         get() = when (currentEnvironment) {
-            Environment.PRODUCTION -> "https://api.bite-size-reader.com"
-            Environment.STAGING -> "https://staging-api.bite-size-reader.com"
+            Environment.PRODUCTION -> "https://api.ratatoskr.po4yka.com"
+            Environment.STAGING -> "https://staging-api.ratatoskr.po4yka.com"
             Environment.LOCAL -> getPlatformLocalUrl()
         }
 
@@ -135,8 +135,8 @@ app.add_middleware(
 All endpoints are prefixed with `/v1`:
 
 ```
-https://api.bite-size-reader.com/v1/summaries
-https://api.bite-size-reader.com/v1/auth/telegram-login
+https://api.ratatoskr.po4yka.com/v1/summaries
+https://api.ratatoskr.po4yka.com/v1/auth/telegram-login
 ```
 
 **Client Implementation**:
@@ -173,14 +173,14 @@ services:
 
 Start backend:
 ```bash
-cd ../bite-size-reader
+cd ../ratatoskr
 docker-compose up -d
 ```
 
 **Manual Setup**:
 
 ```bash
-cd ../bite-size-reader
+cd ../ratatoskr
 
 # Create virtual environment
 python -m venv .venv
@@ -208,7 +208,7 @@ api.retry.max.attempts=3
 
 # Authentication
 telegram.bot.token=YOUR_BOT_TOKEN_HERE
-client.id=android-app-v1.0
+client.id=ratatoskr-android-v1.0
 
 # Debug
 api.logging.enabled=true
@@ -233,7 +233,7 @@ android {
         buildConfigField(
             "String",
             "CLIENT_ID",
-            "\"${properties.getProperty("client.id", "android-app-v1.0")}\""
+            "\"${properties.getProperty("client.id", "ratatoskr-android-v1.0")}\""
         )
     }
 }
@@ -781,7 +781,7 @@ when (val result = repository.getSummaries()) {
 **1. Start Backend Locally**:
 
 ```bash
-cd ../bite-size-reader
+cd ../ratatoskr
 docker-compose up -d
 ```
 

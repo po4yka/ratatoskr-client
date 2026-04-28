@@ -8,8 +8,8 @@
         android:shortcutLongLabel="@string/shortcut_submit_long">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.po4yka.bitesizereader"
-            android:targetClass="com.po4yka.bitesizereader.MainActivity">
+            android:targetPackage="com.po4yka.ratatoskr"
+            android:targetClass="com.po4yka.ratatoskr.MainActivity">
             <extra android:name="action" android:value="submit_url" />
         </intent>
     </shortcut>
@@ -22,8 +22,8 @@
         android:shortcutLongLabel="@string/shortcut_search_long">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.po4yka.bitesizereader"
-            android:targetClass="com.po4yka.bitesizereader.MainActivity">
+            android:targetPackage="com.po4yka.ratatoskr"
+            android:targetClass="com.po4yka.ratatoskr.MainActivity">
             <extra android:name="action" android:value="search" />
         </intent>
     </shortcut>

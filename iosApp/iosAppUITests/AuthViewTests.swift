@@ -21,7 +21,7 @@ final class AuthViewTests: XCTestCase {
         // When: Auth screen is displayed
 
         // Then: App title should be visible
-        let title = app.staticTexts["Bite-Size Reader"]
+        let title = app.staticTexts["Ratatoskr"]
         XCTAssertTrue(title.exists)
     }
 

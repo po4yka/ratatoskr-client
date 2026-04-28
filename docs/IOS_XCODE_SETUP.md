@@ -43,8 +43,8 @@ All Swift code files have been created and are ready to use:
 5. Configure:
    - **Product Name**: `ShareExtension`
    - **Team**: Your development team
-   - **Organization Identifier**: `com.po4yka.bitesizereader`
-   - **Bundle Identifier**: `com.po4yka.bitesizereader.ShareExtension`
+   - **Organization Identifier**: `com.po4yka.ratatoskr`
+   - **Bundle Identifier**: `com.po4yka.ratatoskr.ShareExtension`
    - **Language**: Swift
    - **Activate scheme**: Click "Cancel" (we'll activate later)
 
@@ -72,7 +72,7 @@ Xcode created some files automatically. Replace them with our versions:
 
 1. Select **ShareExtension** target
 2. Go to **General** tab
-3. Verify **Bundle Identifier** is: `com.po4yka.bitesizereader.ShareExtension`
+3. Verify **Bundle Identifier** is: `com.po4yka.ratatoskr.ShareExtension`
 4. Set **Deployment Target** to iOS 15.0 (or match main app)
 
 ---
@@ -88,7 +88,7 @@ App Groups allow the main app and Share Extension to share data.
 3. Click **+ Capability**
 4. Select **App Groups**
 5. Click **+ button** to add a new group
-6. Enter group ID: `group.com.po4yka.bitesizereader`
+6. Enter group ID: `group.com.po4yka.ratatoskr`
 7. Check the checkbox next to the group
 
 ### Step 2: Enable App Groups for Share Extension
@@ -97,12 +97,12 @@ App Groups allow the main app and Share Extension to share data.
 2. Go to **Signing & Capabilities** tab
 3. Click **+ Capability**
 4. Select **App Groups**
-5. Enable the **same group**: `group.com.po4yka.bitesizereader`
+5. Enable the **same group**: `group.com.po4yka.ratatoskr`
 6. Check the checkbox
 
 ### Step 3: Verify App Group Configuration
 
-Both targets should now show `group.com.po4yka.bitesizereader` in their App Groups.
+Both targets should now show `group.com.po4yka.ratatoskr` in their App Groups.
 
 ---
 
@@ -127,14 +127,14 @@ Both targets should now show `group.com.po4yka.bitesizereader` in their App Grou
    - **Key**: `BGTaskSchedulerPermittedIdentifiers`
    - **Type**: Array
 5. Add item to array:
-   - **Item 0**: `com.po4yka.bitesizereader.sync` (String)
+   - **Item 0**: `com.po4yka.ratatoskr.sync` (String)
 
 **Alternative**: Edit `Info.plist` directly and add:
 
 ```xml
 <key>BGTaskSchedulerPermittedIdentifiers</key>
 <array>
-    <string>com.po4yka.bitesizereader.sync</string>
+    <string>com.po4yka.ratatoskr.sync</string>
 </array>
 ```
 
@@ -157,10 +157,10 @@ Ensure the main app's Info.plist has these entries:
     <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>bitesizereader</string>
+            <string>ratatoskr</string>
         </array>
         <key>CFBundleURLName</key>
-        <string>com.po4yka.bitesizereader</string>
+        <string>com.po4yka.ratatoskr</string>
     </dict>
 </array>
 ```
@@ -196,7 +196,7 @@ Share Extension and Background Tasks work best on real devices, not simulator.
 1. Open **Safari** on the device
 2. Navigate to any webpage (e.g., https://techcrunch.com/article)
 3. Tap **Share button** (square with arrow)
-4. Scroll down and tap **More** if "Bite-Size Reader" isn't visible
+4. Scroll down and tap **More** if "Ratatoskr" isn't visible
 5. Enable **ShareExtension** toggle
 6. Tap **Done**
 7. Now tap **Share** again
@@ -217,7 +217,7 @@ Background tasks only run on real devices (not simulator).
 4. In **LLDB console**, paste:
 
 ```bash
-e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.po4yka.bitesizereader.sync"]
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.po4yka.ratatoskr.sync"]
 ```
 
 5. Resume execution ()
@@ -228,7 +228,7 @@ e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWith
 ### Testing Expiration
 
 ```bash
-e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateExpirationForTaskWithIdentifier:@"com.po4yka.bitesizereader.sync"]
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateExpirationForTaskWithIdentifier:@"com.po4yka.ratatoskr.sync"]
 ```
 
 ---
@@ -250,7 +250,7 @@ e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateExpirationForTask
 **Problem**: URL is shared but app doesn't open
 
 **Solutions**:
-1. Verify App Group name matches exactly: `group.com.po4yka.bitesizereader`
+1. Verify App Group name matches exactly: `group.com.po4yka.ratatoskr`
 2. Check console logs for errors
 3. Ensure both targets have the capability enabled
 
@@ -294,7 +294,7 @@ Before considering setup complete, verify:
 - [ ] Our Info.plist is in target
 - [ ] Our MainInterface.storyboard is in target
 - [ ] App Groups capability enabled with same group
-- [ ] Bundle ID: com.po4yka.bitesizereader.ShareExtension
+- [ ] Bundle ID: com.po4yka.ratatoskr.ShareExtension
 - [ ] Extension builds without errors
 
 ### Functionality

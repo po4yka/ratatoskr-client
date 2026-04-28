@@ -5,7 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] — Renamed to Ratatoskr Client
+
+### Breaking
+
+- Project renamed from `bite-size-reader-client` to `ratatoskr-client`. Gradle root
+  project name is now `Ratatoskr`; build-logic plugin IDs renamed from `bitesize.*`
+  to `ratatoskr.*`.
+- Android `applicationId` changed from `com.po4yka.bitesizereader` to
+  `com.po4yka.ratatoskr`. Existing installs MUST be uninstalled and reinstalled —
+  there is no in-place upgrade path. Local cached summaries, JWT tokens, and the
+  on-device SQLite database will be cleared.
+- iOS bundle identifiers changed: main app `com.po4yka.bitesizereader` →
+  `com.po4yka.ratatoskr`; Share Extension `.shareextension` and Widget `.widget`
+  variants tracked. App-group renamed from `group.com.po4yka.bitesizereader` to
+  `group.com.po4yka.ratatoskr`. Background task identifier renamed to
+  `com.po4yka.ratatoskr.sync`. iOS `PRODUCT_NAME` is now `Ratatoskr`. Same
+  fresh-install requirement on iOS.
+- Kotlin package root renamed: `com.po4yka.bitesizereader.*` → `com.po4yka.ratatoskr.*`.
+  External integrators reading shared types must update imports.
+- Deep-link URL scheme renamed: `bitesizereader://` → `ratatoskr://` (affects
+  share-sheet, widget, and Telegram auth callback flows on both platforms).
+- Default `client.id` sent to backend renamed from `android-app-v1.0` to
+  `ratatoskr-android-v1.0` (and `ratatoskr-ios-v1.0` on iOS). Backend
+  `ALLOWED_CLIENT_IDS` must be updated in lockstep.
+- Default backend URL changed from `https://bitsizereaderapi.po4yka.com` to
+  `https://api.ratatoskr.po4yka.com`.
+- Telegram bot username default renamed from `bitesizereader_bot` to
+  `ratatoskr_client_bot`. Coordinate with the BotFather bot rename or new bot
+  registration before users can authenticate.
+- Local SQLite database file renamed from `bite_size_reader.db` to `ratatoskr.db`.
+  Combined with the bundle ID change above, this means existing local data is not
+  carried over.
+- App theme symbol renamed: `BiteSizeReaderTheme` → `RatatoskrTheme`. Android
+  `Application` class renamed: `BiteSizeReaderApp` → `RatatoskrApp`.
+- iOS entitlements file renamed: `iosApp/iosApp/BiteSizeReader.entitlements` →
+  `iosApp/iosApp/Ratatoskr.entitlements`.
+
+### Migration steps for existing users
+
+1. Uninstall the previous Bite-Size Reader app from device.
+2. Install Ratatoskr Client.
+3. Re-authenticate with Telegram. Local summaries will sync down on first session.
+4. (Self-hosting backend) Update `ALLOWED_CLIENT_IDS` server-side to include the
+   new `client.id` value(s).
+5. (Self-hosting backend) Provision the new Telegram bot or transfer the username
+   so `ratatoskr_client_bot` resolves.
 
 ## [0.1.0] - 2026-03-17
 
@@ -57,5 +102,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   iOS (macOS) builds, automated APK/IPA release artefacts, ktlint, Detekt, and
   dependency security scanning.
 
-[Unreleased]: https://github.com/po4yka/bite-size-reader-client/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/po4yka/bite-size-reader-client/releases/tag/v0.1.0
+[Unreleased]: https://github.com/po4yka/ratatoskr-client/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/po4yka/ratatoskr-client/releases/tag/v0.1.0

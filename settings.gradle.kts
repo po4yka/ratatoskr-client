@@ -27,7 +27,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "BiteSizeReader"
+rootProject.name = "Ratatoskr"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":androidApp")

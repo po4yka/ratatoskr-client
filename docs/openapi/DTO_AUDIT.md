@@ -1,7 +1,7 @@
 # DTO Audit: OpenAPI Schema Alignment
 
 Audit date: 2026-02-21
-Spec version: [`docs/openapi/mobile_api.yaml`](https://github.com/nickolay-p/bite-size-reader/blob/main/docs/openapi/mobile_api.yaml) (canonical source in backend repo)
+Spec version: [`docs/openapi/mobile_api.yaml`](https://github.com/nickolay-p/ratatoskr/blob/main/docs/openapi/mobile_api.yaml) (canonical source in backend repo)
 
 ## Legend
 

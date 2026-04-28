@@ -17,7 +17,7 @@ Guidance for UI work in `composeApp/`.
 
 ## Design System
 
-- The app theme is `BiteSizeReaderTheme` in `core/ui/.../theme/Theme.kt`.
+- The app theme is `RatatoskrTheme` in `core/ui/.../theme/Theme.kt`.
 - Carbon Compose is the primary component system.
 - Use `Carbon.theme.*` for surfaces, icons, and semantic colors.
 - Use `Carbon.typography.*` for text styles.
@@ -46,7 +46,7 @@ Prefer extending existing components before creating new abstractions. Useful an
 
 ## DI Exception
 
-`composeApp/src/commonMain/kotlin/com/po4yka/bitesizereader/di/ImageLoaderModule.kt` uses Koin DSL on purpose. Do not treat it as an annotations bug.
+`composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/di/ImageLoaderModule.kt` uses Koin DSL on purpose. Do not treat it as an annotations bug.
 
 ## Icons
 

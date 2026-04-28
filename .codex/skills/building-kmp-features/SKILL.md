@@ -1,7 +1,7 @@
 ---
 name: building-kmp-features
 description:
-  Guides feature work in this Bite-Size Reader Kotlin Multiplatform project.
+  Guides feature work in this Ratatoskr Kotlin Multiplatform project.
   Use when adding or refactoring screens, ViewModels, Decompose components,
   repositories, use cases, DTOs, mappers, or Carbon-based Compose UI. Covers
   the current shared-module DI rules, component retention pattern, Compose
@@ -84,7 +84,7 @@ For Carbon usage and project-local UI anchors, read [references/carbon-component
 
 Core rules:
 
-- Use `BiteSizeReaderTheme`.
+- Use `RatatoskrTheme`.
 - Prefer Carbon components and theme tokens.
 - Use Material 3 `Text` and `Icon` with Carbon styling.
 - Reuse existing components from `ui/components/` before introducing new ones.
@@ -94,7 +94,7 @@ Core rules:
 ## File Map
 
 ```text
-shared/src/commonMain/kotlin/com/po4yka/bitesizereader/
+shared/src/commonMain/kotlin/com/po4yka/ratatoskr/
   data/local
   data/remote
   data/mappers
@@ -108,7 +108,7 @@ shared/src/commonMain/kotlin/com/po4yka/bitesizereader/
   di
   util
 
-composeApp/src/commonMain/kotlin/com/po4yka/bitesizereader/
+composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/
   di
   ui/auth
   ui/components

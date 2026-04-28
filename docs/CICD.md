@@ -1,6 +1,6 @@
 # CI/CD Documentation
 
-This document describes the comprehensive CI/CD setup for the Bite-Size Reader KMP (Kotlin Multiplatform) project.
+This document describes the comprehensive CI/CD setup for the Ratatoskr KMP (Kotlin Multiplatform) project.
 
 ## Overview
 

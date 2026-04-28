@@ -19,7 +19,7 @@
 	<!-- Background Task Scheduler Identifiers -->
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.po4yka.bitesizereader.sync</string>
+		<string>com.po4yka.ratatoskr.sync</string>
 	</array>
 	<!-- Deep Link URL Scheme for Widgets -->
 	<key>CFBundleURLTypes</key>
@@ -27,10 +27,10 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>bitesizereader</string>
+				<string>ratatoskr</string>
 			</array>
 			<key>CFBundleURLName</key>
-			<string>com.po4yka.bitesizereader</string>
+			<string>com.po4yka.ratatoskr</string>
 		</dict>
 	</array>
 </dict>

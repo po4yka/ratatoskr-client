@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
-    id("bitesize.kmp.library")
+    id("ratatoskr.kmp.library")
 }
 
 kotlin {

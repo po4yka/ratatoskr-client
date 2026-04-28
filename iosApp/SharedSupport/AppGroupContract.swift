@@ -1,7 +1,7 @@
 import Foundation
 
 enum AppGroupContract {
-    static let appGroupIdentifier = "group.com.po4yka.bitesizereader"
+    static let appGroupIdentifier = "group.com.po4yka.ratatoskr"
     static let sharedURLKey = "sharedURL"
     static let sharedURLTimestampKey = "sharedURLTimestamp"
     static let recentSummariesSnapshotKey = "recentSummariesSnapshot"
@@ -9,11 +9,11 @@ enum AppGroupContract {
     static let recentSummariesWidgetKind = "RecentSummariesWidget"
 
     static func summaryDeepLink(summaryId: String) -> URL {
-        URL(string: "bitesizereader://summary/\(summaryId)")!
+        URL(string: "ratatoskr://summary/\(summaryId)")!
     }
 
     static func submitURLDeepLink() -> URL {
-        URL(string: "bitesizereader://submit-url")!
+        URL(string: "ratatoskr://submit-url")!
     }
 }
 

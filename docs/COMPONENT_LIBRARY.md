@@ -87,7 +87,7 @@ Carbon.typography.label01        // Labels
 Use `CarbonIcons` object:
 
 ```kotlin
-import com.po4yka.bitesizereader.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.ui.icons.CarbonIcons
 
 Icon(
     imageVector = CarbonIcons.Bookmark,

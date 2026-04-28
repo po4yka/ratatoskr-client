@@ -1,5 +1,5 @@
 /* Authentication */
-"auth.title" = "Bite-Size Reader";
+"auth.title" = "Ratatoskr";
 "auth.subtitle" = "AI-powered summaries of web articles";
 "auth.loginButton" = "Login with Telegram";
 "auth.loggingIn" = "Logging in…";

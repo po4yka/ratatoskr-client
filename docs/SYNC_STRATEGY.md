@@ -1,6 +1,6 @@
 # Sync Strategy
 
-Comprehensive guide for implementing offline-first synchronization with the Bite-Size Reader backend.
+Comprehensive guide for implementing offline-first synchronization with the Ratatoskr backend.
 
 ## Table of Contents
 
@@ -730,7 +730,7 @@ import BackgroundTasks
 
 class BackgroundSyncManager {
     static let shared = BackgroundSyncManager()
-    private let taskIdentifier = "com.bitesizereader.sync"
+    private let taskIdentifier = "com.po4yka.ratatoskr.sync"
 
     func registerBackgroundTasks() {
         BGTaskScheduler.shared.register(

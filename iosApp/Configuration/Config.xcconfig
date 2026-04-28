@@ -1,10 +1,10 @@
 TEAM_ID=
-APP_GROUP_IDENTIFIER=group.com.po4yka.bitesizereader
+APP_GROUP_IDENTIFIER=group.com.po4yka.ratatoskr
 
-PRODUCT_NAME=BiteSizeReader
-PRODUCT_BUNDLE_IDENTIFIER=com.po4yka.bitesizereader
-SHARE_EXTENSION_BUNDLE_IDENTIFIER=com.po4yka.bitesizereader.shareextension
-WIDGET_EXTENSION_BUNDLE_IDENTIFIER=com.po4yka.bitesizereader.widget
+PRODUCT_NAME=Ratatoskr
+PRODUCT_BUNDLE_IDENTIFIER=com.po4yka.ratatoskr
+SHARE_EXTENSION_BUNDLE_IDENTIFIER=com.po4yka.ratatoskr.shareextension
+WIDGET_EXTENSION_BUNDLE_IDENTIFIER=com.po4yka.ratatoskr.widget
 
 CURRENT_PROJECT_VERSION=1
 MARKETING_VERSION=1.0

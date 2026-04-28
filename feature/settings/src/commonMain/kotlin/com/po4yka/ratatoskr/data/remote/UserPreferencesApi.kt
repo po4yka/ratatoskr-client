@@ -1,0 +1,36 @@
+package com.po4yka.ratatoskr.data.remote
+
+import com.po4yka.ratatoskr.data.remote.dto.ApiResponseDto
+import com.po4yka.ratatoskr.data.remote.dto.CreateGoalRequestDto
+import com.po4yka.ratatoskr.data.remote.dto.GoalDto
+import com.po4yka.ratatoskr.data.remote.dto.GoalProgressDto
+import com.po4yka.ratatoskr.data.remote.dto.StreakDto
+import com.po4yka.ratatoskr.data.remote.dto.UpdatePreferencesRequestDto
+import com.po4yka.ratatoskr.data.remote.dto.UserPreferencesDto
+import com.po4yka.ratatoskr.data.remote.dto.UserStatsDto
+
+/**
+ * User preferences and statistics API matching OpenAPI spec.
+ */
+interface UserPreferencesApi {
+    /** Get current user preferences */
+    suspend fun getPreferences(): ApiResponseDto<UserPreferencesDto>
+
+    /** Update user preferences */
+    suspend fun updatePreferences(request: UpdatePreferencesRequestDto): ApiResponseDto<UserPreferencesDto>
+
+    /** Get user statistics */
+    suspend fun getStats(): ApiResponseDto<UserStatsDto>
+
+    /** Get user reading streak */
+    suspend fun getStreak(): ApiResponseDto<StreakDto>
+
+    /** Get all user reading goals */
+    suspend fun getGoals(): ApiResponseDto<List<GoalDto>>
+
+    /** Get progress for all reading goals */
+    suspend fun getGoalsProgress(): ApiResponseDto<List<GoalProgressDto>>
+
+    /** Create a new reading goal */
+    suspend fun createGoal(request: CreateGoalRequestDto): ApiResponseDto<GoalDto>
+}

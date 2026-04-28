@@ -18,13 +18,13 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/po4yka/bite-size-reader-client.git
-cd bite-size-reader-client
+git clone https://github.com/po4yka/ratatoskr-client.git
+cd ratatoskr-client
 
 # Create local.properties
 cat > local.properties << EOL
-api.base.url=https://bitsizereaderapi.po4yka.com
-client.id=android-app-v1.0
+api.base.url=https://api.ratatoskr.po4yka.com
+client.id=ratatoskr-android-v1.0
 api.timeout.seconds=30
 api.logging.enabled=true
 EOL
@@ -45,7 +45,7 @@ open iosApp/iosApp.xcodeproj
 ## Project Structure
 
 ```
-bite-size-reader-client/
+ratatoskr-client/
  androidApp/          # Android application host
  composeApp/          # Compose shell, shared UI, CocoaPods export
  core/                # Shared domain, data, navigation, and UI infrastructure
@@ -131,7 +131,7 @@ Edit `core/data/src/commonMain/sqldelight/`:
 ALTER TABLE summaries ADD COLUMN new_field TEXT;
 ```
 
-Update models in `core/common/src/commonMain/kotlin/com/po4yka/bitesizereader/domain/` or the owning feature module if the type is feature-specific.
+Update models in `core/common/src/commonMain/kotlin/com/po4yka/ratatoskr/domain/` or the owning feature module if the type is feature-specific.
 
 ### Adding API Endpoint
 
@@ -177,13 +177,13 @@ Update models in `core/common/src/commonMain/kotlin/com/po4yka/bitesizereader/do
 
 ```bash
 # View logs
-adb logcat | grep BiteSizeReader
+adb logcat | grep ratatoskr
 
 # View database
 adb shell
-run-as com.po4yka.bitesizereader.debug
+run-as com.po4yka.ratatoskr.debug
 cd databases
-sqlite3 bite_size_reader.db
+sqlite3 ratatoskr.db
 ```
 
 ### iOS

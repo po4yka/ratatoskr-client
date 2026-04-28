@@ -10,7 +10,7 @@ enum AppConfiguration {
     enum API {
         /// Base URL for the API server
         /// Update this with your actual API endpoint
-        static let baseURL = "https://bitsizereaderapi.po4yka.com"
+        static let baseURL = "https://api.ratatoskr.po4yka.com"
 
         /// Enable API logging
         static let loggingEnabled = true
@@ -31,14 +31,14 @@ enum AppConfiguration {
         /// 2. Use /setdomain to set your app's domain
         /// 3. Set the username here (without @)
         ///
-        /// Example: "bitesizereader_bot"
-        static let botUsername = "bitesizereader_bot"
+        /// Example: "ratatoskr_client_bot"
+        static let botUsername = "ratatoskr_client_bot"
 
         /// Telegram bot ID (numeric)
         static let botID = ""
 
         /// Deep link scheme for auth callbacks
-        static let deepLinkScheme = "bitesizereader"
+        static let deepLinkScheme = "ratatoskr"
 
         /// Deep link host for Telegram auth
         static let deepLinkHost = "telegram-auth"
@@ -52,19 +52,19 @@ enum AppConfiguration {
     /// App Configuration
     enum App {
         /// App name
-        static let name = "Bite-Size Reader"
+        static let name = "Ratatoskr Client"
 
         /// App package/bundle identifier
-        static let bundleID = "com.po4yka.bitesizereader"
+        static let bundleID = "com.po4yka.ratatoskr"
 
         /// App version
         static let version = "0.1.0"
 
         /// Support email
-        static let supportEmail = "support@bitesizereader.example.com"
+        static let supportEmail = "support@ratatoskr.example.com"
 
         /// Website URL
-        static let websiteURL = "https://bitesizereader.example.com"
+        static let websiteURL = "https://ratatoskr.example.com"
     }
 
     /// Feature Flags

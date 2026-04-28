@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Auth Screen -->
-    <string name="auth_app_title">Bite-Size Reader</string>
+    <string name="auth_app_title">Ratatoskr</string>
     <string name="auth_subtitle">Резюме веб-статей на основе ИИ</string>
     <string name="auth_logging_in">Вход...</string>
     <string name="auth_login_with_telegram">Войти через Telegram</string>

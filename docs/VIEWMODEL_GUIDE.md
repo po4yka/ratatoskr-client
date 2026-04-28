@@ -95,8 +95,8 @@ private fun observeExternalData() {
 Use the error utility for user-friendly messages:
 
 ```kotlin
-import com.po4yka.bitesizereader.util.error.toAppError
-import com.po4yka.bitesizereader.util.error.userMessage
+import com.po4yka.ratatoskr.util.error.toAppError
+import com.po4yka.ratatoskr.util.error.userMessage
 
 .onFailure { throwable ->
     _state.value = _state.value.copy(

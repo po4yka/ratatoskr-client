@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    id("bitesize.kmp.library")
+    id("ratatoskr.kmp.library")
 }
 
 compose.resources {

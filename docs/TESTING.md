@@ -22,7 +22,7 @@
 
 ## Overview
 
-Bite-Size Reader uses a comprehensive testing strategy with multiple test types:
+Ratatoskr uses a comprehensive testing strategy with multiple test types:
 
 | Test Type | Coverage | Tools | Location |
 |-----------|----------|-------|----------|

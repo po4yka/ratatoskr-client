@@ -1,6 +1,6 @@
 # Documentation Index
 
-Central navigation hub for Bite-Size Reader client documentation.
+Central navigation hub for Ratatoskr client documentation.
 
 ## Quick Start
 
@@ -89,7 +89,7 @@ Central navigation hub for Bite-Size Reader client documentation.
 
 ## API Specifications
 
-The canonical OpenAPI specs live in the [backend repository](https://github.com/nickolay-p/bite-size-reader/tree/main/docs/openapi).
+The canonical OpenAPI specs live in the [backend repository](https://github.com/nickolay-p/ratatoskr/tree/main/docs/openapi).
 
 | File | Description |
 |------|-------------|

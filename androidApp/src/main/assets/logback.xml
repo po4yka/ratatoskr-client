@@ -16,6 +16,6 @@
     </root>
 
     <!-- Specific logger levels -->
-    <logger name="com.po4yka.bitesizereader" level="DEBUG" />
+    <logger name="com.po4yka.ratatoskr" level="DEBUG" />
     <logger name="io.ktor" level="INFO" />
 </configuration>
