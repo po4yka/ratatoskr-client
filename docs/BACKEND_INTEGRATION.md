@@ -983,6 +983,3 @@ class TrustAllCertificatesDelegate: NSObject, URLSessionDelegate {
 - Review [SECURITY.md](./SECURITY.md) for security best practices
 - Review [DEVELOPMENT.md](./DEVELOPMENT.md) for local development setup
 
----
-
-**Last Updated**: 2025-11-16

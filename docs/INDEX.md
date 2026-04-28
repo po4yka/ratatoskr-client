@@ -49,9 +49,7 @@ Central navigation hub for Ratatoskr client documentation.
 
 | Document | Description |
 |----------|-------------|
-| [IOS_FEATURES.md](IOS_FEATURES.md) | iOS-specific features |
-| [IOS_XCODE_SETUP.md](IOS_XCODE_SETUP.md) | Xcode configuration |
-| [WIDGETS_IMPLEMENTATION.md](WIDGETS_IMPLEMENTATION.md) | Home screen widgets |
+| [IOS_FEATURES.md](IOS_FEATURES.md) | iOS-specific features (share, widgets, background tasks) |
 | [COMPOSE_HOT_RELOAD.md](COMPOSE_HOT_RELOAD.md) | Desktop hot reload |
 
 ---
