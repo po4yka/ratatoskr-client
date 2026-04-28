@@ -1,7 +1,5 @@
 # Development Guide
 
-**Last Updated**: 2025-11-17
-
 ---
 
 ## Quick Start
@@ -165,9 +163,8 @@ Update models in `core/common/src/commonMain/kotlin/com/po4yka/ratatoskr/domain/
 3. **Select Device**: iPhone 15 simulator
 4. **Run**: Product → Run (⌘R)
 
-**Required Configuration**:
-- See `docs/IOS_XCODE_SETUP.md` for Share Extension
-- See `docs/WIDGETS_IMPLEMENTATION.md` for Widget setup
+For platform-specific feature details (Share Extension, Widgets,
+Background Tasks), see [`IOS_FEATURES.md`](IOS_FEATURES.md).
 
 ---
 

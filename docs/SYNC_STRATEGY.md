@@ -1002,6 +1002,3 @@ WorkManagerSyncScheduler.schedulePeriodicSync(this)
 BackgroundSyncManager.shared.registerBackgroundTasks()
 ```
 
----
-
-**Last Updated**: 2025-12-18

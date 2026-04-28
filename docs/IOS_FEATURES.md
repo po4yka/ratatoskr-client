@@ -2,9 +2,6 @@
 
 This document describes the iOS-specific features implemented in the Ratatoskr app.
 
-**Last Updated**: 2025-11-18
-**Status**:  All Core Features Implemented
-
 ---
 
 ## Table of Contents
@@ -24,8 +21,6 @@ This document describes the iOS-specific features implemented in the Ratatoskr a
 ### Overview
 
 The Share Extension allows users to submit URLs from Safari, Chrome, and other apps directly to Ratatoskr.
-
-### Status:  **Fully Implemented**
 
 ### Implementation Details
 
@@ -121,8 +116,6 @@ private func checkForSharedURL() {
 ### Overview
 
 Background tasks enable automatic syncing of summaries while the app is not in use, keeping data fresh without user intervention.
-
-### Status:  **Fully Implemented**
 
 ### Implementation Details
 
@@ -250,15 +243,11 @@ e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWith
 
 iOS WidgetKit widget shows recent summaries on the home screen.
 
-### Status:  **Partially Implemented**
-
 **Files**:
 - `iosApp/RecentSummariesWidget/RecentSummariesWidget.swift`
-
-**TODO**:
-- Review and test widget implementation
-- Add widget configuration options
-- Test timeline refresh
+- `iosApp/RecentSummariesWidget/RecentSummariesView.swift`
+- `iosApp/RecentSummariesWidget/Info.plist`
+- `iosApp/RecentSummariesWidget/RecentSummariesWidget.entitlements`
 
 ---
 
@@ -267,8 +256,6 @@ iOS WidgetKit widget shows recent summaries on the home screen.
 ### Overview
 
 Custom URL scheme for opening summaries from widgets or external apps.
-
-### Status:  **Fully Implemented**
 
 **URL Scheme**: `ratatoskr://`
 
@@ -314,8 +301,6 @@ private func handleDeepLink(_ url: URL) {
 ### Overview
 
 App Groups enable data sharing between main app, Share Extension, and widgets.
-
-### Status:  **Fully Configured**
 
 **App Group Identifier**: `group.com.po4yka.ratatoskr`
 
@@ -529,7 +514,3 @@ Create HTML file with link:
 - WWDC 2020: Build complications in SwiftUI
 - WWDC 2021: What's new in WidgetKit
 
----
-
-**Maintained by**: Development Team
-**Review Frequency**: After each iOS platform update

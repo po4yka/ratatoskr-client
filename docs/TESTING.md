@@ -1,9 +1,5 @@
 # Testing Documentation
 
-**Last Updated**: 2025-11-17
-**Current Coverage**: ~60-70%
-**Target Coverage**: 85%+
-
 ---
 
 ## Table of Contents
@@ -346,7 +342,3 @@ open build/reports/kover/
 - [Turbine](https://github.com/cashapp/turbine)
 - [Compose Testing](https://developer.android.com/jetpack/compose/testing)
 
----
-
-**Created**: 2025-11-17
-**Maintained By**: Development Team

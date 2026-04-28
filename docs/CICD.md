@@ -468,7 +468,3 @@ For issues with CI/CD:
 3. Search [GitHub Actions community forum](https://github.community/c/code-to-cloud/52)
 4. Open issue in this repository with workflow logs
 
----
-
-**Last Updated:** 2025-01-16
-**Maintained By:** @po4yka
