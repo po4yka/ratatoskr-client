@@ -1,12 +1,12 @@
-# Bite-Size Reader Android ProGuard Rules
+# Ratatoskr Client Android ProGuard Rules
 
 # Keep source file names and line numbers for better crash reports
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
 # Keep models for kotlinx.serialization
--keep class com.po4yka.bitesizereader.**.dto.** { *; }
--keep class com.po4yka.bitesizereader.**.model.** { *; }
+-keep class com.po4yka.ratatoskr.**.dto.** { *; }
+-keep class com.po4yka.ratatoskr.**.model.** { *; }
 
 # Keep Ktor
 -keep class io.ktor.** { *; }
@@ -15,7 +15,7 @@
 
 # Keep SQLDelight
 -keep class app.cash.sqldelight.** { *; }
--keep class com.po4yka.bitesizereader.database.** { *; }
+-keep class com.po4yka.ratatoskr.database.** { *; }
 
 # Keep Koin
 -keep class org.koin.** { *; }
@@ -33,11 +33,11 @@
 -keepclasseswithmembers class kotlinx.serialization.json.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
--keep,includedescriptorclasses class com.po4yka.bitesizereader.**$$serializer { *; }
--keepclassmembers class com.po4yka.bitesizereader.** {
+-keep,includedescriptorclasses class com.po4yka.ratatoskr.**$$serializer { *; }
+-keepclassmembers class com.po4yka.ratatoskr.** {
     *** Companion;
 }
--keepclasseswithmembers class com.po4yka.bitesizereader.** {
+-keepclasseswithmembers class com.po4yka.ratatoskr.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
 

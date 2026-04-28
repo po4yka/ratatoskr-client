@@ -26,18 +26,18 @@ targets:
       - path: iosApp
         excludes:
           - Info.plist
-          - BiteSizeReader.entitlements
+          - Ratatoskr.entitlements
       - path: SharedSupport
         includes:
           - AppGroupContract.swift
     settings:
       base:
-        PRODUCT_NAME: BiteSizeReader
-        PRODUCT_BUNDLE_IDENTIFIER: com.po4yka.bitesizereader
+        PRODUCT_NAME: Ratatoskr
+        PRODUCT_BUNDLE_IDENTIFIER: com.po4yka.ratatoskr
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: Apple Development
         DEVELOPMENT_TEAM: "$(TEAM_ID)"
-        CODE_SIGN_ENTITLEMENTS: iosApp/BiteSizeReader.entitlements
+        CODE_SIGN_ENTITLEMENTS: iosApp/Ratatoskr.entitlements
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: iosApp/Info.plist
         DEVELOPMENT_ASSET_PATHS: "\"iosApp/Preview Content\""
@@ -99,7 +99,7 @@ targets:
           - AppGroupContract.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.po4yka.bitesizereader.shareextension
+        PRODUCT_BUNDLE_IDENTIFIER: com.po4yka.ratatoskr.shareextension
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: Apple Development
         DEVELOPMENT_TEAM: "$(TEAM_ID)"
@@ -129,7 +129,7 @@ targets:
           - AppGroupContract.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.po4yka.bitesizereader.widget
+        PRODUCT_BUNDLE_IDENTIFIER: com.po4yka.ratatoskr.widget
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: Apple Development
         DEVELOPMENT_TEAM: "$(TEAM_ID)"

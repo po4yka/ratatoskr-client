@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package processing.v1;
 
-option java_package = "com.po4yka.bitesizereader.grpc.processing";
+option java_package = "com.po4yka.ratatoskr.grpc.processing";
 option java_multiple_files = true;
 
 service ProcessingService {

@@ -1,0 +1,57 @@
+package com.po4yka.ratatoskr.feature.collections.domain.repository
+
+import com.po4yka.ratatoskr.domain.model.Collection
+import com.po4yka.ratatoskr.domain.model.CollaboratorRole
+import com.po4yka.ratatoskr.domain.model.CollectionAcl
+import com.po4yka.ratatoskr.domain.model.CollectionInvite
+import com.po4yka.ratatoskr.domain.model.Summary
+import kotlinx.coroutines.flow.Flow
+
+interface CollectionRepository {
+    fun getCollections(): Flow<List<Collection>>
+
+    suspend fun getCollection(id: String): Collection?
+
+    suspend fun getCollectionItems(
+        collectionId: String,
+        limit: Int = 20,
+        offset: Int = 0,
+    ): List<Summary>
+
+    suspend fun updateCollection(
+        id: String,
+        name: String? = null,
+        description: String? = null,
+    ): Collection
+
+    suspend fun deleteCollection(id: String)
+
+    suspend fun getCollectionAcl(id: String): List<CollectionAcl>
+
+    suspend fun addCollaborator(
+        id: String,
+        userId: Int,
+        role: CollaboratorRole,
+    )
+
+    suspend fun removeCollaborator(
+        id: String,
+        userId: Int,
+    )
+
+    suspend fun createInviteLink(
+        id: String,
+        role: CollaboratorRole,
+        expiresAt: String? = null,
+    ): CollectionInvite
+
+    suspend fun addToCollection(
+        collectionId: String,
+        summaryId: String,
+    )
+
+    suspend fun createCollection(
+        name: String,
+        description: String? = null,
+    ): Collection
+}

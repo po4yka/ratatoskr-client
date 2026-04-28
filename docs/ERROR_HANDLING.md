@@ -7,7 +7,7 @@
 
 ## Overview
 
-Bite-Size Reader uses a comprehensive, user-friendly error handling system with automatic retry mechanisms and offline support.
+Ratatoskr uses a comprehensive, user-friendly error handling system with automatic retry mechanisms and offline support.
 
 ## Architecture
 

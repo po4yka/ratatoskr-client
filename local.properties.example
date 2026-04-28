@@ -1,8 +1,8 @@
 # API Configuration
-api.base.url=https://bitsizereaderapi.po4yka.com
+api.base.url=https://api.ratatoskr.po4yka.com
 # Optional Android release override. Must be HTTPS when set.
-# api.release.base.url=https://bitsizereaderapi.po4yka.com
-client.id=android-app-v1.0
+# api.release.base.url=https://api.ratatoskr.po4yka.com
+client.id=ratatoskr-android-v1.0
 api.timeout.seconds=30
 api.logging.enabled=false
 

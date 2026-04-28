@@ -4,7 +4,7 @@ Use this reference when you are touching `composeApp` UI.
 
 ## Theme Rules
 
-- Wrap app UI with `BiteSizeReaderTheme`.
+- Wrap app UI with `RatatoskrTheme`.
 - Use `Carbon.theme.*` for colors and surfaces.
 - Use `Carbon.typography.*` for typography.
 - Use Material 3 `Text` and `Icon` with Carbon styles.

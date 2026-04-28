@@ -6,7 +6,7 @@ import os.log
 import Foundation
 
 /// Logger for iOS app events
-private let logger = Logger(subsystem: "com.po4yka.bitesizereader", category: "app")
+private let logger = Logger(subsystem: "com.po4yka.ratatoskr", category: "app")
 
 private extension URL {
     var redactedForLogging: String {
@@ -60,8 +60,8 @@ struct iOSApp: App {
     private func handleDeepLink(_ url: URL) {
         logger.debug("Received deep link: \(url.redactedForLogging)")
 
-        // Parse widget deep link: bitesizereader://summary/{id}
-        guard url.scheme == "bitesizereader" else {
+        // Parse widget deep link: ratatoskr://summary/{id}
+        guard url.scheme == "ratatoskr" else {
             logger.warning("Unknown URL scheme: \(url.scheme ?? "nil")")
             return
         }
@@ -94,7 +94,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     var rootComponent: RootComponent { host.rootComponent }
 
     // Background task identifier
-    static let syncTaskIdentifier = "com.po4yka.bitesizereader.sync"
+    static let syncTaskIdentifier = "com.po4yka.ratatoskr.sync"
 
     override init() {
         // Initialize Koin

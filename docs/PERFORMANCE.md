@@ -22,7 +22,7 @@
 
 ## Overview
 
-This document outlines performance optimizations implemented in the Bite-Size Reader mobile application and best practices for maintaining optimal performance.
+This document outlines performance optimizations implemented in the Ratatoskr mobile application and best practices for maintaining optimal performance.
 
 ### Performance Goals
 
@@ -47,7 +47,7 @@ This document outlines performance optimizations implemented in the Bite-Size Re
 
 ### 1. Database Indices (November 2025)
 
-**Location**: `core/data/src/commonMain/sqldelight/com/po4yka/bitesizereader/database/Summary.sq`
+**Location**: `core/data/src/commonMain/sqldelight/com/po4yka/ratatoskr/database/Summary.sq`
 
 Added composite indices for common query patterns:
 
@@ -78,7 +78,7 @@ CREATE INDEX IF NOT EXISTS idx_summary_syncStatus_locallyModified
 
 ### 2. Lazy Dependency Injection (November 2025)
 
-**Location**: `core/data/src/commonMain/kotlin/com/po4yka/bitesizereader/di/`
+**Location**: `core/data/src/commonMain/kotlin/com/po4yka/ratatoskr/di/`
 
 Converted all singleton dependencies to lazy initialization:
 
@@ -119,7 +119,7 @@ startKoin {
 
 ### 3. ViewModel Lifecycle Management (November 2025)
 
-**Location**: `core/common/src/commonMain/kotlin/com/po4yka/bitesizereader/presentation/viewmodel/`
+**Location**: `core/common/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/viewmodel/`
 
 Introduced `BaseViewModel` with proper lifecycle management:
 
@@ -520,10 +520,10 @@ AnimationHelpers.spring
 **Metrics to Track**:
 ```kotlin
 // App startup time
-adb shell am start -W com.po4yka.bitesizereader/.MainActivity
+adb shell am start -W com.po4yka.ratatoskr/.MainActivity
 
 // Frame rendering
-adb shell dumpsys gfxinfo com.po4yka.bitesizereader
+adb shell dumpsys gfxinfo com.po4yka.ratatoskr
 ```
 
 ### iOS

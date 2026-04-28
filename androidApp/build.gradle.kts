@@ -6,11 +6,11 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    id("bitesize.android.application")
+    id("ratatoskr.android.application")
 }
 
 val debugApiBaseUrl = "http://10.0.2.2:8000"
-val productionApiBaseUrl = "https://bitsizereaderapi.po4yka.com"
+val productionApiBaseUrl = "https://api.ratatoskr.po4yka.com"
 
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
@@ -38,14 +38,14 @@ fun releaseApiBaseUrl(): String {
 
 android {
     defaultConfig {
-        applicationId = "com.po4yka.bitesizereader"
+        applicationId = "com.po4yka.ratatoskr"
         versionCode = 1
         versionName = "1.0.0"
 
         buildConfigField(
             "String",
             "CLIENT_ID",
-            buildConfigString(localProperty("client.id", "android-app-v1.0")),
+            buildConfigString(localProperty("client.id", "ratatoskr-android-v1.0")),
         )
         buildConfigField(
             "int",

@@ -1,6 +1,6 @@
 # iOS Platform Features
 
-This document describes the iOS-specific features implemented in the Bite-Size Reader app.
+This document describes the iOS-specific features implemented in the Ratatoskr app.
 
 **Last Updated**: 2025-11-18
 **Status**:  All Core Features Implemented
@@ -23,7 +23,7 @@ This document describes the iOS-specific features implemented in the Bite-Size R
 
 ### Overview
 
-The Share Extension allows users to submit URLs from Safari, Chrome, and other apps directly to Bite-Size Reader.
+The Share Extension allows users to submit URLs from Safari, Chrome, and other apps directly to Ratatoskr.
 
 ### Status:  **Fully Implemented**
 
@@ -39,7 +39,7 @@ The Share Extension allows users to submit URLs from Safari, Chrome, and other a
 1. User shares a URL from Safari/other apps
 2. Extension appears in share sheet
 3. Extension extracts URL from share context
-4. URL is saved to shared UserDefaults (App Group: `group.com.po4yka.bitesizereader`)
+4. URL is saved to shared UserDefaults (App Group: `group.com.po4yka.ratatoskr`)
 5. User returns to main app
 6. Main app detects shared URL and navigates to Submit URL screen with prefilled URL
 7. Shared storage is cleaned up
@@ -57,7 +57,7 @@ override func didSelectPost() {
 }
 
 private func saveSharedURL(_ url: String) {
-    if let sharedDefaults = UserDefaults(suiteName: "group.com.po4yka.bitesizereader") {
+    if let sharedDefaults = UserDefaults(suiteName: "group.com.po4yka.ratatoskr") {
         sharedDefaults.set(url, forKey: "sharedURL")
         sharedDefaults.set(Date(), forKey: "sharedURLTimestamp")
         sharedDefaults.synchronize()
@@ -74,7 +74,7 @@ private func saveSharedURL(_ url: String) {
 }
 
 private func checkForSharedURL() {
-    if let sharedDefaults = UserDefaults(suiteName: "group.com.po4yka.bitesizereader"),
+    if let sharedDefaults = UserDefaults(suiteName: "group.com.po4yka.ratatoskr"),
        let sharedURL = sharedDefaults.string(forKey: "sharedURL") {
 
         // Navigate to Submit URL screen
@@ -108,9 +108,9 @@ private func checkForSharedURL() {
 
 1. User browsing in Safari
 2. Finds interesting article
-3. Taps Share button → Bite-Size Reader
+3. Taps Share button → Ratatoskr
 4. Extension saves URL and dismisses
-5. User returns to Bite-Size Reader app
+5. User returns to Ratatoskr app
 6. App automatically opens Submit URL screen with URL prefilled
 7. User taps Submit
 
@@ -141,7 +141,7 @@ Background tasks enable automatic syncing of summaries while the app is not in u
 
 **Background Task Configuration**:
 
-**Task Identifier**: `com.po4yka.bitesizereader.sync`
+**Task Identifier**: `com.po4yka.ratatoskr.sync`
 **Type**: `BGProcessingTask` (allows longer runtime than BGAppRefreshTask)
 **Frequency**: Every 6 hours (matches Android WorkManager)
 **Requirements**: Network connectivity required, external power optional
@@ -213,7 +213,7 @@ func scheduleBackgroundSync() {
 <!-- Background Task Identifiers -->
 <key>BGTaskSchedulerPermittedIdentifiers</key>
 <array>
-    <string>com.po4yka.bitesizereader.sync</string>
+    <string>com.po4yka.ratatoskr.sync</string>
 </array>
 ```
 
@@ -224,7 +224,7 @@ func scheduleBackgroundSync() {
  **Device Testing**: To test on a real device, use Xcode's background task debugging:
 ```bash
 # Launch app on device, then in Xcode console:
-e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.po4yka.bitesizereader.sync"]
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.po4yka.ratatoskr.sync"]
 ```
 
  **Logging**: Look for `[BackgroundTasks]` prefix in console logs
@@ -270,10 +270,10 @@ Custom URL scheme for opening summaries from widgets or external apps.
 
 ### Status:  **Fully Implemented**
 
-**URL Scheme**: `bitesizereader://`
+**URL Scheme**: `ratatoskr://`
 
 **Supported URLs**:
-- `bitesizereader://summary/{id}` - Opens specific summary detail view
+- `ratatoskr://summary/{id}` - Opens specific summary detail view
 
 **Implementation**:
 
@@ -283,7 +283,7 @@ Custom URL scheme for opening summaries from widgets or external apps.
 }
 
 private func handleDeepLink(_ url: URL) {
-    if url.scheme == "bitesizereader",
+    if url.scheme == "ratatoskr",
        url.host == "summary",
        let summaryId = Int32(url.pathComponents.last) {
         appDelegate.rootComponent.navigateToSummaryDetail(id: summaryId)
@@ -299,10 +299,10 @@ private func handleDeepLink(_ url: URL) {
     <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>bitesizereader</string>
+            <string>ratatoskr</string>
         </array>
         <key>CFBundleURLName</key>
-        <string>com.po4yka.bitesizereader</string>
+        <string>com.po4yka.ratatoskr</string>
     </dict>
 </array>
 ```
@@ -317,7 +317,7 @@ App Groups enable data sharing between main app, Share Extension, and widgets.
 
 ### Status:  **Fully Configured**
 
-**App Group Identifier**: `group.com.po4yka.bitesizereader`
+**App Group Identifier**: `group.com.po4yka.ratatoskr`
 
 **Used For**:
 -  Share Extension → Main App (shared URLs)
@@ -334,7 +334,7 @@ App Groups enable data sharing between main app, Share Extension, and widgets.
 
 ```swift
 // Access shared UserDefaults
-if let sharedDefaults = UserDefaults(suiteName: "group.com.po4yka.bitesizereader") {
+if let sharedDefaults = UserDefaults(suiteName: "group.com.po4yka.ratatoskr") {
     // Write
     sharedDefaults.set(value, forKey: "key")
     sharedDefaults.synchronize()
@@ -350,7 +350,7 @@ Both Main App and Share Extension targets must have App Groups capability enable
 
 1. Select target → Signing & Capabilities
 2. Add Capability → App Groups
-3. Check `group.com.po4yka.bitesizereader`
+3. Check `group.com.po4yka.ratatoskr`
 
 ---
 
@@ -364,16 +364,16 @@ Both Main App and Share Extension targets must have App Groups capability enable
 2. Open Safari
 3. Navigate to any article (e.g., https://techcrunch.com/latest)
 4. Tap Share button
-5. Find "Bite-Size Reader" in share sheet (may need to scroll)
+5. Find "Ratatoskr" in share sheet (may need to scroll)
 6. Tap extension
 7. Extension should save URL and dismiss
-8. Switch back to Bite-Size Reader app
+8. Switch back to Ratatoskr app
 9. Submit URL screen should open with URL prefilled
 
 **Debugging**:
 - Look for `[ShareExtension]` logs when extension runs
 - Look for `[MainApp]` logs when app processes shared URL
-- Check UserDefaults: `UserDefaults(suiteName: "group.com.po4yka.bitesizereader")`
+- Check UserDefaults: `UserDefaults(suiteName: "group.com.po4yka.ratatoskr")`
 
 ### Background Tasks Testing
 
@@ -388,7 +388,7 @@ Both Main App and Share Extension targets must have App Groups capability enable
 5. Run this command in Xcode LLDB console:
 
 ```bash
-e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.po4yka.bitesizereader.sync"]
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.po4yka.ratatoskr.sync"]
 ```
 
 6. Watch console for `[BackgroundTasks]` logs
@@ -415,14 +415,14 @@ e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWith
 **From Terminal (Simulator)**:
 
 ```bash
-xcrun simctl openurl booted "bitesizereader://summary/123"
+xcrun simctl openurl booted "ratatoskr://summary/123"
 ```
 
 **From Safari (Device or Simulator)**:
 
 Create HTML file with link:
 ```html
-<a href="bitesizereader://summary/123">Open Summary 123</a>
+<a href="ratatoskr://summary/123">Open Summary 123</a>
 ```
 
 ---
@@ -446,7 +446,7 @@ Create HTML file with link:
 
 **Solutions**:
 1. Check `[MainApp]` logs for errors
-2. Verify App Group identifier matches exactly: `group.com.po4yka.bitesizereader`
+2. Verify App Group identifier matches exactly: `group.com.po4yka.ratatoskr`
 3. Check both targets have App Groups capability enabled
 4. Add logging to `checkForSharedURL()` method
 
@@ -476,8 +476,8 @@ Create HTML file with link:
 
 **Solutions**:
 1. Verify URL scheme in Info.plist
-2. Check URL format: `bitesizereader://summary/123`
-3. Test with simpler URL first: `bitesizereader://test`
+2. Check URL format: `ratatoskr://summary/123`
+3. Test with simpler URL first: `ratatoskr://test`
 4. Add logging to `handleDeepLink()` method
 5. Rebuild and reinstall app
 

@@ -5,15 +5,15 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
-    id("bitesize.kmp.library")
+    id("ratatoskr.kmp.library")
     kotlin("native.cocoapods")
 }
 
 kotlin {
     cocoapods {
         name = "ComposeApp"
-        summary = "Compose Multiplatform UI for Bite-Size Reader"
-        homepage = "https://github.com/po4yka/bite-size-reader-client"
+        summary = "Compose Multiplatform UI for Ratatoskr Client"
+        homepage = "https://github.com/po4yka/ratatoskr-client"
         version = "1.0.0"
         ios.deploymentTarget = "15.0"
         podfile = project.file("../iosApp/Podfile")

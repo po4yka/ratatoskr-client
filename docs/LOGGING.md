@@ -93,8 +93,8 @@ iOS uses NSLog by default through kotlin-logging. No additional configuration is
 
 See the following files for usage examples:
 
-- `core/data/src/commonMain/kotlin/com/po4yka/bitesizereader/data/remote/ApiClient.kt` - HTTP client logging
-- `feature/auth/src/commonMain/kotlin/com/po4yka/bitesizereader/data/repository/AuthRepositoryImpl.kt` - Repository logging
+- `core/data/src/commonMain/kotlin/com/po4yka/ratatoskr/data/remote/ApiClient.kt` - HTTP client logging
+- `feature/auth/src/commonMain/kotlin/com/po4yka/ratatoskr/data/repository/AuthRepositoryImpl.kt` - Repository logging
 
 ## Best Practices
 

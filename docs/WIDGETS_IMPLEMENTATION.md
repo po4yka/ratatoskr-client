@@ -114,7 +114,7 @@ WorkManager (hourly) → WidgetUpdateWorker
    ```
    1. Long-press on home screen
    2. Tap "Widgets"
-   3. Find "Bite-Size Reader"
+   3. Find "Ratatoskr"
    4. Drag "Recent Summaries" to home screen
    5.  Widget should display recent summaries
    ```
@@ -169,7 +169,7 @@ WorkManager (hourly) → WidgetUpdateWorker
 
 **User Interaction**:
 1. User taps on a summary in the widget
-2. Deep link opens app with URL: `bitesizereader://summary/{id}`
+2. Deep link opens app with URL: `ratatoskr://summary/{id}`
 3. App parses URL and navigates to Summary Detail screen
 
 **Auto-Updates**:
@@ -220,11 +220,11 @@ iOS Timeline Refresh → RecentSummariesProvider.getTimeline()
 
 ### iOS Deep Link Handling
 
-**URL Scheme**: `bitesizereader://`
+**URL Scheme**: `ratatoskr://`
 
 **Widget Deep Links**:
-- Format: `bitesizereader://summary/{id}`
-- Example: `bitesizereader://summary/123`
+- Format: `ratatoskr://summary/{id}`
+- Example: `ratatoskr://summary/123`
 
 **Main App Handling** (in `iOSApp.swift`):
 ```swift
@@ -233,7 +233,7 @@ iOS Timeline Refresh → RecentSummariesProvider.getTimeline()
 }
 
 private func handleDeepLink(_ url: URL) {
-    // Parse: bitesizereader://summary/{id}
+    // Parse: ratatoskr://summary/{id}
     if url.host == "summary",
        let summaryId = Int32(url.pathComponents.last) {
         rootComponent.navigateToSummaryDetail(id: summaryId)
@@ -257,7 +257,7 @@ private func handleDeepLink(_ url: URL) {
    ```
    1. Long-press on home screen (device only)
    2. Tap "+"
-   3. Search "Bite-Size Reader"
+   3. Search "Ratatoskr"
    4. Select "Recent Summaries"
    5. Choose size and tap "Add Widget"
    6.  Widget should display recent summaries
@@ -283,7 +283,7 @@ private func handleDeepLink(_ url: URL) {
    ```
    Look for:
    [Widget] Fetching summaries for widget
-   [MainApp] Received deep link: bitesizereader://summary/123
+   [MainApp] Received deep link: ratatoskr://summary/123
    ```
 
 ---
@@ -318,7 +318,7 @@ private func handleDeepLink(_ url: URL) {
    - Share data between app and widget
 
 4. **Configure URL Scheme** (~2 min)
-   - Add `bitesizereader://` URL scheme to main app
+   - Add `ratatoskr://` URL scheme to main app
    - Enable deep linking from widget
 
 5. **Build and Test** (~3 min)
@@ -336,8 +336,8 @@ private func handleDeepLink(_ url: URL) {
 5. Configure:
    - **Product Name**: `RecentSummariesWidget`
    - **Team**: Your development team
-   - **Organization Identifier**: `com.po4yka.bitesizereader`
-   - **Bundle Identifier**: `com.po4yka.bitesizereader.RecentSummariesWidget`
+   - **Organization Identifier**: `com.po4yka.ratatoskr`
+   - **Bundle Identifier**: `com.po4yka.ratatoskr.RecentSummariesWidget`
    - **Include Configuration Intent**: Unchecked
    - **Activate scheme**: Click "Cancel"
 
@@ -376,13 +376,13 @@ private func handleDeepLink(_ url: URL) {
 1. Select **iosApp** target
 2. Go to **Signing & Capabilities**
 3. If not present, click **+ Capability** → **App Groups**
-4. Enable: `group.com.po4yka.bitesizereader`
+4. Enable: `group.com.po4yka.ratatoskr`
 
 **Widget Extension**:
 1. Select **RecentSummariesWidget** target
 2. Go to **Signing & Capabilities**
 3. Click **+ Capability** → **App Groups**
-4. Enable: `group.com.po4yka.bitesizereader`
+4. Enable: `group.com.po4yka.ratatoskr`
 
 #### Part 4: Configure URL Scheme
 
@@ -390,8 +390,8 @@ private func handleDeepLink(_ url: URL) {
 2. Go to **Info** tab
 3. Expand **URL Types**
 4. If not present, click **+** to add:
-   - **Identifier**: `com.po4yka.bitesizereader`
-   - **URL Schemes**: `bitesizereader`
+   - **Identifier**: `com.po4yka.ratatoskr`
+   - **URL Schemes**: `ratatoskr`
    - **Role**: Editor
 
 **Alternative** (edit Info.plist directly):
@@ -401,10 +401,10 @@ private func handleDeepLink(_ url: URL) {
     <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>bitesizereader</string>
+            <string>ratatoskr</string>
         </array>
         <key>CFBundleURLName</key>
-        <string>com.po4yka.bitesizereader</string>
+        <string>com.po4yka.ratatoskr</string>
     </dict>
 </array>
 ```
@@ -465,7 +465,7 @@ User taps summary → Intent with summaryId extra
 
 #### iOS
 ```
-User taps summary → Open URL: bitesizereader://summary/{id}
+User taps summary → Open URL: ratatoskr://summary/{id}
   → iOSApp.onOpenURL receives URL
   → handleDeepLink() parses summaryId
   → rootComponent.navigateToSummaryDetail(id)
@@ -560,7 +560,7 @@ User taps summary → Open URL: bitesizereader://summary/{id}
 **Widget clicks don't open app**:
 - Verify URL scheme in main app Info.plist
 - Check deep link parsing in iOSApp.swift
-- Ensure URL format: `bitesizereader://summary/{id}`
+- Ensure URL format: `ratatoskr://summary/{id}`
 
 **Koin initialization fails**:
 - Verify Shared framework is embedded correctly

@@ -4,7 +4,7 @@ Last updated: 2026-03-28
 
 ## Overview
 
-Bite-Size Reader is a Kotlin Multiplatform app with:
+Ratatoskr is a Kotlin Multiplatform app with:
 
 - `core/common` for cross-feature domain models, config, errors, base presentation primitives, and platform abstractions
 - `core/data` for shared networking/bootstrap, persistence, SQLDelight, secure storage, and generic API wrappers

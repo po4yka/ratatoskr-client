@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Bite-Size Reader backend API provides endpoints for authentication, content submission, and summary retrieval.
+The Ratatoskr backend API provides endpoints for authentication, content submission, and summary retrieval.
 
 ---
 
@@ -415,7 +415,7 @@ val request = client.post("/api/requests") {
 
 ## Resources
 
-- [Backend Repository](https://github.com/po4yka/bite-size-reader-server)
+- [Backend Repository](https://github.com/po4yka/ratatoskr-server)
 - [API Swagger Docs](http://localhost:8000/docs)
 - [Postman Collection](link-to-collection)
 

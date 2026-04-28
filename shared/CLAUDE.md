@@ -4,7 +4,7 @@ Guidance for work inside the shared KMP module.
 
 ## Structure
 
-`shared/src/commonMain/kotlin/com/po4yka/bitesizereader/` is organized into:
+`shared/src/commonMain/kotlin/com/po4yka/ratatoskr/` is organized into:
 
 - `data/local`: SQLDelight, secure storage contracts, platform-facing persistence helpers
 - `data/remote`: Ktor APIs, DTOs, gRPC client code, API client setup

@@ -1,6 +1,6 @@
 # Authentication Setup Guide
 
-This document explains how to set up and configure Telegram Login Widget authentication for the Bite-Size Reader application.
+This document explains how to set up and configure Telegram Login Widget authentication for the Ratatoskr application.
 
 ## Overview
 
@@ -16,8 +16,8 @@ The application uses Telegram Login Widget for user authentication, providing a 
 1. Open Telegram and search for [@BotFather](https://t.me/botfather)
 2. Send `/newbot` command
 3. Follow the instructions to create your bot:
-   - Choose a name for your bot (e.g., "Bite-Size Reader")
-   - Choose a username for your bot (must end with 'bot', e.g., "bitesizereader_bot")
+   - Choose a name for your bot (e.g., "Ratatoskr")
+   - Choose a username for your bot (must end with 'bot', e.g., "ratatoskr_client_bot")
 4. Save the bot token provided by BotFather (you'll need this for the backend)
 5. Note the bot username (you'll need this for the mobile app)
 
@@ -25,7 +25,7 @@ The application uses Telegram Login Widget for user authentication, providing a 
 
 1. Send `/setdomain` to @BotFather
 2. Select your bot
-3. Enter your domain (e.g., `bitesizereader.com`)
+3. Enter your domain (e.g., `ratatoskr.example.com`)
    - For development, you can use `localhost` or your ngrok domain
 4. This allows the Telegram Login Widget to work with your application
 
@@ -39,14 +39,14 @@ You can get the bot ID from the bot token:
 
 ### 1. Update TelegramAuthHelper
 
-Edit `composeApp/src/androidMain/kotlin/com/po4yka/bitesizereader/auth/TelegramAuthHelper.kt`:
+Edit `composeApp/src/androidMain/kotlin/com/po4yka/ratatoskr/auth/TelegramAuthHelper.kt`:
 
 ```kotlin
 object TelegramAuthHelper {
     // Replace with your actual Telegram bot username
-    private const val TELEGRAM_BOT_USERNAME = "your_bot_username"  // e.g., "bitesizereader_bot"
+    private const val TELEGRAM_BOT_USERNAME = "your_bot_username"  // e.g., "ratatoskr_client_bot"
 
-    private const val CALLBACK_URL = "bitesizereader://telegram-auth"
+    private const val CALLBACK_URL = "ratatoskr://telegram-auth"
 
     private fun buildTelegramAuthUrl(): String {
         return buildString {
@@ -67,10 +67,10 @@ object TelegramAuthHelper {
 The deep link scheme is already configured in `AndroidManifest.xml`:
 
 ```xml
-<data android:scheme="bitesizereader" android:host="telegram-auth" />
+<data android:scheme="ratatoskr" android:host="telegram-auth" />
 ```
 
-This creates the callback URL: `bitesizereader://telegram-auth`
+This creates the callback URL: `ratatoskr://telegram-auth`
 
 ### 3. Test on Android
 
@@ -90,7 +90,7 @@ Edit `iosApp/iosApp/Auth/TelegramAuthWebView.swift`:
 ```swift
 struct TelegramAuthHelper {
     // Replace with your actual Telegram bot username
-    private static let botUsername = "your_bot_username"  // e.g., "bitesizereader_bot"
+    private static let botUsername = "your_bot_username"  // e.g., "ratatoskr_client_bot"
 }
 ```
 
@@ -103,8 +103,8 @@ The URL scheme needs to be configured in Xcode:
 3. Go to the "Info" tab
 4. Expand "URL Types"
 5. Add a new URL Type:
-   - Identifier: `com.po4yka.bitesizereader`
-   - URL Schemes: `bitesizereader`
+   - Identifier: `com.po4yka.ratatoskr`
+   - URL Schemes: `ratatoskr`
    - Role: `Editor`
 
 ### 3. Test on iOS
@@ -129,7 +129,7 @@ Custom Tab opens with Telegram OAuth URL
     ↓
 User authenticates with Telegram
     ↓
-Telegram redirects to: bitesizereader://telegram-auth?id=...&hash=...
+Telegram redirects to: ratatoskr://telegram-auth?id=...&hash=...
     ↓
 TelegramAuthActivity receives deep link
     ↓
@@ -302,7 +302,7 @@ The refresh mechanism includes explicit status checking:
 **Solution**:
 - Verify the deep link configuration in AndroidManifest.xml
 - Check that the scheme and host match in both TelegramAuthHelper and AndroidManifest
-- Use `adb shell am start -W -a android.intent.action.VIEW -d "bitesizereader://telegram-auth?id=123&hash=abc"` to test deep link handling
+- Use `adb shell am start -W -a android.intent.action.VIEW -d "ratatoskr://telegram-auth?id=123&hash=abc"` to test deep link handling
 
 ### iOS: WebView shows blank page
 
@@ -339,7 +339,7 @@ For production deployment, use environment variables or a configuration file:
 ### Android (local.properties or BuildConfig)
 
 ```properties
-TELEGRAM_BOT_USERNAME=bitesizereader_bot
+TELEGRAM_BOT_USERNAME=ratatoskr_client_bot
 TELEGRAM_BOT_ID=123456789
 ```
 
@@ -347,7 +347,7 @@ TELEGRAM_BOT_ID=123456789
 
 ```swift
 enum Config {
-    static let telegramBotUsername = ProcessInfo.processInfo.environment["TELEGRAM_BOT_USERNAME"] ?? "bitesizereader_bot"
+    static let telegramBotUsername = ProcessInfo.processInfo.environment["TELEGRAM_BOT_USERNAME"] ?? "ratatoskr_client_bot"
 }
 ```
 

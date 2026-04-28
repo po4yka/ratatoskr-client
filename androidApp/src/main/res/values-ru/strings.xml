@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App Name -->
-    <string name="app_name">Bite-Size Reader</string>
+    <string name="app_name">Ratatoskr</string>
     <string name="shortcut_submit_short">Отправить URL</string>
     <string name="shortcut_submit_long">Отправить новый URL</string>
     <string name="shortcut_search_short">Поиск</string>
     <string name="shortcut_search_long">Искать резюме</string>
 
     <!-- Authentication -->
-    <string name="auth_title">Bite-Size Reader</string>
+    <string name="auth_title">Ratatoskr</string>
     <string name="auth_subtitle">AI-резюме веб-статей</string>
     <string name="auth_login_button">Войти через Telegram</string>
     <string name="auth_logging_in">Вход…</string>

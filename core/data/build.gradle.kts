@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
-    id("bitesize.kmp.library")
+    id("ratatoskr.kmp.library")
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.wire)
     alias(libs.plugins.kover)
@@ -73,7 +73,7 @@ kotlin {
 sqldelight {
     databases {
         create("Database") {
-            packageName.set("com.po4yka.bitesizereader.database")
+            packageName.set("com.po4yka.ratatoskr.database")
             srcDirs.setFrom("src/commonMain/sqldelight")
         }
     }

@@ -13,7 +13,7 @@ data/repository/MyRepositoryImpl.kt   <- Implementation
 
 ```kotlin
 // domain/repository/MyRepository.kt
-package com.po4yka.bitesizereader.domain.repository
+package com.po4yka.ratatoskr.domain.repository
 
 interface MyRepository {
     // Observable data
@@ -30,7 +30,7 @@ interface MyRepository {
 
 ```kotlin
 // data/repository/MyRepositoryImpl.kt
-package com.po4yka.bitesizereader.data.repository
+package com.po4yka.ratatoskr.data.repository
 
 import org.koin.core.annotation.Single
 
@@ -71,7 +71,7 @@ Or with `@ComponentScan` in module:
 
 ```kotlin
 @Module
-@ComponentScan("com.po4yka.bitesizereader.data.repository")
+@ComponentScan("com.po4yka.ratatoskr.data.repository")
 class RepositoryModule
 ```
 

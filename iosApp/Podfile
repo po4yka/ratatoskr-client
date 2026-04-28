@@ -1,6 +1,6 @@
 source 'https://cdn.cocoapods.org'
 
-# Bite-Size Reader iOS - Podfile
+# Ratatoskr Client iOS - Podfile
 
 # Minimum iOS deployment target
 platform :ios, '15.0'

@@ -1,4 +1,4 @@
-rootProject.name = "bite-size-reader-build-logic"
+rootProject.name = "ratatoskr-build-logic"
 
 dependencyResolutionManagement {
     repositories {

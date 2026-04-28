@@ -1,0 +1,12 @@
+package com.po4yka.ratatoskr.domain.usecase
+
+import com.po4yka.ratatoskr.domain.model.Recommendation
+import com.po4yka.ratatoskr.domain.repository.RecommendationRepository
+import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Factory
+
+@Factory
+class GetRecommendationsUseCase(private val recommendationRepository: RecommendationRepository) {
+    operator fun invoke(limit: Int = 10): Flow<List<Recommendation>> =
+        recommendationRepository.getRecommendations(limit)
+}

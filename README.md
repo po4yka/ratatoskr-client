@@ -1,10 +1,10 @@
-# Bite-Size Reader Mobile Client
+# Ratatoskr Client
 
-[![PR Validation](https://github.com/po4yka/bite-size-reader-client/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/po4yka/bite-size-reader-client/actions/workflows/pr-validation.yml)
-[![CI](https://github.com/po4yka/bite-size-reader-client/actions/workflows/ci.yml/badge.svg)](https://github.com/po4yka/bite-size-reader-client/actions/workflows/ci.yml)
-[![Code Quality](https://github.com/po4yka/bite-size-reader-client/actions/workflows/code-quality.yml/badge.svg)](https://github.com/po4yka/bite-size-reader-client/actions/workflows/code-quality.yml)
+[![PR Validation](https://github.com/po4yka/ratatoskr-client/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/po4yka/ratatoskr-client/actions/workflows/pr-validation.yml)
+[![CI](https://github.com/po4yka/ratatoskr-client/actions/workflows/ci.yml/badge.svg)](https://github.com/po4yka/ratatoskr-client/actions/workflows/ci.yml)
+[![Code Quality](https://github.com/po4yka/ratatoskr-client/actions/workflows/code-quality.yml/badge.svg)](https://github.com/po4yka/ratatoskr-client/actions/workflows/code-quality.yml)
 
-Compose Multiplatform client for [Bite-Size Reader](https://github.com/po4yka/bite-size-reader) - a service that summarizes web articles and YouTube videos using LLM.
+Compose Multiplatform client for [Ratatoskr](https://github.com/po4yka/ratatoskr) - a service that summarizes web articles and YouTube videos using LLM.
 
 ## Overview
 
@@ -81,7 +81,7 @@ See **[docs/CICD.md](docs/CICD.md)** for complete documentation including setup,
 ## Project Structure
 
 ```
-bite-size-reader-client/
+ratatoskr-client/
  androidApp/                      # Android app host, widgets, workers, manifest/resources
  composeApp/                      # Compose Multiplatform UI + navigation shell + CocoaPods export
     src/iosMain/kotlin/          # Compose UIViewController for iOS host
@@ -116,9 +116,9 @@ bite-size-reader-client/
 
 ## Backend API Integration
 
-This client connects to the [bite-size-reader](https://github.com/po4yka/bite-size-reader) FastAPI backend.
+This client connects to the [ratatoskr](https://github.com/po4yka/ratatoskr) FastAPI backend.
 
-**Base URL**: Configurable via `local.properties` (default: `https://bitsizereaderapi.po4yka.com`)
+**Base URL**: Configurable via `local.properties` (default: `https://api.ratatoskr.po4yka.com`)
 
 **API Version**: v1
 
@@ -144,7 +144,7 @@ Authenticate user with Telegram and receive JWT tokens.
   "first_name": "John",
   "last_name": "Doe",
   "photo_url": "https://...",
-  "client_id": "android-app-v1.0"
+  "client_id": "ratatoskr-android-v1.0"
 }
 ```
 
@@ -1006,7 +1006,7 @@ See [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) for setup and workflow guidance
 
 #### Backend Service
 
-The mobile client requires the [bite-size-reader](https://github.com/po4yka/bite-size-reader) FastAPI backend service.
+The mobile client requires the [ratatoskr](https://github.com/po4yka/ratatoskr) FastAPI backend service.
 
 **Backend Requirements**:
 - **Python 3.13+**
@@ -1025,8 +1025,8 @@ The mobile client requires the [bite-size-reader](https://github.com/po4yka/bite
 ```bash
 # Clone backend repository
 cd ..
-git clone https://github.com/po4yka/bite-size-reader.git
-cd bite-size-reader
+git clone https://github.com/po4yka/ratatoskr.git
+cd ratatoskr
 
 # Configure environment
 cp .env.example .env
@@ -1047,8 +1047,8 @@ For detailed backend setup, see [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md#back
 ### Clone Repository
 
 ```bash
-git clone https://github.com/po4yka/bite-size-reader-client.git
-cd bite-size-reader-client
+git clone https://github.com/po4yka/ratatoskr-client.git
+cd ratatoskr-client
 ```
 
 ### Configuration
@@ -1063,7 +1063,7 @@ api.base.url=http://localhost:8000
 telegram.bot.token=YOUR_BOT_TOKEN_HERE
 
 # Client ID (identifies this app to backend)
-client.id=android-app-v1.0
+client.id=ratatoskr-android-v1.0
 ```
 
 **Note**: Do NOT commit `local.properties` - it's in `.gitignore`.
@@ -1286,7 +1286,7 @@ cd iosApp && pod install
 ```
 
 **API connection refused:**
-- Ensure backend is running: `cd ../bite-size-reader && docker-compose up`
+- Ensure backend is running: `cd ../ratatoskr && docker-compose up`
 - Check `api.base.url` in `local.properties`
 - On Android emulator, use `http://10.0.2.2:8000` instead of `localhost:8000`
 
@@ -1337,4 +1337,4 @@ Copyright (c) 2025, Nikita Pochaev
 
 ## Related Projects
 
-- **Backend Service**: [bite-size-reader](https://github.com/po4yka/bite-size-reader) - FastAPI backend with Telegram bot
+- **Backend Service**: [ratatoskr](https://github.com/po4yka/ratatoskr) - FastAPI backend with Telegram bot

@@ -5,9 +5,9 @@ Quick reference for implementing domain use cases in this project.
 ## Structure Template
 
 ```kotlin
-package com.po4yka.bitesizereader.domain.usecase
+package com.po4yka.ratatoskr.domain.usecase
 
-import com.po4yka.bitesizereader.domain.repository.MyRepository
+import com.po4yka.ratatoskr.domain.repository.MyRepository
 import org.koin.core.annotation.Factory
 
 @Factory
