@@ -71,208 +71,45 @@ Login → Receive Tokens → Store Securely → Use in Requests → Refresh Befo
 - Store in source code or build config
 
 **ALWAYS**:
-- Use Keychain (iOS) or EncryptedSharedPreferences/Keystore (Android)
+- Use Keychain (iOS) or Tink AEAD + DataStore (Android)
 - Clear tokens on logout
 - Validate tokens before use
 - Refresh before expiration
 
 ### Implementation
 
-**Android (EncryptedSharedPreferences)**:
+The `SecureStorage` interface in
+[`core/data/src/commonMain/kotlin/com/po4yka/ratatoskr/data/local/SecureStorage.kt`](../core/data/src/commonMain/kotlin/com/po4yka/ratatoskr/data/local/SecureStorage.kt)
+defines the cross-platform contract. Each platform provides its own actual:
 
-```kotlin
-// androidMain/kotlin/security/SecureTokenStorage.kt
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+| Platform | File | Backing store |
+|----------|------|---------------|
+| Android | [`AndroidSecureStorage.kt`](../core/data/src/androidMain/kotlin/com/po4yka/ratatoskr/data/local/AndroidSecureStorage.kt) | DataStore Preferences with values encrypted at rest using a Tink AEAD primitive ([`TinkKeyManager.kt`](../core/data/src/androidMain/kotlin/com/po4yka/ratatoskr/data/local/TinkKeyManager.kt) — AES-256-GCM, key wrapped by Android Keystore master key, hardware-backed on supported devices). |
+| iOS | [`IosSecureStorage.kt`](../core/data/src/iosMain/kotlin/com/po4yka/ratatoskr/data/local/IosSecureStorage.kt) | `KeychainSettings` (multiplatform-settings) with service identifier `com.po4yka.ratatoskr.auth`. Tokens never leave the Keychain in plaintext. |
+| Desktop | [`DesktopSecureStorage.kt`](../core/data/src/desktopMain/kotlin/com/po4yka/ratatoskr/data/local/DesktopSecureStorage.kt) | **In-memory `MapSettings` — DEVELOPMENT ONLY.** Not persisted, not encrypted. The desktop target exists for Compose hot-reload work, not production use. |
 
-class AndroidSecureTokenStorage(private val context: Context) : SecureTokenStorage {
+**Why Tink AEAD + DataStore on Android instead of `EncryptedSharedPreferences`?**
+Google deprecated `androidx.security:security-crypto` in 2024. Tink is
+Google's actively maintained crypto library; pairing it with DataStore
+gives an asynchronous, coroutine-friendly API plus hardware-backed
+key wrapping via `android-keystore://` URIs.
 
-    private val masterKey = MasterKey.Builder(context)
-        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-        .build()
-
-    private val encryptedPrefs = EncryptedSharedPreferences.create(
-        context,
-        "secure_prefs",
-        masterKey,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
-
-    override fun saveAccessToken(token: String) {
-        encryptedPrefs.edit()
-            .putString(KEY_ACCESS_TOKEN, token)
-            .apply()
-    }
-
-    override fun getAccessToken(): String? {
-        return encryptedPrefs.getString(KEY_ACCESS_TOKEN, null)
-    }
-
-    override fun saveRefreshToken(token: String) {
-        encryptedPrefs.edit()
-            .putString(KEY_REFRESH_TOKEN, token)
-            .apply()
-    }
-
-    override fun getRefreshToken(): String? {
-        return encryptedPrefs.getString(KEY_REFRESH_TOKEN, null)
-    }
-
-    override fun clearTokens() {
-        encryptedPrefs.edit()
-            .remove(KEY_ACCESS_TOKEN)
-            .remove(KEY_REFRESH_TOKEN)
-            .apply()
-    }
-
-    companion object {
-        private const val KEY_ACCESS_TOKEN = "access_token"
-        private const val KEY_REFRESH_TOKEN = "refresh_token"
-    }
-}
-```
-
-**iOS (Keychain)**:
-
-```swift
-// iosApp/Security/KeychainTokenStorage.swift
-import Security
-
-class KeychainTokenStorage {
-    private let service = "com.po4yka.ratatoskr.tokens"
-
-    func saveAccessToken(_ token: String) {
-        save(key: "access_token", value: token)
-    }
-
-    func getAccessToken() -> String? {
-        return load(key: "access_token")
-    }
-
-    func saveRefreshToken(_ token: String) {
-        save(key: "refresh_token", value: token)
-    }
-
-    func getRefreshToken() -> String? {
-        return load(key: "refresh_token")
-    }
-
-    func clearTokens() {
-        delete(key: "access_token")
-        delete(key: "refresh_token")
-    }
-
-    private func save(key: String, value: String) {
-        let data = value.data(using: .utf8)!
-
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-        ]
-
-        SecItemDelete(query as CFDictionary)  // Delete old value
-        SecItemAdd(query as CFDictionary, nil)
-    }
-
-    private func load(key: String) -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecReturnData as String: true
-        ]
-
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-
-        guard status == errSecSuccess,
-              let data = result as? Data,
-              let value = String(data: data, encoding: .utf8) else {
-            return nil
-        }
-
-        return value
-    }
-
-    private func delete(key: String) {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key
-        ]
-
-        SecItemDelete(query as CFDictionary)
-    }
-}
-```
+**What gets stored**: access token, refresh token, and developer
+credentials (`userId` / `clientId` / `secret` for the dev secret-login
+flow). All values encrypt-then-encode (Base64 NO_WRAP) before landing
+in DataStore.
 
 ### Token Refresh Logic
 
-```kotlin
-// data/remote/TokenProvider.kt
-class TokenProviderImpl(
-    private val secureStorage: SecureTokenStorage,
-    private val authApi: AuthApi
-) : TokenProvider {
-
-    private val tokenExpiryBuffer = 5.minutes  // Refresh 5 min before expiry
-
-    override suspend fun getTokens(): AuthTokens {
-        val accessToken = secureStorage.getAccessToken()
-            ?: throw UnauthorizedException("No access token")
-
-        val refreshToken = secureStorage.getRefreshToken()
-            ?: throw UnauthorizedException("No refresh token")
-
-        // Check if token needs refresh
-        if (isTokenExpiringSoon(accessToken)) {
-            return refreshToken(refreshToken)
-        }
-
-        return AuthTokens(accessToken, refreshToken)
-    }
-
-    override suspend fun refreshToken(): AuthTokens {
-        val refreshToken = secureStorage.getRefreshToken()
-            ?: throw UnauthorizedException("No refresh token")
-
-        val response = authApi.refreshToken(refreshToken)
-
-        // Save new tokens
-        secureStorage.saveAccessToken(response.accessToken)
-        response.refreshToken?.let {
-            secureStorage.saveRefreshToken(it)
-        }
-
-        return AuthTokens(
-            accessToken = response.accessToken,
-            refreshToken = response.refreshToken ?: refreshToken
-        )
-    }
-
-    private fun isTokenExpiringSoon(token: String): Boolean {
-        try {
-            val parts = token.split(".")
-            if (parts.size != 3) return true
-
-            val payload = String(Base64.decode(parts[1], Base64.URL_SAFE))
-            val json = Json.parseToJsonElement(payload).jsonObject
-            val exp = json["exp"]?.jsonPrimitive?.long ?: return true
-
-            val expiryTime = Instant.fromEpochSeconds(exp)
-            val now = Clock.System.now()
-
-            return (expiryTime - now) < tokenExpiryBuffer
-        } catch (e: Exception) {
-            return true  // Assume expired if can't parse
-        }
-    }
-}
-```
+Refresh is wired through Ktor's `Auth` plugin in
+[`core/data/src/commonMain/kotlin/com/po4yka/ratatoskr/data/remote/ApiClient.kt`](../core/data/src/commonMain/kotlin/com/po4yka/ratatoskr/data/remote/ApiClient.kt).
+On a 401 response Ktor invokes the `refreshTokens` block, which
+`POST`s to `/v1/auth/refresh`, persists the new bearer pair to
+`SecureStorage`, and retries the original call. If refresh itself
+fails (`success=false` or HTTP error) the storage is wiped to force
+re-authentication. See
+[`docs/AUTHENTICATION.md`](AUTHENTICATION.md#token-refresh-mechanism)
+for the full sequence and the Kotlin snippet.
 
 ---
 
@@ -708,7 +545,7 @@ func isJailbroken() -> Bool {
 
 ### Authentication
 
-- [ ] Tokens stored in Keychain/EncryptedSharedPreferences
+- [ ] Tokens stored in Keychain (iOS) / Tink AEAD + DataStore (Android)
 - [ ] Token refresh implemented
 - [ ] Logout clears all tokens
 - [ ] Tokens never logged
@@ -753,4 +590,4 @@ func isJailbroken() -> Bool {
 
 ---
 
-**Last Updated**: 2025-11-16
+**Last Updated**: 2026-04-28
