@@ -35,7 +35,18 @@ Fixes #
 
 - [ ] Android
 - [ ] iOS
+- [ ] Desktop (Compose hot reload)
 - [ ] Shared code only (no platform-specific changes)
+
+## Architecture Rules
+
+<!-- These are enforced by the verifyArchitectureBoundaries Gradle task -->
+
+- [ ] No cross-feature `data/` or `presentation/` imports
+- [ ] Used Compose Resources for UI strings (no hardcoded strings in shared UI)
+- [ ] Routed Composables read deps from the Decompose component (no `koinInject()` inside screens)
+- [ ] Domain code does not import `data.remote` APIs or DTOs
+- [ ] Updated `docs/` and the `.claude/` + `.codex/` SKILL.md files if patterns changed
 
 ## Testing
 

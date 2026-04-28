@@ -8,12 +8,14 @@ Guidance for UI work in `composeApp/`.
 - Android app entrypoints, widgets, and workers now live in `androidApp/`.
 - Shared design system code lives in `core/ui/`.
 - Route screens and feature-specific UI live in the owning `feature/*` module.
+- `composeApp` UI should stay limited to the shell host and adaptive navigation chrome.
 
 ## Screen Pattern
 
 - Prefer `*Screen(component: *Component)` over wiring navigation directly inside composables.
+- Read routed-screen dependencies from the component or app-level providers, not `koinInject` inside the screen.
 - Keep navigation callbacks in the component layer; screens should call component methods or ViewModel intents, not mutate navigation stacks.
-- Do not import feature route screens into shell hosts. Shell rendering should go through render descriptors from `core/navigation`.
+- Do not import feature route screens into shell hosts. Shell rendering should go through `MainChildDescriptor.render()` and `RootChildDescriptor.render()`.
 
 ## Design System
 
@@ -47,6 +49,8 @@ Prefer extending existing components before creating new abstractions. Useful an
 ## DI Exception
 
 `composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/di/ImageLoaderModule.kt` uses Koin DSL on purpose. Do not treat it as an annotations bug.
+
+The app-level `App.kt` provider for image URL transformation is also intentional. Reusable composables should consume that provider instead of resolving Koin directly.
 
 ## Icons
 
