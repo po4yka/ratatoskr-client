@@ -98,12 +98,6 @@ Swift interop:
 
 - SKIE is configured in Gradle but currently disabled because the active Kotlin version is ahead of the supported SKIE version.
 
-## Build Tooling
-
-- AGP 9 / Kotlin Multiplatform plugin migration is deferred.
-- Current architecture acceptance criteria do not require replacing the legacy Android library plugin wiring yet.
-- See [BUILD_MIGRATION_DEFERRED.md](BUILD_MIGRATION_DEFERRED.md) for the scoped follow-up note.
-
 ## Implementation Patterns
 
 The structural rules above describe *what depends on what*. The
