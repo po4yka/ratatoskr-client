@@ -95,7 +95,6 @@ The canonical OpenAPI specs live in the [backend repository](https://github.com/
 | File | Description |
 |------|-------------|
 | [openapi/README.md](openapi/README.md) | How to access the API specs |
-| [openapi/DTO_AUDIT.md](openapi/DTO_AUDIT.md) | Kotlin DTO alignment audit |
 | [openapi/grpc_processing.md](openapi/grpc_processing.md) | gRPC ProcessingService docs |
 
 ---

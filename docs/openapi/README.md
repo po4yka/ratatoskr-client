@@ -13,5 +13,4 @@ The canonical OpenAPI specs live in the **backend repository**:
 
 | File | Description |
 |------|-------------|
-| [DTO_AUDIT.md](DTO_AUDIT.md) | Audit of Kotlin DTOs against OpenAPI schemas |
 | [grpc_processing.md](grpc_processing.md) | gRPC ProcessingService documentation |

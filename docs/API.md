@@ -11,10 +11,8 @@ The canonical OpenAPI spec lives in the backend repository at
 This document captures the endpoints the mobile client actually
 consumes plus the Kotlin transport-layer wiring that calls them.
 
-For DTO-level alignment audits, see
-[`docs/openapi/DTO_AUDIT.md`](openapi/DTO_AUDIT.md). For end-to-end
-authentication setup (BotFather, deep-link scheme, WebView actuals),
-see [`docs/AUTHENTICATION.md`](AUTHENTICATION.md).
+For end-to-end authentication setup (BotFather, deep-link scheme,
+WebView actuals), see [`docs/AUTHENTICATION.md`](AUTHENTICATION.md).
 
 ---
 
