@@ -34,13 +34,9 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val buildFiles: ConfigurableFileCollection
 
-    @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val docFiles: ConfigurableFileCollection
-
     init {
         group = "verification"
-        description = "Rejects direct DI in routed UI, illegal module edges, and stale legacy docs references."
+        description = "Rejects direct DI in routed UI and illegal module edges."
     }
 
     @TaskAction
@@ -80,9 +76,6 @@ abstract class VerifyArchitectureBoundariesTask : DefaultTask() {
 
         val buildSourceFiles = load(buildFiles.files, "kts")
         violations += ArchitectureBoundaryRules.findModuleDependencyViolations(buildSourceFiles)
-
-        val docsSourceFiles = load(docFiles.files, "md")
-        violations += ArchitectureBoundaryRules.findLegacyDocsViolations(docsSourceFiles)
 
         if (violations.isNotEmpty()) {
             throw GradleException(

@@ -6,7 +6,6 @@ Project guidance for Codex when working in this repository.
 
 - Kotlin Multiplatform app with shared infrastructure in `core/`, feature modules under `feature/*`, a Compose shell in `composeApp/`, an Android application host in `androidApp/`, and a SwiftUI host app in `iosApp/`.
 - Active Kotlin modules are `core/common`, `core/data`, `core/navigation`, `core/ui`, `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, and `feature/sync`.
-- Legacy migration residue may still exist in the repo, but it is not part of the active Gradle graph.
 - Desktop exists as a development target for Compose work and hot reload, not as a production app.
 
 ## Build And Run

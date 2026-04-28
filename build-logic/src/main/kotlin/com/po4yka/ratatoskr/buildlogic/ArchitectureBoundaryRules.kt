@@ -21,12 +21,6 @@ internal object ArchitectureBoundaryRules {
             "feature/sync" to emptySet(),
         )
 
-    private val allowedLegacyDocPaths =
-        setOf(
-            "shared/AGENTS.md",
-            "docs/BUILD_MIGRATION_DEFERRED.md",
-        )
-
     private val allowedComposeAppUiPaths =
         setOf(
             "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt",
@@ -143,17 +137,6 @@ internal object ArchitectureBoundaryRules {
         return violations
     }
 
-    fun findLegacyDocsViolations(docFiles: List<SourceFile>): List<String> =
-        docFiles.flatMap { file ->
-            if (file.path in allowedLegacyDocPaths) {
-                emptyList()
-            } else {
-                LegacySharedDocPattern.findAll(file.content)
-                    .map { match -> "Docs drift: ${file.path} still references legacy '${match.value}'" }
-                    .toList()
-            }
-        }
-
     fun scanImports(content: String): List<String> =
         ImportPattern.findAll(content)
             .map { match -> match.groupValues[1].substringBefore(" as ").trim() }
@@ -223,7 +206,6 @@ internal object ArchitectureBoundaryRules {
         Regex(
             """\bKoinComponent\b|\binject\(|\bkoin\.(?:get|getAll)\s*(?:<|\()|\bgetKoin\(\)\.(?:get|getAll)\s*(?:<|\()""",
         )
-    private val LegacySharedDocPattern = Regex("""shared/|:shared:""")
     private val DiManagedRouteRegistrationPattern =
         Regex("""\b(?:single|factory)\s*<\s*(?:MainRouteEntry|AuthEntry)\s*>|\bbind\s+(?:MainRouteEntry|AuthEntry)::class""")
     private val RawAppRouteCreationPattern = Regex("""\bAppRoute\s*\(""")
