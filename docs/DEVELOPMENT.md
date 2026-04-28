@@ -223,6 +223,63 @@ pod install
 
 ---
 
+## Running the Backend Locally
+
+The mobile client requires the
+[`po4yka/ratatoskr`](https://github.com/po4yka/ratatoskr) FastAPI
+backend service.
+
+**Backend requirements**:
+
+- Python 3.13+
+- Docker (recommended)
+- Required environment variables:
+  - `JWT_SECRET_KEY` — 32+ character secret (generate with
+    `openssl rand -hex 32`)
+  - `BOT_TOKEN` — Telegram bot token (used to verify auth hashes)
+  - `ALLOWED_USER_IDS` — comma-separated Telegram user IDs
+  - `ALLOWED_CLIENT_IDS` — optional client-ID whitelist; must
+    include `ratatoskr-android-v1.0` and/or `ratatoskr-ios-v1.0` if
+    you want the mobile clients to authenticate
+  - `ALLOWED_ORIGINS` — CORS allowed origins (the mobile API
+    requires the deep-link origin `ratatoskr://telegram-auth`)
+  - `OPENROUTER_API_KEY` — for LLM summarization
+  - `FIRECRAWL_API_KEY` — for content extraction
+
+**Quick setup**:
+
+```bash
+# Clone the backend repo next to the client
+cd ..
+git clone https://github.com/po4yka/ratatoskr.git
+cd ratatoskr
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys + ALLOWED_CLIENT_IDS
+
+# Start with Docker
+docker-compose up -d
+
+# Verify
+curl http://localhost:8000/health
+# Expected: {"status":"ok"}
+```
+
+Backend OpenAPI docs are served at <http://localhost:8000/docs> while
+the container runs.
+
+**Pointing the mobile client at it**: in `local.properties` set
+
+```properties
+api.base.url=http://localhost:8000
+```
+
+For Android emulator, use `http://10.0.2.2:8000` instead of
+`localhost` (the emulator's loopback resolves inside the VM).
+
+---
+
 ## Resources
 
 - [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)

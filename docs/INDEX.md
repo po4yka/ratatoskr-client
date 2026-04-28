@@ -65,6 +65,7 @@ Central navigation hub for Ratatoskr client documentation.
 | [ERROR_HANDLING.md](ERROR_HANDLING.md) | Error handling patterns |
 | [LOGGING.md](LOGGING.md) | Structured logging |
 | [SECURITY.md](SECURITY.md) | Security best practices |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Build, runtime, API, and logging troubleshooting |
 
 ---
 
@@ -109,4 +110,4 @@ The canonical OpenAPI specs live in the [backend repository](https://github.com/
 
 ---
 
-**Last Updated**: 2025-12-18
+**Last Updated**: 2026-04-28
