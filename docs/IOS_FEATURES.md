@@ -491,7 +491,7 @@ Create HTML file with link:
 | Background Sync |  BGProcessingTask |  WorkManager | Both every 6 hours |
 | Widgets |  WidgetKit (needs testing) |  Glance Widget | iOS needs verification |
 | Deep Links |  URL Scheme |  Intent Filters | iOS working, Android TBD |
-| Secure Storage |  Keychain |  EncryptedSharedPreferences | Both working |
+| Secure Storage |  Keychain (`KeychainSettings`) |  Tink AEAD + DataStore | Both working |
 
 ---
 
