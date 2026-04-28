@@ -4,10 +4,11 @@ This document explains how to set up and configure Telegram Login Widget authent
 
 ## Overview
 
-The application uses Telegram Login Widget for user authentication, providing a secure OAuth-based login flow. The implementation is platform-specific:
+The application uses the Telegram Login Widget for user authentication, providing a secure OAuth-based login flow. A single Compose screen — [`TelegramAuthScreen`](../feature/auth/src/commonMain/kotlin/com/po4yka/ratatoskr/feature/auth/ui/auth/TelegramAuthScreen.kt) in `feature/auth` — drives the UI on every platform. It hosts a platform-specific `WebView` actual that loads the bot's login widget and intercepts the `ratatoskr://telegram-auth` callback URL.
 
-- **Android**: Custom Tabs with deep link callbacks
-- **iOS**: WKWebView with JavaScript message handlers
+- **Android** (`WebView.android.kt`): wraps `android.webkit.WebView` with a `WebViewClient` that intercepts `shouldOverrideUrlLoading` and forwards `ratatoskr://` URLs to the Compose layer.
+- **iOS** (`WebView.ios.kt`): wraps `WKWebView` with a `WKNavigationDelegateProtocol` that cancels navigation on `ratatoskr://` URLs and forwards them to the Compose layer.
+- **Desktop**: not wired (no production desktop target).
 
 ## Prerequisites
 
@@ -35,137 +36,139 @@ You can get the bot ID from the bot token:
 - Token format: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`
 - Bot ID is the first part: `123456789`
 
-## Android Configuration
+## Configuration
 
-### 1. Update TelegramAuthHelper
+### 1. Set bot credentials in `local.properties`
 
-Edit `composeApp/src/androidMain/kotlin/com/po4yka/ratatoskr/auth/TelegramAuthHelper.kt`:
+The bot username, callback URL, and deep-link scheme all live in
+[`AppConfig`](../core/common/src/commonMain/kotlin/com/po4yka/ratatoskr/util/config/AppConfig.kt)
+under `AppConfig.Telegram`. Defaults ship in the file; production
+overrides come from `local.properties` (gitignored):
 
-```kotlin
-object TelegramAuthHelper {
-    // Replace with your actual Telegram bot username
-    private const val TELEGRAM_BOT_USERNAME = "your_bot_username"  // e.g., "ratatoskr_client_bot"
-
-    private const val CALLBACK_URL = "ratatoskr://telegram-auth"
-
-    private fun buildTelegramAuthUrl(): String {
-        return buildString {
-            append("https://oauth.telegram.org/auth")
-            append("?bot_id=123456789")  // Replace with your bot ID
-            append("&origin=android")
-            append("&embed=1")
-            append("&request_access=write")
-            append("&return_to=")
-            append(Uri.encode(CALLBACK_URL))
-        }
-    }
-}
+```properties
+telegram.bot.username=ratatoskr_client_bot
+telegram.bot.id=123456789
 ```
 
-### 2. Deep Link Configuration
+These values are wired into Koin via `AppConfig.initializeFromProperties(...)`
+during startup, so no source edits are required to swap bots.
 
-The deep link scheme is already configured in `AndroidManifest.xml`:
+The deep-link scheme `ratatoskr://telegram-auth` is hardcoded in
+`AppConfig.Telegram.DEEP_LINK_SCHEME` / `DEEP_LINK_HOST` and used by
+both platforms.
+
+### 2. Where the auth UI lives
+
+The Compose-based screen at
+[`feature/auth/src/commonMain/.../TelegramAuthScreen.kt`](../feature/auth/src/commonMain/kotlin/com/po4yka/ratatoskr/feature/auth/ui/auth/TelegramAuthScreen.kt)
+builds the login URL from `AppConfig.Telegram` and renders the platform
+WebView actual:
+
+```kotlin
+val botUsername = AppConfig.Telegram.botUsername
+val origin = AppConfig.Telegram.callbackUrl  // "ratatoskr://telegram-auth"
+val loginUrl =
+    "${AppConfig.Api.baseUrl}/v1/auth/login-widget?bot=$botUsername&origin=$origin"
+
+WebView(
+    url = loginUrl,
+    onDeepLink = { url ->
+        val authData = parseTelegramAuthData(url)
+        if (authData != null) onLogin(authData) else onDismiss()
+    },
+)
+```
+
+The screen parses `id`, `hash`, `first_name`, `last_name`, `username`,
+`photo_url`, and `auth_date` query parameters from the redirect URL
+and passes them to `LoginViewModel.loginWithTelegram(authData)`.
+
+### 3. Android: WebView actual
+
+[`WebView.android.kt`](../feature/auth/src/androidMain/kotlin/com/po4yka/ratatoskr/feature/auth/ui/auth/WebView.android.kt)
+hosts an `android.webkit.WebView` inside an `AndroidView`. The
+`WebViewClient.shouldOverrideUrlLoading(...)` callback intercepts any
+URL that starts with `ratatoskr://` and forwards it to
+`onDeepLink` — the Compose layer handles the rest. JavaScript and DOM
+storage are enabled for the Telegram widget to render.
+
+The `ratatoskr` URL scheme is also declared in `AndroidManifest.xml`
+for OS-level deep-link interop (widget links, Share Extension hand-off,
+etc.):
 
 ```xml
 <data android:scheme="ratatoskr" android:host="telegram-auth" />
 ```
 
-This creates the callback URL: `ratatoskr://telegram-auth`
+### 4. iOS: WebView actual
 
-### 3. Test on Android
+[`WebView.ios.kt`](../feature/auth/src/iosMain/kotlin/com/po4yka/ratatoskr/feature/auth/ui/auth/WebView.ios.kt)
+hosts a `WKWebView` inside `UIKitView`. A `WKNavigationDelegateProtocol`
+implementation cancels navigation on `ratatoskr://` URLs (returning
+`WKNavigationActionPolicyCancel`) and forwards the URL to `onDeepLink`.
+On dispose the delegate is detached and the WebView is stopped to
+avoid leaks.
 
-1. Build and run the app on an Android device or emulator
-2. Tap "Login with Telegram"
-3. A Custom Tab will open with the Telegram Login Widget
-4. Authenticate with Telegram
-5. You'll be redirected back to the app via the deep link
-6. The app should automatically log you in
+The `ratatoskr` URL scheme is registered in `iosApp/iosApp/Info.plist`
+under `CFBundleURLTypes`:
 
-## iOS Configuration
-
-### 1. Update TelegramAuthHelper
-
-Edit `iosApp/iosApp/Auth/TelegramAuthWebView.swift`:
-
-```swift
-struct TelegramAuthHelper {
-    // Replace with your actual Telegram bot username
-    private static let botUsername = "your_bot_username"  // e.g., "ratatoskr_client_bot"
-}
+```xml
+<key>CFBundleURLSchemes</key>
+<array>
+    <string>ratatoskr</string>
+</array>
+<key>CFBundleURLName</key>
+<string>com.po4yka.ratatoskr</string>
 ```
 
-### 2. Configure URL Scheme
+This is set automatically by the regenerated `project.yml` /
+`Info.plist`; no Xcode UI configuration is required for fresh
+checkouts.
 
-The URL scheme needs to be configured in Xcode:
+### 5. Manual smoke tests
 
-1. Open the iOS project in Xcode
-2. Select the `iosApp` target
-3. Go to the "Info" tab
-4. Expand "URL Types"
-5. Add a new URL Type:
-   - Identifier: `com.po4yka.ratatoskr`
-   - URL Schemes: `ratatoskr`
-   - Role: `Editor`
+**Android**:
 
-### 3. Test on iOS
+```bash
+./gradlew :androidApp:installDebug
+# Tap "Login with Telegram", complete the widget flow.
+# Or test the deep-link directly:
+adb shell am start -W -a android.intent.action.VIEW \
+  -d "ratatoskr://telegram-auth?id=123&hash=abc"
+```
 
-1. Build and run the app on an iOS device or simulator
-2. Tap "Login with Telegram"
-3. A sheet will appear with the Telegram Login Widget in a WKWebView
-4. Authenticate with Telegram
-5. The authentication data will be passed via JavaScript message handler
-6. The app should automatically log you in
+**iOS** (simulator):
+
+```bash
+xcrun simctl openurl booted "ratatoskr://telegram-auth?id=123&hash=abc"
+```
+
+Both should land in `TelegramAuthScreen` and forward the parsed auth
+data to the backend.
 
 ## Authentication Flow
 
-### Android Flow
-
 ```
 User taps "Login with Telegram"
     ↓
-TelegramAuthHelper.launchTelegramAuth()
+TelegramAuthScreen builds login URL from AppConfig.Telegram + AppConfig.Api
     ↓
-Custom Tab opens with Telegram OAuth URL
+Platform WebView (Android: android.webkit.WebView; iOS: WKWebView)
+    loads .../v1/auth/login-widget?bot=...&origin=ratatoskr://telegram-auth
     ↓
-User authenticates with Telegram
+User authenticates with Telegram inside the widget
     ↓
 Telegram redirects to: ratatoskr://telegram-auth?id=...&hash=...
     ↓
-TelegramAuthActivity receives deep link
+WebView actual intercepts the URL → invokes onDeepLink callback
     ↓
-Parses auth parameters and calls LoginViewModel.loginWithTelegram()
+TelegramAuthScreen.parseTelegramAuthData(url) extracts auth fields
     ↓
-Backend validates auth data and returns JWT token
+LoginViewModel.loginWithTelegram(authData) called
     ↓
-Token stored in SecureStorage
+Backend validates auth hash via /v1/auth/telegram-login, returns JWT pair
     ↓
-User is authenticated
-```
-
-### iOS Flow
-
-```
-User taps "Login with Telegram"
-    ↓
-AuthView shows sheet with TelegramAuthWebView
-    ↓
-WKWebView loads HTML with Telegram Login Widget
-    ↓
-User authenticates with Telegram
-    ↓
-Telegram widget calls onTelegramAuth(user) JavaScript function
-    ↓
-JavaScript posts message to native code via WKScriptMessageHandler
-    ↓
-TelegramAuthWebView.Coordinator receives message
-    ↓
-Parses auth data and calls onAuthSuccess callback
-    ↓
-LoginViewModelWrapper.loginWithTelegram() is called
-    ↓
-Backend validates auth data and returns JWT token
-    ↓
-Token stored in SecureStorage
+Tokens stored via SecureStorage (Tink+DataStore on Android, Keychain on iOS)
     ↓
 User is authenticated
 ```
@@ -200,11 +203,18 @@ fun isAuthRecent(authDate: Long): Boolean {
 
 ### 3. Secure Token Storage
 
-Tokens are stored using:
-- **Android**: EncryptedSharedPreferences
-- **iOS**: Keychain
+Tokens are stored using the platform actuals defined in
+`core/data/.../data/local/`:
 
-Both provide hardware-backed encryption when available.
+- **Android**: DataStore Preferences with values encrypted at rest
+  by a Tink AEAD primitive (AES-256-GCM, key wrapped by Android
+  Keystore master key).
+- **iOS**: `KeychainSettings` (multiplatform-settings) with service
+  identifier `com.po4yka.ratatoskr.auth`.
+- **Desktop**: in-memory `MapSettings` — DEVELOPMENT ONLY.
+
+See [`docs/SECURITY.md`](SECURITY.md#implementation) for the full
+implementation matrix.
 
 ## Token Refresh Mechanism
 
@@ -286,41 +296,42 @@ The refresh mechanism includes explicit status checking:
 
 ## Troubleshooting
 
-### Android: Custom Tab doesn't open
+### Android: WebView shows blank page
 
-**Problem**: Clicking "Login with Telegram" does nothing.
-
-**Solution**:
-- Ensure Chrome or another Custom Tabs compatible browser is installed
-- Check Logcat for exceptions
-- Verify the bot ID and origin in the auth URL
-
-### Android: Deep link not working
-
-**Problem**: After authentication, nothing happens.
+**Problem**: The Compose sheet appears but the widget doesn't render.
 
 **Solution**:
-- Verify the deep link configuration in AndroidManifest.xml
-- Check that the scheme and host match in both TelegramAuthHelper and AndroidManifest
-- Use `adb shell am start -W -a android.intent.action.VIEW -d "ratatoskr://telegram-auth?id=123&hash=abc"` to test deep link handling
+- Confirm `telegram.bot.username` in `local.properties` matches an existing bot on BotFather (`/setdomain` must include the API base URL host).
+- Check Logcat for `chromium` warnings about CORS or mixed content.
+- Confirm `AppConfig.Api.baseUrl` is reachable from the device (the widget is served from the backend, not directly from `oauth.telegram.org`).
+
+### Android: Deep link callback never fires
+
+**Problem**: The widget completes but `onDeepLink` is not invoked.
+
+**Solution**:
+- Confirm the `ratatoskr` scheme matches `AppConfig.Telegram.DEEP_LINK_SCHEME`.
+- Test the deep-link path directly:
+  `adb shell am start -W -a android.intent.action.VIEW -d "ratatoskr://telegram-auth?id=123&hash=abc"`.
+- The interception happens in `WebView.android.kt`'s `shouldOverrideUrlLoading`. Set a breakpoint there to confirm the URL is being seen.
 
 ### iOS: WebView shows blank page
 
-**Problem**: The authentication sheet appears but shows a blank page.
+**Problem**: The authentication screen appears but the widget doesn't render.
 
 **Solution**:
-- Check the bot username is correct in TelegramAuthHelper
-- Verify the HTML is loading correctly (check WKWebView console logs)
-- Ensure network requests are allowed (check Info.plist for NSAppTransportSecurity)
+- Verify `telegram.bot.username` is set and the host is whitelisted on BotFather.
+- Inspect Safari Web Inspector against the WKWebView — load failures usually show in the console.
+- `Info.plist` must not enable `NSAllowsArbitraryLoads`. If you self-host the backend over HTTP for development, configure ATS exceptions explicitly.
 
-### iOS: Authentication data not received
+### iOS: Deep link callback never fires
 
-**Problem**: User authenticates but nothing happens.
+**Problem**: Telegram redirects but `onDeepLink` is not invoked.
 
 **Solution**:
-- Check that the WKScriptMessageHandler is properly registered
-- Verify the JavaScript message handler name matches ("telegramAuthHandler")
-- Check the data parsing in TelegramAuthData.from(dict:)
+- The `ratatoskr` URL scheme must be present in `Info.plist` under `CFBundleURLTypes` (auto-generated by `iosApp/project.yml` + xcodegen).
+- Test with `xcrun simctl openurl booted "ratatoskr://telegram-auth?id=123&hash=abc"`.
+- Check that the navigation delegate set in `WebView.ios.kt` is still attached; `DisposableEffect` clears it on dispose.
 
 ### Backend: Invalid auth hash
 
@@ -332,34 +343,13 @@ The refresh mechanism includes explicit status checking:
 - Check that all auth parameters are included in the data check string
 - Ensure parameters are sorted alphabetically when building the check string
 
-## Environment Variables
-
-For production deployment, use environment variables or a configuration file:
-
-### Android (local.properties or BuildConfig)
-
-```properties
-TELEGRAM_BOT_USERNAME=ratatoskr_client_bot
-TELEGRAM_BOT_ID=123456789
-```
-
-### iOS (Configuration file or Info.plist)
-
-```swift
-enum Config {
-    static let telegramBotUsername = ProcessInfo.processInfo.environment["TELEGRAM_BOT_USERNAME"] ?? "ratatoskr_client_bot"
-}
-```
-
 ## Next Steps
 
-1. **Set up your Telegram bot** following the prerequisites
-2. **Update bot credentials** in both Android and iOS code
-3. **Configure backend validation** to verify auth hash
-4. **Test the authentication flow** on both platforms
-5. **Set up proper error handling** for network failures
-6. **Implement token refresh** logic if needed
-7. **Add logout functionality** (already implemented in LoginViewModel)
+1. **Set up your Telegram bot** following the prerequisites.
+2. **Set `telegram.bot.username` and `telegram.bot.id` in `local.properties`** — no source edits required.
+3. **Configure backend validation** so `/v1/auth/telegram-login` verifies the auth hash with your bot token.
+4. **Test the authentication flow** on both platforms (use the simulator/emulator deep-link commands above).
+5. **Logout** is already implemented in `LoginViewModel` and clears tokens via `SecureStorage.clearTokens()`.
 
 ## Resources
 
