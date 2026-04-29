@@ -23,9 +23,7 @@ import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * Error state view component using Carbon Design System
- */
+/** Reusable error-state view. */
 @Composable
 fun ErrorView(
     message: String,

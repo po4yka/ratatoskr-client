@@ -8,12 +8,11 @@ import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 
 /**
- * Project-owned spinner shim, sized to roughly match Carbon's `Loading` (48 dp default).
+ * Project-owned spinner shim (48 dp default).
  *
- * Backs onto Material 3 [CircularProgressIndicator] today; introduced as a thin wrapper so the
- * 21 call sites that previously used Carbon's `Loading` / `SmallLoading` can swap backing impl
- * without re-touching call sites. Call sites that want a different diameter pass
- * `Modifier.size(...)` — the modifier wins because it's applied after the default.
+ * Backs onto Material 3 [CircularProgressIndicator]; introduced as a thin wrapper so call sites
+ * can swap the backing impl without re-touching each one. Pass `Modifier.size(...)` to override
+ * the diameter — the modifier wins because it is applied after the default.
  */
 @Composable
 fun AppSpinner(modifier: Modifier = Modifier.size(48.dp)) {
@@ -24,9 +23,8 @@ fun AppSpinner(modifier: Modifier = Modifier.size(48.dp)) {
 }
 
 /**
- * Smaller spinner variant, sized to roughly match Carbon's `SmallLoading` (16 dp).
- *
- * Stroke width is reduced so the smaller diameter still reads as a spinner.
+ * Smaller spinner variant (16 dp). Stroke width is reduced so the smaller diameter still reads
+ * as a spinner.
  */
 @Composable
 fun AppSmallSpinner(modifier: Modifier = Modifier.size(16.dp)) {

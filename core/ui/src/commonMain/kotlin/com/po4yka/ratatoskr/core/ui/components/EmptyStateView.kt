@@ -127,9 +127,7 @@ private data class EmptyStateConfig(
     val actionText: String?,
 )
 
-/**
- * Empty state view component using Carbon Design System
- */
+/** Reusable empty-state view. */
 @Suppress("FunctionNaming", "LongParameterList") // Composable naming convention; UI component with optional params
 @Composable
 fun EmptyStateView(

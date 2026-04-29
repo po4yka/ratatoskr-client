@@ -18,9 +18,7 @@ import androidx.compose.material3.Text
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Collection
 
-/**
- * Collection item component using Carbon Design System
- */
+/** Collection item for list rows. */
 @Suppress("FunctionNaming", "UnstableCollections") // Collection is a domain model, not kotlin.collections
 @Composable
 fun CollectionItem(

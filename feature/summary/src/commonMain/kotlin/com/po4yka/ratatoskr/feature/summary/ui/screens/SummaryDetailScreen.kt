@@ -121,7 +121,7 @@ import ratatoskr.core.ui.generated.resources.summary_detail_unknown_source
 import kotlin.time.Instant
 import org.jetbrains.compose.resources.stringResource
 
-/** Summary detail screen using Carbon Design System */
+/** Summary detail screen. */
 @Suppress("FunctionNaming")
 @Composable
 fun SummaryDetailScreen(

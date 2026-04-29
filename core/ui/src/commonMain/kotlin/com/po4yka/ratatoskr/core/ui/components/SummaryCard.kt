@@ -32,9 +32,7 @@ import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.util.extractDomain
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * Card component for displaying a summary in a list using Carbon Design System
- */
+/** Summary card for list rows. */
 @Suppress("FunctionNaming", "LongMethod", "LongParameterList")
 @Composable
 fun SummaryCard(
