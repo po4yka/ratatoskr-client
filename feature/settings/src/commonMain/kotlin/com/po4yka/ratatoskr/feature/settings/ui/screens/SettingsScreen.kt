@@ -131,9 +131,7 @@ import ratatoskr.core.ui.generated.resources.privacy_policy
 import ratatoskr.core.ui.generated.resources.terms_of_service
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * Settings screen using Carbon Design System
- */
+/** Settings screen. */
 @Suppress("FunctionNaming")
 @Composable
 fun SettingsScreen(component: SettingsComponent) {

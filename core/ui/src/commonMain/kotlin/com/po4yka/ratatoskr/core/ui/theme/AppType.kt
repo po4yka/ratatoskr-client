@@ -8,13 +8,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * Project-owned type scale. Field set mirrors the Carbon typography fields used by the codebase
- * before Carbon Design System was removed. Sizing values were captured one-time from Carbon's
- * `CarbonTypography`; the project owns these values henceforth.
+ * Project-owned type scale. Field set used by AppTheme.type.X across the codebase.
  *
- * Family defaults to [FontFamily.SansSerif] since the IBM Plex font resources shipped by the
- * Carbon dependency are no longer available. Future design-system work can swap to a packaged
- * font family without re-touching call sites.
+ * Future design-system work can replace these values without touching call sites.
  */
 data class AppType(
     val body01: TextStyle,

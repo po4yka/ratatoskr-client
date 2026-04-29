@@ -27,9 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 
 private val logger = KotlinLogging.logger {}
 
-/**
- * Telegram authentication screen using Carbon Design System
- */
+/** Telegram authentication screen. */
 @Composable
 fun TelegramAuthScreen(
     isAuthenticated: Boolean,

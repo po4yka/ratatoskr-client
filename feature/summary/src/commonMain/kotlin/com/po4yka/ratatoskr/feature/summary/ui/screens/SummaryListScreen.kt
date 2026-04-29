@@ -85,7 +85,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * Summary list screen with search, filtering, sorting, swipe actions,
- * infinite scroll, and pull-to-refresh using Carbon Design System.
+ * infinite scroll, and pull-to-refresh.
  */
 @Suppress("FunctionNaming", "LongMethod")
 @Composable
