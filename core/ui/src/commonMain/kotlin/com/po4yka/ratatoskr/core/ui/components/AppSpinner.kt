@@ -16,9 +16,7 @@ import com.po4yka.ratatoskr.core.ui.theme.AppTheme
  * `Modifier.size(...)` — the modifier wins because it's applied after the default.
  */
 @Composable
-fun AppSpinner(
-    modifier: Modifier = Modifier.size(48.dp),
-) {
+fun AppSpinner(modifier: Modifier = Modifier.size(48.dp)) {
     CircularProgressIndicator(
         modifier = modifier,
         color = AppTheme.colors.interactive,
@@ -31,9 +29,7 @@ fun AppSpinner(
  * Stroke width is reduced so the smaller diameter still reads as a spinner.
  */
 @Composable
-fun AppSmallSpinner(
-    modifier: Modifier = Modifier.size(16.dp),
-) {
+fun AppSmallSpinner(modifier: Modifier = Modifier.size(16.dp)) {
     CircularProgressIndicator(
         modifier = modifier,
         color = AppTheme.colors.interactive,
