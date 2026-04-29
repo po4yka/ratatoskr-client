@@ -5,6 +5,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import com.gabrieldrn.carbon.CarbonDesignSystem
 import com.gabrieldrn.carbon.Carbon
@@ -16,6 +17,11 @@ import com.gabrieldrn.carbon.foundation.color.WhiteTheme
  *
  * This theme wraps CarbonDesignSystem to provide access to Carbon components
  * while maintaining Material 3 theming for existing components.
+ *
+ * During the Carbon removal migration this also provides [AppColors] / [AppType]
+ * via [LocalAppColors] / [LocalAppType] so call sites can be migrated incrementally
+ * from `Carbon.theme.X` / `Carbon.typography.X` to `AppTheme.colors.X` / `AppTheme.type.X`.
+ * The Carbon wrap will be removed once all call sites are migrated.
  */
 @Composable
 fun RatatoskrTheme(
@@ -23,20 +29,27 @@ fun RatatoskrTheme(
     content: @Composable () -> Unit,
 ) {
     val carbonTheme = if (darkTheme) Gray100Theme else WhiteTheme
+    val appColors = if (darkTheme) darkAppColors else lightAppColors
+    val appType = defaultAppType
 
     CarbonDesignSystem(
         theme = carbonTheme,
     ) {
-        val materialColorScheme =
-            rememberCarbonMaterialColorScheme(darkTheme = darkTheme)
-        val materialTypography =
-            rememberCarbonMaterialTypography()
+        CompositionLocalProvider(
+            LocalAppColors provides appColors,
+            LocalAppType provides appType,
+        ) {
+            val materialColorScheme =
+                rememberCarbonMaterialColorScheme(darkTheme = darkTheme)
+            val materialTypography =
+                rememberCarbonMaterialTypography()
 
-        MaterialTheme(
-            colorScheme = materialColorScheme,
-            typography = materialTypography,
-            content = content,
-        )
+            MaterialTheme(
+                colorScheme = materialColorScheme,
+                typography = materialTypography,
+                content = content,
+            )
+        }
     }
 }
 
