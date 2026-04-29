@@ -28,8 +28,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.Loading
+import com.po4yka.ratatoskr.core.ui.components.AppSpinner
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DomainStat
 import com.po4yka.ratatoskr.domain.model.GoalProgress
 import com.po4yka.ratatoskr.domain.model.Streak
@@ -90,7 +90,7 @@ fun StatsScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         StatsHeader()
 
@@ -101,7 +101,7 @@ fun StatsScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Loading(
+                    AppSpinner(
                         modifier =
                             Modifier.size(PROGRESS_INDICATOR_SIZE.dp)
                                 .semantics { contentDescription = loadingDesc },
@@ -120,14 +120,14 @@ fun StatsScreen(
                         Icon(
                             imageVector = CarbonIcons.WarningAlt,
                             contentDescription = stringResource(Res.string.stats_error_icon),
-                            tint = Carbon.theme.supportError,
+                            tint = AppTheme.colors.supportError,
                             modifier = Modifier.size(Spacing.xl),
                         )
                         Spacer(modifier = Modifier.height(Spacing.sm))
                         Text(
                             text = state.error ?: stringResource(Res.string.stats_error_default),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.supportError,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.supportError,
                         )
                     }
                 }
@@ -151,14 +151,14 @@ private fun StatsHeader() {
             Modifier
                 .fillMaxWidth()
                 .height(Dimensions.headerHeight)
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(horizontal = Spacing.md),
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
             text = stringResource(Res.string.stats_title),
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.semantics { heading() },
         )
     }
@@ -230,8 +230,8 @@ private fun GoalsAndStreaksSection(
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
         Text(
             text = stringResource(Res.string.stats_goals_and_streaks),
-            style = Carbon.typography.heading02,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading02,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.semantics { heading() },
         )
         Spacer(modifier = Modifier.height(Spacing.sm))
@@ -258,7 +258,7 @@ private fun StreakCard(streak: Streak) {
                 .fillMaxWidth()
                 .semantics(mergeDescendants = true) { contentDescription = streakDesc }
                 .background(
-                    color = Carbon.theme.layer01,
+                    color = AppTheme.colors.layer01,
                     shape = RoundedCornerShape(STAT_CARD_CORNER_RADIUS.dp),
                 )
                 .padding(Spacing.sm),
@@ -268,31 +268,31 @@ private fun StreakCard(streak: Streak) {
         Icon(
             imageVector = CarbonIcons.Star,
             contentDescription = null,
-            tint = Carbon.theme.supportWarning,
+            tint = AppTheme.colors.supportWarning,
             modifier = Modifier.size(24.dp),
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(Res.string.stats_current_streak, streak.currentStreak),
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.heading03,
+                color = AppTheme.colors.textPrimary,
             )
             Text(
                 text = stringResource(Res.string.stats_best_streak, streak.longestStreak),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(
                 text = stringResource(Res.string.stats_this_week, streak.weekCount),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
             Text(
                 text = stringResource(Res.string.stats_this_month, streak.monthCount),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
         }
     }
@@ -327,7 +327,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                 .fillMaxWidth()
                 .semantics(mergeDescendants = true) { contentDescription = goalDesc }
                 .background(
-                    color = Carbon.theme.layer01,
+                    color = AppTheme.colors.layer01,
                     shape = RoundedCornerShape(STAT_CARD_CORNER_RADIUS.dp),
                 )
                 .padding(Spacing.sm),
@@ -346,14 +346,14 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                 )
             Text(
                 text = goalLabel,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
             )
             if (goalProgress.achieved) {
                 Icon(
                     imageVector = CarbonIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.stats_goal_achieved),
-                    tint = Carbon.theme.supportSuccess,
+                    tint = AppTheme.colors.supportSuccess,
                     modifier = Modifier.size(16.dp),
                 )
             }
@@ -365,7 +365,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                     .fillMaxWidth()
                     .height(4.dp)
                     .background(
-                        color = Carbon.theme.layer02,
+                        color = AppTheme.colors.layer02,
                         shape = RoundedCornerShape(2.dp),
                     ),
         ) {
@@ -377,9 +377,9 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                         .background(
                             color =
                                 if (goalProgress.achieved) {
-                                    Carbon.theme.supportSuccess
+                                    AppTheme.colors.supportSuccess
                                 } else {
-                                    Carbon.theme.borderInteractive
+                                    AppTheme.colors.borderInteractive
                                 },
                             shape = RoundedCornerShape(2.dp),
                         ),
@@ -394,8 +394,8 @@ private fun SummarySection(stats: UserStats) {
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
         Text(
             text = stringResource(Res.string.stats_overview),
-            style = Carbon.typography.heading02,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading02,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.semantics { heading() },
         )
         Spacer(modifier = Modifier.height(Spacing.sm))
@@ -458,21 +458,21 @@ private fun StatCard(
             modifier
                 .semantics(mergeDescendants = true) {}
                 .background(
-                    color = Carbon.theme.layer01,
+                    color = AppTheme.colors.layer01,
                     shape = RoundedCornerShape(STAT_CARD_CORNER_RADIUS.dp),
                 )
                 .padding(Spacing.sm),
     ) {
         Text(
             text = value,
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = label,
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textSecondary,
         )
     }
 }
@@ -484,8 +484,8 @@ private fun TopicsSection(topics: List<TopicStat>) {
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
         Text(
             text = stringResource(Res.string.stats_top_topics),
-            style = Carbon.typography.heading02,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading02,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.semantics { heading() },
         )
         Spacer(modifier = Modifier.height(Spacing.sm))
@@ -507,8 +507,8 @@ private fun DomainsSection(domains: List<DomainStat>) {
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
         Text(
             text = stringResource(Res.string.stats_top_sources),
-            style = Carbon.typography.heading02,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading02,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.semantics { heading() },
         )
         Spacer(modifier = Modifier.height(Spacing.sm))
@@ -533,7 +533,7 @@ private fun TopicChip(
         modifier =
             Modifier
                 .background(
-                    color = Carbon.theme.layer01,
+                    color = AppTheme.colors.layer01,
                     shape = RoundedCornerShape(Dimensions.chipCornerRadius),
                 )
                 .padding(horizontal = Spacing.sm, vertical = Spacing.xxs),
@@ -541,14 +541,14 @@ private fun TopicChip(
     ) {
         Text(
             text = label,
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.bodyCompact01,
+            color = AppTheme.colors.textPrimary,
         )
         Spacer(modifier = Modifier.width(Spacing.xxs))
         Text(
             text = count.toString(),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textSecondary,
         )
     }
 }
@@ -559,8 +559,8 @@ private fun LanguageSection(distribution: Map<String, Int>) {
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
         Text(
             text = stringResource(Res.string.stats_languages),
-            style = Carbon.typography.heading02,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading02,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.semantics { heading() },
         )
         Spacer(modifier = Modifier.height(Spacing.sm))
@@ -589,13 +589,13 @@ private fun LanguageRow(
         ) {
             Text(
                 text = language.uppercase(),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
             )
             Text(
                 text = count.toString(),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
             )
         }
         Spacer(modifier = Modifier.height(2.dp))
@@ -605,7 +605,7 @@ private fun LanguageRow(
                     .fillMaxWidth()
                     .height(4.dp)
                     .background(
-                        color = Carbon.theme.layer02,
+                        color = AppTheme.colors.layer02,
                         shape = RoundedCornerShape(2.dp),
                     ),
         ) {
@@ -615,7 +615,7 @@ private fun LanguageRow(
                         .fillMaxWidth(fraction)
                         .height(4.dp)
                         .background(
-                            color = Carbon.theme.borderInteractive,
+                            color = AppTheme.colors.borderInteractive,
                             shape = RoundedCornerShape(2.dp),
                         ),
             )
@@ -628,7 +628,7 @@ private fun LanguageRow(
 private fun SectionDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(horizontal = Spacing.md),
-        color = Carbon.theme.borderSubtle00,
+        color = AppTheme.colors.borderSubtle00,
     )
     Spacer(modifier = Modifier.height(Spacing.lg))
 }

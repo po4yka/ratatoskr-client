@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,15 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
-import com.gabrieldrn.carbon.loading.SmallLoading
-import com.gabrieldrn.carbon.textinput.TextInput
-import com.gabrieldrn.carbon.textinput.TextInputState
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DeveloperCredentials
 import com.po4yka.ratatoskr.core.ui.components.AppCheckbox
 import com.po4yka.ratatoskr.core.ui.components.AppDialog
+import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.auth_developer_client_id_label
 import ratatoskr.core.ui.generated.resources.auth_developer_client_id_placeholder
@@ -44,7 +43,7 @@ import ratatoskr.core.ui.generated.resources.settings_cancel
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Developer login dialog using Carbon Design System
+ * Developer login dialog.
  */
 @Composable
 fun DeveloperLoginDialog(
@@ -60,30 +59,27 @@ fun DeveloperLoginDialog(
     var isUserIdError by remember { mutableStateOf(false) }
     var rememberCredentials by remember { mutableStateOf(true) }
 
+    val userIdErrorText = stringResource(Res.string.auth_developer_user_id_error)
+
     AppDialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
         title = stringResource(Res.string.auth_developer_login),
     ) {
-        TextInput(
-            label = stringResource(Res.string.auth_developer_user_id_label),
+        OutlinedTextField(
             value = userId,
             onValueChange = {
                 userId = it
                 isUserIdError = it.toIntOrNull() == null && it.isNotEmpty()
             },
-            state =
-                when {
-                    isUserIdError -> TextInputState.Error
-                    isLoading -> TextInputState.Disabled
-                    else -> TextInputState.Enabled
-                },
-            helperText =
-                if (isUserIdError) {
-                    stringResource(Res.string.auth_developer_user_id_error)
-                } else {
-                    ""
-                },
-            placeholderText = stringResource(Res.string.auth_developer_user_id_placeholder),
+            label = { Text(stringResource(Res.string.auth_developer_user_id_label)) },
+            placeholder = { Text(stringResource(Res.string.auth_developer_user_id_placeholder)) },
+            isError = isUserIdError,
+            enabled = !isLoading,
+            supportingText = if (isUserIdError) {
+                { Text(userIdErrorText) }
+            } else {
+                null
+            },
             keyboardOptions =
                 KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -92,22 +88,22 @@ fun DeveloperLoginDialog(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        TextInput(
-            label = stringResource(Res.string.auth_developer_client_id_label),
+        OutlinedTextField(
             value = clientId,
             onValueChange = { clientId = it },
-            state = if (isLoading) TextInputState.Disabled else TextInputState.Enabled,
-            placeholderText = stringResource(Res.string.auth_developer_client_id_placeholder),
+            label = { Text(stringResource(Res.string.auth_developer_client_id_label)) },
+            placeholder = { Text(stringResource(Res.string.auth_developer_client_id_placeholder)) },
+            enabled = !isLoading,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth(),
         )
 
-        TextInput(
-            label = stringResource(Res.string.auth_developer_secret_label),
+        OutlinedTextField(
             value = secret,
             onValueChange = { secret = it },
-            state = if (isLoading) TextInputState.Disabled else TextInputState.Enabled,
-            placeholderText = stringResource(Res.string.auth_developer_secret_placeholder),
+            label = { Text(stringResource(Res.string.auth_developer_secret_label)) },
+            placeholder = { Text(stringResource(Res.string.auth_developer_secret_placeholder)) },
+            enabled = !isLoading,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions =
                 KeyboardActions(
@@ -138,12 +134,12 @@ fun DeveloperLoginDialog(
             )
             Text(
                 text = stringResource(Res.string.auth_developer_remember_credentials),
-                style = Carbon.typography.body01,
+                style = AppTheme.type.body01,
                 color =
                     if (isLoading) {
-                        Carbon.theme.textDisabled
+                        AppTheme.colors.textDisabled
                     } else {
-                        Carbon.theme.textSecondary
+                        AppTheme.colors.textSecondary
                     },
             )
         }
@@ -151,8 +147,8 @@ fun DeveloperLoginDialog(
         if (error != null) {
             Text(
                 text = error,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.supportError,
             )
         }
 
@@ -163,31 +159,31 @@ fun DeveloperLoginDialog(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Button(
-                label = stringResource(Res.string.settings_cancel),
+            OutlinedButton(
                 onClick = onDismiss,
-                isEnabled = !isLoading,
-                buttonType = ButtonType.Secondary,
-            )
+                enabled = !isLoading,
+            ) {
+                Text(stringResource(Res.string.settings_cancel))
+            }
 
             Spacer(modifier = Modifier.width(8.dp))
 
             if (isLoading) {
-                SmallLoading()
+                AppSmallSpinner()
             } else {
                 Button(
-                    label = stringResource(Res.string.auth_developer_login_action),
                     onClick = {
                         val uid = userId.toIntOrNull()
                         if (uid != null && clientId.isNotBlank() && secret.isNotBlank()) {
                             onLogin(uid, clientId, secret, rememberCredentials)
                         }
                     },
-                    isEnabled =
+                    enabled =
                         !isLoading && !isUserIdError &&
                             userId.isNotBlank() && clientId.isNotBlank() && secret.isNotBlank(),
-                    buttonType = ButtonType.Primary,
-                )
+                ) {
+                    Text(stringResource(Res.string.auth_developer_login_action))
+                }
             }
         }
     }

@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,8 +29,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
 import com.po4yka.ratatoskr.core.ui.components.AppLogo
+import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.a11y_loading
 import ratatoskr.core.ui.generated.resources.auth_app_title
@@ -38,15 +41,12 @@ import ratatoskr.core.ui.generated.resources.auth_feature_sync
 import ratatoskr.core.ui.generated.resources.auth_login_with_telegram
 import ratatoskr.core.ui.generated.resources.auth_logging_in
 import ratatoskr.core.ui.generated.resources.auth_subtitle
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import org.jetbrains.compose.resources.stringResource
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
-import com.gabrieldrn.carbon.loading.SmallLoading
 import com.po4yka.ratatoskr.presentation.navigation.AuthComponent
 
 /**
- * Authentication screen with Telegram login using Carbon Design System
+ * Authentication screen with Telegram login.
  */
 @Composable
 fun AuthScreen(
@@ -61,7 +61,7 @@ fun AuthScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -81,15 +81,15 @@ fun AuthScreen(
             // App Title
             Text(
                 text = stringResource(Res.string.auth_app_title),
-                style = Carbon.typography.heading04,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.heading04,
+                color = AppTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
             )
 
             Text(
                 text = stringResource(Res.string.auth_subtitle),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
                 textAlign = TextAlign.Center,
             )
 
@@ -105,22 +105,22 @@ fun AuthScreen(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth().semantics { contentDescription = loadingDesc },
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(Res.string.auth_logging_in),
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textSecondary,
+                        style = AppTheme.type.bodyCompact01,
+                        color = AppTheme.colors.textSecondary,
                     )
                 }
             } else {
                 Button(
-                    label = stringResource(Res.string.auth_login_with_telegram),
                     onClick = { showTelegramLogin = true },
-                    isEnabled = !state.isLoading,
-                    buttonType = ButtonType.Primary,
+                    enabled = !state.isLoading,
                     modifier = Modifier.fillMaxWidth(),
-                )
+                ) {
+                    Text(stringResource(Res.string.auth_login_with_telegram))
+                }
             }
 
             if (showTelegramLogin) {
@@ -136,12 +136,12 @@ fun AuthScreen(
 
             // Developer Login (Secret Key)
             var showDevLogin by remember { mutableStateOf(false) }
-            Button(
-                label = stringResource(Res.string.auth_developer_login),
+            TextButton(
                 onClick = { showDevLogin = true },
-                isEnabled = !state.isLoading,
-                buttonType = ButtonType.Ghost,
-            )
+                enabled = !state.isLoading,
+            ) {
+                Text(stringResource(Res.string.auth_developer_login))
+            }
 
             if (showDevLogin) {
                 DeveloperLoginDialog(
@@ -162,13 +162,13 @@ fun AuthScreen(
                         Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(4.dp))
-                            .background(Carbon.theme.supportErrorInverse)
+                            .background(AppTheme.colors.supportErrorInverse)
                             .padding(16.dp),
                 ) {
                     Text(
                         text = error,
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textOnColorDisabled,
+                        style = AppTheme.type.bodyCompact01,
+                        color = AppTheme.colors.textOnColorDisabled,
                     )
                 }
             }
@@ -212,13 +212,13 @@ private fun FeatureItem(
     ) {
         Text(
             text = icon,
-            style = Carbon.typography.headingCompact01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.headingCompact01,
+            color = AppTheme.colors.textSecondary,
         )
         Text(
             text = text,
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.bodyCompact01,
+            color = AppTheme.colors.textSecondary,
         )
     }
 }

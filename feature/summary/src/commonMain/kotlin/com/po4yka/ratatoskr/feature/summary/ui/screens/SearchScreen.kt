@@ -29,12 +29,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.Loading
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.presentation.navigation.SearchComponent
 import com.po4yka.ratatoskr.presentation.state.SearchMode
 import com.po4yka.ratatoskr.presentation.state.SearchState
+import com.po4yka.ratatoskr.core.ui.components.AppSpinner
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.CarbonSearchField
 import com.po4yka.ratatoskr.core.ui.components.SelectableChip
@@ -81,7 +81,7 @@ fun SearchScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         // Search Header with search bar and mode toggle
         SearchScreenHeader(
@@ -135,7 +135,7 @@ private fun SearchScreenHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
     ) {
         Row(
             modifier =
@@ -147,8 +147,8 @@ private fun SearchScreenHeader(
         ) {
             Text(
                 text = stringResource(Res.string.search_title),
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.heading03,
+                color = AppTheme.colors.textPrimary,
                 modifier = Modifier.weight(1f),
             )
 
@@ -250,13 +250,13 @@ private fun SearchFiltersPanel(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
     ) {
         Text(
             text = stringResource(Res.string.search_filters),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textSecondary,
             modifier = Modifier.padding(bottom = Spacing.sm),
         )
 
@@ -314,8 +314,8 @@ private fun SearchFiltersPanel(
             Spacer(modifier = Modifier.height(Spacing.sm))
             Text(
                 text = stringResource(Res.string.search_language),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
                 modifier = Modifier.padding(bottom = Spacing.xs),
             )
             Row(
@@ -432,7 +432,7 @@ private fun SearchScreenContent(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                Loading(modifier = Modifier.size(48.dp))
+                AppSpinner(modifier = Modifier.size(48.dp))
             }
         }
 
@@ -520,7 +520,7 @@ private fun SearchResultsList(
                             .padding(Spacing.md),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Loading(modifier = Modifier.size(24.dp))
+                    AppSpinner(modifier = Modifier.size(24.dp))
                 }
             }
         }

@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,12 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
-import com.gabrieldrn.carbon.loading.SmallLoading
-import com.gabrieldrn.carbon.textinput.TextInput
-import com.gabrieldrn.carbon.textinput.TextInputState
+import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.CollectionType
 import com.po4yka.ratatoskr.presentation.navigation.CollectionsComponent
 import com.po4yka.ratatoskr.core.ui.components.AppDialog
@@ -72,7 +71,7 @@ fun CollectionsScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         // Header with "New Collection" button
         CollectionsHeader(
@@ -135,7 +134,7 @@ fun CollectionsScreen(
 
                 trashCollection?.let {
                     item {
-                        HorizontalDivider(color = Carbon.theme.borderSubtle00)
+                        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
                         CollectionItem(
                             collection = it,
                             onClick = { component.onCollectionClicked(it.id) },
@@ -165,14 +164,14 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
             Modifier
                 .fillMaxWidth()
                 .height(Dimensions.headerHeight)
-                .background(Carbon.theme.background)
+                .background(AppTheme.colors.background)
                 .padding(horizontal = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = stringResource(Res.string.collections_title),
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading04,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f),
         )
 
@@ -190,12 +189,12 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
 private fun SectionHeader(title: String) {
     Text(
         text = title,
-        style = Carbon.typography.label01,
-        color = Carbon.theme.textSecondary,
+        style = AppTheme.type.label01,
+        color = AppTheme.colors.textSecondary,
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.background)
+                .background(AppTheme.colors.background)
                 .padding(horizontal = Spacing.md, vertical = Spacing.xs),
     )
 }
@@ -216,44 +215,44 @@ private fun CreateCollectionDialog(
         title = stringResource(Res.string.collections_create_dialog_title),
         confirmButton = {
             Button(
-                label = stringResource(Res.string.collections_create),
                 onClick = { onConfirm(name, description) },
-                isEnabled = name.isNotBlank() && !isCreating,
-                buttonType = ButtonType.Primary,
-            )
+                enabled = name.isNotBlank() && !isCreating,
+            ) {
+                Text(stringResource(Res.string.collections_create))
+            }
         },
         dismissButton = {
-            Button(
-                label = stringResource(Res.string.collections_cancel),
+            TextButton(
                 onClick = onDismiss,
-                isEnabled = !isCreating,
-                buttonType = ButtonType.Ghost,
-            )
+                enabled = !isCreating,
+            ) {
+                Text(stringResource(Res.string.collections_cancel))
+            }
         },
     ) {
-        TextInput(
-            label = stringResource(Res.string.collections_name_label),
+        OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            placeholderText = stringResource(Res.string.collections_name_placeholder),
-            state = if (isCreating) TextInputState.Disabled else TextInputState.Enabled,
+            label = { Text(stringResource(Res.string.collections_name_label)) },
+            placeholder = { Text(stringResource(Res.string.collections_name_placeholder)) },
+            enabled = !isCreating,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        TextInput(
-            label = stringResource(Res.string.collections_description_label),
+        OutlinedTextField(
             value = description,
             onValueChange = { description = it },
-            placeholderText = stringResource(Res.string.collections_description_placeholder),
-            state = if (isCreating) TextInputState.Disabled else TextInputState.Enabled,
+            label = { Text(stringResource(Res.string.collections_description_label)) },
+            placeholder = { Text(stringResource(Res.string.collections_description_placeholder)) },
+            enabled = !isCreating,
             modifier = Modifier.fillMaxWidth(),
         )
 
         if (createError != null) {
             Text(
                 text = createError,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.supportError,
             )
         }
 
@@ -262,11 +261,11 @@ private fun CreateCollectionDialog(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
-                SmallLoading()
+                AppSmallSpinner()
                 Text(
                     text = stringResource(Res.string.collections_creating),
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.bodyCompact01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
         }

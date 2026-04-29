@@ -40,14 +40,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
-import com.gabrieldrn.carbon.loading.SmallLoading
-import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
-import com.gabrieldrn.carbon.progressbar.ProgressBarState
-import com.gabrieldrn.carbon.textinput.TextInput
-import com.gabrieldrn.carbon.textinput.TextInputState
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
 import com.po4yka.ratatoskr.domain.model.BatchUrlEntry
 import com.po4yka.ratatoskr.domain.model.BatchUrlStatus
 import com.po4yka.ratatoskr.domain.model.ProcessingStage
@@ -56,6 +53,7 @@ import com.po4yka.ratatoskr.domain.model.RequestStatus
 import com.po4yka.ratatoskr.presentation.navigation.SubmitURLComponent
 import com.po4yka.ratatoskr.presentation.state.SubmitURLState
 import com.po4yka.ratatoskr.presentation.state.SubmitUrlError
+import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.TextArea
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
@@ -132,7 +130,7 @@ fun SubmitURLScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         // Header with back button
         SubmitURLHeader(
@@ -264,15 +262,15 @@ fun SubmitURLScreen(
                                     .padding(Spacing.lg),
                             contentAlignment = Alignment.Center,
                         ) {
-                            SmallLoading()
+                            AppSmallSpinner()
                         }
                     }
                 } else if (state.recentRequests.isEmpty()) {
                     item {
                         Text(
                             text = stringResource(Res.string.submit_url_no_recent_requests),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textSecondary,
                             modifier = Modifier.padding(vertical = Spacing.md),
                         )
                     }
@@ -328,9 +326,9 @@ private fun ModeChip(
     onClick: () -> Unit,
 ) {
     val shape = RoundedCornerShape(Spacing.md)
-    val backgroundColor = if (isSelected) Carbon.theme.backgroundInverse else Carbon.theme.layer01
-    val textColor = if (isSelected) Carbon.theme.textOnColor else Carbon.theme.textSecondary
-    val borderColor = if (isSelected) Carbon.theme.backgroundInverse else Carbon.theme.borderSubtle00
+    val backgroundColor = if (isSelected) AppTheme.colors.backgroundInverse else AppTheme.colors.layer01
+    val textColor = if (isSelected) AppTheme.colors.textOnColor else AppTheme.colors.textSecondary
+    val borderColor = if (isSelected) AppTheme.colors.backgroundInverse else AppTheme.colors.borderSubtle00
 
     Box(
         modifier =
@@ -348,7 +346,7 @@ private fun ModeChip(
     ) {
         Text(
             text = label,
-            style = Carbon.typography.bodyCompact01,
+            style = AppTheme.type.bodyCompact01,
             color = textColor,
         )
     }
@@ -371,8 +369,8 @@ private fun BatchInputSection(
     ) {
         Text(
             text = stringResource(Res.string.submit_url_batch_prompt),
-            style = Carbon.typography.body01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.body01,
+            color = AppTheme.colors.textSecondary,
         )
 
         TextArea(
@@ -390,17 +388,17 @@ private fun BatchInputSection(
                 } else {
                     stringResource(Res.string.submit_url_batch_detected_plural, urlCount)
                 },
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textSecondary,
         )
 
         Button(
-            label = stringResource(Res.string.submit_url_batch_submit_all),
             onClick = onSubmitBatch,
-            isEnabled = urlCount > 0,
-            buttonType = ButtonType.Primary,
+            enabled = urlCount > 0,
             modifier = Modifier.fillMaxWidth(),
-        )
+        ) {
+            Text(stringResource(Res.string.submit_url_batch_submit_all))
+        }
     }
 }
 
@@ -417,28 +415,24 @@ private fun BatchProgressHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = stringResource(Res.string.submit_url_batch_progress, completedCount, totalCount),
-            style = Carbon.typography.headingCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.headingCompact01,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f),
         )
         if (isBatchSubmitting) {
-            Button(
-                label = stringResource(Res.string.submit_url_batch_cancel),
-                onClick = onCancel,
-                buttonType = ButtonType.Ghost,
-            )
+            TextButton(onClick = onCancel) {
+                Text(stringResource(Res.string.submit_url_batch_cancel))
+            }
         } else {
-            Button(
-                label = stringResource(Res.string.submit_url_batch_submit_more),
-                onClick = onReset,
-                buttonType = ButtonType.Ghost,
-            )
+            TextButton(onClick = onReset) {
+                Text(stringResource(Res.string.submit_url_batch_submit_more))
+            }
         }
     }
 }
@@ -455,7 +449,7 @@ private fun BatchUrlEntryRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
@@ -466,18 +460,18 @@ private fun BatchUrlEntryRow(
                 Icon(
                     imageVector = CarbonIcons.CircleOutline,
                     contentDescription = stringResource(Res.string.submit_url_batch_pending),
-                    tint = Carbon.theme.iconSecondary,
+                    tint = AppTheme.colors.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
                 )
             }
             BatchUrlStatus.CHECKING -> {
-                SmallLoading()
+                AppSmallSpinner()
             }
             BatchUrlStatus.SUBMITTING -> {
                 Text(
                     text = stringResource(Res.string.common_percent, (entry.progress * 100).toInt()),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.linkPrimary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.linkPrimary,
                     modifier = Modifier.width(Spacing.xl),
                 )
             }
@@ -485,7 +479,7 @@ private fun BatchUrlEntryRow(
                 Icon(
                     imageVector = CarbonIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.submit_url_batch_completed),
-                    tint = Carbon.theme.supportSuccess,
+                    tint = AppTheme.colors.supportSuccess,
                     modifier = Modifier.size(IconSizes.sm),
                 )
             }
@@ -493,7 +487,7 @@ private fun BatchUrlEntryRow(
                 Icon(
                     imageVector = CarbonIcons.Close,
                     contentDescription = stringResource(Res.string.submit_url_batch_failed),
-                    tint = Carbon.theme.supportError,
+                    tint = AppTheme.colors.supportError,
                     modifier = Modifier.size(IconSizes.sm),
                 )
             }
@@ -501,7 +495,7 @@ private fun BatchUrlEntryRow(
                 Icon(
                     imageVector = CarbonIcons.Close,
                     contentDescription = stringResource(Res.string.submit_url_batch_skipped),
-                    tint = Carbon.theme.iconSecondary,
+                    tint = AppTheme.colors.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
                 )
             }
@@ -511,8 +505,8 @@ private fun BatchUrlEntryRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = entry.url,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -520,8 +514,8 @@ private fun BatchUrlEntryRow(
             if (entry.status == BatchUrlStatus.FAILED && entryError != null) {
                 Text(
                     text = entryError,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.supportError,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -529,8 +523,8 @@ private fun BatchUrlEntryRow(
             if (entry.isDuplicate && entry.status == BatchUrlStatus.SKIPPED) {
                 Text(
                     text = stringResource(Res.string.submit_url_batch_duplicate_skipped),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
         }
@@ -538,19 +532,15 @@ private fun BatchUrlEntryRow(
         // Action buttons
         when (entry.status) {
             BatchUrlStatus.FAILED -> {
-                Button(
-                    label = stringResource(Res.string.submit_url_batch_retry),
-                    onClick = onRetry,
-                    buttonType = ButtonType.Ghost,
-                )
+                TextButton(onClick = onRetry) {
+                    Text(stringResource(Res.string.submit_url_batch_retry))
+                }
             }
             BatchUrlStatus.SKIPPED -> {
                 if (entry.isDuplicate) {
-                    Button(
-                        label = stringResource(Res.string.submit_url_batch_submit_anyway),
-                        onClick = onSubmitAnyway,
-                        buttonType = ButtonType.Ghost,
-                    )
+                    TextButton(onClick = onSubmitAnyway) {
+                        Text(stringResource(Res.string.submit_url_batch_submit_anyway))
+                    }
                 }
             }
             else -> {}
@@ -566,7 +556,7 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
             Modifier
                 .fillMaxWidth()
                 .height(Dimensions.detailHeaderHeight)
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(horizontal = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -579,8 +569,8 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
 
         Text(
             text = stringResource(Res.string.submit_url_title),
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f),
         )
     }
@@ -605,21 +595,17 @@ private fun URLInputSection(
     ) {
         Text(
             text = stringResource(Res.string.submit_url_enter_prompt),
-            style = Carbon.typography.body01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.body01,
+            color = AppTheme.colors.textSecondary,
         )
 
-        TextInput(
-            label = stringResource(Res.string.submit_url_label),
+        OutlinedTextField(
             value = url,
             onValueChange = onUrlChanged,
-            state =
-                when {
-                    hasError -> TextInputState.Error
-                    isLoading -> TextInputState.Disabled
-                    else -> TextInputState.Enabled
-                },
-            placeholderText = stringResource(Res.string.submit_url_placeholder),
+            label = { Text(stringResource(Res.string.submit_url_label)) },
+            placeholder = { Text(stringResource(Res.string.submit_url_placeholder)) },
+            enabled = !isLoading,
+            isError = hasError,
             keyboardOptions =
                 KeyboardOptions(
                     keyboardType = KeyboardType.Uri,
@@ -639,51 +625,49 @@ private fun URLInputSection(
             is SubmitUrlError.InvalidUrl -> {
                 Text(
                     text = stringResource(Res.string.submit_url_error_invalid_url),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.supportError,
                 )
             }
             is SubmitUrlError.DuplicateUrl -> {
                 Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                     Text(
                         text = stringResource(Res.string.submit_url_error_duplicate),
-                        style = Carbon.typography.label01,
-                        color = Carbon.theme.supportError,
+                        style = AppTheme.type.label01,
+                        color = AppTheme.colors.supportError,
                     )
-                    Button(
-                        label = stringResource(Res.string.submit_url_error_view_library),
-                        onClick = onViewLibrary,
-                        buttonType = ButtonType.Ghost,
-                    )
+                    TextButton(onClick = onViewLibrary) {
+                        Text(stringResource(Res.string.submit_url_error_view_library))
+                    }
                 }
             }
             is SubmitUrlError.NetworkError -> {
                 Text(
                     text = stringResource(Res.string.submit_url_error_network),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.supportError,
                 )
             }
             is SubmitUrlError.ServerError -> {
                 Text(
                     text = stringResource(Res.string.submit_url_error_server),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.supportError,
                 )
             }
             is SubmitUrlError.Unknown -> {
                 Text(
                     text = submitError.message,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.supportError,
                 )
             }
             null -> {
                 if (error != null) {
                     Text(
                         text = error,
-                        style = Carbon.typography.label01,
-                        color = Carbon.theme.supportError,
+                        style = AppTheme.type.label01,
+                        color = AppTheme.colors.supportError,
                     )
                 }
             }
@@ -696,12 +680,12 @@ private fun URLInputSection(
                 stringResource(Res.string.submit_url_submit)
             }
         Button(
-            label = submitLabel,
             onClick = onSubmit,
-            isEnabled = !isLoading && url.isNotBlank(),
-            buttonType = ButtonType.Primary,
+            enabled = !isLoading && url.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
-        )
+        ) {
+            Text(submitLabel)
+        }
     }
 }
 
@@ -717,7 +701,7 @@ private fun DuplicateWarningSection(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
@@ -728,20 +712,20 @@ private fun DuplicateWarningSection(
             Icon(
                 imageVector = CarbonIcons.WarningAlt,
                 contentDescription = stringResource(Res.string.submit_url_duplicate_warning),
-                tint = Carbon.theme.supportWarning,
+                tint = AppTheme.colors.supportWarning,
                 modifier = Modifier.size(IconSizes.md),
             )
             Text(
                 text = stringResource(Res.string.submit_url_duplicate_title),
-                style = Carbon.typography.headingCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.headingCompact01,
+                color = AppTheme.colors.textPrimary,
             )
         }
 
         Text(
             text = stringResource(Res.string.submit_url_duplicate_message),
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.bodyCompact01,
+            color = AppTheme.colors.textSecondary,
         )
 
         Row(
@@ -750,26 +734,26 @@ private fun DuplicateWarningSection(
         ) {
             if (summaryId != null) {
                 Button(
-                    label = stringResource(Res.string.submit_url_view_existing),
                     onClick = { onViewExisting(summaryId) },
-                    buttonType = ButtonType.Primary,
                     modifier = Modifier.weight(1f),
-                )
+                ) {
+                    Text(stringResource(Res.string.submit_url_view_existing))
+                }
             }
 
-            Button(
-                label = stringResource(Res.string.submit_url_submit_anyway),
+            androidx.compose.material3.OutlinedButton(
                 onClick = onForceSubmit,
-                buttonType = ButtonType.Secondary,
                 modifier = Modifier.weight(1f),
-            )
+            ) {
+                Text(stringResource(Res.string.submit_url_submit_anyway))
+            }
 
-            Button(
-                label = stringResource(Res.string.submit_url_cancel),
+            TextButton(
                 onClick = onDismiss,
-                buttonType = ButtonType.Ghost,
                 modifier = Modifier.weight(1f),
-            )
+            ) {
+                Text(stringResource(Res.string.submit_url_cancel))
+            }
         }
     }
 }
@@ -781,30 +765,29 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = stringResource(Res.string.submit_url_processing),
-            style = Carbon.typography.headingCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.headingCompact01,
+            color = AppTheme.colors.textPrimary,
         )
 
-        IndeterminateProgressBar(
+        LinearProgressIndicator(
             modifier = Modifier.fillMaxWidth(),
-            state = ProgressBarState.Active,
         )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
-            SmallLoading()
+            AppSmallSpinner()
             Text(
                 text = state.message ?: stringResource(Res.string.submit_url_processing_default_message),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
             )
         }
 
@@ -814,8 +797,8 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
                     Res.string.submit_url_processing_stage,
                     processingStageLabel(state.stage),
                 ),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textSecondary,
         )
     }
 }
@@ -838,7 +821,7 @@ private fun CompletionSection() {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
@@ -846,13 +829,13 @@ private fun CompletionSection() {
         Icon(
             imageVector = CarbonIcons.CheckmarkFilled,
             contentDescription = stringResource(Res.string.submit_url_batch_completed),
-            tint = Carbon.theme.supportSuccess,
+            tint = AppTheme.colors.supportSuccess,
             modifier = Modifier.size(IconSizes.md),
         )
         Text(
             text = stringResource(Res.string.submit_url_success),
-            style = Carbon.typography.body01,
-            color = Carbon.theme.supportSuccess,
+            style = AppTheme.type.body01,
+            color = AppTheme.colors.supportSuccess,
         )
     }
 }
@@ -871,8 +854,8 @@ private fun RequestHistoryHeader(
     ) {
         Text(
             text = stringResource(Res.string.submit_url_request_history),
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f),
         )
 
@@ -901,7 +884,7 @@ private fun RequestHistoryItem(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -915,10 +898,10 @@ private fun RequestHistoryItem(
             }
         val statusColor =
             when (request.status) {
-                RequestStatus.COMPLETED -> Carbon.theme.supportSuccess
-                RequestStatus.FAILED -> Carbon.theme.supportError
-                RequestStatus.PROCESSING -> Carbon.theme.linkPrimary
-                RequestStatus.PENDING -> Carbon.theme.iconSecondary
+                RequestStatus.COMPLETED -> AppTheme.colors.supportSuccess
+                RequestStatus.FAILED -> AppTheme.colors.supportError
+                RequestStatus.PROCESSING -> AppTheme.colors.linkPrimary
+                RequestStatus.PENDING -> AppTheme.colors.iconSecondary
             }
 
         Icon(
@@ -939,8 +922,8 @@ private fun RequestHistoryItem(
         // URL text (truncated)
         Text(
             text = request.url,
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.bodyCompact01,
+            color = AppTheme.colors.textPrimary,
             maxLines = 1,
             modifier = Modifier.weight(1f),
         )
