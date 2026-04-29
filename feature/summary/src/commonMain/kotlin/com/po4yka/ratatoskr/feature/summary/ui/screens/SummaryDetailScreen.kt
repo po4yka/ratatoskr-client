@@ -63,7 +63,7 @@ import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.presentation.navigation.SummaryDetailComponent
 import com.po4yka.ratatoskr.core.ui.components.AddToCollectionDialog
 import com.po4yka.ratatoskr.core.ui.components.AnnotationDialog
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.FeedbackDialog
 import com.po4yka.ratatoskr.core.ui.components.ErrorView
 import com.po4yka.ratatoskr.core.ui.components.HeaderIconButton
@@ -393,7 +393,7 @@ private fun AudioPlayerRow(
                 } else {
                     stringResource(Res.string.audio_play_narration)
                 }
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = if (isPlaying) CarbonIcons.PauseFilled else CarbonIcons.PlayFilled,
                 contentDescription = playPauseDesc,
                 onClick = onPlayPause,
@@ -425,7 +425,7 @@ private fun AudioPlayerRow(
         )
 
         if (isActive && !isLoading) {
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = CarbonIcons.Close,
                 contentDescription = stringResource(Res.string.audio_stop_narration),
                 onClick = onStop,

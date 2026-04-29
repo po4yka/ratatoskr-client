@@ -29,14 +29,14 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 @Composable
-fun CarbonMenu(
+fun AppMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
@@ -48,7 +48,7 @@ fun CarbonMenu(
     val density = LocalDensity.current
     val positionProvider =
         remember(offset, density) {
-            CarbonMenuPositionProvider(
+            AppMenuPositionProvider(
                 horizontalOffsetPx = with(density) { offset.x.roundToPx() },
                 verticalOffsetPx = with(density) { offset.y.roundToPx() },
             )
@@ -65,7 +65,7 @@ fun CarbonMenu(
                 clippingEnabled = false,
             ),
     ) {
-        CarbonLayerCard(
+        LayerCard(
             modifier = modifier.widthIn(min = Dimensions.menuWidth),
         ) {
             Column(
@@ -77,21 +77,21 @@ fun CarbonMenu(
 }
 
 @Composable
-fun CarbonMenuItem(
+fun AppMenuItem(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     leadingIcon: ImageVector? = null,
-    leadingIconTint: Color = Carbon.theme.iconSecondary,
+    leadingIconTint: Color = AppTheme.colors.iconSecondary,
     isDestructive: Boolean = false,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val contentColor =
         if (isDestructive) {
-            Carbon.theme.supportError
+            AppTheme.colors.supportError
         } else {
-            Carbon.theme.textPrimary
+            AppTheme.colors.textPrimary
         }
 
     Row(
@@ -112,9 +112,9 @@ fun CarbonMenuItem(
                 contentDescription = null,
                 tint =
                     if (enabled) {
-                        if (isDestructive) Carbon.theme.supportError else leadingIconTint
+                        if (isDestructive) AppTheme.colors.supportError else leadingIconTint
                     } else {
-                        Carbon.theme.iconDisabled
+                        AppTheme.colors.iconDisabled
                     },
                 modifier = Modifier.size(IconSizes.xs),
             )
@@ -123,8 +123,8 @@ fun CarbonMenuItem(
 
         Text(
             text = label,
-            style = Carbon.typography.bodyCompact01,
-            color = if (enabled) contentColor else Carbon.theme.textDisabled,
+            style = AppTheme.type.bodyCompact01,
+            color = if (enabled) contentColor else AppTheme.colors.textDisabled,
             modifier = Modifier.weight(1f),
         )
 
@@ -132,7 +132,7 @@ fun CarbonMenuItem(
     }
 }
 
-private class CarbonMenuPositionProvider(
+private class AppMenuPositionProvider(
     private val horizontalOffsetPx: Int,
     private val verticalOffsetPx: Int,
 ) : PopupPositionProvider {
@@ -166,13 +166,13 @@ private class CarbonMenuPositionProvider(
 }
 
 @Composable
-fun CarbonOverflowMenuButton(
+fun AppOverflowMenuButton(
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    tint: Color = Carbon.theme.iconSecondary,
+    tint: Color = AppTheme.colors.iconSecondary,
 ) {
-    CarbonIconButton(
+    AppIconButton(
         imageVector = CarbonIcons.OverflowMenuVertical,
         contentDescription = contentDescription,
         onClick = onClick,

@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Collection
 
 /**
@@ -40,7 +40,7 @@ fun CollectionItem(
         Icon(
             imageVector = getIconForName(collection.iconName),
             contentDescription = collection.name,
-            tint = Carbon.theme.iconPrimary,
+            tint = AppTheme.colors.iconPrimary,
             modifier = Modifier.size(24.dp),
         )
 
@@ -49,8 +49,8 @@ fun CollectionItem(
         // Name
         Text(
             text = collection.name,
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.bodyCompact01,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f),
         )
 
@@ -58,8 +58,8 @@ fun CollectionItem(
         if (collection.count > 0) {
             Text(
                 text = collection.count.toString(),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
             )
         }
     }

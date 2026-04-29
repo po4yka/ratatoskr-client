@@ -4,10 +4,10 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 
 @Composable
-fun CarbonSlider(
+fun AppSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
@@ -24,12 +24,12 @@ fun CarbonSlider(
         steps = steps,
         colors =
             SliderDefaults.colors(
-                thumbColor = Carbon.theme.linkPrimary,
-                activeTrackColor = Carbon.theme.linkPrimary,
-                inactiveTrackColor = Carbon.theme.borderSubtle00,
-                disabledThumbColor = Carbon.theme.iconDisabled,
-                disabledActiveTrackColor = Carbon.theme.iconDisabled,
-                disabledInactiveTrackColor = Carbon.theme.borderDisabled,
+                thumbColor = AppTheme.colors.linkPrimary,
+                activeTrackColor = AppTheme.colors.linkPrimary,
+                inactiveTrackColor = AppTheme.colors.borderSubtle00,
+                disabledThumbColor = AppTheme.colors.iconDisabled,
+                disabledActiveTrackColor = AppTheme.colors.iconDisabled,
+                disabledInactiveTrackColor = AppTheme.colors.borderDisabled,
             ),
     )
 }

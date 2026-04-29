@@ -40,7 +40,7 @@ import ratatoskr.core.ui.generated.resources.swipeable_summary_archive
 import ratatoskr.core.ui.generated.resources.swipeable_summary_archive_action
 import ratatoskr.core.ui.generated.resources.swipeable_summary_delete_action
 import ratatoskr.core.ui.generated.resources.swipeable_summary_mark_read_action
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
@@ -75,9 +75,9 @@ fun SwipeableSummaryCard(
     val leftBackgroundColor by animateColorAsState(
         targetValue =
             if (offsetX < -SWIPE_THRESHOLD / 2) {
-                Carbon.theme.supportWarning
+                AppTheme.colors.supportWarning
             } else {
-                Carbon.theme.layer02
+                AppTheme.colors.layer02
             },
         label = "left_bg_color",
     )
@@ -85,9 +85,9 @@ fun SwipeableSummaryCard(
     val rightBackgroundColor by animateColorAsState(
         targetValue =
             if (offsetX > SWIPE_THRESHOLD / 2) {
-                Carbon.theme.supportSuccess
+                AppTheme.colors.supportSuccess
             } else {
-                Carbon.theme.layer02
+                AppTheme.colors.layer02
             },
         label = "right_bg_color",
     )
@@ -159,7 +159,7 @@ fun SwipeableSummaryCard(
                 Icon(
                     imageVector = CarbonIcons.Checkmark,
                     contentDescription = stringResource(Res.string.summary_card_mark_read),
-                    tint = Carbon.theme.textOnColor,
+                    tint = AppTheme.colors.textOnColor,
                     modifier =
                         Modifier
                             .padding(start = Spacing.lg)
@@ -179,7 +179,7 @@ fun SwipeableSummaryCard(
                 Icon(
                     imageVector = CarbonIcons.Archive,
                     contentDescription = stringResource(Res.string.swipeable_summary_archive),
-                    tint = Carbon.theme.textOnColor,
+                    tint = AppTheme.colors.textOnColor,
                     modifier =
                         Modifier
                             .padding(end = Spacing.lg)

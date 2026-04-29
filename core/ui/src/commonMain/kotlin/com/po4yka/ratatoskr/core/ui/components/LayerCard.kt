@@ -12,16 +12,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 
 @Composable
-fun CarbonLayerCard(
+fun LayerCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     enabled: Boolean = true,
-    backgroundColor: Color = Carbon.theme.layer01,
-    borderColor: Color = Carbon.theme.borderSubtle00,
+    backgroundColor: Color = AppTheme.colors.layer01,
+    borderColor: Color = AppTheme.colors.borderSubtle00,
     shape: Shape = RoundedCornerShape(Dimensions.cardCornerRadius),
     content: @Composable BoxScope.() -> Unit,
 ) {

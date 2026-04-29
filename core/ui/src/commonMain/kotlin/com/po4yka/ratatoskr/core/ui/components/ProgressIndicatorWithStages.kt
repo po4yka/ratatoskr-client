@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,18 +22,18 @@ import ratatoskr.core.ui.generated.resources.progress_stages_failed
 import ratatoskr.core.ui.generated.resources.progress_stages_processing_summary
 import ratatoskr.core.ui.generated.resources.progress_stages_ready
 import ratatoskr.core.ui.generated.resources.progress_stages_submitted
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.SmallLoading
-import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
-import com.gabrieldrn.carbon.progressbar.ProgressBar
-import com.gabrieldrn.carbon.progressbar.ProgressBarState
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.RequestStatus
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Progress indicator showing request processing stages using Carbon Design System
+ * Progress indicator showing request processing stages.
+ *
+ * Material 3 [LinearProgressIndicator] backs the bar. The semantic states (Active / Success / Error)
+ * that Carbon's `ProgressBarState` carried are expressed by the choice of color and progress value
+ * at each call site.
  */
 @Suppress("FunctionNaming", "unused") // Composable naming convention; Public API
 @Composable
@@ -44,26 +45,24 @@ fun ProgressIndicatorWithStages(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Overall progress bar using Carbon ProgressBar
+        // Overall progress bar
         when (status) {
             RequestStatus.PENDING, RequestStatus.PROCESSING -> {
-                IndeterminateProgressBar(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = ProgressBarState.Active,
-                )
+                // Indeterminate: omit `progress` argument.
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
             RequestStatus.COMPLETED -> {
-                ProgressBar(
-                    value = 1f,
+                LinearProgressIndicator(
+                    progress = { 1f },
                     modifier = Modifier.fillMaxWidth(),
-                    state = ProgressBarState.Success,
+                    color = AppTheme.colors.supportSuccess,
                 )
             }
             RequestStatus.FAILED -> {
-                ProgressBar(
-                    value = 1f,
+                LinearProgressIndicator(
+                    progress = { 1f },
                     modifier = Modifier.fillMaxWidth(),
-                    state = ProgressBarState.Error,
+                    color = AppTheme.colors.supportError,
                 )
             }
         }
@@ -117,7 +116,7 @@ private fun StageIndicator(
                 Icon(
                     imageVector = CarbonIcons.Close,
                     contentDescription = stringResource(Res.string.progress_stages_failed, title),
-                    tint = Carbon.theme.supportError,
+                    tint = AppTheme.colors.supportError,
                     modifier = Modifier.size(Dimensions.stageIndicatorSize),
                 )
             }
@@ -125,12 +124,12 @@ private fun StageIndicator(
                 Icon(
                     imageVector = CarbonIcons.Checkmark,
                     contentDescription = stringResource(Res.string.progress_stages_completed, title),
-                    tint = Carbon.theme.supportSuccess,
+                    tint = AppTheme.colors.supportSuccess,
                     modifier = Modifier.size(Dimensions.stageIndicatorSize),
                 )
             }
             isCurrent -> {
-                SmallLoading(
+                AppSmallSpinner(
                     modifier = Modifier.size(Dimensions.stageIndicatorSize),
                 )
             }
@@ -139,7 +138,7 @@ private fun StageIndicator(
                     modifier =
                         Modifier
                             .size(Dimensions.stageIndicatorSize)
-                            .background(Carbon.theme.layer02, shape = androidx.compose.foundation.shape.CircleShape),
+                            .background(AppTheme.colors.layer02, shape = androidx.compose.foundation.shape.CircleShape),
                 )
             }
         }
@@ -147,12 +146,12 @@ private fun StageIndicator(
         // Stage title
         Text(
             text = title,
-            style = Carbon.typography.bodyCompact01,
+            style = AppTheme.type.bodyCompact01,
             color =
                 when {
-                    isFailed -> Carbon.theme.supportError
-                    isCompleted || isCurrent -> Carbon.theme.textPrimary
-                    else -> Carbon.theme.textSecondary
+                    isFailed -> AppTheme.colors.supportError
+                    isCompleted || isCurrent -> AppTheme.colors.textPrimary
+                    else -> AppTheme.colors.textSecondary
                 },
         )
     }

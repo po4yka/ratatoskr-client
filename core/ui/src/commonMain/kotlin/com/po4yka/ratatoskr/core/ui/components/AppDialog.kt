@@ -18,12 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 @Composable
-fun CarbonDialog(
+fun AppDialog(
     onDismissRequest: () -> Unit,
     title: String,
     modifier: Modifier = Modifier,
@@ -48,14 +48,14 @@ fun CarbonDialog(
                         .fillMaxWidth()
                         .widthIn(max = Dimensions.dialogMaxWidth)
                         .clip(RoundedCornerShape(Dimensions.dialogCornerRadius))
-                        .background(Carbon.theme.layer01)
+                        .background(AppTheme.colors.layer01)
                         .padding(Dimensions.dialogPadding),
                 verticalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
                 Text(
                     text = title,
-                    style = Carbon.typography.heading03,
-                    color = Carbon.theme.textPrimary,
+                    style = AppTheme.type.heading03,
+                    color = AppTheme.colors.textPrimary,
                 )
 
                 content()

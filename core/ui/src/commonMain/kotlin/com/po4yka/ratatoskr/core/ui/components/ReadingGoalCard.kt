@@ -22,7 +22,7 @@ import ratatoskr.core.ui.generated.resources.common_percent
 import ratatoskr.core.ui.generated.resources.reading_goal_completed
 import ratatoskr.core.ui.generated.resources.reading_goal_streak
 import ratatoskr.core.ui.generated.resources.reading_goal_today_progress
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.ReadingGoalProgress
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
@@ -36,7 +36,7 @@ fun ReadingGoalCard(
     goalProgress: ReadingGoalProgress,
     modifier: Modifier = Modifier,
 ) {
-    CarbonLayerCard(
+    LayerCard(
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(
@@ -57,8 +57,8 @@ fun ReadingGoalCard(
                 val targetMin = goalProgress.goal.dailyTargetMin
                 Text(
                     text = stringResource(Res.string.reading_goal_today_progress, readMin, targetMin),
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.textPrimary,
+                    style = AppTheme.type.bodyCompact01,
+                    color = AppTheme.colors.textPrimary,
                 )
                 if (goalProgress.goal.currentStreakDays > 0) {
                     Spacer(modifier = Modifier.height(Spacing.xxs))
@@ -66,14 +66,14 @@ fun ReadingGoalCard(
                         Icon(
                             imageVector = CarbonIcons.Favorite,
                             contentDescription = null,
-                            tint = Carbon.theme.textSecondary,
+                            tint = AppTheme.colors.textSecondary,
                             modifier = Modifier.size(Dimensions.readingGoalInlineIconSize),
                         )
                         Spacer(modifier = Modifier.width(Spacing.xxs))
                         Text(
                             text = stringResource(Res.string.reading_goal_streak, goalProgress.goal.currentStreakDays),
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.label01,
+                            color = AppTheme.colors.textSecondary,
                         )
                     }
                 }
@@ -83,7 +83,7 @@ fun ReadingGoalCard(
                 Icon(
                     imageVector = CarbonIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.reading_goal_completed),
-                    tint = Carbon.theme.supportSuccess,
+                    tint = AppTheme.colors.supportSuccess,
                     modifier = Modifier.size(IconSizes.md),
                 )
             }
@@ -96,7 +96,7 @@ private fun ReadingGoalProgressRing(
     progressFraction: Float,
     modifier: Modifier = Modifier,
 ) {
-    val progressColor = Carbon.theme.linkPrimary
+    val progressColor = AppTheme.colors.linkPrimary
 
     Box(
         modifier = modifier.size(Dimensions.readingGoalRingSize),
@@ -121,8 +121,8 @@ private fun ReadingGoalProgressRing(
         }
         Text(
             text = stringResource(Res.string.common_percent, (progressFraction * 100).toInt()),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textPrimary,
         )
     }
 }

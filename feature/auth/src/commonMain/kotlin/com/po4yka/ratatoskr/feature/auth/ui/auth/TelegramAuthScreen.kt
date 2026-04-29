@@ -18,7 +18,7 @@ import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.telegram_auth_close
 import com.gabrieldrn.carbon.Carbon
 import com.po4yka.ratatoskr.feature.auth.util.UrlDecoder
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.domain.model.TelegramAuthData
 import com.po4yka.ratatoskr.util.config.AppConfig
 import com.po4yka.ratatoskr.util.redactQueryAndFragment
@@ -60,7 +60,7 @@ fun TelegramAuthScreen(
     ) {
         // Close button
         Box(Modifier.padding(top = 16.dp, start = 16.dp)) {
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = Icons.Default.Close,
                 contentDescription = stringResource(Res.string.telegram_auth_close),
                 onClick = onDismiss,

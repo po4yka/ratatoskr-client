@@ -30,8 +30,7 @@ import ratatoskr.core.ui.generated.resources.user_stats_minutes_short
 import ratatoskr.core.ui.generated.resources.user_stats_title
 import ratatoskr.core.ui.generated.resources.user_stats_topic_chip
 import ratatoskr.core.ui.generated.resources.user_stats_unavailable
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.SmallLoading
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.TopicStat
 import com.po4yka.ratatoskr.domain.model.UserStats
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
@@ -54,14 +53,14 @@ fun UserStatsCard(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = stringResource(Res.string.user_stats_title),
-            style = Carbon.typography.headingCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.headingCompact01,
+            color = AppTheme.colors.textPrimary,
         )
 
         when {
@@ -70,11 +69,11 @@ fun UserStatsCard(
                     horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                     Text(
                         text = stringResource(Res.string.user_stats_loading),
-                        style = Carbon.typography.label01,
-                        color = Carbon.theme.textSecondary,
+                        style = AppTheme.type.label01,
+                        color = AppTheme.colors.textSecondary,
                     )
                 }
             }
@@ -97,13 +96,13 @@ fun UserStatsCard(
                     ) {
                         Text(
                             text = stringResource(Res.string.stats_total_reading_time),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textSecondary,
                         )
                         Text(
                             text = formatReadingTime(totalTime),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textPrimary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textPrimary,
                         )
                     }
                 }
@@ -115,13 +114,13 @@ fun UserStatsCard(
                     ) {
                         Text(
                             text = stringResource(Res.string.stats_avg_per_summary),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textSecondary,
                         )
                         Text(
                             text = stringResource(Res.string.user_stats_average_minutes, avgTime.toInt()),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textPrimary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textPrimary,
                         )
                     }
                 }
@@ -133,8 +132,8 @@ fun UserStatsCard(
                     ) {
                         Text(
                             text = stringResource(Res.string.user_stats_favorite_topics),
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.label01,
+                            color = AppTheme.colors.textSecondary,
                         )
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
@@ -155,13 +154,13 @@ fun UserStatsCard(
                     ) {
                         Text(
                             text = stringResource(Res.string.user_stats_member_since),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textSecondary,
                         )
                         Text(
                             text = formatDate(joinedAt),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textPrimary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textPrimary,
                         )
                     }
                 }
@@ -169,8 +168,8 @@ fun UserStatsCard(
             else -> {
                 Text(
                     text = stringResource(Res.string.user_stats_unavailable),
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.bodyCompact01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
         }
@@ -190,13 +189,13 @@ private fun StatItem(
     ) {
         Text(
             text = value,
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
         )
         Text(
             text = label,
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textSecondary,
         )
     }
 }
@@ -209,12 +208,12 @@ private fun TopicChip(
 ) {
     Text(
         text = stringResource(Res.string.user_stats_topic_chip, topicStat.topic, topicStat.count),
-        style = Carbon.typography.label01,
-        color = Carbon.theme.textOnColor,
+        style = AppTheme.type.label01,
+        color = AppTheme.colors.textOnColor,
         modifier =
             modifier
                 .clip(RoundedCornerShape(Spacing.sm))
-                .background(Carbon.theme.linkPrimary)
+                .background(AppTheme.colors.linkPrimary)
                 .padding(horizontal = Spacing.xs, vertical = Spacing.xxs),
     )
 }

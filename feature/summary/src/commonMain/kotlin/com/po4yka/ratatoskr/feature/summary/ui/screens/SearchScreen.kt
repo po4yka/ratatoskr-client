@@ -35,9 +35,9 @@ import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.presentation.navigation.SearchComponent
 import com.po4yka.ratatoskr.presentation.state.SearchMode
 import com.po4yka.ratatoskr.presentation.state.SearchState
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.CarbonSearchField
-import com.po4yka.ratatoskr.core.ui.components.CarbonSelectableChip
+import com.po4yka.ratatoskr.core.ui.components.SelectableChip
 import com.po4yka.ratatoskr.core.ui.components.ContextualEmptyState
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateType
 import com.po4yka.ratatoskr.core.ui.components.InsightsSection
@@ -152,7 +152,7 @@ private fun SearchScreenHeader(
                 modifier = Modifier.weight(1f),
             )
 
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = CarbonIcons.Filter,
                 contentDescription = stringResource(Res.string.search_toggle_filters),
                 onClick = onFilterClick,
@@ -230,7 +230,7 @@ private fun SearchModeChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CarbonSelectableChip(
+    SelectableChip(
         label = label,
         selected = isSelected,
         onClick = onClick,
@@ -350,7 +350,7 @@ private fun ReadFilterChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CarbonSelectableChip(
+    SelectableChip(
         label = label,
         selected = isSelected,
         onClick = onClick,

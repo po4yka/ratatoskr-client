@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import ratatoskr.core.ui.generated.resources.common_percent
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.ReadingPreferences
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
@@ -44,13 +44,13 @@ fun ReadingSettingsPanel(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .background(Carbon.theme.layer01)
+                    .background(AppTheme.colors.layer01)
                     .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         ) {
             Text(
                 text = stringResource(Res.string.summary_detail_reading_settings),
-                style = Carbon.typography.headingCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.headingCompact01,
+                color = AppTheme.colors.textPrimary,
             )
 
             Spacer(modifier = Modifier.height(Spacing.sm))
@@ -62,11 +62,11 @@ fun ReadingSettingsPanel(
             ) {
                 Text(
                     text = stringResource(Res.string.reading_settings_font_size),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                     modifier = Modifier.weight(0.3f),
                 )
-                CarbonSlider(
+                AppSlider(
                     value = preferences.fontSizeScale,
                     onValueChange = onFontSizeScaleChange,
                     valueRange = ReadingPreferences.MIN_FONT_SCALE..ReadingPreferences.MAX_FONT_SCALE,
@@ -75,8 +75,8 @@ fun ReadingSettingsPanel(
                 )
                 Text(
                     text = stringResource(Res.string.common_percent, (preferences.fontSizeScale * 100).toInt()),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                     modifier = Modifier.weight(0.15f),
                 )
             }
@@ -88,11 +88,11 @@ fun ReadingSettingsPanel(
             ) {
                 Text(
                     text = stringResource(Res.string.reading_settings_line_spacing),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                     modifier = Modifier.weight(0.3f),
                 )
-                CarbonSlider(
+                AppSlider(
                     value = preferences.lineSpacingScale,
                     onValueChange = onLineSpacingScaleChange,
                     valueRange = ReadingPreferences.MIN_LINE_SPACING_SCALE..ReadingPreferences.MAX_LINE_SPACING_SCALE,
@@ -101,13 +101,13 @@ fun ReadingSettingsPanel(
                 )
                 Text(
                     text = stringResource(Res.string.common_percent, (preferences.lineSpacingScale * 100).toInt()),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                     modifier = Modifier.weight(0.15f),
                 )
             }
 
-            HorizontalDivider(color = Carbon.theme.borderSubtle00)
+            HorizontalDivider(color = AppTheme.colors.borderSubtle00)
         }
     }
 }

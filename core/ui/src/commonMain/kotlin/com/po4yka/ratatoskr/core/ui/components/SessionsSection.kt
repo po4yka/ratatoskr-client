@@ -32,8 +32,7 @@ import ratatoskr.core.ui.generated.resources.sessions_loading
 import ratatoskr.core.ui.generated.resources.sessions_prompt
 import ratatoskr.core.ui.generated.resources.sessions_title
 import ratatoskr.core.ui.generated.resources.sessions_unknown_device
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.SmallLoading
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Session
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
@@ -58,7 +57,7 @@ fun SessionsSection(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
     ) {
         // Header (clickable to expand/collapse)
         Row(
@@ -73,8 +72,8 @@ fun SessionsSection(
             Column {
                 Text(
                     text = stringResource(Res.string.sessions_title),
-                    style = Carbon.typography.headingCompact01,
-                    color = Carbon.theme.textPrimary,
+                    style = AppTheme.type.headingCompact01,
+                    color = AppTheme.colors.textPrimary,
                 )
                 Text(
                     text =
@@ -87,8 +86,8 @@ fun SessionsSection(
                         } else {
                             stringResource(Res.string.sessions_prompt)
                         },
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
 
@@ -100,7 +99,7 @@ fun SessionsSection(
                     } else {
                         stringResource(Res.string.sessions_expand)
                     },
-                tint = Carbon.theme.iconSecondary,
+                tint = AppTheme.colors.iconSecondary,
                 modifier =
                     Modifier
                         .size(IconSizes.xs)
@@ -132,11 +131,11 @@ fun SessionsSection(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            SmallLoading()
+                            AppSmallSpinner()
                             Text(
                                 text = stringResource(Res.string.sessions_loading),
-                                style = Carbon.typography.label01,
-                                color = Carbon.theme.textSecondary,
+                                style = AppTheme.type.label01,
+                                color = AppTheme.colors.textSecondary,
                                 modifier = Modifier.padding(start = Spacing.xs),
                             )
                         }
@@ -144,8 +143,8 @@ fun SessionsSection(
                     sessions.isEmpty() -> {
                         Text(
                             text = stringResource(Res.string.sessions_empty),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textSecondary,
                         )
                     }
                     else -> {
@@ -170,7 +169,7 @@ private fun SessionItem(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
-                .background(Carbon.theme.layer02)
+                .background(AppTheme.colors.layer02)
                 .padding(Spacing.sm),
         verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
     ) {
@@ -181,18 +180,18 @@ private fun SessionItem(
         ) {
             Text(
                 text = session.deviceInfo ?: session.clientId ?: stringResource(Res.string.sessions_unknown_device),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
             )
             if (session.isCurrent) {
                 Text(
                     text = stringResource(Res.string.sessions_current),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textOnColor,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textOnColor,
                     modifier =
                         Modifier
                             .clip(RoundedCornerShape(Dimensions.badgeCornerRadius))
-                            .background(Carbon.theme.supportSuccess)
+                            .background(AppTheme.colors.supportSuccess)
                             .padding(
                                 horizontal = Dimensions.badgeHorizontalPadding,
                                 vertical = Dimensions.badgeVerticalPadding,
@@ -204,16 +203,16 @@ private fun SessionItem(
         session.ipAddress?.let { ip ->
             Text(
                 text = stringResource(Res.string.sessions_ip, ip),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
         }
 
         session.lastUsedAt?.let { lastUsed ->
             Text(
                 text = stringResource(Res.string.sessions_last_active, formatSessionDate(lastUsed)),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
         }
     }

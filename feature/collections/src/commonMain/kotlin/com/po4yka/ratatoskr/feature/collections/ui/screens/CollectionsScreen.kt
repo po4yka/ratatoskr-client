@@ -30,8 +30,8 @@ import com.gabrieldrn.carbon.textinput.TextInput
 import com.gabrieldrn.carbon.textinput.TextInputState
 import com.po4yka.ratatoskr.domain.model.CollectionType
 import com.po4yka.ratatoskr.presentation.navigation.CollectionsComponent
-import com.po4yka.ratatoskr.core.ui.components.CarbonDialog
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppDialog
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.CollectionItem
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateView
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
@@ -176,7 +176,7 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
             modifier = Modifier.weight(1f),
         )
 
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.Add,
             contentDescription = stringResource(Res.string.collections_new),
             onClick = onCreateClick,
@@ -211,7 +211,7 @@ private fun CreateCollectionDialog(
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    CarbonDialog(
+    AppDialog(
         onDismissRequest = { if (!isCreating) onDismiss() },
         title = stringResource(Res.string.collections_create_dialog_title),
         confirmButton = {

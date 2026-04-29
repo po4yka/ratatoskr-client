@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
@@ -43,14 +43,14 @@ fun SummaryCardSkeleton(modifier: Modifier = Modifier) {
         label = "shimmer_alpha",
     )
 
-    val shimmerColor = Carbon.theme.layer02.copy(alpha = alpha)
+    val shimmerColor = AppTheme.colors.layer02.copy(alpha = alpha)
 
     Row(
         modifier =
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
     ) {
         // Thumbnail placeholder

@@ -27,8 +27,8 @@ import com.gabrieldrn.carbon.loading.SmallLoading
 import com.gabrieldrn.carbon.textinput.TextInput
 import com.gabrieldrn.carbon.textinput.TextInputState
 import com.po4yka.ratatoskr.domain.model.DeveloperCredentials
-import com.po4yka.ratatoskr.core.ui.components.CarbonCheckbox
-import com.po4yka.ratatoskr.core.ui.components.CarbonDialog
+import com.po4yka.ratatoskr.core.ui.components.AppCheckbox
+import com.po4yka.ratatoskr.core.ui.components.AppDialog
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.auth_developer_client_id_label
 import ratatoskr.core.ui.generated.resources.auth_developer_client_id_placeholder
@@ -60,7 +60,7 @@ fun DeveloperLoginDialog(
     var isUserIdError by remember { mutableStateOf(false) }
     var rememberCredentials by remember { mutableStateOf(true) }
 
-    CarbonDialog(
+    AppDialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
         title = stringResource(Res.string.auth_developer_login),
     ) {
@@ -131,7 +131,7 @@ fun DeveloperLoginDialog(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            CarbonCheckbox(
+            AppCheckbox(
                 checked = rememberCredentials,
                 onCheckedChange = { rememberCredentials = it },
                 enabled = !isLoading,

@@ -46,7 +46,7 @@ import com.po4yka.ratatoskr.presentation.navigation.SummaryListComponent
 import com.po4yka.ratatoskr.presentation.state.LayoutMode
 import com.po4yka.ratatoskr.presentation.state.SummaryListState
 import com.po4yka.ratatoskr.core.ui.components.ContextualEmptyState
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateType
 import com.po4yka.ratatoskr.core.ui.components.FilterChipsRow
 import com.po4yka.ratatoskr.core.ui.components.PullToRefreshContainer
@@ -267,7 +267,7 @@ private fun SummaryListHeader(
         )
 
         // Add URL button
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.Add,
             contentDescription = stringResource(Res.string.summary_list_submit_url),
             onClick = onSubmitUrlClicked,
@@ -275,7 +275,7 @@ private fun SummaryListHeader(
         )
 
         // Create Digest button
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.Document,
             contentDescription = stringResource(Res.string.summary_list_create_digest),
             onClick = onCreateDigestClicked,
@@ -289,7 +289,7 @@ private fun SummaryListHeader(
             } else {
                 stringResource(Res.string.summary_list_search)
             }
-        CarbonIconButton(
+        AppIconButton(
             imageVector = if (isSearchActive) CarbonIcons.Close else CarbonIcons.Search,
             contentDescription = searchDesc,
             onClick = onToggleSearch,
@@ -297,7 +297,7 @@ private fun SummaryListHeader(
         )
 
         // Layout toggle
-        CarbonIconButton(
+        AppIconButton(
             imageVector =
                 if (layoutMode == LayoutMode.LIST) {
                     CarbonIcons.Grid
@@ -321,7 +321,7 @@ private fun SummaryListHeader(
         )
 
         // Refresh button
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.Renew,
             contentDescription = stringResource(Res.string.summary_list_refresh),
             onClick = onRefresh,
