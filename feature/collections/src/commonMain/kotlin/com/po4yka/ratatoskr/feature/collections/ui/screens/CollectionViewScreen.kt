@@ -51,9 +51,9 @@ import com.po4yka.ratatoskr.presentation.state.CollectionItemsState
 import com.po4yka.ratatoskr.presentation.state.CollectionSettingsState
 import com.po4yka.ratatoskr.presentation.state.CollectionSharingState
 import com.po4yka.ratatoskr.presentation.state.CollectionViewTab
-import com.po4yka.ratatoskr.core.ui.components.CarbonDialog
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
-import com.po4yka.ratatoskr.core.ui.components.CarbonTextArea
+import com.po4yka.ratatoskr.core.ui.components.AppDialog
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
+import com.po4yka.ratatoskr.core.ui.components.TextArea
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateView
 import com.po4yka.ratatoskr.core.ui.components.ErrorView
 import com.po4yka.ratatoskr.core.ui.components.SummaryCard
@@ -179,7 +179,7 @@ private fun CollectionViewHeader(
                     .padding(horizontal = Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = CarbonIcons.ArrowLeft,
                 contentDescription = stringResource(Res.string.a11y_navigate_back),
                 onClick = onBackClick,
@@ -556,7 +556,7 @@ private fun CollectionEditForm(
                 style = Carbon.typography.label01,
                 color = Carbon.theme.textSecondary,
             )
-            CarbonTextArea(
+            TextArea(
                 label = stringResource(Res.string.collection_view_description),
                 value = editedDescription,
                 onValueChange = onDescriptionChange,
@@ -637,7 +637,7 @@ private fun DeleteCollectionDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    CarbonDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(Res.string.collection_view_delete_dialog_title),
         confirmButton = {
@@ -792,7 +792,7 @@ private fun CollaboratorRow(
         }
 
         if (collaborator.role != CollaboratorRole.Owner && collaborator.userId != null) {
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = CarbonIcons.Close,
                 contentDescription = stringResource(Res.string.collection_view_remove),
                 onClick = { onRemove(collaborator.userId!!) },

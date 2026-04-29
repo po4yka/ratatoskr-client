@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.insights_fallback_source
 import ratatoskr.core.ui.generated.resources.insights_title
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -34,7 +34,7 @@ fun InsightsSection(
 ) {
     if (insights.isEmpty()) return
 
-    CarbonLayerCard(
+    LayerCard(
         modifier =
             modifier
                 .fillMaxWidth()
@@ -48,8 +48,8 @@ fun InsightsSection(
         ) {
             Text(
                 text = stringResource(Res.string.insights_title),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
                 modifier =
                     Modifier
                         .padding(horizontal = Spacing.md)
@@ -81,10 +81,10 @@ private fun InsightCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CarbonLayerCard(
+    LayerCard(
         modifier = modifier.width(Dimensions.recommendationCardWidth),
         onClick = onClick,
-        backgroundColor = Carbon.theme.layer02,
+        backgroundColor = AppTheme.colors.layer02,
     ) {
         Column {
             if (summary.imageUrl != null) {
@@ -101,8 +101,8 @@ private fun InsightCard(
             Column(modifier = Modifier.padding(Spacing.sm)) {
                 Text(
                     text = summary.title,
-                    style = Carbon.typography.headingCompact01,
-                    color = Carbon.theme.textPrimary,
+                    style = AppTheme.type.headingCompact01,
+                    color = AppTheme.colors.textPrimary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -111,8 +111,8 @@ private fun InsightCard(
 
                 Text(
                     text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.insights_fallback_source),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )

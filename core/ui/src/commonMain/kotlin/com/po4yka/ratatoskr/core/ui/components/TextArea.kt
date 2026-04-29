@@ -16,12 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 @Composable
-fun CarbonTextArea(
+fun TextArea(
     label: String? = null,
     value: String,
     onValueChange: (String) -> Unit,
@@ -36,24 +36,24 @@ fun CarbonTextArea(
     val shape = RoundedCornerShape(Dimensions.cardCornerRadius)
     val borderColor =
         if (errorText != null) {
-            Carbon.theme.supportError
+            AppTheme.colors.supportError
         } else {
-            Carbon.theme.borderSubtle00
+            AppTheme.colors.borderSubtle00
         }
     val textColor =
         if (enabled) {
-            Carbon.theme.textPrimary
+            AppTheme.colors.textPrimary
         } else {
-            Carbon.theme.textDisabled
+            AppTheme.colors.textDisabled
         }
     val supportingTextColor =
         if (enabled) {
-            Carbon.theme.textSecondary
+            AppTheme.colors.textSecondary
         } else {
-            Carbon.theme.textDisabled
+            AppTheme.colors.textDisabled
         }
     val textStyle: TextStyle =
-        Carbon.typography.bodyCompact01.copy(color = textColor)
+        AppTheme.type.bodyCompact01.copy(color = textColor)
 
     Column(
         modifier = modifier,
@@ -62,7 +62,7 @@ fun CarbonTextArea(
         if (!label.isNullOrBlank()) {
             Text(
                 text = label,
-                style = Carbon.typography.label01,
+                style = AppTheme.type.label01,
                 color = supportingTextColor,
             )
         }
@@ -72,7 +72,7 @@ fun CarbonTextArea(
             onValueChange = onValueChange,
             enabled = enabled,
             textStyle = textStyle,
-            cursorBrush = SolidColor(Carbon.theme.linkPrimary),
+            cursorBrush = SolidColor(AppTheme.colors.linkPrimary),
             maxLines = maxLines,
             modifier = Modifier.fillMaxWidth(),
             decorationBox = { innerTextField ->
@@ -84,9 +84,9 @@ fun CarbonTextArea(
                             .clip(shape)
                             .background(
                                 if (enabled) {
-                                    Carbon.theme.background
+                                    AppTheme.colors.background
                                 } else {
-                                    Carbon.theme.layer02
+                                    AppTheme.colors.layer02
                                 },
                             )
                             .border(Dimensions.borderWidth, borderColor, shape)
@@ -95,8 +95,8 @@ fun CarbonTextArea(
                     if (value.isEmpty() && !placeholderText.isNullOrBlank()) {
                         Text(
                             text = placeholderText,
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textPlaceholder,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textPlaceholder,
                         )
                     }
 
@@ -109,14 +109,14 @@ fun CarbonTextArea(
             errorText != null ->
                 Text(
                     text = errorText,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.supportError,
                 )
 
             !helperText.isNullOrBlank() ->
                 Text(
                     text = helperText,
-                    style = Carbon.typography.label01,
+                    style = AppTheme.type.label01,
                     color = supportingTextColor,
                 )
         }

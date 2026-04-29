@@ -16,18 +16,18 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 
 @Composable
-fun CarbonIconButton(
+fun AppIconButton(
     imageVector: ImageVector,
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    tint: Color = Carbon.theme.iconPrimary,
+    tint: Color = AppTheme.colors.iconPrimary,
     buttonSize: Dp = Dimensions.iconButtonSize,
     iconSize: Dp = IconSizes.md,
     shape: Shape = CircleShape,
@@ -55,7 +55,7 @@ fun CarbonIconButton(
                 if (enabled) {
                     tint
                 } else {
-                    Carbon.theme.iconDisabled
+                    AppTheme.colors.iconDisabled
                 },
             modifier = Modifier.size(iconSize),
         )

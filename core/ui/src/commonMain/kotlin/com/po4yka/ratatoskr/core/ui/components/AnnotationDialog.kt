@@ -3,10 +3,11 @@ package com.po4yka.ratatoskr.core.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.annotation_dialog_helper
@@ -25,26 +26,23 @@ fun AnnotationDialog(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CarbonDialog(
+    AppDialog(
         onDismissRequest = onCancel,
         title = stringResource(Res.string.annotation_dialog_title),
         modifier = modifier,
         dismissButton = {
-            Button(
-                label = stringResource(Res.string.collections_cancel),
-                onClick = onCancel,
-                buttonType = ButtonType.Ghost,
-            )
+            TextButton(onClick = onCancel) {
+                Text(stringResource(Res.string.collections_cancel))
+            }
         },
         confirmButton = {
-            Button(
-                label = stringResource(Res.string.annotation_dialog_save),
-                onClick = onSave,
-            )
+            Button(onClick = onSave) {
+                Text(stringResource(Res.string.annotation_dialog_save))
+            }
         },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            CarbonTextArea(
+            TextArea(
                 value = draft,
                 onValueChange = onDraftChange,
                 placeholderText = stringResource(Res.string.annotation_dialog_placeholder),

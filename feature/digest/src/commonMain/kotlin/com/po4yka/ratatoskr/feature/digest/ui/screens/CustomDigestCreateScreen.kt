@@ -35,8 +35,8 @@ import com.gabrieldrn.carbon.textinput.TextInputState
 import com.po4yka.ratatoskr.domain.model.DigestFormat
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.presentation.navigation.CustomDigestCreateComponent
-import com.po4yka.ratatoskr.core.ui.components.CarbonCheckbox
-import com.po4yka.ratatoskr.core.ui.components.CarbonSelectableChip
+import com.po4yka.ratatoskr.core.ui.components.AppCheckbox
+import com.po4yka.ratatoskr.core.ui.components.SelectableChip
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
@@ -210,7 +210,7 @@ private fun FormatChip(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    CarbonSelectableChip(
+    SelectableChip(
         label = label,
         selected = isSelected,
         onClick = onClick,
@@ -233,7 +233,7 @@ private fun SelectableSummaryRow(
                 .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CarbonCheckbox(
+        AppCheckbox(
             checked = isSelected,
             onCheckedChange = { onClick() },
         )

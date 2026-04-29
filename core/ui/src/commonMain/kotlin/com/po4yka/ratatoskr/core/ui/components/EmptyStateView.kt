@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,9 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -152,7 +151,7 @@ fun EmptyStateView(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = Carbon.theme.iconSecondary,
+            tint = AppTheme.colors.iconSecondary,
             modifier = Modifier.size(IconSizes.xl),
         )
 
@@ -160,8 +159,8 @@ fun EmptyStateView(
 
         Text(
             text = title,
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading04,
+            color = AppTheme.colors.textPrimary,
             textAlign = TextAlign.Center,
         )
 
@@ -169,19 +168,17 @@ fun EmptyStateView(
 
         Text(
             text = message,
-            style = Carbon.typography.body01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.body01,
+            color = AppTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
         )
 
         if (actionText != null && onAction != null) {
             Spacer(modifier = Modifier.height(Spacing.xl))
 
-            Button(
-                label = actionText,
-                onClick = onAction,
-                buttonType = ButtonType.Primary,
-            )
+            Button(onClick = onAction) {
+                Text(actionText)
+            }
         }
     }
 }

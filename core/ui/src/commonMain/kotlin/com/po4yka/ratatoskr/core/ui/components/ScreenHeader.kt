@@ -14,7 +14,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.a11y_navigate_back
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -52,13 +52,13 @@ fun ScreenHeader(
             modifier
                 .fillMaxWidth()
                 .height(headerHeight)
-                .background(Carbon.theme.background)
+                .background(AppTheme.colors.background)
                 .padding(horizontal = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Back button (optional)
         if (onBackClick != null) {
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = CarbonIcons.ArrowLeft,
                 contentDescription = stringResource(Res.string.a11y_navigate_back),
                 onClick = onBackClick,
@@ -68,8 +68,8 @@ fun ScreenHeader(
         // Title
         Text(
             text = title,
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading04,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f).semantics { heading() },
         )
 
@@ -93,9 +93,9 @@ fun HeaderIconButton(
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    tint: androidx.compose.ui.graphics.Color = Carbon.theme.iconPrimary,
+    tint: androidx.compose.ui.graphics.Color = AppTheme.colors.iconPrimary,
 ) {
-    CarbonIconButton(
+    AppIconButton(
         imageVector = icon,
         contentDescription = contentDescription,
         onClick = onClick,

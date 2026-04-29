@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,10 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
-import com.gabrieldrn.carbon.loading.SmallLoading
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.FeedbackIssue
 import com.po4yka.ratatoskr.domain.model.FeedbackRating
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -58,34 +57,34 @@ fun FeedbackDialog(
     var checkedIssues by remember { mutableStateOf(setOf<FeedbackIssue>()) }
     var comment by remember { mutableStateOf("") }
 
-    CarbonDialog(
+    AppDialog(
         onDismissRequest = { if (!isSubmitting) onDismiss() },
         title = stringResource(Res.string.feedback_dialog_title),
         dismissButton = {
-            Button(
-                label = stringResource(Res.string.collections_cancel),
+            TextButton(
                 onClick = onDismiss,
-                isEnabled = !isSubmitting,
-                buttonType = ButtonType.Ghost,
-            )
+                enabled = !isSubmitting,
+            ) {
+                Text(stringResource(Res.string.collections_cancel))
+            }
         },
         confirmButton = {
             Button(
-                label = stringResource(Res.string.feedback_dialog_submit),
                 onClick = {
                     val commentValue = comment.trim().ifEmpty { null }
                     onSubmit(rating, checkedIssues.toList(), commentValue)
                 },
-                isEnabled = !isSubmitting,
-                buttonType = ButtonType.Primary,
-            )
+                enabled = !isSubmitting,
+            ) {
+                Text(stringResource(Res.string.feedback_dialog_submit))
+            }
         },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             Text(
                 text = stringResource(Res.string.feedback_dialog_prompt),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
             )
             FeedbackIssue.entries.forEach { issue ->
                 Row(
@@ -102,7 +101,7 @@ fun FeedbackDialog(
                             },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    CarbonCheckbox(
+                    AppCheckbox(
                         checked = issue in checkedIssues,
                         onCheckedChange = { checked ->
                             checkedIssues =
@@ -116,13 +115,13 @@ fun FeedbackDialog(
                     )
                     Text(
                         text = issue.displayName(),
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textPrimary,
+                        style = AppTheme.type.bodyCompact01,
+                        color = AppTheme.colors.textPrimary,
                         modifier = Modifier.padding(start = Spacing.xs),
                     )
                 }
             }
-            CarbonTextArea(
+            TextArea(
                 label = stringResource(Res.string.feedback_dialog_comment_label),
                 value = comment,
                 onValueChange = { comment = it },
@@ -135,11 +134,11 @@ fun FeedbackDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                     Text(
                         text = stringResource(Res.string.feedback_dialog_submitting),
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textSecondary,
+                        style = AppTheme.type.bodyCompact01,
+                        color = AppTheme.colors.textSecondary,
                     )
                 }
             }

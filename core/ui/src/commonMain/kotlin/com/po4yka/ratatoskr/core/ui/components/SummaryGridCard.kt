@@ -31,7 +31,7 @@ import ratatoskr.core.ui.generated.resources.summary_card_available_offline
 import ratatoskr.core.ui.generated.resources.summary_card_favorited
 import ratatoskr.core.ui.generated.resources.summary_card_saved_article
 import ratatoskr.core.ui.generated.resources.summary_detail_mark_read
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
@@ -75,7 +75,7 @@ fun SummaryGridCard(
             }
         }
 
-    CarbonLayerCard(
+    LayerCard(
         modifier =
             modifier
                 .fillMaxWidth()
@@ -106,8 +106,8 @@ fun SummaryGridCard(
             ) {
                 Text(
                     text = summary.title,
-                    style = Carbon.typography.headingCompact01,
-                    color = Carbon.theme.textPrimary,
+                    style = AppTheme.type.headingCompact01,
+                    color = AppTheme.colors.textPrimary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
@@ -130,7 +130,7 @@ fun SummaryGridCard(
                     Icon(
                         imageVector = CarbonIcons.Download,
                         contentDescription = stringResource(Res.string.summary_card_available_offline),
-                        tint = Carbon.theme.iconSecondary,
+                        tint = AppTheme.colors.iconSecondary,
                         modifier = Modifier.size(IconSizes.xs),
                     )
                 }
@@ -138,7 +138,7 @@ fun SummaryGridCard(
                     Icon(
                         imageVector = CarbonIcons.FavoriteFilled,
                         contentDescription = stringResource(Res.string.summary_card_favorited),
-                        tint = Carbon.theme.supportError,
+                        tint = AppTheme.colors.supportError,
                         modifier = Modifier.size(IconSizes.xs),
                     )
                 }
@@ -148,13 +148,13 @@ fun SummaryGridCard(
                             Modifier
                                 .size(20.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(Carbon.theme.supportSuccess),
+                                .background(AppTheme.colors.supportSuccess),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = CarbonIcons.Checkmark,
                             contentDescription = stringResource(Res.string.summary_detail_mark_read),
-                            tint = Carbon.theme.textOnColor,
+                            tint = AppTheme.colors.textOnColor,
                             modifier = Modifier.size(IconSizes.xs),
                         )
                     }
@@ -171,8 +171,8 @@ fun SummaryGridCard(
                             append(stringResource(Res.string.custom_digest_create_read_time, it))
                         }
                     },
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

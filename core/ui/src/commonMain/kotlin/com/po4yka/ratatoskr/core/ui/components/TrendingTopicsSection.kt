@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.trending_topics_title
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
@@ -32,7 +32,7 @@ fun TrendingTopicsSection(
 ) {
     if (topics.isEmpty()) return
 
-    CarbonLayerCard(
+    LayerCard(
         modifier =
             modifier
                 .fillMaxWidth()
@@ -46,8 +46,8 @@ fun TrendingTopicsSection(
         ) {
             Text(
                 text = stringResource(Res.string.trending_topics_title),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
                 modifier = Modifier.padding(bottom = Spacing.sm),
             )
 
@@ -74,7 +74,7 @@ private fun TrendingTopicChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CarbonSelectableChip(
+    SelectableChip(
         label = topic,
         selected = true,
         onClick = onClick,

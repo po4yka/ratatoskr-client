@@ -20,8 +20,8 @@ import com.gabrieldrn.carbon.foundation.color.WhiteTheme
  *
  * During the Carbon removal migration this also provides [AppColors] / [AppType]
  * via [LocalAppColors] / [LocalAppType] so call sites can be migrated incrementally
- * from `Carbon.theme.X` / `Carbon.typography.X` to `AppTheme.colors.X` / `AppTheme.type.X`.
- * The Carbon wrap will be removed once all call sites are migrated.
+ * to `AppTheme.colors.X` / `AppTheme.type.X`. The Carbon wrap will be removed once
+ * all call sites are migrated.
  */
 @Composable
 fun RatatoskrTheme(

@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Recommendation
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
@@ -46,8 +46,8 @@ fun RecommendationsSection(
     Column(modifier = modifier) {
         Text(
             text = stringResource(Res.string.recommendations_title),
-            style = Carbon.typography.heading02,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading02,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.xs),
         )
         LazyRow(
@@ -73,7 +73,7 @@ private fun RecommendationCard(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CarbonLayerCard(
+    LayerCard(
         onClick = onClick,
         modifier = modifier.width(Dimensions.recommendationCardWidth),
     ) {
@@ -96,14 +96,14 @@ private fun RecommendationCard(
                             Modifier
                                 .fillMaxWidth()
                                 .height(Dimensions.recommendationCardImageHeight)
-                                .background(Carbon.theme.layer02),
+                                .background(AppTheme.colors.layer02),
                     )
                 }
                 Column(modifier = Modifier.padding(Spacing.sm)) {
                     Text(
                         text = recommendation.summary.title,
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textPrimary,
+                        style = AppTheme.type.bodyCompact01,
+                        color = AppTheme.colors.textPrimary,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -111,19 +111,19 @@ private fun RecommendationCard(
                         Spacer(modifier = Modifier.height(Spacing.xxs))
                         Text(
                             text = reason,
-                            style = Carbon.typography.label01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.label01,
+                            color = AppTheme.colors.textSecondary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
                 }
             }
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = CarbonIcons.Close,
                 contentDescription = stringResource(Res.string.recommendations_dismiss),
                 onClick = onDismiss,
-                tint = Carbon.theme.textSecondary,
+                tint = AppTheme.colors.textSecondary,
                 iconSize = IconSizes.xs,
                 buttonSize = IconSizes.lg,
                 modifier =

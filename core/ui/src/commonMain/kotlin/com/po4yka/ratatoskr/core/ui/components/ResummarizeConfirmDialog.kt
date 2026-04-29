@@ -1,10 +1,10 @@
 package com.po4yka.ratatoskr.core.ui.components
 
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.collections_cancel
 import ratatoskr.core.ui.generated.resources.resummarize_confirm_action
@@ -18,28 +18,24 @@ fun ResummarizeConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    CarbonDialog(
+    AppDialog(
         onDismissRequest = onDismiss,
         title = stringResource(Res.string.resummarize_confirm_title),
         dismissButton = {
-            Button(
-                label = stringResource(Res.string.collections_cancel),
-                onClick = onDismiss,
-                buttonType = ButtonType.Ghost,
-            )
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.collections_cancel))
+            }
         },
         confirmButton = {
-            Button(
-                label = stringResource(Res.string.resummarize_confirm_action),
-                onClick = onConfirm,
-                buttonType = ButtonType.Primary,
-            )
+            Button(onClick = onConfirm) {
+                Text(stringResource(Res.string.resummarize_confirm_action))
+            }
         },
     ) {
         Text(
             stringResource(Res.string.resummarize_confirm_message),
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.bodyCompact01,
+            color = AppTheme.colors.textSecondary,
         )
     }
 }

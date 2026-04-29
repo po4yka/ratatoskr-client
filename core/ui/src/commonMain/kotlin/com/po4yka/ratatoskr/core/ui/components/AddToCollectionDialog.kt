@@ -13,13 +13,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
-import com.gabrieldrn.carbon.loading.SmallLoading
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Collection
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -41,16 +39,16 @@ fun AddToCollectionDialog(
     onCollectionSelected: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    CarbonDialog(
+    AppDialog(
         onDismissRequest = { if (!isAdding) onDismiss() },
         title = stringResource(Res.string.add_to_collection_title),
         dismissButton = {
-            Button(
-                label = stringResource(Res.string.collections_cancel),
+            TextButton(
                 onClick = onDismiss,
-                isEnabled = !isAdding,
-                buttonType = ButtonType.Ghost,
-            )
+                enabled = !isAdding,
+            ) {
+                Text(stringResource(Res.string.collections_cancel))
+            }
         },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
@@ -59,13 +57,13 @@ fun AddToCollectionDialog(
                     modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
                     contentAlignment = Alignment.Center,
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                 }
             } else if (collections.isEmpty()) {
                 Text(
                     text = stringResource(Res.string.add_to_collection_empty),
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.bodyCompact01,
+                    color = AppTheme.colors.textSecondary,
                 )
             } else {
                 LazyColumn(
@@ -89,11 +87,11 @@ fun AddToCollectionDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                     Text(
                         text = stringResource(Res.string.add_to_collection_adding),
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textSecondary,
+                        style = AppTheme.type.bodyCompact01,
+                        color = AppTheme.colors.textSecondary,
                     )
                 }
             }
@@ -101,8 +99,8 @@ fun AddToCollectionDialog(
             error?.let {
                 Text(
                     text = it,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.supportError,
                 )
             }
         }
@@ -120,7 +118,7 @@ private fun CollectionSelectionRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer02)
+                .background(AppTheme.colors.layer02)
                 .clickable(enabled = isEnabled, onClick = onClick)
                 .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
@@ -129,28 +127,28 @@ private fun CollectionSelectionRow(
         Icon(
             imageVector = CarbonIcons.Folder,
             contentDescription = null,
-            tint = Carbon.theme.iconPrimary,
+            tint = AppTheme.colors.iconPrimary,
             modifier = Modifier.size(IconSizes.sm),
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = collection.name,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
             )
             collection.description?.let {
                 Text(
                     text = it,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                     maxLines = 1,
                 )
             }
         }
         Text(
             text = collection.count.toString(),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textSecondary,
         )
     }
 }

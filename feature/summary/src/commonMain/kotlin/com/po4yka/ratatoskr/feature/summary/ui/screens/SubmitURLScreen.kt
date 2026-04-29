@@ -56,8 +56,8 @@ import com.po4yka.ratatoskr.domain.model.RequestStatus
 import com.po4yka.ratatoskr.presentation.navigation.SubmitURLComponent
 import com.po4yka.ratatoskr.presentation.state.SubmitURLState
 import com.po4yka.ratatoskr.presentation.state.SubmitUrlError
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
-import com.po4yka.ratatoskr.core.ui.components.CarbonTextArea
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
+import com.po4yka.ratatoskr.core.ui.components.TextArea
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -375,7 +375,7 @@ private fun BatchInputSection(
             color = Carbon.theme.textSecondary,
         )
 
-        CarbonTextArea(
+        TextArea(
             value = batchInput,
             onValueChange = onBatchInputChanged,
             modifier = Modifier.fillMaxWidth(),
@@ -570,7 +570,7 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
                 .padding(horizontal = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.ArrowLeft,
             contentDescription = stringResource(Res.string.submit_url_back),
             onClick = onBackClick,
@@ -882,7 +882,7 @@ private fun RequestHistoryHeader(
             } else {
                 stringResource(Res.string.submit_url_show_history)
             }
-        CarbonIconButton(
+        AppIconButton(
             imageVector = if (showHistory) CarbonIcons.ChevronUp else CarbonIcons.ChevronDown,
             contentDescription = historyDesc,
             onClick = onToggle,
@@ -947,7 +947,7 @@ private fun RequestHistoryItem(
 
         // Retry button for failed requests
         if (request.status == RequestStatus.FAILED) {
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = CarbonIcons.Renew,
                 contentDescription = stringResource(Res.string.settings_retry),
                 onClick = onRetry,

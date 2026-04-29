@@ -48,10 +48,10 @@ import com.po4yka.ratatoskr.presentation.state.SettingsState
 import com.po4yka.ratatoskr.presentation.state.SyncSettingsState
 import com.po4yka.ratatoskr.presentation.state.TelegramLinkState
 import com.po4yka.ratatoskr.domain.model.Request
-import com.po4yka.ratatoskr.core.ui.components.CarbonLayerCard
+import com.po4yka.ratatoskr.core.ui.components.LayerCard
 import com.po4yka.ratatoskr.core.ui.components.DeleteAccountDialog
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
-import com.po4yka.ratatoskr.core.ui.components.CarbonSelectableChip
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
+import com.po4yka.ratatoskr.core.ui.components.SelectableChip
 import com.po4yka.ratatoskr.core.ui.components.RequestHistorySection
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.components.SessionsSection
@@ -358,7 +358,7 @@ private fun SettingsSectionCard(
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(Spacing.sm),
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    CarbonLayerCard(
+    LayerCard(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
     ) {
@@ -773,7 +773,7 @@ private fun SyncProgressHeader(
                 color = Carbon.theme.textSecondary,
             )
         }
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.Close,
             contentDescription = stringResource(Res.string.settings_cancel_sync),
             onClick = onCancelSync,
@@ -894,7 +894,7 @@ private fun LanguageChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CarbonSelectableChip(
+    SelectableChip(
         label = label,
         selected = isSelected,
         enabled = isEnabled,
@@ -906,7 +906,7 @@ private fun LanguageChip(
 @Suppress("FunctionNaming")
 @Composable
 private fun DigestNavigationRow(onClick: () -> Unit) {
-    CarbonLayerCard(
+    LayerCard(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
     ) {
@@ -1008,7 +1008,7 @@ private fun ReadingGoalsCard(
             ) {
                 val targets = listOf(5, 10, 15, 20, 30, 45, 60)
                 targets.forEach { minutes ->
-                    CarbonSelectableChip(
+                    SelectableChip(
                         label = stringResource(Res.string.user_stats_minutes_short, minutes),
                         selected = goal.dailyTargetMin == minutes,
                         enabled = isEnabled,

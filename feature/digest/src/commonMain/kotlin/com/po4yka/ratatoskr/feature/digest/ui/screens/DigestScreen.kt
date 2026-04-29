@@ -41,7 +41,7 @@ import com.po4yka.ratatoskr.presentation.state.DigestHistoryState
 import com.po4yka.ratatoskr.presentation.state.DigestPreferencesState
 import com.po4yka.ratatoskr.presentation.state.DigestTab
 import com.po4yka.ratatoskr.presentation.state.DigestTriggerState
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -195,7 +195,7 @@ private fun DigestHeader(onBackClick: () -> Unit) {
                 .padding(horizontal = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.ArrowLeft,
             contentDescription = stringResource(Res.string.submit_url_back),
             onClick = onBackClick,
@@ -472,7 +472,7 @@ private fun DigestChannelRow(
                 )
             }
         }
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.Close,
             contentDescription = stringResource(Res.string.digest_screen_unsubscribe),
             onClick = onUnsubscribe,

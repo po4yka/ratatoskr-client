@@ -23,7 +23,7 @@ import ratatoskr.core.ui.generated.resources.search_clear
 import ratatoskr.core.ui.generated.resources.search_placeholder
 import ratatoskr.core.ui.generated.resources.summary_list_close_search
 import ratatoskr.core.ui.generated.resources.summary_list_search
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -39,7 +39,7 @@ fun CarbonSearchField(
     modifier: Modifier = Modifier,
     searchIconContentDescription: String? = null,
     onClearQuery: (() -> Unit)? = null,
-    backgroundColor: androidx.compose.ui.graphics.Color = Carbon.theme.layer02,
+    backgroundColor: androidx.compose.ui.graphics.Color = AppTheme.colors.layer02,
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
@@ -55,7 +55,7 @@ fun CarbonSearchField(
         Icon(
             imageVector = CarbonIcons.Search,
             contentDescription = searchIconContentDescription,
-            tint = Carbon.theme.iconSecondary,
+            tint = AppTheme.colors.iconSecondary,
             modifier = Modifier.size(IconSizes.sm),
         )
 
@@ -68,8 +68,8 @@ fun CarbonSearchField(
                     .padding(horizontal = Spacing.sm),
             singleLine = true,
             textStyle =
-                Carbon.typography.bodyCompact01.copy(
-                    color = Carbon.theme.textPrimary,
+                AppTheme.type.bodyCompact01.copy(
+                    color = AppTheme.colors.textPrimary,
                 ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions =
@@ -80,8 +80,8 @@ fun CarbonSearchField(
                 if (query.isEmpty()) {
                     Text(
                         text = placeholder,
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textPlaceholder,
+                        style = AppTheme.type.bodyCompact01,
+                        color = AppTheme.colors.textPlaceholder,
                     )
                 }
                 innerTextField()
@@ -89,7 +89,7 @@ fun CarbonSearchField(
         )
 
         if (query.isNotEmpty()) {
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = CarbonIcons.Close,
                 contentDescription = stringResource(Res.string.search_clear),
                 onClick = clearQuery,
@@ -114,7 +114,7 @@ fun SummarySearchBar(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(horizontal = Spacing.md, vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -128,7 +128,7 @@ fun SummarySearchBar(
 
         Spacer(modifier = Modifier.width(Spacing.xs))
 
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.Close,
             contentDescription = stringResource(Res.string.summary_list_close_search),
             onClick = onClose,

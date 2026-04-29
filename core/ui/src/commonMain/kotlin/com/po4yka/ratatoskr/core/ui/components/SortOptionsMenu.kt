@@ -16,7 +16,7 @@ import ratatoskr.core.ui.generated.resources.sort_menu_description
 import ratatoskr.core.ui.generated.resources.sort_menu_newest
 import ratatoskr.core.ui.generated.resources.sort_menu_oldest
 import ratatoskr.core.ui.generated.resources.sort_menu_selected
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.SortOrder
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
@@ -37,19 +37,19 @@ fun SortOptionsMenu(
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = modifier) {
-        CarbonIconButton(
+        AppIconButton(
             imageVector = CarbonIcons.SortAscending,
             contentDescription = stringResource(Res.string.sort_menu_description, currentSortOrder.displayName()),
             onClick = { expanded = true },
         )
 
-        CarbonMenu(
+        AppMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier.width(Dimensions.menuWidth),
         ) {
             SortOrder.entries.forEach { sortOrder ->
-                CarbonMenuItem(
+                AppMenuItem(
                     label = sortOrder.displayName(),
                     onClick = {
                         onSortOrderSelected(sortOrder)
@@ -61,7 +61,7 @@ fun SortOptionsMenu(
                                 Icon(
                                     imageVector = CarbonIcons.Checkmark,
                                     contentDescription = stringResource(Res.string.sort_menu_selected),
-                                    tint = Carbon.theme.iconPrimary,
+                                    tint = AppTheme.colors.iconPrimary,
                                     modifier = Modifier.size(IconSizes.xs),
                                 )
                             }

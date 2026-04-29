@@ -13,7 +13,7 @@ import ratatoskr.core.ui.generated.resources.summary_card_more_options
 import ratatoskr.core.ui.generated.resources.summary_detail_add_to_collection
 import ratatoskr.core.ui.generated.resources.summary_detail_favorite
 import ratatoskr.core.ui.generated.resources.summary_detail_unfavorite
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import org.jetbrains.compose.resources.stringResource
@@ -28,16 +28,16 @@ fun SummaryOverflowMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    CarbonOverflowMenuButton(
+    AppOverflowMenuButton(
         contentDescription = stringResource(Res.string.summary_card_more_options),
         onClick = { expanded = true },
     )
 
-    CarbonMenu(
+    AppMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
     ) {
-        CarbonMenuItem(
+        AppMenuItem(
             label =
                 if (summary.isFavorited) {
                     stringResource(Res.string.summary_detail_unfavorite)
@@ -51,12 +51,12 @@ fun SummaryOverflowMenu(
             leadingIcon = if (summary.isFavorited) CarbonIcons.FavoriteFilled else CarbonIcons.Favorite,
             leadingIconTint =
                 if (summary.isFavorited) {
-                    Carbon.theme.supportError
+                    AppTheme.colors.supportError
                 } else {
-                    Carbon.theme.iconSecondary
+                    AppTheme.colors.iconSecondary
                 },
         )
-        CarbonMenuItem(
+        AppMenuItem(
             label =
                 if (summary.isRead) {
                     stringResource(Res.string.summary_card_already_read)
@@ -72,7 +72,7 @@ fun SummaryOverflowMenu(
             enabled = !summary.isRead,
             leadingIcon = CarbonIcons.CheckmarkFilled,
         )
-        CarbonMenuItem(
+        AppMenuItem(
             label = stringResource(Res.string.summary_detail_add_to_collection),
             onClick = {
                 expanded = false
@@ -80,7 +80,7 @@ fun SummaryOverflowMenu(
             },
             leadingIcon = CarbonIcons.Folder,
         )
-        CarbonMenuItem(
+        AppMenuItem(
             label = stringResource(Res.string.collection_view_delete_action),
             onClick = {
                 expanded = false

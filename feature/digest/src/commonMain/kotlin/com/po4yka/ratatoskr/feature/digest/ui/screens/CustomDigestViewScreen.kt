@@ -30,7 +30,7 @@ import com.gabrieldrn.carbon.loading.SmallLoading
 import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
 import com.po4yka.ratatoskr.domain.model.CustomDigestStatus
 import com.po4yka.ratatoskr.presentation.navigation.CustomDigestViewComponent
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -58,7 +58,7 @@ fun CustomDigestViewScreen(
             onBackClick = component::onBackClicked,
             actions = {
                 if (state.digest != null) {
-                    CarbonIconButton(
+                    AppIconButton(
                         imageVector = CarbonIcons.TrashCan,
                         contentDescription = stringResource(Res.string.custom_digest_view_delete),
                         onClick = {
