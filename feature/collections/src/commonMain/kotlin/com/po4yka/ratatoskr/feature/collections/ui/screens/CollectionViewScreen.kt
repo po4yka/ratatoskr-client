@@ -35,12 +35,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
-import com.gabrieldrn.carbon.loading.Loading
-import com.gabrieldrn.carbon.textinput.TextInput
-import com.gabrieldrn.carbon.textinput.TextInputState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
+import com.po4yka.ratatoskr.core.ui.components.AppSpinner
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.CollaboratorRole
 import com.po4yka.ratatoskr.domain.model.Collection
 import com.po4yka.ratatoskr.domain.model.CollectionAcl
@@ -113,7 +114,7 @@ fun CollectionViewScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         // Header with back button and collection info
         CollectionViewHeader(
@@ -168,7 +169,7 @@ private fun CollectionViewHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
     ) {
         // Top row with back button
         Row(
@@ -190,8 +191,8 @@ private fun CollectionViewHeader(
 
             Text(
                 text = collection?.name ?: stringResource(Res.string.collection_view_default_title),
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.heading03,
+                color = AppTheme.colors.textPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
@@ -203,7 +204,7 @@ private fun CollectionViewHeader(
             CollectionInfoSection(collection = collection)
         }
 
-        HorizontalDivider(color = Carbon.theme.borderSubtle00)
+        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
     }
 }
 
@@ -221,8 +222,8 @@ private fun CollectionInfoSection(collection: Collection) {
         if (!description.isNullOrBlank()) {
             Text(
                 text = description,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -235,15 +236,15 @@ private fun CollectionInfoSection(collection: Collection) {
         ) {
             Text(
                 text = stringResource(Res.string.collection_view_items_count, collection.count),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
 
             if (collection.isShared) {
                 Text(
                     text = stringResource(Res.string.collection_view_shared),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.linkPrimary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.linkPrimary,
                 )
             }
         }
@@ -261,7 +262,7 @@ private fun CollectionTabBar(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         TabItem(
@@ -288,7 +289,7 @@ private fun CollectionTabBar(
         )
     }
 
-    HorizontalDivider(color = Carbon.theme.borderSubtle00)
+    HorizontalDivider(color = AppTheme.colors.borderSubtle00)
 }
 
 @Suppress("FunctionNaming")
@@ -303,9 +304,9 @@ private fun TabItem(
     val iconColor by animateColorAsState(
         targetValue =
             when {
-                !enabled -> Carbon.theme.iconDisabled
-                isSelected -> Carbon.theme.iconPrimary
-                else -> Carbon.theme.iconSecondary
+                !enabled -> AppTheme.colors.iconDisabled
+                isSelected -> AppTheme.colors.iconPrimary
+                else -> AppTheme.colors.iconSecondary
             },
         animationSpec = tween(durationMillis = 200),
         label = "iconColor",
@@ -313,15 +314,15 @@ private fun TabItem(
     val textColor by animateColorAsState(
         targetValue =
             when {
-                !enabled -> Carbon.theme.textDisabled
-                isSelected -> Carbon.theme.textPrimary
-                else -> Carbon.theme.textSecondary
+                !enabled -> AppTheme.colors.textDisabled
+                isSelected -> AppTheme.colors.textPrimary
+                else -> AppTheme.colors.textSecondary
             },
         animationSpec = tween(durationMillis = 200),
         label = "textColor",
     )
     val indicatorColor by animateColorAsState(
-        targetValue = if (isSelected && enabled) Carbon.theme.borderInteractive else Carbon.theme.layer01,
+        targetValue = if (isSelected && enabled) AppTheme.colors.borderInteractive else AppTheme.colors.layer01,
         animationSpec = tween(durationMillis = 200),
         label = "indicatorColor",
     )
@@ -345,7 +346,7 @@ private fun TabItem(
             )
             Text(
                 text = label,
-                style = Carbon.typography.bodyCompact01,
+                style = AppTheme.type.bodyCompact01,
                 color = textColor,
             )
         }
@@ -427,7 +428,7 @@ private fun ItemsTabContent(
                                     .padding(Spacing.md),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Loading(modifier = Modifier.size(44.dp))
+                            AppSpinner(modifier = Modifier.size(44.dp))
                         }
                     }
                 }
@@ -441,7 +442,7 @@ private fun ItemsTabContent(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            Loading(modifier = Modifier.size(88.dp))
+            AppSpinner(modifier = Modifier.size(88.dp))
         }
     }
 }
@@ -465,8 +466,8 @@ private fun SettingsTabContent(
         ) {
             Text(
                 text = stringResource(Res.string.collection_view_system_readonly),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
             )
         }
         return
@@ -480,8 +481,8 @@ private fun SettingsTabContent(
         item {
             Text(
                 text = stringResource(Res.string.collection_view_settings_title),
-                style = Carbon.typography.heading03,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.heading03,
+                color = AppTheme.colors.textPrimary,
             )
         }
 
@@ -537,15 +538,15 @@ private fun CollectionEditForm(
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             Text(
                 text = stringResource(Res.string.collection_view_name),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
-            TextInput(
-                label = stringResource(Res.string.collection_view_name),
+            OutlinedTextField(
                 value = editedName,
                 onValueChange = onNameChange,
-                placeholderText = stringResource(Res.string.collections_name_placeholder),
-                state = if (isUpdating) TextInputState.Disabled else TextInputState.Enabled,
+                label = { Text(stringResource(Res.string.collection_view_name)) },
+                placeholder = { Text(stringResource(Res.string.collections_name_placeholder)) },
+                enabled = !isUpdating,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -553,8 +554,8 @@ private fun CollectionEditForm(
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             Text(
                 text = stringResource(Res.string.collection_view_description),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
             TextArea(
                 label = stringResource(Res.string.collection_view_description),
@@ -567,23 +568,24 @@ private fun CollectionEditForm(
         }
 
         Button(
-            label =
+            onClick = onSave,
+            enabled = !isUpdating,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
                 if (isUpdating) {
                     stringResource(Res.string.collection_view_saving)
                 } else {
                     stringResource(Res.string.collection_view_save_changes)
                 },
-            onClick = onSave,
-            buttonType = ButtonType.Primary,
-            isEnabled = !isUpdating,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            )
+        }
 
         if (updateError != null) {
             Text(
                 text = updateError,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.supportError,
             )
         }
     }
@@ -598,34 +600,40 @@ private fun CollectionDangerZone(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         HorizontalDivider(
-            color = Carbon.theme.borderSubtle00,
+            color = AppTheme.colors.borderSubtle00,
             modifier = Modifier.padding(vertical = Spacing.xs),
         )
 
         Text(
             text = stringResource(Res.string.collection_view_danger_zone),
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.supportError,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.supportError,
         )
 
         Button(
-            label =
+            onClick = onShowDeleteDialog,
+            enabled = !isDeleting,
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = AppTheme.colors.supportError,
+                    contentColor = AppTheme.colors.textOnColor,
+                ),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
                 if (isDeleting) {
                     stringResource(Res.string.collection_view_deleting)
                 } else {
                     stringResource(Res.string.collection_view_delete_collection)
                 },
-            onClick = onShowDeleteDialog,
-            buttonType = ButtonType.PrimaryDanger,
-            isEnabled = !isDeleting,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            )
+        }
 
         if (deleteError != null) {
             Text(
                 text = deleteError,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.supportError,
             )
         }
     }
@@ -642,23 +650,26 @@ private fun DeleteCollectionDialog(
         title = stringResource(Res.string.collection_view_delete_dialog_title),
         confirmButton = {
             Button(
-                label = stringResource(Res.string.collection_view_delete_action),
                 onClick = onConfirm,
-                buttonType = ButtonType.PrimaryDanger,
-            )
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = AppTheme.colors.supportError,
+                        contentColor = AppTheme.colors.textOnColor,
+                    ),
+            ) {
+                Text(stringResource(Res.string.collection_view_delete_action))
+            }
         },
         dismissButton = {
-            Button(
-                label = stringResource(Res.string.collections_cancel),
-                onClick = onDismiss,
-                buttonType = ButtonType.Ghost,
-            )
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.collections_cancel))
+            }
         },
     ) {
         Text(
             text = stringResource(Res.string.collection_view_delete_dialog_message),
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.bodyCompact01,
+            color = AppTheme.colors.textSecondary,
         )
     }
 }
@@ -678,8 +689,8 @@ private fun SharingTabContent(
         ) {
             Text(
                 text = stringResource(Res.string.collection_view_system_unshareable),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
             )
         }
         return
@@ -721,8 +732,8 @@ private fun CollaboratorsList(
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         Text(
             text = stringResource(Res.string.collection_view_collaborators),
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
         )
 
         when {
@@ -731,14 +742,14 @@ private fun CollaboratorsList(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Loading(modifier = Modifier.size(44.dp))
+                    AppSpinner(modifier = Modifier.size(44.dp))
                 }
             }
             collaborators.isEmpty() -> {
                 Text(
                     text = stringResource(Res.string.collection_view_no_collaborators),
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.bodyCompact01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
             else -> {
@@ -754,8 +765,8 @@ private fun CollaboratorsList(
         if (error != null) {
             Text(
                 text = error,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.supportError,
             )
         }
     }
@@ -772,7 +783,7 @@ private fun CollaboratorRow(
             Modifier
                 .fillMaxWidth()
                 .background(
-                    Carbon.theme.layer01,
+                    AppTheme.colors.layer01,
                     RoundedCornerShape(Dimensions.cardCornerRadius),
                 )
                 .padding(Spacing.sm),
@@ -781,13 +792,13 @@ private fun CollaboratorRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(Res.string.collection_view_user, collaborator.userId ?: 0),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
             )
             Text(
                 text = collaboratorRoleLabel(collaborator.role),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
         }
 
@@ -796,7 +807,7 @@ private fun CollaboratorRow(
                 imageVector = CarbonIcons.Close,
                 contentDescription = stringResource(Res.string.collection_view_remove),
                 onClick = { onRemove(collaborator.userId!!) },
-                tint = Carbon.theme.iconSecondary,
+                tint = AppTheme.colors.iconSecondary,
                 buttonSize = Dimensions.compactIconButtonSize,
                 iconSize = IconSizes.sm,
             )
@@ -822,28 +833,29 @@ private fun InviteLinkSection(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         HorizontalDivider(
-            color = Carbon.theme.borderSubtle00,
+            color = AppTheme.colors.borderSubtle00,
             modifier = Modifier.padding(vertical = Spacing.xs),
         )
 
         Text(
             text = stringResource(Res.string.collection_view_invite_link),
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
         )
 
-        Button(
-            label =
+        OutlinedButton(
+            onClick = { onCreateInviteLink(CollaboratorRole.Viewer) },
+            enabled = !isCreatingInvite,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
                 if (isCreatingInvite) {
                     stringResource(Res.string.collection_view_creating_invite)
                 } else {
                     stringResource(Res.string.collection_view_create_invite_viewer)
                 },
-            onClick = { onCreateInviteLink(CollaboratorRole.Viewer) },
-            buttonType = ButtonType.Secondary,
-            isEnabled = !isCreatingInvite,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            )
+        }
 
         if (inviteLink != null) {
             Column(
@@ -851,7 +863,7 @@ private fun InviteLinkSection(
                     Modifier
                         .fillMaxWidth()
                         .background(
-                            Carbon.theme.layer01,
+                            AppTheme.colors.layer01,
                             RoundedCornerShape(Dimensions.cardCornerRadius),
                         )
                         .padding(Spacing.sm),
@@ -859,20 +871,20 @@ private fun InviteLinkSection(
             ) {
                 Text(
                     text = stringResource(Res.string.collection_view_invite_token),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                 )
                 Text(
                     text = inviteLink.token,
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.textPrimary,
+                    style = AppTheme.type.bodyCompact01,
+                    color = AppTheme.colors.textPrimary,
                 )
                 val expiresAt = inviteLink.expiresAt
                 if (expiresAt != null) {
                     Text(
                         text = stringResource(Res.string.collection_view_expires, expiresAt),
-                        style = Carbon.typography.label01,
-                        color = Carbon.theme.textSecondary,
+                        style = AppTheme.type.label01,
+                        color = AppTheme.colors.textSecondary,
                     )
                 }
             }
@@ -881,8 +893,8 @@ private fun InviteLinkSection(
         if (inviteError != null) {
             Text(
                 text = inviteError,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.supportError,
             )
         }
     }

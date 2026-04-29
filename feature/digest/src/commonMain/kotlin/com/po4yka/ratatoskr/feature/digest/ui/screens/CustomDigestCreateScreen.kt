@@ -26,12 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
-import com.gabrieldrn.carbon.loading.SmallLoading
-import com.gabrieldrn.carbon.textinput.TextInput
-import com.gabrieldrn.carbon.textinput.TextInputState
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DigestFormat
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.presentation.navigation.CustomDigestCreateComponent
@@ -70,7 +68,7 @@ fun CustomDigestCreateScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         ScreenHeader(
             title = stringResource(Res.string.custom_digest_create_title),
@@ -78,15 +76,14 @@ fun CustomDigestCreateScreen(
             onBackClick = component::onBackClicked,
         )
 
-        HorizontalDivider(color = Carbon.theme.borderSubtle00)
+        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
 
         // Title input
-        TextInput(
-            label = stringResource(Res.string.custom_digest_create_title_label),
+        OutlinedTextField(
             value = state.title,
             onValueChange = { viewModel.setTitle(it) },
-            placeholderText = stringResource(Res.string.custom_digest_create_title_placeholder),
-            state = TextInputState.Enabled,
+            label = { Text(stringResource(Res.string.custom_digest_create_title_label)) },
+            placeholder = { Text(stringResource(Res.string.custom_digest_create_title_placeholder)) },
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -111,11 +108,10 @@ fun CustomDigestCreateScreen(
         }
 
         // Search bar
-        TextInput(
-            label = stringResource(Res.string.custom_digest_create_search_label),
+        OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { viewModel.onSearchChanged(it) },
-            state = TextInputState.Enabled,
+            label = { Text(stringResource(Res.string.custom_digest_create_search_label)) },
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -128,7 +124,7 @@ fun CustomDigestCreateScreen(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                SmallLoading()
+                AppSmallSpinner()
             }
         } else {
             val filtered = state.filteredSummaries
@@ -142,7 +138,7 @@ fun CustomDigestCreateScreen(
                         isSelected = summary.id in state.selectedIds,
                         onClick = { viewModel.toggleSelection(summary.id) },
                     )
-                    HorizontalDivider(color = Carbon.theme.borderSubtle00)
+                    HorizontalDivider(color = AppTheme.colors.borderSubtle00)
                 }
                 if (filtered.isEmpty()) {
                     item {
@@ -152,8 +148,8 @@ fun CustomDigestCreateScreen(
                         ) {
                             Text(
                                 text = stringResource(Res.string.custom_digest_create_no_articles),
-                                style = Carbon.typography.bodyCompact01,
-                                color = Carbon.theme.textSecondary,
+                                style = AppTheme.type.bodyCompact01,
+                                color = AppTheme.colors.textSecondary,
                             )
                         }
                     }
@@ -161,42 +157,43 @@ fun CustomDigestCreateScreen(
             }
         }
 
-        HorizontalDivider(color = Carbon.theme.borderSubtle00)
+        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
 
         // Bottom bar
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .background(Carbon.theme.layer01)
+                    .background(AppTheme.colors.layer01)
                     .padding(Spacing.md),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = stringResource(Res.string.custom_digest_create_selected_count, state.selectedIds.size),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
             )
             Button(
-                label =
+                onClick = { viewModel.createDigest() },
+                enabled = state.selectedIds.isNotEmpty() && !state.isCreating,
+            ) {
+                Text(
                     if (state.isCreating) {
                         stringResource(Res.string.custom_digest_create_creating)
                     } else {
                         stringResource(Res.string.custom_digest_create_generate)
                     },
-                onClick = { viewModel.createDigest() },
-                isEnabled = state.selectedIds.isNotEmpty() && !state.isCreating,
-                buttonType = ButtonType.Primary,
-            )
+                )
+            }
         }
 
         // Error message
         state.error?.let { errorText ->
             Text(
                 text = errorText,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.supportError,
                 modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.xs),
             )
         }
@@ -229,7 +226,7 @@ private fun SelectableSummaryRow(
             Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onClick)
-                .background(if (isSelected) Carbon.theme.layer02 else Carbon.theme.background)
+                .background(if (isSelected) AppTheme.colors.layer02 else AppTheme.colors.background)
                 .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -243,8 +240,8 @@ private fun SelectableSummaryRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = summary.title,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -252,8 +249,8 @@ private fun SelectableSummaryRow(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = stringResource(Res.string.custom_digest_create_read_time, readTime),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
         }

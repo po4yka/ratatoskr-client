@@ -38,13 +38,13 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.SmallLoading
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.ReadFilter
 import com.po4yka.ratatoskr.domain.model.SortOrder
 import com.po4yka.ratatoskr.presentation.navigation.SummaryListComponent
 import com.po4yka.ratatoskr.presentation.state.LayoutMode
 import com.po4yka.ratatoskr.presentation.state.SummaryListState
+import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import com.po4yka.ratatoskr.core.ui.components.ContextualEmptyState
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateType
@@ -109,7 +109,7 @@ fun SummaryListScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         // Header with actions
         SummaryListHeader(
@@ -255,14 +255,14 @@ private fun SummaryListHeader(
             Modifier
                 .fillMaxWidth()
                 .height(Dimensions.headerHeight)
-                .background(Carbon.theme.background)
+                .background(AppTheme.colors.background)
                 .padding(horizontal = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = title,
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading04,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f).semantics { heading() },
         )
 
@@ -483,7 +483,7 @@ private fun SummaryListView(
                             .padding(Spacing.md),
                     contentAlignment = Alignment.Center,
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                 }
             }
         }
@@ -511,9 +511,9 @@ private fun SyncStatusBanner(
     // Priority: offline > sync error > stale data
     val (backgroundColor, text) =
         when {
-            isOffline -> Carbon.theme.supportWarning to offlineText
-            syncError != null -> Carbon.theme.supportError to syncError
-            else -> Carbon.theme.supportWarning to staleText
+            isOffline -> AppTheme.colors.supportWarning to offlineText
+            syncError != null -> AppTheme.colors.supportError to syncError
+            else -> AppTheme.colors.supportWarning to staleText
         }
 
     AnimatedVisibility(
@@ -534,14 +534,14 @@ private fun SyncStatusBanner(
             Icon(
                 imageVector = CarbonIcons.WarningAlt,
                 contentDescription = null,
-                tint = Carbon.theme.textOnColor,
+                tint = AppTheme.colors.textOnColor,
                 modifier = Modifier.size(IconSizes.sm),
             )
             Spacer(modifier = Modifier.width(Spacing.xs))
             Text(
                 text = text,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textOnColor,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textOnColor,
             )
         }
     }
@@ -614,7 +614,7 @@ private fun SummaryGridView(
                             .padding(Spacing.md),
                     contentAlignment = Alignment.Center,
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                 }
             }
         }

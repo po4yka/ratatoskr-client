@@ -46,9 +46,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.Loading
-import com.gabrieldrn.carbon.progressbar.ProgressBar
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import androidx.compose.material3.LinearProgressIndicator
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.MarkdownElement
 import com.mikepenz.markdown.model.DefaultMarkdownColors
@@ -61,6 +60,7 @@ import com.po4yka.ratatoskr.domain.model.ProcessingStage
 import com.po4yka.ratatoskr.domain.model.ReadingPreferences
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.presentation.navigation.SummaryDetailComponent
+import com.po4yka.ratatoskr.core.ui.components.AppSpinner
 import com.po4yka.ratatoskr.core.ui.components.AddToCollectionDialog
 import com.po4yka.ratatoskr.core.ui.components.AnnotationDialog
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
@@ -135,7 +135,7 @@ fun SummaryDetailScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         // Header
         SummaryDetailHeader(
@@ -161,7 +161,7 @@ fun SummaryDetailScreen(
                     Modifier
                         .fillMaxWidth()
                         .semantics { liveRegion = LiveRegionMode.Polite }
-                        .background(Carbon.theme.layer02)
+                        .background(AppTheme.colors.layer02)
                         .padding(horizontal = Spacing.md, vertical = Spacing.xs),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
@@ -169,13 +169,13 @@ fun SummaryDetailScreen(
                 Icon(
                     imageVector = CarbonIcons.WifiOff,
                     contentDescription = null,
-                    tint = Carbon.theme.supportWarning,
+                    tint = AppTheme.colors.supportWarning,
                     modifier = Modifier.size(IconSizes.sm),
                 )
                 Text(
                     text = stringResource(Res.string.summary_detail_reading_offline),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
         }
@@ -184,8 +184,8 @@ fun SummaryDetailScreen(
         state.exportError?.let { exportError ->
             Text(
                 text = exportError,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.supportError,
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -202,8 +202,8 @@ fun SummaryDetailScreen(
                         .fillMaxWidth()
                         .padding(horizontal = Spacing.md, vertical = Spacing.xs),
             ) {
-                ProgressBar(
-                    value = state.feedback.resummarizeProgress,
+                LinearProgressIndicator(
+                    progress = { state.feedback.resummarizeProgress },
                     modifier = Modifier.fillMaxWidth().semantics { contentDescription = reSummarizeDesc },
                 )
                 Text(
@@ -213,8 +213,8 @@ fun SummaryDetailScreen(
                         } else {
                             processingStageLabel(state.feedback.resummarizeStage)
                         },
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                     modifier = Modifier.padding(top = Spacing.xs),
                 )
             }
@@ -224,8 +224,8 @@ fun SummaryDetailScreen(
         state.feedback.resummarizeError?.let { errorMessage ->
             Text(
                 text = errorMessage,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.supportError,
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -259,7 +259,7 @@ fun SummaryDetailScreen(
                             .weight(1f),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Loading(modifier = Modifier.size(88.dp))
+                    AppSpinner(modifier = Modifier.size(88.dp))
                 }
             }
 
@@ -366,12 +366,12 @@ private fun AudioPlayerRow(
     val isPlaying = status == AudioStatus.PLAYING
     val isActive = audioState != null && status != AudioStatus.ERROR
 
-    HorizontalDivider(color = Carbon.theme.borderSubtle00)
+    HorizontalDivider(color = AppTheme.colors.borderSubtle00)
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(horizontal = Spacing.md, vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
@@ -383,7 +383,7 @@ private fun AudioPlayerRow(
                 } else {
                     stringResource(Res.string.audio_loading)
                 }
-            Loading(
+            AppSpinner(
                 modifier = Modifier.size(IconSizes.sm).semantics { contentDescription = audioLoadingDesc },
             )
         } else {
@@ -419,8 +419,8 @@ private fun AudioPlayerRow(
             }
         Text(
             text = audioLabel,
-            style = Carbon.typography.label01,
-            color = if (status == AudioStatus.ERROR) Carbon.theme.supportError else Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = if (status == AudioStatus.ERROR) AppTheme.colors.supportError else AppTheme.colors.textSecondary,
             modifier = Modifier.weight(1f),
         )
 
@@ -429,7 +429,7 @@ private fun AudioPlayerRow(
                 imageVector = CarbonIcons.Close,
                 contentDescription = stringResource(Res.string.audio_stop_narration),
                 onClick = onStop,
-                tint = Carbon.theme.iconSecondary,
+                tint = AppTheme.colors.iconSecondary,
                 buttonSize = IconSizes.sm,
                 iconSize = IconSizes.sm,
             )
@@ -480,9 +480,9 @@ private fun SummaryDetailHeader(
                     onClick = onFavoriteClick,
                     tint =
                         if (s.isFavorited) {
-                            Carbon.theme.supportError
+                            AppTheme.colors.supportError
                         } else {
-                            Carbon.theme.iconSecondary
+                            AppTheme.colors.iconSecondary
                         },
                 )
 
@@ -492,9 +492,9 @@ private fun SummaryDetailHeader(
                     onClick = onThumbsUpClick,
                     tint =
                         if (feedbackRating == FeedbackRating.UP) {
-                            Carbon.theme.supportSuccess
+                            AppTheme.colors.supportSuccess
                         } else {
-                            Carbon.theme.iconSecondary
+                            AppTheme.colors.iconSecondary
                         },
                 )
 
@@ -504,9 +504,9 @@ private fun SummaryDetailHeader(
                     onClick = onThumbsDownClick,
                     tint =
                         if (feedbackRating == FeedbackRating.DOWN) {
-                            Carbon.theme.supportError
+                            AppTheme.colors.supportError
                         } else {
-                            Carbon.theme.iconSecondary
+                            AppTheme.colors.iconSecondary
                         },
                 )
 
@@ -526,7 +526,7 @@ private fun SummaryDetailHeader(
                     icon = if (isHighlightModeActive) CarbonIcons.BookmarkAdd else CarbonIcons.Bookmark,
                     contentDescription = highlightDesc,
                     onClick = onHighlightModeClick,
-                    tint = if (isHighlightModeActive) Carbon.theme.linkPrimary else Carbon.theme.iconSecondary,
+                    tint = if (isHighlightModeActive) AppTheme.colors.linkPrimary else AppTheme.colors.iconSecondary,
                 )
 
                 val readDesc =
@@ -538,7 +538,7 @@ private fun SummaryDetailHeader(
                 Icon(
                     imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
                     contentDescription = readDesc,
-                    tint = if (s.isRead) Carbon.theme.supportSuccess else Carbon.theme.iconSecondary,
+                    tint = if (s.isRead) AppTheme.colors.supportSuccess else AppTheme.colors.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
                 )
 
@@ -552,7 +552,7 @@ private fun SummaryDetailHeader(
                     icon = CarbonIcons.Renew,
                     contentDescription = stringResource(Res.string.summary_detail_re_summarize),
                     onClick = { if (!isResummarizing) onResummarizeClick() },
-                    tint = Carbon.theme.iconSecondary,
+                    tint = AppTheme.colors.iconSecondary,
                     modifier = Modifier.alpha(if (isResummarizing) 0.4f else 1f),
                 )
 
@@ -610,14 +610,14 @@ private fun SummaryDetailContent(
     val imageTransformer = remember(imageUrlTransformer) { ProxiedImageTransformer(imageUrlTransformer) }
 
     Column(modifier = modifier.fillMaxSize()) {
-        ProgressBar(
-            value = readingProgress,
+        LinearProgressIndicator(
+            progress = { readingProgress },
             modifier = Modifier.fillMaxWidth().height(2.dp),
         )
 
-        val textPrimary = Carbon.theme.textPrimary
-        val layer01 = Carbon.theme.layer01
-        val borderSubtle00 = Carbon.theme.borderSubtle00
+        val textPrimary = AppTheme.colors.textPrimary
+        val layer01 = AppTheme.colors.layer01
+        val borderSubtle00 = AppTheme.colors.borderSubtle00
         val markdownColors =
             remember(textPrimary, layer01, borderSubtle00) {
                 DefaultMarkdownColors(
@@ -629,11 +629,11 @@ private fun SummaryDetailContent(
                 )
             }
 
-        val heading04 = Carbon.typography.heading04
-        val heading03 = Carbon.typography.heading03
-        val headingCompact01 = Carbon.typography.headingCompact01
-        val bodyCompact01 = Carbon.typography.bodyCompact01
-        val body01 = Carbon.typography.body01
+        val heading04 = AppTheme.type.heading04
+        val heading03 = AppTheme.type.heading03
+        val headingCompact01 = AppTheme.type.headingCompact01
+        val bodyCompact01 = AppTheme.type.bodyCompact01
+        val body01 = AppTheme.type.body01
         val markdownTypography =
             remember(
                 readingPreferences.fontSizeScale,
@@ -663,8 +663,8 @@ private fun SummaryDetailContent(
             ) {
                 Text(
                     text = stringResource(Res.string.summary_detail_no_content),
-                    style = Carbon.typography.body01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.body01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
         } else {
@@ -679,7 +679,7 @@ private fun SummaryDetailContent(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Loading(modifier = Modifier.size(48.dp))
+                        AppSpinner(modifier = Modifier.size(48.dp))
                     }
                 },
                 error = { _ ->
@@ -690,14 +690,14 @@ private fun SummaryDetailContent(
                     ) {
                         item(key = "header") { ArticleHeader(summary = summary) }
                         item(key = "divider_top") {
-                            HorizontalDivider(color = Carbon.theme.borderSubtle00)
+                            HorizontalDivider(color = AppTheme.colors.borderSubtle00)
                             Spacer(modifier = Modifier.height(Spacing.md))
                         }
                         item(key = "fallback_text") {
                             Text(
                                 text = markdownContent,
-                                style = Carbon.typography.body01,
-                                color = Carbon.theme.textPrimary,
+                                style = AppTheme.type.body01,
+                                color = AppTheme.colors.textPrimary,
                             )
                         }
                         item(key = "footer") { ArticleFooter(sourceUrl = summary.sourceUrl) }
@@ -714,7 +714,7 @@ private fun SummaryDetailContent(
                         item(key = "header") { ArticleHeader(summary = summary) }
 
                         item(key = "divider_top") {
-                            HorizontalDivider(color = Carbon.theme.borderSubtle00)
+                            HorizontalDivider(color = AppTheme.colors.borderSubtle00)
                             Spacer(modifier = Modifier.height(Spacing.md))
                         }
 
@@ -771,7 +771,7 @@ private fun SummaryDetailContent(
                                     Icon(
                                         imageVector = CarbonIcons.WarningAlt,
                                         contentDescription = stringResource(Res.string.summary_detail_has_annotation),
-                                        tint = Carbon.theme.textSecondary,
+                                        tint = AppTheme.colors.textSecondary,
                                         modifier = Modifier.size(12.dp).align(Alignment.TopEnd),
                                     )
                                 }
@@ -793,8 +793,8 @@ private fun ArticleHeader(summary: Summary) {
     Column {
         Text(
             text = summary.title,
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading04,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.semantics { heading() },
         )
         Spacer(modifier = Modifier.height(Spacing.xs))
@@ -813,8 +813,8 @@ private fun ArticleHeader(summary: Summary) {
 
         Text(
             text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.summary_detail_unknown_source),
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textSecondary,
         )
         val createdAtLabel = formatDate(summary.createdAt)
         val readTimeLabel =
@@ -830,8 +830,8 @@ private fun ArticleHeader(summary: Summary) {
                         append(it)
                     }
                 },
-            style = Carbon.typography.label01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.textSecondary,
         )
         Spacer(modifier = Modifier.height(Spacing.md))
 
@@ -853,21 +853,21 @@ private fun ArticleHeader(summary: Summary) {
 private fun ArticleFooter(sourceUrl: String) {
     Column {
         Spacer(modifier = Modifier.height(Spacing.lg))
-        HorizontalDivider(color = Carbon.theme.borderSubtle00)
+        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
         Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
             text = stringResource(Res.string.summary_detail_original_article),
-            style = Carbon.typography.headingCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.headingCompact01,
+            color = AppTheme.colors.textPrimary,
         )
         Spacer(modifier = Modifier.height(Spacing.xs))
 
         val uriHandler = LocalUriHandler.current
         Text(
             text = sourceUrl,
-            style = Carbon.typography.label01,
-            color = Carbon.theme.linkPrimary,
+            style = AppTheme.type.label01,
+            color = AppTheme.colors.linkPrimary,
             modifier =
                 Modifier
                     .semantics { role = Role.Button }
