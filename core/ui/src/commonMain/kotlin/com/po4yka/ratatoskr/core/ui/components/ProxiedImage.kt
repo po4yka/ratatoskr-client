@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 
 val LocalImageUrlTransformer = compositionLocalOf<(String) -> String> { { it } }
 
@@ -25,7 +25,7 @@ fun ProxiedImage(
     AsyncImage(
         model = proxiedUrl,
         contentDescription = contentDescription,
-        modifier = modifier.background(Carbon.theme.layer02),
+        modifier = modifier.background(AppTheme.colors.layer02),
         contentScale = contentScale,
     )
 }

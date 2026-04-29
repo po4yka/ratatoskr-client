@@ -8,19 +8,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Collection
 
-/**
- * Collection item component using Carbon Design System
- */
+/** Collection item for list rows. */
 @Suppress("FunctionNaming", "UnstableCollections") // Collection is a domain model, not kotlin.collections
 @Composable
 fun CollectionItem(
@@ -40,7 +38,7 @@ fun CollectionItem(
         Icon(
             imageVector = getIconForName(collection.iconName),
             contentDescription = collection.name,
-            tint = Carbon.theme.iconPrimary,
+            tint = AppTheme.colors.iconPrimary,
             modifier = Modifier.size(24.dp),
         )
 
@@ -49,8 +47,8 @@ fun CollectionItem(
         // Name
         Text(
             text = collection.name,
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.bodyCompact01,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f),
         )
 
@@ -58,8 +56,8 @@ fun CollectionItem(
         if (collection.count > 0) {
             Text(
                 text = collection.count.toString(),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textSecondary,
             )
         }
     }
@@ -67,17 +65,17 @@ fun CollectionItem(
 
 private fun getIconForName(name: String?): ImageVector {
     return when (name) {
-        "inbox" -> CarbonIcons.Email
-        "bookmark" -> CarbonIcons.Bookmark
-        "palette" -> CarbonIcons.ColorPalette
-        "lightbulb" -> CarbonIcons.Idea
-        "map" -> CarbonIcons.Map
-        "restaurant" -> CarbonIcons.Restaurant
-        "sports_esports" -> CarbonIcons.GameWireless
-        "spa" -> CarbonIcons.RainDrop
-        "diamond" -> CarbonIcons.Gem
-        "architecture" -> CarbonIcons.Home
-        "delete" -> CarbonIcons.TrashCan
-        else -> CarbonIcons.Folder
+        "inbox" -> AppIcons.Email
+        "bookmark" -> AppIcons.Bookmark
+        "palette" -> AppIcons.ColorPalette
+        "lightbulb" -> AppIcons.Idea
+        "map" -> AppIcons.Map
+        "restaurant" -> AppIcons.Restaurant
+        "sports_esports" -> AppIcons.GameWireless
+        "spa" -> AppIcons.RainDrop
+        "diamond" -> AppIcons.Gem
+        "architecture" -> AppIcons.Home
+        "delete" -> AppIcons.TrashCan
+        else -> AppIcons.Folder
     }
 }

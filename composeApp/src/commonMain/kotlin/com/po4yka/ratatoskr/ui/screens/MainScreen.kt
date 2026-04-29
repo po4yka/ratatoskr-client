@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.nav_collections
 import ratatoskr.core.ui.generated.resources.nav_read_later
@@ -40,7 +40,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.po4yka.ratatoskr.navigation.MainChildDescriptor
 import com.po4yka.ratatoskr.navigation.MainTab
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.presentation.navigation.MainComponent
 
 /** Minimum width to switch from bottom-bar to side navigation rail layout. */
@@ -66,7 +66,7 @@ fun MainScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         val isExpanded = maxWidth >= EXPANDED_WIDTH_THRESHOLD
 
@@ -129,42 +129,42 @@ private fun NavigationRail(
             Modifier
                 .width(80.dp)
                 .fillMaxHeight()
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
         RailItem(
-            icon = CarbonIcons.Bookmark,
+            icon = AppIcons.Bookmark,
             label = stringResource(Res.string.nav_read_later),
             isSelected = activeChild.tab == MainTab.SUMMARY_LIST,
             onClick = { onTabSelected(MainTab.SUMMARY_LIST) },
         )
 
         RailItem(
-            icon = CarbonIcons.Search,
+            icon = AppIcons.Search,
             label = stringResource(Res.string.nav_search),
             isSelected = activeChild.tab == MainTab.SEARCH,
             onClick = { onTabSelected(MainTab.SEARCH) },
         )
 
         RailItem(
-            icon = CarbonIcons.Folder,
+            icon = AppIcons.Folder,
             label = stringResource(Res.string.nav_collections),
             isSelected = activeChild.tab == MainTab.COLLECTIONS,
             onClick = { onTabSelected(MainTab.COLLECTIONS) },
         )
 
         RailItem(
-            icon = CarbonIcons.Document,
+            icon = AppIcons.Document,
             label = stringResource(Res.string.nav_stats),
             isSelected = activeChild.tab == MainTab.STATS,
             onClick = { onTabSelected(MainTab.STATS) },
         )
 
         RailItem(
-            icon = CarbonIcons.Settings,
+            icon = AppIcons.Settings,
             label = stringResource(Res.string.nav_settings),
             isSelected = activeChild.tab == MainTab.SETTINGS,
             onClick = { onTabSelected(MainTab.SETTINGS) },
@@ -181,17 +181,17 @@ private fun RailItem(
     onClick: () -> Unit,
 ) {
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.iconPrimary else Carbon.theme.iconSecondary,
+        targetValue = if (isSelected) AppTheme.colors.iconPrimary else AppTheme.colors.iconSecondary,
         animationSpec = tween(durationMillis = 200),
         label = "railIconColor",
     )
     val textColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.textPrimary else Carbon.theme.textSecondary,
+        targetValue = if (isSelected) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
         animationSpec = tween(durationMillis = 200),
         label = "railTextColor",
     )
     val indicatorColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.borderInteractive else Carbon.theme.layer01,
+        targetValue = if (isSelected) AppTheme.colors.borderInteractive else AppTheme.colors.layer01,
         animationSpec = tween(durationMillis = 200),
         label = "railIndicatorColor",
     )
@@ -231,7 +231,7 @@ private fun RailItem(
             )
             Text(
                 text = label,
-                style = Carbon.typography.label01,
+                style = AppTheme.type.label01,
                 color = textColor,
             )
         }
@@ -249,40 +249,40 @@ private fun BottomNavigation(
             Modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         NavItem(
-            icon = CarbonIcons.Bookmark,
+            icon = AppIcons.Bookmark,
             label = stringResource(Res.string.nav_read_later),
             isSelected = activeChild.tab == MainTab.SUMMARY_LIST,
             onClick = { onTabSelected(MainTab.SUMMARY_LIST) },
         )
 
         NavItem(
-            icon = CarbonIcons.Search,
+            icon = AppIcons.Search,
             label = stringResource(Res.string.nav_search),
             isSelected = activeChild.tab == MainTab.SEARCH,
             onClick = { onTabSelected(MainTab.SEARCH) },
         )
 
         NavItem(
-            icon = CarbonIcons.Folder,
+            icon = AppIcons.Folder,
             label = stringResource(Res.string.nav_collections),
             isSelected = activeChild.tab == MainTab.COLLECTIONS,
             onClick = { onTabSelected(MainTab.COLLECTIONS) },
         )
 
         NavItem(
-            icon = CarbonIcons.Document,
+            icon = AppIcons.Document,
             label = stringResource(Res.string.nav_stats),
             isSelected = activeChild.tab == MainTab.STATS,
             onClick = { onTabSelected(MainTab.STATS) },
         )
 
         NavItem(
-            icon = CarbonIcons.Settings,
+            icon = AppIcons.Settings,
             label = stringResource(Res.string.nav_settings),
             isSelected = activeChild.tab == MainTab.SETTINGS,
             onClick = { onTabSelected(MainTab.SETTINGS) },
@@ -299,17 +299,17 @@ private fun NavItem(
     onClick: () -> Unit,
 ) {
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.iconPrimary else Carbon.theme.iconSecondary,
+        targetValue = if (isSelected) AppTheme.colors.iconPrimary else AppTheme.colors.iconSecondary,
         animationSpec = tween(durationMillis = 200),
         label = "iconColor",
     )
     val textColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.textPrimary else Carbon.theme.textSecondary,
+        targetValue = if (isSelected) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
         animationSpec = tween(durationMillis = 200),
         label = "textColor",
     )
     val indicatorColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.borderInteractive else Carbon.theme.layer01,
+        targetValue = if (isSelected) AppTheme.colors.borderInteractive else AppTheme.colors.layer01,
         animationSpec = tween(durationMillis = 200),
         label = "indicatorColor",
     )
@@ -346,7 +346,7 @@ private fun NavItem(
             )
             Text(
                 text = label,
-                style = Carbon.typography.label01,
+                style = AppTheme.type.label01,
                 color = textColor,
             )
         }

@@ -25,14 +25,14 @@ import ratatoskr.core.ui.generated.resources.custom_digest_view_error
 import ratatoskr.core.ui.generated.resources.custom_digest_view_failed
 import ratatoskr.core.ui.generated.resources.custom_digest_view_generating
 import ratatoskr.core.ui.generated.resources.custom_digest_view_not_found
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.SmallLoading
-import com.gabrieldrn.carbon.progressbar.IndeterminateProgressBar
+import androidx.compose.material3.LinearProgressIndicator
+import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.CustomDigestStatus
 import com.po4yka.ratatoskr.presentation.navigation.CustomDigestViewComponent
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
@@ -50,7 +50,7 @@ fun CustomDigestViewScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         ScreenHeader(
             title = state.digest?.title ?: stringResource(Res.string.custom_digest_view_default_title),
@@ -58,13 +58,13 @@ fun CustomDigestViewScreen(
             onBackClick = component::onBackClicked,
             actions = {
                 if (state.digest != null) {
-                    CarbonIconButton(
-                        imageVector = CarbonIcons.TrashCan,
+                    AppIconButton(
+                        imageVector = AppIcons.TrashCan,
                         contentDescription = stringResource(Res.string.custom_digest_view_delete),
                         onClick = {
                             viewModel.deleteDigest(component.digestId) { component.onBackClicked() }
                         },
-                        tint = Carbon.theme.supportError,
+                        tint = AppTheme.colors.supportError,
                         iconSize = IconSizes.md,
                     )
                 }
@@ -77,7 +77,7 @@ fun CustomDigestViewScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                 }
             }
 
@@ -88,12 +88,12 @@ fun CustomDigestViewScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    IndeterminateProgressBar(modifier = Modifier.fillMaxWidth())
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     Spacer(modifier = Modifier.height(Spacing.sm))
                     Text(
                         text = stringResource(Res.string.custom_digest_view_generating),
-                        style = Carbon.typography.body01,
-                        color = Carbon.theme.textSecondary,
+                        style = AppTheme.type.body01,
+                        color = AppTheme.colors.textSecondary,
                     )
                 }
             }
@@ -106,8 +106,8 @@ fun CustomDigestViewScreen(
                     item {
                         Text(
                             text = state.digest!!.content!!,
-                            style = Carbon.typography.body01,
-                            color = Carbon.theme.textPrimary,
+                            style = AppTheme.type.body01,
+                            color = AppTheme.colors.textPrimary,
                             modifier = Modifier.padding(vertical = Spacing.md),
                         )
                     }
@@ -121,23 +121,23 @@ fun CustomDigestViewScreen(
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Icon(
-                        imageVector = CarbonIcons.WarningAlt,
+                        imageVector = AppIcons.WarningAlt,
                         contentDescription = stringResource(Res.string.custom_digest_view_error),
-                        tint = Carbon.theme.supportError,
+                        tint = AppTheme.colors.supportError,
                         modifier = Modifier.size(IconSizes.xl),
                     )
                     Spacer(modifier = Modifier.height(Spacing.sm))
                     Text(
                         text = stringResource(Res.string.custom_digest_view_failed),
-                        style = Carbon.typography.heading03,
-                        color = Carbon.theme.supportError,
+                        style = AppTheme.type.heading03,
+                        color = AppTheme.colors.supportError,
                     )
                     state.error?.let { errorText ->
                         Spacer(modifier = Modifier.height(Spacing.xs))
                         Text(
                             text = errorText,
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textSecondary,
                         )
                     }
                 }
@@ -150,8 +150,8 @@ fun CustomDigestViewScreen(
                 ) {
                     Text(
                         text = stringResource(Res.string.custom_digest_view_not_found),
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textSecondary,
+                        style = AppTheme.type.bodyCompact01,
+                        color = AppTheme.colors.textSecondary,
                     )
                 }
             }

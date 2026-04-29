@@ -16,9 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.telegram_auth_close
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.feature.auth.util.UrlDecoder
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.domain.model.TelegramAuthData
 import com.po4yka.ratatoskr.util.config.AppConfig
 import com.po4yka.ratatoskr.util.redactQueryAndFragment
@@ -27,9 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 
 private val logger = KotlinLogging.logger {}
 
-/**
- * Telegram authentication screen using Carbon Design System
- */
+/** Telegram authentication screen. */
 @Composable
 fun TelegramAuthScreen(
     isAuthenticated: Boolean,
@@ -56,11 +54,11 @@ fun TelegramAuthScreen(
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         // Close button
         Box(Modifier.padding(top = 16.dp, start = 16.dp)) {
-            CarbonIconButton(
+            AppIconButton(
                 imageVector = Icons.Default.Close,
                 contentDescription = stringResource(Res.string.telegram_auth_close),
                 onClick = onDismiss,

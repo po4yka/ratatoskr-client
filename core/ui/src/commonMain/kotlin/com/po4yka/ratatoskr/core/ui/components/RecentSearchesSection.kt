@@ -19,8 +19,8 @@ import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.recent_searches_clear_all
 import ratatoskr.core.ui.generated.resources.recent_searches_remove
 import ratatoskr.core.ui.generated.resources.recent_searches_title
-import com.gabrieldrn.carbon.Carbon
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -41,7 +41,7 @@ fun RecentSearchesSection(
 ) {
     if (searches.isEmpty()) return
 
-    CarbonLayerCard(
+    LayerCard(
         modifier =
             modifier
                 .fillMaxWidth()
@@ -61,11 +61,11 @@ fun RecentSearchesSection(
             ) {
                 Text(
                     text = stringResource(Res.string.recent_searches_title),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                 )
 
-                CarbonTextButton(
+                AppTextButton(
                     label = stringResource(Res.string.recent_searches_clear_all),
                     onClick = onClearAll,
                 )
@@ -112,26 +112,26 @@ private fun RecentSearchItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = CarbonIcons.Search,
+                imageVector = AppIcons.Search,
                 contentDescription = null,
-                tint = Carbon.theme.iconSecondary,
+                tint = AppTheme.colors.iconSecondary,
                 modifier = Modifier.size(IconSizes.xs),
             )
 
             Text(
                 text = query,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
             )
         }
 
-        CarbonIconButton(
-            imageVector = CarbonIcons.Close,
+        AppIconButton(
+            imageVector = AppIcons.Close,
             contentDescription = stringResource(Res.string.recent_searches_remove, query),
             onClick = onDelete,
             buttonSize = Dimensions.compactIconButtonSize,
             iconSize = IconSizes.xs,
-            tint = Carbon.theme.iconSecondary,
+            tint = AppTheme.colors.iconSecondary,
         )
     }
 }

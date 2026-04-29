@@ -13,12 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 @Composable
-fun CarbonSelectableChip(
+fun SelectableChip(
     label: String,
     selected: Boolean,
     onClick: () -> Unit,
@@ -30,21 +30,21 @@ fun CarbonSelectableChip(
     val shape = RoundedCornerShape(Dimensions.chipCornerRadius)
     val backgroundColor =
         if (selected) {
-            Carbon.theme.backgroundInverse
+            AppTheme.colors.backgroundInverse
         } else {
-            Carbon.theme.layer01
+            AppTheme.colors.layer01
         }
     val borderColor =
         if (selected) {
-            Carbon.theme.backgroundInverse
+            AppTheme.colors.backgroundInverse
         } else {
-            Carbon.theme.borderSubtle00
+            AppTheme.colors.borderSubtle00
         }
     val textColor =
         if (selected) {
-            Carbon.theme.textOnColor
+            AppTheme.colors.textOnColor
         } else {
-            Carbon.theme.textSecondary
+            AppTheme.colors.textSecondary
         }
 
     Box(
@@ -64,7 +64,7 @@ fun CarbonSelectableChip(
     ) {
         Text(
             text = label,
-            style = Carbon.typography.bodyCompact01,
+            style = AppTheme.type.bodyCompact01,
             color = textColor,
         )
     }

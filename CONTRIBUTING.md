@@ -70,7 +70,7 @@ is the source of truth for cross-feature exceptions.
 
 ## UI rules
 
-- Use `RatatoskrTheme` and Carbon components from `core/ui/`.
+- Use `RatatoskrTheme`, `AppTheme.colors`/`AppTheme.type`, and components from `core/ui/`.
 - Add user-facing strings to `core/ui/src/commonMain/composeResources/values{,-ru}/strings.xml`,
   not to `androidApp/` resources.
 - Reuse existing components from `core/ui/.../components/` before

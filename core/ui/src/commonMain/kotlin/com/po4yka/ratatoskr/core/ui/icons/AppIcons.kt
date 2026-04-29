@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
  *
  * All icons are 32x32dp by default (Carbon's standard size).
  */
-object CarbonIcons {
+object AppIcons {
     // Icon dimension constants
     private val ICON_SIZE = 32.dp
     private const val VIEWPORT_SIZE = 32f

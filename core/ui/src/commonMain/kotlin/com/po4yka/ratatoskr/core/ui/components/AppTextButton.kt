@@ -7,11 +7,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 @Composable
-fun CarbonTextButton(
+fun AppTextButton(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -20,8 +20,8 @@ fun CarbonTextButton(
 ) {
     Text(
         text = label,
-        style = Carbon.typography.label01,
-        color = if (enabled) Carbon.theme.linkPrimary else Carbon.theme.textDisabled,
+        style = AppTheme.type.label01,
+        color = if (enabled) AppTheme.colors.linkPrimary else AppTheme.colors.textDisabled,
         modifier =
             modifier
                 .clickable(

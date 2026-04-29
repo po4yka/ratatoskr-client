@@ -67,7 +67,7 @@ private fun FilterChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CarbonSelectableChip(
+    SelectableChip(
         label = label,
         selected = isSelected,
         onClick = onClick,
