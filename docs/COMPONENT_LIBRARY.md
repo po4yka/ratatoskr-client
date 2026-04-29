@@ -59,42 +59,61 @@ TagChip(
 )
 ```
 
-## Carbon Design System Integration
+## Design System Integration
 
-All components use Carbon theme values:
+All components use Material 3 as the substrate with project-owned `AppTheme` tokens.
 
 ### Colors
 
 ```kotlin
-Carbon.theme.layer01      // Card backgrounds
-Carbon.theme.textPrimary  // Primary text
-Carbon.theme.textSecondary // Secondary text
-Carbon.theme.iconPrimary  // Icons
-Carbon.theme.supportError // Error states
+AppTheme.colors.layer01      // Card backgrounds
+AppTheme.colors.textPrimary  // Primary text
+AppTheme.colors.textSecondary // Secondary text
+AppTheme.colors.iconPrimary  // Icons
+AppTheme.colors.supportError // Error states
+// TODO: confirm exact AppTheme field list — see core/ui/.../theme/AppColors.kt
 ```
 
 ### Typography
 
 ```kotlin
-Carbon.typography.heading03      // Titles
-Carbon.typography.body01         // Body text
-Carbon.typography.bodyCompact01  // Compact body
-Carbon.typography.label01        // Labels
+AppTheme.type.heading03      // Titles
+AppTheme.type.body01         // Body text
+AppTheme.type.bodyCompact01  // Compact body
+AppTheme.type.label01        // Labels
+// TODO: confirm exact AppTheme.type field list — see core/ui/.../theme/AppType.kt
 ```
 
 ### Icons
 
-Use `CarbonIcons` object:
+Use `AppIcons` object:
 
 ```kotlin
-import com.po4yka.ratatoskr.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 
 Icon(
-    imageVector = CarbonIcons.Bookmark,
+    imageVector = AppIcons.Bookmark,
     contentDescription = "Bookmark",
-    tint = Carbon.theme.iconPrimary
+    tint = AppTheme.colors.iconPrimary
 )
 ```
+
+### Project Wrapper Components
+
+Prefer these wrappers in `core/ui/.../components/` over raw Material 3 equivalents:
+
+| Wrapper | Purpose |
+|---------|---------|
+| `AppCheckbox` | Themed checkbox |
+| `AppDialog` | Themed dialog |
+| `AppIconButton` | Themed icon button |
+| `LayerCard` | Themed card surface |
+| `AppMenu` / `AppMenuItem` / `AppOverflowMenuButton` | Themed menus |
+| `SelectableChip` | Filter / selectable chip |
+| `AppSlider` | Themed slider |
+| `TextArea` | Multi-line text input |
+| `AppTextButton` | Text-style button |
+| `AppSpinner` / `AppSmallSpinner` | Loading indicators (wraps `CircularProgressIndicator`) |
 
 ## Component Pattern
 
@@ -109,15 +128,15 @@ fun MyComponent(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(Carbon.theme.layer01)
+            .background(AppTheme.colors.layer01)
             .clickable(onClick = onClick)
             .padding(16.dp),
     ) {
         // Content
         Text(
             text = data.title,
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
         )
     }
 }
@@ -131,4 +150,4 @@ Feature-specific UI should live with the owning feature module, not under `compo
 
 ---
 
-**Related**: [VIEWMODEL_GUIDE.md](VIEWMODEL_GUIDE.md) | Carbon Docs: https://gabrieldrn.github.io/carbon-compose/
+**Related**: [VIEWMODEL_GUIDE.md](VIEWMODEL_GUIDE.md)

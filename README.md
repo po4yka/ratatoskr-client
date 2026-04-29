@@ -67,12 +67,12 @@ configuration, and troubleshooting.
 | Concurrency | [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) | `Flow`, `StateFlow`, structured concurrency |
 | Date/Time | [kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime) | ISO 8601, timezone-correct |
 | Logging | [kotlin-logging](https://github.com/oshai/kotlin-logging) | Structured logging facade |
-| UI Kit | [Carbon Compose](https://github.com/gabrieldrn/Carbon) | IBM Carbon Design System tokens |
+| UI Kit | Material 3 + project `AppTheme` | Custom design tokens in `core/ui/.../theme/` |
 | Hot Reload | [Compose Hot Reload](https://github.com/JetBrains/compose-hot-reload) | Desktop dev loop |
 
 ### Android (androidApp + Android actuals)
 
-- **Jetpack Compose** UI (M3 + Carbon)
+- **Jetpack Compose** UI (Material 3 + `AppTheme`)
 - **Tink AEAD + DataStore** secure JWT storage (see [`docs/SECURITY.md`](docs/SECURITY.md))
 - **OkHttp** Ktor engine
 - **WorkManager** background sync
@@ -138,7 +138,7 @@ ratatoskr-client/
 │   ├── common/              # Cross-feature domain primitives, AppConfig, BaseViewModel, error types
 │   ├── data/                # Ktor ApiClient, SQLDelight, SecureStorage actuals, generic API wrappers
 │   ├── navigation/          # Route contracts (RootNavigation, MainNavigation)
-│   └── ui/                  # Shared Compose components, RatatoskrTheme, CarbonIcons, Compose Resources
+│   └── ui/                  # Shared Compose components, RatatoskrTheme, AppIcons, Compose Resources
 ├── feature/
 │   ├── auth/                # Telegram login screen, JWT exchange, login session
 │   ├── collections/         # Folders, tags, RSS, OPML import/export
