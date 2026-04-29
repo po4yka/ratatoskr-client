@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
@@ -51,7 +51,7 @@ fun ContextualEmptyState(
                 EmptyStateConfig(
                     title = "No articles yet",
                     message = "Submit a URL to generate your first summary",
-                    icon = CarbonIcons.Document,
+                    icon = AppIcons.Document,
                     actionText = null,
                 )
             EmptyStateType.NO_SEARCH_RESULTS ->
@@ -63,49 +63,49 @@ fun ContextualEmptyState(
                         } else {
                             "No articles match \"$searchQuery\""
                         },
-                    icon = CarbonIcons.Search,
+                    icon = AppIcons.Search,
                     actionText = "Clear search",
                 )
             EmptyStateType.NO_UNREAD_ARTICLES ->
                 EmptyStateConfig(
                     title = "All caught up!",
                     message = "You've read all your articles",
-                    icon = CarbonIcons.CheckmarkFilled,
+                    icon = AppIcons.CheckmarkFilled,
                     actionText = "Show all articles",
                 )
             EmptyStateType.NO_READ_ARTICLES ->
                 EmptyStateConfig(
                     title = "No read articles",
                     message = "Articles you've read will appear here",
-                    icon = CarbonIcons.Document,
+                    icon = AppIcons.Document,
                     actionText = "Show all articles",
                 )
             EmptyStateType.NO_ARCHIVED_ARTICLES ->
                 EmptyStateConfig(
                     title = "No archived articles",
                     message = "Archived articles will appear here",
-                    icon = CarbonIcons.Archive,
+                    icon = AppIcons.Archive,
                     actionText = "Show all articles",
                 )
             EmptyStateType.ERROR ->
                 EmptyStateConfig(
                     title = "Something went wrong",
                     message = "Unable to load articles. Please try again.",
-                    icon = CarbonIcons.WarningAlt,
+                    icon = AppIcons.WarningAlt,
                     actionText = "Retry",
                 )
             EmptyStateType.SEARCH_PROMPT ->
                 EmptyStateConfig(
                     title = "Search articles",
                     message = "Enter a search term to find articles",
-                    icon = CarbonIcons.Search,
+                    icon = AppIcons.Search,
                     actionText = null,
                 )
             EmptyStateType.COLLECTION_EMPTY ->
                 EmptyStateConfig(
                     title = "Collection is empty",
                     message = "Add articles to this collection",
-                    icon = CarbonIcons.Folder,
+                    icon = AppIcons.Folder,
                     actionText = null,
                 )
         }
@@ -135,7 +135,7 @@ private data class EmptyStateConfig(
 fun EmptyStateView(
     title: String,
     message: String,
-    icon: ImageVector = CarbonIcons.Document,
+    icon: ImageVector = AppIcons.Document,
     actionText: String? = null,
     onAction: (() -> Unit)? = null,
     modifier: Modifier = Modifier,

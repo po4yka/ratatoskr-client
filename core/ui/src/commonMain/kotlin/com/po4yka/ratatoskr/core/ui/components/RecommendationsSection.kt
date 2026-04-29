@@ -20,7 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Recommendation
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -120,7 +120,7 @@ private fun RecommendationCard(
                 }
             }
             AppIconButton(
-                imageVector = CarbonIcons.Close,
+                imageVector = AppIcons.Close,
                 contentDescription = stringResource(Res.string.recommendations_dismiss),
                 onClick = onDismiss,
                 tint = AppTheme.colors.textSecondary,

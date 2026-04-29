@@ -24,7 +24,7 @@ import ratatoskr.core.ui.generated.resources.search_placeholder
 import ratatoskr.core.ui.generated.resources.summary_list_close_search
 import ratatoskr.core.ui.generated.resources.summary_list_search
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -53,7 +53,7 @@ fun CarbonSearchField(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = CarbonIcons.Search,
+            imageVector = AppIcons.Search,
             contentDescription = searchIconContentDescription,
             tint = AppTheme.colors.iconSecondary,
             modifier = Modifier.size(IconSizes.sm),
@@ -90,7 +90,7 @@ fun CarbonSearchField(
 
         if (query.isNotEmpty()) {
             AppIconButton(
-                imageVector = CarbonIcons.Close,
+                imageVector = AppIcons.Close,
                 contentDescription = stringResource(Res.string.search_clear),
                 onClick = clearQuery,
                 buttonSize = Dimensions.compactIconButtonSize,
@@ -129,7 +129,7 @@ fun SummarySearchBar(
         Spacer(modifier = Modifier.width(Spacing.xs))
 
         AppIconButton(
-            imageVector = CarbonIcons.Close,
+            imageVector = AppIcons.Close,
             contentDescription = stringResource(Res.string.summary_list_close_search),
             onClick = onClose,
             buttonSize = Dimensions.compactIconButtonSize,

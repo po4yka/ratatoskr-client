@@ -56,7 +56,7 @@ import com.po4yka.ratatoskr.core.ui.components.RequestHistorySection
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.components.SessionsSection
 import com.po4yka.ratatoskr.core.ui.components.UserStatsCard
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -431,7 +431,7 @@ private fun LegalRow(
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Icon(
-            imageVector = CarbonIcons.Document,
+            imageVector = AppIcons.Document,
             contentDescription = null,
             tint = AppTheme.colors.iconSecondary,
             modifier = Modifier.size(IconSizes.sm),
@@ -782,7 +782,7 @@ private fun SyncProgressHeader(
             )
         }
         AppIconButton(
-            imageVector = CarbonIcons.Close,
+            imageVector = AppIcons.Close,
             contentDescription = stringResource(Res.string.settings_cancel_sync),
             onClick = onCancelSync,
             tint = AppTheme.colors.iconSecondary,
@@ -927,7 +927,7 @@ private fun DigestNavigationRow(onClick: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             Icon(
-                imageVector = CarbonIcons.Notification,
+                imageVector = AppIcons.Notification,
                 contentDescription = stringResource(Res.string.settings_digest_icon),
                 tint = AppTheme.colors.iconPrimary,
                 modifier = Modifier.size(IconSizes.md),

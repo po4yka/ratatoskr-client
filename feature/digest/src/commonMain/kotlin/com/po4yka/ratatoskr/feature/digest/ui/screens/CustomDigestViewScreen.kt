@@ -32,7 +32,7 @@ import com.po4yka.ratatoskr.domain.model.CustomDigestStatus
 import com.po4yka.ratatoskr.presentation.navigation.CustomDigestViewComponent
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
@@ -59,7 +59,7 @@ fun CustomDigestViewScreen(
             actions = {
                 if (state.digest != null) {
                     AppIconButton(
-                        imageVector = CarbonIcons.TrashCan,
+                        imageVector = AppIcons.TrashCan,
                         contentDescription = stringResource(Res.string.custom_digest_view_delete),
                         onClick = {
                             viewModel.deleteDigest(component.digestId) { component.onBackClicked() }
@@ -121,7 +121,7 @@ fun CustomDigestViewScreen(
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Icon(
-                        imageVector = CarbonIcons.WarningAlt,
+                        imageVector = AppIcons.WarningAlt,
                         contentDescription = stringResource(Res.string.custom_digest_view_error),
                         tint = AppTheme.colors.supportError,
                         modifier = Modifier.size(IconSizes.xl),

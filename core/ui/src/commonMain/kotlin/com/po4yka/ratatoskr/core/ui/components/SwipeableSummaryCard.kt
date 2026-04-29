@@ -42,7 +42,7 @@ import ratatoskr.core.ui.generated.resources.swipeable_summary_delete_action
 import ratatoskr.core.ui.generated.resources.swipeable_summary_mark_read_action
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
@@ -157,7 +157,7 @@ fun SwipeableSummaryCard(
                 contentAlignment = Alignment.CenterStart,
             ) {
                 Icon(
-                    imageVector = CarbonIcons.Checkmark,
+                    imageVector = AppIcons.Checkmark,
                     contentDescription = stringResource(Res.string.summary_card_mark_read),
                     tint = AppTheme.colors.textOnColor,
                     modifier =
@@ -177,7 +177,7 @@ fun SwipeableSummaryCard(
                 contentAlignment = Alignment.CenterEnd,
             ) {
                 Icon(
-                    imageVector = CarbonIcons.Archive,
+                    imageVector = AppIcons.Archive,
                     contentDescription = stringResource(Res.string.swipeable_summary_archive),
                     tint = AppTheme.colors.textOnColor,
                     modifier =

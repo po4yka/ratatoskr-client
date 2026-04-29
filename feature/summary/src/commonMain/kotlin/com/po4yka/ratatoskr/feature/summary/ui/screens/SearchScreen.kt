@@ -44,7 +44,7 @@ import com.po4yka.ratatoskr.core.ui.components.InsightsSection
 import com.po4yka.ratatoskr.core.ui.components.RecentSearchesSection
 import com.po4yka.ratatoskr.core.ui.components.SummaryCard
 import com.po4yka.ratatoskr.core.ui.components.TrendingTopicsSection
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -153,7 +153,7 @@ private fun SearchScreenHeader(
             )
 
             AppIconButton(
-                imageVector = CarbonIcons.Filter,
+                imageVector = AppIcons.Filter,
                 contentDescription = stringResource(Res.string.search_toggle_filters),
                 onClick = onFilterClick,
                 iconSize = IconSizes.sm,

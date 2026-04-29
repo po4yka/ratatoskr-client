@@ -58,7 +58,7 @@ import com.po4yka.ratatoskr.core.ui.components.TextArea
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateView
 import com.po4yka.ratatoskr.core.ui.components.ErrorView
 import com.po4yka.ratatoskr.core.ui.components.SummaryCard
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -181,7 +181,7 @@ private fun CollectionViewHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AppIconButton(
-                imageVector = CarbonIcons.ArrowLeft,
+                imageVector = AppIcons.ArrowLeft,
                 contentDescription = stringResource(Res.string.a11y_navigate_back),
                 onClick = onBackClick,
                 iconSize = IconSizes.md,
@@ -267,14 +267,14 @@ private fun CollectionTabBar(
     ) {
         TabItem(
             label = stringResource(Res.string.collection_view_tab_items),
-            icon = CarbonIcons.Document,
+            icon = AppIcons.Document,
             isSelected = selectedTab == CollectionViewTab.Items,
             onClick = { onTabSelected(CollectionViewTab.Items) },
         )
 
         TabItem(
             label = stringResource(Res.string.collection_view_tab_settings),
-            icon = CarbonIcons.Settings,
+            icon = AppIcons.Settings,
             isSelected = selectedTab == CollectionViewTab.Settings,
             onClick = { onTabSelected(CollectionViewTab.Settings) },
             enabled = !isSystemCollection,
@@ -282,7 +282,7 @@ private fun CollectionTabBar(
 
         TabItem(
             label = stringResource(Res.string.collection_view_tab_sharing),
-            icon = CarbonIcons.Share,
+            icon = AppIcons.Share,
             isSelected = selectedTab == CollectionViewTab.Sharing,
             onClick = { onTabSelected(CollectionViewTab.Sharing) },
             enabled = !isSystemCollection,
@@ -804,7 +804,7 @@ private fun CollaboratorRow(
 
         if (collaborator.role != CollaboratorRole.Owner && collaborator.userId != null) {
             AppIconButton(
-                imageVector = CarbonIcons.Close,
+                imageVector = AppIcons.Close,
                 contentDescription = stringResource(Res.string.collection_view_remove),
                 onClick = { onRemove(collaborator.userId!!) },
                 tint = AppTheme.colors.iconSecondary,

@@ -30,7 +30,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -173,7 +173,7 @@ fun AppOverflowMenuButton(
     tint: Color = AppTheme.colors.iconSecondary,
 ) {
     AppIconButton(
-        imageVector = CarbonIcons.OverflowMenuVertical,
+        imageVector = AppIcons.OverflowMenuVertical,
         contentDescription = contentDescription,
         onClick = onClick,
         modifier = modifier,

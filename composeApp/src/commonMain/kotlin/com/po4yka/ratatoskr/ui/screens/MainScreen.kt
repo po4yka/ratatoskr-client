@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.nav_collections
 import ratatoskr.core.ui.generated.resources.nav_read_later
@@ -136,35 +136,35 @@ private fun NavigationRail(
         Spacer(modifier = Modifier.height(16.dp))
 
         RailItem(
-            icon = CarbonIcons.Bookmark,
+            icon = AppIcons.Bookmark,
             label = stringResource(Res.string.nav_read_later),
             isSelected = activeChild.tab == MainTab.SUMMARY_LIST,
             onClick = { onTabSelected(MainTab.SUMMARY_LIST) },
         )
 
         RailItem(
-            icon = CarbonIcons.Search,
+            icon = AppIcons.Search,
             label = stringResource(Res.string.nav_search),
             isSelected = activeChild.tab == MainTab.SEARCH,
             onClick = { onTabSelected(MainTab.SEARCH) },
         )
 
         RailItem(
-            icon = CarbonIcons.Folder,
+            icon = AppIcons.Folder,
             label = stringResource(Res.string.nav_collections),
             isSelected = activeChild.tab == MainTab.COLLECTIONS,
             onClick = { onTabSelected(MainTab.COLLECTIONS) },
         )
 
         RailItem(
-            icon = CarbonIcons.Document,
+            icon = AppIcons.Document,
             label = stringResource(Res.string.nav_stats),
             isSelected = activeChild.tab == MainTab.STATS,
             onClick = { onTabSelected(MainTab.STATS) },
         )
 
         RailItem(
-            icon = CarbonIcons.Settings,
+            icon = AppIcons.Settings,
             label = stringResource(Res.string.nav_settings),
             isSelected = activeChild.tab == MainTab.SETTINGS,
             onClick = { onTabSelected(MainTab.SETTINGS) },
@@ -254,35 +254,35 @@ private fun BottomNavigation(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         NavItem(
-            icon = CarbonIcons.Bookmark,
+            icon = AppIcons.Bookmark,
             label = stringResource(Res.string.nav_read_later),
             isSelected = activeChild.tab == MainTab.SUMMARY_LIST,
             onClick = { onTabSelected(MainTab.SUMMARY_LIST) },
         )
 
         NavItem(
-            icon = CarbonIcons.Search,
+            icon = AppIcons.Search,
             label = stringResource(Res.string.nav_search),
             isSelected = activeChild.tab == MainTab.SEARCH,
             onClick = { onTabSelected(MainTab.SEARCH) },
         )
 
         NavItem(
-            icon = CarbonIcons.Folder,
+            icon = AppIcons.Folder,
             label = stringResource(Res.string.nav_collections),
             isSelected = activeChild.tab == MainTab.COLLECTIONS,
             onClick = { onTabSelected(MainTab.COLLECTIONS) },
         )
 
         NavItem(
-            icon = CarbonIcons.Document,
+            icon = AppIcons.Document,
             label = stringResource(Res.string.nav_stats),
             isSelected = activeChild.tab == MainTab.STATS,
             onClick = { onTabSelected(MainTab.STATS) },
         )
 
         NavItem(
-            icon = CarbonIcons.Settings,
+            icon = AppIcons.Settings,
             label = stringResource(Res.string.nav_settings),
             isSelected = activeChild.tab == MainTab.SETTINGS,
             onClick = { onTabSelected(MainTab.SETTINGS) },

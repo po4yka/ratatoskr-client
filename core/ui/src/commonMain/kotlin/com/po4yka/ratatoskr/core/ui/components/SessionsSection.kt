@@ -34,7 +34,7 @@ import ratatoskr.core.ui.generated.resources.sessions_title
 import ratatoskr.core.ui.generated.resources.sessions_unknown_device
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Session
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -92,7 +92,7 @@ fun SessionsSection(
             }
 
             Icon(
-                imageVector = CarbonIcons.ArrowLeft,
+                imageVector = AppIcons.ArrowLeft,
                 contentDescription =
                     if (isExpanded) {
                         stringResource(Res.string.sessions_collapse)
