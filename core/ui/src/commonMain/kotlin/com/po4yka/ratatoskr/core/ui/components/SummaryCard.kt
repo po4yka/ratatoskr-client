@@ -24,17 +24,15 @@ import ratatoskr.core.ui.generated.resources.summary_card_available_offline
 import ratatoskr.core.ui.generated.resources.summary_card_favorited
 import ratatoskr.core.ui.generated.resources.summary_card_saved_article
 import ratatoskr.core.ui.generated.resources.summary_detail_mark_read
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.util.extractDomain
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * Card component for displaying a summary in a list using Carbon Design System
- */
+/** Summary card for list rows. */
 @Suppress("FunctionNaming", "LongMethod", "LongParameterList")
 @Composable
 fun SummaryCard(
@@ -46,7 +44,7 @@ fun SummaryCard(
     onAddToCollectionClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    CarbonLayerCard(
+    LayerCard(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
     ) {
@@ -69,8 +67,8 @@ fun SummaryCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = summary.title,
-                    style = Carbon.typography.headingCompact01,
-                    color = Carbon.theme.textPrimary,
+                    style = AppTheme.type.headingCompact01,
+                    color = AppTheme.colors.textPrimary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -79,8 +77,8 @@ fun SummaryCard(
                     Spacer(modifier = Modifier.height(Spacing.xxs))
                     Text(
                         text = summary.content.take(150).replace("\n", " "),
-                        style = Carbon.typography.bodyCompact01,
-                        color = Carbon.theme.textSecondary,
+                        style = AppTheme.type.bodyCompact01,
+                        color = AppTheme.colors.textSecondary,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -105,8 +103,8 @@ fun SummaryCard(
                                     append(stringResource(Res.string.custom_digest_create_read_time, it))
                                 }
                             },
-                        style = Carbon.typography.label01,
-                        color = Carbon.theme.textSecondary,
+                        style = AppTheme.type.label01,
+                        color = AppTheme.colors.textSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false),
@@ -114,27 +112,27 @@ fun SummaryCard(
 
                     if (summary.isFavorited) {
                         Icon(
-                            imageVector = CarbonIcons.FavoriteFilled,
+                            imageVector = AppIcons.FavoriteFilled,
                             contentDescription = stringResource(Res.string.summary_card_favorited),
-                            tint = Carbon.theme.supportError,
+                            tint = AppTheme.colors.supportError,
                             modifier = Modifier.size(IconSizes.xs),
                         )
                     }
 
                     if (summary.isFullContentCached) {
                         Icon(
-                            imageVector = CarbonIcons.Download,
+                            imageVector = AppIcons.Download,
                             contentDescription = stringResource(Res.string.summary_card_available_offline),
-                            tint = Carbon.theme.iconSecondary,
+                            tint = AppTheme.colors.iconSecondary,
                             modifier = Modifier.size(IconSizes.xs),
                         )
                     }
 
                     if (summary.isRead) {
                         Icon(
-                            imageVector = CarbonIcons.CheckmarkFilled,
+                            imageVector = AppIcons.CheckmarkFilled,
                             contentDescription = stringResource(Res.string.summary_detail_mark_read),
-                            tint = Carbon.theme.supportSuccess,
+                            tint = AppTheme.colors.supportSuccess,
                             modifier = Modifier.size(IconSizes.xs),
                         )
                     }

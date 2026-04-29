@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 
 /**
  * App logo composable: a rounded rectangle in Carbon interactive blue with a white "R" monogram.
@@ -26,7 +26,7 @@ fun AppLogo(
     modifier: Modifier = Modifier,
     size: Dp = 80.dp,
 ) {
-    val interactiveColor = Carbon.theme.interactive
+    val interactiveColor = AppTheme.colors.interactive
     val fontSize = (size.value * 0.62f).sp
 
     Box(

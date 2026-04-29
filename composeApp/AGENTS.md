@@ -20,13 +20,14 @@ Guidance for UI work in `composeApp/`.
 ## Design System
 
 - The app theme is `RatatoskrTheme` in `core/ui/.../theme/Theme.kt`.
-- Carbon Compose is the primary component system.
-- Use `Carbon.theme.*` for surfaces, icons, and semantic colors.
-- Use `Carbon.typography.*` for text styles.
-- Use Material 3 `Text` and `Icon`, not Carbon's internal text/icon APIs.
+- Material 3 is the component substrate; project-owned `AppTheme` tokens are the design system.
+- Use `AppTheme.colors.*` for surfaces, icons, and semantic colors.
+- Use `AppTheme.type.*` for text styles.
+- Use Material 3 `Text` and `Icon` for primitives.
 - Reuse `Spacing`, `Dimensions`, and `IconSizes` from `core/ui/.../theme/`.
+- Prefer the project wrapper components in `core/ui/.../components/` (`AppCheckbox`, `AppDialog`, `AppIconButton`, `LayerCard`, `AppMenu`/`AppMenuItem`/`AppOverflowMenuButton`, `SelectableChip`, `AppSlider`, `TextArea`, `AppTextButton`) over raw Material 3 equivalents.
 
-Widgets are the main exception: Glance UI is platform-specific and does not follow Carbon patterns.
+Widgets are the main exception: Glance UI is platform-specific and does not follow AppTheme patterns.
 
 ## Resources And Accessibility
 
@@ -54,6 +55,5 @@ The app-level `App.kt` provider for image URL transformation is also intentional
 
 ## Icons
 
-- Carbon icons live in `core/ui/.../icons/CarbonIcons.kt`.
-- Keep icon names aligned with IBM Carbon names where practical.
-- New icons should stay 32x32 and use existing theme colors in UI call sites.
+- Project icons live in `core/ui/.../icons/AppIcons.kt`.
+- New icons should stay 32x32 and use `AppTheme.colors.*` at call sites.

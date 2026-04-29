@@ -22,7 +22,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.loading.Loading
 import kotlin.math.roundToInt
 
 private const val REFRESH_TRIGGER_PX = 200f
@@ -105,7 +104,7 @@ fun PullToRefreshContainer(
                         .padding(top = 16.dp),
                 contentAlignment = Alignment.TopCenter,
             ) {
-                Loading(
+                AppSpinner(
                     modifier =
                         Modifier
                             .offset {

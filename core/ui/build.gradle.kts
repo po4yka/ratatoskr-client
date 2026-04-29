@@ -22,7 +22,6 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
-            implementation(libs.carbon.compose)
             implementation(libs.markdown.renderer)
             implementation(libs.markdown.renderer.coil3)
         }

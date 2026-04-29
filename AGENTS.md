@@ -103,7 +103,7 @@ Do not "fix" those exceptions by force-converting them to annotations without un
 - Secure storage uses Tink AEAD + DataStore.
 - Networking uses OkHttp.
 - Background work uses WorkManager.
-- Widgets use Glance and are exempt from Carbon UI rules.
+- Widgets use Glance and are exempt from AppTheme rules.
 
 ### iOS
 

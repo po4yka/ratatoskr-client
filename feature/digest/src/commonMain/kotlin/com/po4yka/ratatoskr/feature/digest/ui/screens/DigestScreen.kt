@@ -26,13 +26,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
-import com.gabrieldrn.carbon.loading.SmallLoading
-import com.gabrieldrn.carbon.progressbar.ProgressBar
-import com.gabrieldrn.carbon.textinput.TextInput
-import com.gabrieldrn.carbon.textinput.TextInputState
+import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
+import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DigestChannel
 import com.po4yka.ratatoskr.domain.model.DigestHistoryItem
 import com.po4yka.ratatoskr.presentation.navigation.DigestComponent
@@ -41,8 +41,8 @@ import com.po4yka.ratatoskr.presentation.state.DigestHistoryState
 import com.po4yka.ratatoskr.presentation.state.DigestPreferencesState
 import com.po4yka.ratatoskr.presentation.state.DigestTab
 import com.po4yka.ratatoskr.presentation.state.DigestTriggerState
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -124,7 +124,7 @@ fun DigestScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         // Header
         DigestHeader(onBackClick = component::onBackClicked)
@@ -191,20 +191,20 @@ private fun DigestHeader(onBackClick: () -> Unit) {
             Modifier
                 .fillMaxWidth()
                 .height(Dimensions.detailHeaderHeight)
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(horizontal = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CarbonIconButton(
-            imageVector = CarbonIcons.ArrowLeft,
+        AppIconButton(
+            imageVector = AppIcons.ArrowLeft,
             contentDescription = stringResource(Res.string.submit_url_back),
             onClick = onBackClick,
             iconSize = IconSizes.md,
         )
         Text(
             text = stringResource(Res.string.settings_digest_channels),
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
         )
     }
 }
@@ -219,7 +219,7 @@ private fun DigestTabBar(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
     ) {
         DigestTab.entries.forEach { tab ->
             val isSelected = tab == selectedTab
@@ -240,8 +240,8 @@ private fun DigestTabBar(
             ) {
                 Text(
                     text = label,
-                    style = Carbon.typography.bodyCompact01,
-                    color = if (isSelected) Carbon.theme.textPrimary else Carbon.theme.textSecondary,
+                    style = AppTheme.type.bodyCompact01,
+                    color = if (isSelected) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
                 )
                 if (isSelected) {
                     Spacer(modifier = Modifier.height(4.dp))
@@ -250,7 +250,7 @@ private fun DigestTabBar(
                             Modifier
                                 .width(48.dp)
                                 .height(2.dp)
-                                .background(Carbon.theme.borderInteractive),
+                                .background(AppTheme.colors.borderInteractive),
                     )
                 }
             }
@@ -282,7 +282,7 @@ private fun ChannelsTab(
                     modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
                     contentAlignment = Alignment.Center,
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                 }
             }
         } else {
@@ -321,8 +321,8 @@ private fun ChannelsTab(
             item {
                 Text(
                     text = error,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.supportError,
                 )
             }
         }
@@ -338,12 +338,12 @@ private fun ChannelSlotUsage(
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
         Text(
             text = stringResource(Res.string.digest_screen_subscriptions, usedSlots, maxSlots),
-            style = Carbon.typography.headingCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.headingCompact01,
+            color = AppTheme.colors.textPrimary,
         )
         if (maxSlots > 0) {
-            ProgressBar(
-                value = usedSlots.toFloat() / maxSlots.toFloat(),
+            LinearProgressIndicator(
+                progress = { usedSlots.toFloat() / maxSlots.toFloat() },
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -363,42 +363,43 @@ private fun AddChannelForm(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = stringResource(Res.string.digest_screen_add_channel),
-            style = Carbon.typography.headingCompact01,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.headingCompact01,
+            color = AppTheme.colors.textPrimary,
         )
-        TextInput(
-            label = stringResource(Res.string.digest_screen_channel_username),
+        OutlinedTextField(
             value = username,
             onValueChange = onUsernameChanged,
-            placeholderText = stringResource(Res.string.digest_screen_channel_placeholder),
-            state = if (isSubscribing) TextInputState.Disabled else TextInputState.Enabled,
+            label = { Text(stringResource(Res.string.digest_screen_channel_username)) },
+            placeholder = { Text(stringResource(Res.string.digest_screen_channel_placeholder)) },
+            enabled = !isSubscribing,
             modifier = Modifier.fillMaxWidth(),
         )
         if (subscribeError != null) {
             Text(
                 text = subscribeError,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.supportError,
             )
         }
         Button(
-            label =
+            onClick = onSubscribe,
+            enabled = !isSubscribing && username.isNotBlank(),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
                 if (isSubscribing) {
                     stringResource(Res.string.digest_screen_subscribing)
                 } else {
                     stringResource(Res.string.digest_screen_subscribe)
                 },
-            onClick = onSubscribe,
-            isEnabled = !isSubscribing && username.isNotBlank(),
-            buttonType = ButtonType.Primary,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            )
+        }
     }
 }
 
@@ -412,32 +413,33 @@ private fun TriggerDigestSection(
 ) {
     Column {
         Spacer(modifier = Modifier.height(Spacing.md))
-        Button(
-            label =
+        OutlinedButton(
+            onClick = onTrigger,
+            enabled = !isTriggering,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
                 if (isTriggering) {
                     stringResource(Res.string.digest_screen_triggering)
                 } else {
                     stringResource(Res.string.digest_screen_trigger_now)
                 },
-            onClick = onTrigger,
-            isEnabled = !isTriggering,
-            buttonType = ButtonType.Secondary,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            )
+        }
         if (triggerSuccess) {
             Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
                 text = stringResource(Res.string.digest_screen_trigger_success),
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.supportSuccess,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.supportSuccess,
             )
         }
         if (triggerError != null) {
             Spacer(modifier = Modifier.height(Spacing.xs))
             Text(
                 text = triggerError,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.supportError,
             )
         }
     }
@@ -454,30 +456,30 @@ private fun DigestChannelRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = channel.username,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
             )
             channel.subscribedAt?.let {
                 Text(
                     text = stringResource(Res.string.digest_screen_subscribed, it),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
         }
-        CarbonIconButton(
-            imageVector = CarbonIcons.Close,
+        AppIconButton(
+            imageVector = AppIcons.Close,
             contentDescription = stringResource(Res.string.digest_screen_unsubscribe),
             onClick = onUnsubscribe,
             enabled = !isLoading,
-            tint = Carbon.theme.supportError,
+            tint = AppTheme.colors.supportError,
             iconSize = IconSizes.sm,
         )
     }
@@ -494,7 +496,7 @@ private fun PreferencesTab(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            SmallLoading()
+            AppSmallSpinner()
         }
         return
     }
@@ -518,82 +520,83 @@ private fun DigestPreferencesForm(
     preferences: DigestPreferencesState,
     actions: DigestActions,
 ) {
-    val inputState = if (preferences.isSaving) TextInputState.Disabled else TextInputState.Enabled
+    val enabled = !preferences.isSaving
 
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        TextInput(
-            label = stringResource(Res.string.digest_screen_delivery_time),
+        OutlinedTextField(
             value = preferences.editedDeliveryTime ?: preferences.preferences.deliveryTime,
             onValueChange = actions::onDeliveryTimeChanged,
-            placeholderText = stringResource(Res.string.digest_screen_delivery_time_placeholder),
-            state = inputState,
+            label = { Text(stringResource(Res.string.digest_screen_delivery_time)) },
+            placeholder = { Text(stringResource(Res.string.digest_screen_delivery_time_placeholder)) },
+            enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        TextInput(
-            label = stringResource(Res.string.digest_screen_timezone),
+        OutlinedTextField(
             value = preferences.editedTimezone ?: preferences.preferences.timezone,
             onValueChange = actions::onTimezoneChanged,
-            placeholderText = stringResource(Res.string.digest_screen_timezone_placeholder),
-            state = inputState,
+            label = { Text(stringResource(Res.string.digest_screen_timezone)) },
+            placeholder = { Text(stringResource(Res.string.digest_screen_timezone_placeholder)) },
+            enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        TextInput(
-            label = stringResource(Res.string.digest_screen_hours_lookback),
+        OutlinedTextField(
             value = preferences.editedHoursLookback ?: preferences.preferences.hoursLookback.toString(),
             onValueChange = actions::onHoursLookbackChanged,
-            placeholderText = stringResource(Res.string.digest_screen_hours_lookback_placeholder),
-            state = inputState,
+            label = { Text(stringResource(Res.string.digest_screen_hours_lookback)) },
+            placeholder = { Text(stringResource(Res.string.digest_screen_hours_lookback_placeholder)) },
+            enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        TextInput(
-            label = stringResource(Res.string.digest_screen_max_posts),
+        OutlinedTextField(
             value = preferences.editedMaxPosts ?: preferences.preferences.maxPostsPerDigest.toString(),
             onValueChange = actions::onMaxPostsChanged,
-            placeholderText = stringResource(Res.string.digest_screen_max_posts_placeholder),
-            state = inputState,
+            label = { Text(stringResource(Res.string.digest_screen_max_posts)) },
+            placeholder = { Text(stringResource(Res.string.digest_screen_max_posts_placeholder)) },
+            enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        TextInput(
-            label = stringResource(Res.string.digest_screen_min_relevance),
+        OutlinedTextField(
             value = preferences.editedMinRelevance ?: preferences.preferences.minRelevanceScore.toString(),
             onValueChange = actions::onMinRelevanceChanged,
-            placeholderText = stringResource(Res.string.digest_screen_min_relevance_placeholder),
-            state = inputState,
+            label = { Text(stringResource(Res.string.digest_screen_min_relevance)) },
+            placeholder = { Text(stringResource(Res.string.digest_screen_min_relevance_placeholder)) },
+            enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
         preferences.saveError?.let { error ->
             Text(
                 text = error,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.supportError,
             )
         }
 
         preferences.error?.let { error ->
             Text(
                 text = error,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.supportError,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.supportError,
             )
         }
 
         Button(
-            label =
+            onClick = actions::savePreferences,
+            enabled = !preferences.isSaving,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
                 if (preferences.isSaving) {
                     stringResource(Res.string.digest_screen_saving_preferences)
                 } else {
                     stringResource(Res.string.digest_screen_save_preferences)
                 },
-            onClick = actions::savePreferences,
-            isEnabled = !preferences.isSaving,
-            buttonType = ButtonType.Primary,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            )
+        }
     }
 }
 
@@ -613,15 +616,15 @@ private fun HistoryTab(
                     modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
                     contentAlignment = Alignment.Center,
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                 }
             }
         } else if (history.items.isEmpty()) {
             item {
                 Text(
                     text = stringResource(Res.string.digest_screen_no_history),
-                    style = Carbon.typography.bodyCompact01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.bodyCompact01,
+                    color = AppTheme.colors.textSecondary,
                     modifier = Modifier.padding(Spacing.md),
                 )
             }
@@ -635,18 +638,19 @@ private fun HistoryTab(
 
             if (history.hasMore) {
                 item {
-                    Button(
-                        label =
+                    TextButton(
+                        onClick = { actions.loadHistory(loadMore = true) },
+                        enabled = !history.isLoading,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
                             if (history.isLoading) {
                                 stringResource(Res.string.digest_screen_loading_more)
                             } else {
                                 stringResource(Res.string.digest_screen_load_more)
                             },
-                        onClick = { actions.loadHistory(loadMore = true) },
-                        isEnabled = !history.isLoading,
-                        buttonType = ButtonType.Ghost,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -655,8 +659,8 @@ private fun HistoryTab(
             item {
                 Text(
                     text = error,
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.supportError,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.supportError,
                 )
             }
         }
@@ -670,21 +674,21 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Carbon.theme.layer01)
+                .background(AppTheme.colors.layer01)
                 .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val statusIcon =
             when (item.status) {
-                "delivered", "completed" -> CarbonIcons.CheckmarkFilled
-                "failed" -> CarbonIcons.Close
-                else -> CarbonIcons.CircleOutline
+                "delivered", "completed" -> AppIcons.CheckmarkFilled
+                "failed" -> AppIcons.Close
+                else -> AppIcons.CircleOutline
             }
         val statusColor =
             when (item.status) {
-                "delivered", "completed" -> Carbon.theme.supportSuccess
-                "failed" -> Carbon.theme.supportError
-                else -> Carbon.theme.iconSecondary
+                "delivered", "completed" -> AppTheme.colors.supportSuccess
+                "failed" -> AppTheme.colors.supportError
+                else -> AppTheme.colors.iconSecondary
             }
 
         Icon(
@@ -705,8 +709,8 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = item.deliveredAt,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
             )
             Text(
                 text =
@@ -715,8 +719,8 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
                         item.channelCount,
                         item.postCount,
                     ),
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textSecondary,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textSecondary,
             )
         }
     }

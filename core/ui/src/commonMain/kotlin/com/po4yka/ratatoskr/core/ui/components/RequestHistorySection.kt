@@ -36,11 +36,10 @@ import ratatoskr.core.ui.generated.resources.request_history_status_failed
 import ratatoskr.core.ui.generated.resources.request_history_status_pending
 import ratatoskr.core.ui.generated.resources.request_history_status_processing
 import ratatoskr.core.ui.generated.resources.submit_url_request_history
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.SmallLoading
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Request
 import com.po4yka.ratatoskr.domain.model.RequestStatus
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -64,7 +63,7 @@ fun RequestHistorySection(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
     ) {
         // Header (clickable to expand/collapse)
         Row(
@@ -79,8 +78,8 @@ fun RequestHistorySection(
             Column {
                 Text(
                     text = stringResource(Res.string.submit_url_request_history),
-                    style = Carbon.typography.headingCompact01,
-                    color = Carbon.theme.textPrimary,
+                    style = AppTheme.type.headingCompact01,
+                    color = AppTheme.colors.textPrimary,
                 )
                 Text(
                     text =
@@ -93,20 +92,20 @@ fun RequestHistorySection(
                         } else {
                             stringResource(Res.string.request_history_prompt)
                         },
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
 
             Icon(
-                imageVector = CarbonIcons.ArrowLeft,
+                imageVector = AppIcons.ArrowLeft,
                 contentDescription =
                     if (isExpanded) {
                         stringResource(Res.string.request_history_collapse)
                     } else {
                         stringResource(Res.string.request_history_expand)
                     },
-                tint = Carbon.theme.iconSecondary,
+                tint = AppTheme.colors.iconSecondary,
                 modifier =
                     Modifier
                         .size(IconSizes.xs)
@@ -137,11 +136,11 @@ fun RequestHistorySection(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            SmallLoading()
+                            AppSmallSpinner()
                             Text(
                                 text = stringResource(Res.string.request_history_loading),
-                                style = Carbon.typography.label01,
-                                color = Carbon.theme.textSecondary,
+                                style = AppTheme.type.label01,
+                                color = AppTheme.colors.textSecondary,
                                 modifier = Modifier.padding(start = Spacing.xs),
                             )
                         }
@@ -149,8 +148,8 @@ fun RequestHistorySection(
                     requests.isEmpty() -> {
                         Text(
                             text = stringResource(Res.string.request_history_empty),
-                            style = Carbon.typography.bodyCompact01,
-                            color = Carbon.theme.textSecondary,
+                            style = AppTheme.type.bodyCompact01,
+                            color = AppTheme.colors.textSecondary,
                         )
                     }
                     else -> {
@@ -179,7 +178,7 @@ private fun RequestItem(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
-                .background(Carbon.theme.layer02)
+                .background(AppTheme.colors.layer02)
                 .padding(Spacing.sm),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -190,8 +189,8 @@ private fun RequestItem(
         ) {
             Text(
                 text = request.url,
-                style = Carbon.typography.bodyCompact01,
-                color = Carbon.theme.textPrimary,
+                style = AppTheme.type.bodyCompact01,
+                color = AppTheme.colors.textPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -202,15 +201,15 @@ private fun RequestItem(
                 StatusBadge(status = request.status)
                 Text(
                     text = formatRequestDate(request.updatedAt.toString()),
-                    style = Carbon.typography.label01,
-                    color = Carbon.theme.textSecondary,
+                    style = AppTheme.type.label01,
+                    color = AppTheme.colors.textSecondary,
                 )
             }
         }
 
         if (request.status == RequestStatus.FAILED) {
-            CarbonIconButton(
-                imageVector = CarbonIcons.Renew,
+            AppIconButton(
+                imageVector = AppIcons.Renew,
                 contentDescription = stringResource(Res.string.request_history_retry),
                 onClick = onRetry,
                 buttonSize = Dimensions.compactIconButtonSize,
@@ -231,32 +230,32 @@ private fun StatusBadge(
             RequestStatus.PENDING ->
                 Triple(
                     stringResource(Res.string.request_history_status_pending),
-                    Carbon.theme.layer02,
-                    Carbon.theme.textSecondary,
+                    AppTheme.colors.layer02,
+                    AppTheme.colors.textSecondary,
                 )
             RequestStatus.PROCESSING ->
                 Triple(
                     stringResource(Res.string.request_history_status_processing),
-                    Carbon.theme.linkPrimary,
-                    Carbon.theme.textOnColor,
+                    AppTheme.colors.linkPrimary,
+                    AppTheme.colors.textOnColor,
                 )
             RequestStatus.COMPLETED ->
                 Triple(
                     stringResource(Res.string.request_history_status_completed),
-                    Carbon.theme.supportSuccess,
-                    Carbon.theme.textOnColor,
+                    AppTheme.colors.supportSuccess,
+                    AppTheme.colors.textOnColor,
                 )
             RequestStatus.FAILED ->
                 Triple(
                     stringResource(Res.string.request_history_status_failed),
-                    Carbon.theme.supportError,
-                    Carbon.theme.textOnColor,
+                    AppTheme.colors.supportError,
+                    AppTheme.colors.textOnColor,
                 )
         }
 
     Text(
         text = text,
-        style = Carbon.typography.label01,
+        style = AppTheme.type.label01,
         color = textColor,
         modifier =
             modifier

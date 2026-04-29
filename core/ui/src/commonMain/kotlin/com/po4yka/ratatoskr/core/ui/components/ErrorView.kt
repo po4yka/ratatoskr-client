@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,16 +17,13 @@ import androidx.compose.material3.Text
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.error_view_title
 import ratatoskr.core.ui.generated.resources.settings_retry
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.button.Button
-import com.gabrieldrn.carbon.button.ButtonType
+import androidx.compose.material3.Button
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * Error state view component using Carbon Design System
- */
+/** Reusable error-state view. */
 @Composable
 fun ErrorView(
     message: String,
@@ -42,9 +39,9 @@ fun ErrorView(
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
-            imageVector = CarbonIcons.WarningAlt,
+            imageVector = AppIcons.WarningAlt,
             contentDescription = stringResource(Res.string.error_view_title),
-            tint = Carbon.theme.supportError,
+            tint = AppTheme.colors.supportError,
             modifier = Modifier.size(IconSizes.xl),
         )
 
@@ -52,8 +49,8 @@ fun ErrorView(
 
         Text(
             text = stringResource(Res.string.error_view_title),
-            style = Carbon.typography.heading03,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading03,
+            color = AppTheme.colors.textPrimary,
             textAlign = TextAlign.Center,
         )
 
@@ -61,19 +58,17 @@ fun ErrorView(
 
         Text(
             text = message,
-            style = Carbon.typography.bodyCompact01,
-            color = Carbon.theme.textSecondary,
+            style = AppTheme.type.bodyCompact01,
+            color = AppTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
         )
 
         if (onRetry != null) {
             Spacer(modifier = Modifier.height(Spacing.lg))
 
-            Button(
-                label = stringResource(Res.string.settings_retry),
-                onClick = onRetry,
-                buttonType = ButtonType.Primary,
-            )
+            Button(onClick = onRetry) {
+                Text(stringResource(Res.string.settings_retry))
+            }
         }
     }
 }

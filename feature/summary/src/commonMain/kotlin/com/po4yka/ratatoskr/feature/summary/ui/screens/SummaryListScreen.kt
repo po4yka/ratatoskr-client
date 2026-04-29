@@ -38,15 +38,15 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.loading.SmallLoading
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.ReadFilter
 import com.po4yka.ratatoskr.domain.model.SortOrder
 import com.po4yka.ratatoskr.presentation.navigation.SummaryListComponent
 import com.po4yka.ratatoskr.presentation.state.LayoutMode
 import com.po4yka.ratatoskr.presentation.state.SummaryListState
+import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import com.po4yka.ratatoskr.core.ui.components.ContextualEmptyState
-import com.po4yka.ratatoskr.core.ui.components.CarbonIconButton
+import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateType
 import com.po4yka.ratatoskr.core.ui.components.FilterChipsRow
 import com.po4yka.ratatoskr.core.ui.components.PullToRefreshContainer
@@ -59,7 +59,7 @@ import com.po4yka.ratatoskr.core.ui.components.SummarySearchBar
 import com.po4yka.ratatoskr.core.ui.components.SwipeableSummaryCard
 import com.po4yka.ratatoskr.core.ui.components.RecommendationsSection
 import com.po4yka.ratatoskr.core.ui.components.TrendingTopicsSection
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -85,7 +85,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * Summary list screen with search, filtering, sorting, swipe actions,
- * infinite scroll, and pull-to-refresh using Carbon Design System.
+ * infinite scroll, and pull-to-refresh.
  */
 @Suppress("FunctionNaming", "LongMethod")
 @Composable
@@ -109,7 +109,7 @@ fun SummaryListScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         // Header with actions
         SummaryListHeader(
@@ -255,28 +255,28 @@ private fun SummaryListHeader(
             Modifier
                 .fillMaxWidth()
                 .height(Dimensions.headerHeight)
-                .background(Carbon.theme.background)
+                .background(AppTheme.colors.background)
                 .padding(horizontal = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = title,
-            style = Carbon.typography.heading04,
-            color = Carbon.theme.textPrimary,
+            style = AppTheme.type.heading04,
+            color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f).semantics { heading() },
         )
 
         // Add URL button
-        CarbonIconButton(
-            imageVector = CarbonIcons.Add,
+        AppIconButton(
+            imageVector = AppIcons.Add,
             contentDescription = stringResource(Res.string.summary_list_submit_url),
             onClick = onSubmitUrlClicked,
             iconSize = IconSizes.md,
         )
 
         // Create Digest button
-        CarbonIconButton(
-            imageVector = CarbonIcons.Document,
+        AppIconButton(
+            imageVector = AppIcons.Document,
             contentDescription = stringResource(Res.string.summary_list_create_digest),
             onClick = onCreateDigestClicked,
             iconSize = IconSizes.md,
@@ -289,20 +289,20 @@ private fun SummaryListHeader(
             } else {
                 stringResource(Res.string.summary_list_search)
             }
-        CarbonIconButton(
-            imageVector = if (isSearchActive) CarbonIcons.Close else CarbonIcons.Search,
+        AppIconButton(
+            imageVector = if (isSearchActive) AppIcons.Close else AppIcons.Search,
             contentDescription = searchDesc,
             onClick = onToggleSearch,
             iconSize = IconSizes.md,
         )
 
         // Layout toggle
-        CarbonIconButton(
+        AppIconButton(
             imageVector =
                 if (layoutMode == LayoutMode.LIST) {
-                    CarbonIcons.Grid
+                    AppIcons.Grid
                 } else {
-                    CarbonIcons.List
+                    AppIcons.List
                 },
             contentDescription =
                 if (layoutMode == LayoutMode.LIST) {
@@ -321,8 +321,8 @@ private fun SummaryListHeader(
         )
 
         // Refresh button
-        CarbonIconButton(
-            imageVector = CarbonIcons.Renew,
+        AppIconButton(
+            imageVector = AppIcons.Renew,
             contentDescription = stringResource(Res.string.summary_list_refresh),
             onClick = onRefresh,
             iconSize = IconSizes.md,
@@ -483,7 +483,7 @@ private fun SummaryListView(
                             .padding(Spacing.md),
                     contentAlignment = Alignment.Center,
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                 }
             }
         }
@@ -511,9 +511,9 @@ private fun SyncStatusBanner(
     // Priority: offline > sync error > stale data
     val (backgroundColor, text) =
         when {
-            isOffline -> Carbon.theme.supportWarning to offlineText
-            syncError != null -> Carbon.theme.supportError to syncError
-            else -> Carbon.theme.supportWarning to staleText
+            isOffline -> AppTheme.colors.supportWarning to offlineText
+            syncError != null -> AppTheme.colors.supportError to syncError
+            else -> AppTheme.colors.supportWarning to staleText
         }
 
     AnimatedVisibility(
@@ -532,16 +532,16 @@ private fun SyncStatusBanner(
                     .padding(horizontal = Spacing.md, vertical = Spacing.xs),
         ) {
             Icon(
-                imageVector = CarbonIcons.WarningAlt,
+                imageVector = AppIcons.WarningAlt,
                 contentDescription = null,
-                tint = Carbon.theme.textOnColor,
+                tint = AppTheme.colors.textOnColor,
                 modifier = Modifier.size(IconSizes.sm),
             )
             Spacer(modifier = Modifier.width(Spacing.xs))
             Text(
                 text = text,
-                style = Carbon.typography.label01,
-                color = Carbon.theme.textOnColor,
+                style = AppTheme.type.label01,
+                color = AppTheme.colors.textOnColor,
             )
         }
     }
@@ -614,7 +614,7 @@ private fun SummaryGridView(
                             .padding(Spacing.md),
                     contentAlignment = Alignment.Center,
                 ) {
-                    SmallLoading()
+                    AppSmallSpinner()
                 }
             }
         }
