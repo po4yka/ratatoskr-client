@@ -38,7 +38,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.TextButton
 import com.po4yka.ratatoskr.domain.model.SyncPhase
 import com.po4yka.ratatoskr.domain.model.SyncProgress
 import com.po4yka.ratatoskr.presentation.navigation.SettingsComponent

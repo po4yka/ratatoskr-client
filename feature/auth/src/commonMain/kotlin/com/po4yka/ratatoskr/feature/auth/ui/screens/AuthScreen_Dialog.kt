@@ -75,11 +75,12 @@ fun DeveloperLoginDialog(
             placeholder = { Text(stringResource(Res.string.auth_developer_user_id_placeholder)) },
             isError = isUserIdError,
             enabled = !isLoading,
-            supportingText = if (isUserIdError) {
-                { Text(userIdErrorText) }
-            } else {
-                null
-            },
+            supportingText =
+                if (isUserIdError) {
+                    { Text(userIdErrorText) }
+                } else {
+                    null
+                },
             keyboardOptions =
                 KeyboardOptions(
                     keyboardType = KeyboardType.Number,
