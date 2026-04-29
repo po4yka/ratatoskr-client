@@ -18,7 +18,7 @@ import ratatoskr.core.ui.generated.resources.sort_menu_oldest
 import ratatoskr.core.ui.generated.resources.sort_menu_selected
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.SortOrder
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import org.jetbrains.compose.resources.stringResource
@@ -38,7 +38,7 @@ fun SortOptionsMenu(
 
     Box(modifier = modifier) {
         AppIconButton(
-            imageVector = CarbonIcons.SortAscending,
+            imageVector = AppIcons.SortAscending,
             contentDescription = stringResource(Res.string.sort_menu_description, currentSortOrder.displayName()),
             onClick = { expanded = true },
         )
@@ -59,7 +59,7 @@ fun SortOptionsMenu(
                         if (currentSortOrder == sortOrder) {
                             {
                                 Icon(
-                                    imageVector = CarbonIcons.Checkmark,
+                                    imageVector = AppIcons.Checkmark,
                                     contentDescription = stringResource(Res.string.sort_menu_selected),
                                     tint = AppTheme.colors.iconPrimary,
                                     modifier = Modifier.size(IconSizes.xs),

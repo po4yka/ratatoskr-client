@@ -33,7 +33,7 @@ import com.po4yka.ratatoskr.core.ui.components.AppDialog
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.CollectionItem
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateView
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -82,14 +82,14 @@ fun CollectionsScreen(
             EmptyStateView(
                 title = stringResource(Res.string.collections_loading),
                 message = "",
-                icon = CarbonIcons.Folder,
+                icon = AppIcons.Folder,
                 modifier = Modifier.fillMaxSize(),
             )
         } else if (state.collections.isEmpty()) {
             EmptyStateView(
                 title = stringResource(Res.string.collections_empty_title),
                 message = stringResource(Res.string.collections_empty_message),
-                icon = CarbonIcons.Folder,
+                icon = AppIcons.Folder,
                 modifier = Modifier.fillMaxSize(),
             )
         } else {
@@ -176,7 +176,7 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
         )
 
         AppIconButton(
-            imageVector = CarbonIcons.Add,
+            imageVector = AppIcons.Add,
             contentDescription = stringResource(Res.string.collections_new),
             onClick = onCreateClick,
             iconSize = IconSizes.md,

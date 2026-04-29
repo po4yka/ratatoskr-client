@@ -74,7 +74,7 @@ import com.po4yka.ratatoskr.core.ui.components.ReadingSettingsPanel
 import com.po4yka.ratatoskr.core.ui.components.ResummarizeConfirmDialog
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.components.TagChip
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.HighlightBlue
 import com.po4yka.ratatoskr.core.ui.theme.HighlightGreen
 import com.po4yka.ratatoskr.core.ui.theme.HighlightPink
@@ -167,7 +167,7 @@ fun SummaryDetailScreen(
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
                 Icon(
-                    imageVector = CarbonIcons.WifiOff,
+                    imageVector = AppIcons.WifiOff,
                     contentDescription = null,
                     tint = AppTheme.colors.supportWarning,
                     modifier = Modifier.size(IconSizes.sm),
@@ -394,7 +394,7 @@ private fun AudioPlayerRow(
                     stringResource(Res.string.audio_play_narration)
                 }
             AppIconButton(
-                imageVector = if (isPlaying) CarbonIcons.PauseFilled else CarbonIcons.PlayFilled,
+                imageVector = if (isPlaying) AppIcons.PauseFilled else AppIcons.PlayFilled,
                 contentDescription = playPauseDesc,
                 onClick = onPlayPause,
                 buttonSize = IconSizes.sm,
@@ -426,7 +426,7 @@ private fun AudioPlayerRow(
 
         if (isActive && !isLoading) {
             AppIconButton(
-                imageVector = CarbonIcons.Close,
+                imageVector = AppIcons.Close,
                 contentDescription = stringResource(Res.string.audio_stop_narration),
                 onClick = onStop,
                 tint = AppTheme.colors.iconSecondary,
@@ -472,9 +472,9 @@ private fun SummaryDetailHeader(
                 HeaderIconButton(
                     icon =
                         if (s.isFavorited) {
-                            CarbonIcons.FavoriteFilled
+                            AppIcons.FavoriteFilled
                         } else {
-                            CarbonIcons.Favorite
+                            AppIcons.Favorite
                         },
                     contentDescription = favoriteDesc,
                     onClick = onFavoriteClick,
@@ -487,7 +487,7 @@ private fun SummaryDetailHeader(
                 )
 
                 HeaderIconButton(
-                    icon = CarbonIcons.ThumbsUp,
+                    icon = AppIcons.ThumbsUp,
                     contentDescription = stringResource(Res.string.summary_detail_thumbs_up),
                     onClick = onThumbsUpClick,
                     tint =
@@ -499,7 +499,7 @@ private fun SummaryDetailHeader(
                 )
 
                 HeaderIconButton(
-                    icon = CarbonIcons.ThumbsDown,
+                    icon = AppIcons.ThumbsDown,
                     contentDescription = stringResource(Res.string.summary_detail_thumbs_down),
                     onClick = onThumbsDownClick,
                     tint =
@@ -511,7 +511,7 @@ private fun SummaryDetailHeader(
                 )
 
                 HeaderIconButton(
-                    icon = CarbonIcons.Folder,
+                    icon = AppIcons.Folder,
                     contentDescription = stringResource(Res.string.summary_detail_add_to_collection),
                     onClick = onAddToCollectionClick,
                 )
@@ -523,7 +523,7 @@ private fun SummaryDetailHeader(
                         stringResource(Res.string.summary_detail_highlight_mode)
                     }
                 HeaderIconButton(
-                    icon = if (isHighlightModeActive) CarbonIcons.BookmarkAdd else CarbonIcons.Bookmark,
+                    icon = if (isHighlightModeActive) AppIcons.BookmarkAdd else AppIcons.Bookmark,
                     contentDescription = highlightDesc,
                     onClick = onHighlightModeClick,
                     tint = if (isHighlightModeActive) AppTheme.colors.linkPrimary else AppTheme.colors.iconSecondary,
@@ -536,20 +536,20 @@ private fun SummaryDetailHeader(
                         stringResource(Res.string.summary_detail_mark_unread)
                     }
                 Icon(
-                    imageVector = if (s.isRead) CarbonIcons.CheckmarkFilled else CarbonIcons.CircleOutline,
+                    imageVector = if (s.isRead) AppIcons.CheckmarkFilled else AppIcons.CircleOutline,
                     contentDescription = readDesc,
                     tint = if (s.isRead) AppTheme.colors.supportSuccess else AppTheme.colors.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
                 )
 
                 HeaderIconButton(
-                    icon = CarbonIcons.Settings,
+                    icon = AppIcons.Settings,
                     contentDescription = stringResource(Res.string.summary_detail_reading_settings),
                     onClick = onReadingSettingsClick,
                 )
 
                 HeaderIconButton(
-                    icon = CarbonIcons.Renew,
+                    icon = AppIcons.Renew,
                     contentDescription = stringResource(Res.string.summary_detail_re_summarize),
                     onClick = { if (!isResummarizing) onResummarizeClick() },
                     tint = AppTheme.colors.iconSecondary,
@@ -557,7 +557,7 @@ private fun SummaryDetailHeader(
                 )
 
                 HeaderIconButton(
-                    icon = CarbonIcons.Share,
+                    icon = AppIcons.Share,
                     contentDescription = stringResource(Res.string.summary_detail_share),
                     onClick = onShareClick,
                 )
@@ -769,7 +769,7 @@ private fun SummaryDetailContent(
                                 MarkdownElement(node, components, state.content)
                                 if (isHighlighted && highlight?.note != null) {
                                     Icon(
-                                        imageVector = CarbonIcons.WarningAlt,
+                                        imageVector = AppIcons.WarningAlt,
                                         contentDescription = stringResource(Res.string.summary_detail_has_annotation),
                                         tint = AppTheme.colors.textSecondary,
                                         modifier = Modifier.size(12.dp).align(Alignment.TopEnd),

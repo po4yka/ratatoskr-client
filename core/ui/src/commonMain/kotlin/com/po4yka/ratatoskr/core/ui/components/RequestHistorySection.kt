@@ -39,7 +39,7 @@ import ratatoskr.core.ui.generated.resources.submit_url_request_history
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Request
 import com.po4yka.ratatoskr.domain.model.RequestStatus
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -98,7 +98,7 @@ fun RequestHistorySection(
             }
 
             Icon(
-                imageVector = CarbonIcons.ArrowLeft,
+                imageVector = AppIcons.ArrowLeft,
                 contentDescription =
                     if (isExpanded) {
                         stringResource(Res.string.request_history_collapse)
@@ -209,7 +209,7 @@ private fun RequestItem(
 
         if (request.status == RequestStatus.FAILED) {
             AppIconButton(
-                imageVector = CarbonIcons.Renew,
+                imageVector = AppIcons.Renew,
                 contentDescription = stringResource(Res.string.request_history_retry),
                 onClick = onRetry,
                 buttonSize = Dimensions.compactIconButtonSize,

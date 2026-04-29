@@ -24,7 +24,7 @@ import ratatoskr.core.ui.generated.resources.reading_goal_streak
 import ratatoskr.core.ui.generated.resources.reading_goal_today_progress
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.ReadingGoalProgress
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -64,7 +64,7 @@ fun ReadingGoalCard(
                     Spacer(modifier = Modifier.height(Spacing.xxs))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = CarbonIcons.Favorite,
+                            imageVector = AppIcons.Favorite,
                             contentDescription = null,
                             tint = AppTheme.colors.textSecondary,
                             modifier = Modifier.size(Dimensions.readingGoalInlineIconSize),
@@ -81,7 +81,7 @@ fun ReadingGoalCard(
 
             if (goalProgress.isCompletedToday) {
                 Icon(
-                    imageVector = CarbonIcons.CheckmarkFilled,
+                    imageVector = AppIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.reading_goal_completed),
                     tint = AppTheme.colors.supportSuccess,
                     modifier = Modifier.size(IconSizes.md),

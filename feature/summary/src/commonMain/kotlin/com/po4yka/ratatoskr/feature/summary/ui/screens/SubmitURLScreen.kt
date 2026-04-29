@@ -56,7 +56,7 @@ import com.po4yka.ratatoskr.presentation.state.SubmitUrlError
 import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.TextArea
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -458,7 +458,7 @@ private fun BatchUrlEntryRow(
         when (entry.status) {
             BatchUrlStatus.PENDING -> {
                 Icon(
-                    imageVector = CarbonIcons.CircleOutline,
+                    imageVector = AppIcons.CircleOutline,
                     contentDescription = stringResource(Res.string.submit_url_batch_pending),
                     tint = AppTheme.colors.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
@@ -477,7 +477,7 @@ private fun BatchUrlEntryRow(
             }
             BatchUrlStatus.COMPLETED -> {
                 Icon(
-                    imageVector = CarbonIcons.CheckmarkFilled,
+                    imageVector = AppIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.submit_url_batch_completed),
                     tint = AppTheme.colors.supportSuccess,
                     modifier = Modifier.size(IconSizes.sm),
@@ -485,7 +485,7 @@ private fun BatchUrlEntryRow(
             }
             BatchUrlStatus.FAILED -> {
                 Icon(
-                    imageVector = CarbonIcons.Close,
+                    imageVector = AppIcons.Close,
                     contentDescription = stringResource(Res.string.submit_url_batch_failed),
                     tint = AppTheme.colors.supportError,
                     modifier = Modifier.size(IconSizes.sm),
@@ -493,7 +493,7 @@ private fun BatchUrlEntryRow(
             }
             BatchUrlStatus.SKIPPED -> {
                 Icon(
-                    imageVector = CarbonIcons.Close,
+                    imageVector = AppIcons.Close,
                     contentDescription = stringResource(Res.string.submit_url_batch_skipped),
                     tint = AppTheme.colors.iconSecondary,
                     modifier = Modifier.size(IconSizes.sm),
@@ -561,7 +561,7 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppIconButton(
-            imageVector = CarbonIcons.ArrowLeft,
+            imageVector = AppIcons.ArrowLeft,
             contentDescription = stringResource(Res.string.submit_url_back),
             onClick = onBackClick,
             iconSize = IconSizes.md,
@@ -710,7 +710,7 @@ private fun DuplicateWarningSection(
             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             Icon(
-                imageVector = CarbonIcons.WarningAlt,
+                imageVector = AppIcons.WarningAlt,
                 contentDescription = stringResource(Res.string.submit_url_duplicate_warning),
                 tint = AppTheme.colors.supportWarning,
                 modifier = Modifier.size(IconSizes.md),
@@ -827,7 +827,7 @@ private fun CompletionSection() {
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
         Icon(
-            imageVector = CarbonIcons.CheckmarkFilled,
+            imageVector = AppIcons.CheckmarkFilled,
             contentDescription = stringResource(Res.string.submit_url_batch_completed),
             tint = AppTheme.colors.supportSuccess,
             modifier = Modifier.size(IconSizes.md),
@@ -866,7 +866,7 @@ private fun RequestHistoryHeader(
                 stringResource(Res.string.submit_url_show_history)
             }
         AppIconButton(
-            imageVector = if (showHistory) CarbonIcons.ChevronUp else CarbonIcons.ChevronDown,
+            imageVector = if (showHistory) AppIcons.ChevronUp else AppIcons.ChevronDown,
             contentDescription = historyDesc,
             onClick = onToggle,
             iconSize = IconSizes.md,
@@ -891,10 +891,10 @@ private fun RequestHistoryItem(
         // Status icon
         val statusIcon =
             when (request.status) {
-                RequestStatus.COMPLETED -> CarbonIcons.CheckmarkFilled
-                RequestStatus.FAILED -> CarbonIcons.Close
-                RequestStatus.PROCESSING -> CarbonIcons.Renew
-                RequestStatus.PENDING -> CarbonIcons.CircleOutline
+                RequestStatus.COMPLETED -> AppIcons.CheckmarkFilled
+                RequestStatus.FAILED -> AppIcons.Close
+                RequestStatus.PROCESSING -> AppIcons.Renew
+                RequestStatus.PENDING -> AppIcons.CircleOutline
             }
         val statusColor =
             when (request.status) {
@@ -931,7 +931,7 @@ private fun RequestHistoryItem(
         // Retry button for failed requests
         if (request.status == RequestStatus.FAILED) {
             AppIconButton(
-                imageVector = CarbonIcons.Renew,
+                imageVector = AppIcons.Renew,
                 contentDescription = stringResource(Res.string.settings_retry),
                 onClick = onRetry,
                 iconSize = IconSizes.sm,

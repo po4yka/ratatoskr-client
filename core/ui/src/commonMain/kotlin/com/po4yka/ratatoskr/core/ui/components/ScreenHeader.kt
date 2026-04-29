@@ -15,7 +15,7 @@ import androidx.compose.ui.semantics.semantics
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.a11y_navigate_back
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -59,7 +59,7 @@ fun ScreenHeader(
         // Back button (optional)
         if (onBackClick != null) {
             AppIconButton(
-                imageVector = CarbonIcons.ArrowLeft,
+                imageVector = AppIcons.ArrowLeft,
                 contentDescription = stringResource(Res.string.a11y_navigate_back),
                 onClick = onBackClick,
             )

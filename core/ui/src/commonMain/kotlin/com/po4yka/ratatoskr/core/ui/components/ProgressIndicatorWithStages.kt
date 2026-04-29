@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -114,7 +114,7 @@ private fun StageIndicator(
         when {
             isFailed -> {
                 Icon(
-                    imageVector = CarbonIcons.Close,
+                    imageVector = AppIcons.Close,
                     contentDescription = stringResource(Res.string.progress_stages_failed, title),
                     tint = AppTheme.colors.supportError,
                     modifier = Modifier.size(Dimensions.stageIndicatorSize),
@@ -122,7 +122,7 @@ private fun StageIndicator(
             }
             isCompleted -> {
                 Icon(
-                    imageVector = CarbonIcons.Checkmark,
+                    imageVector = AppIcons.Checkmark,
                     contentDescription = stringResource(Res.string.progress_stages_completed, title),
                     tint = AppTheme.colors.supportSuccess,
                     modifier = Modifier.size(Dimensions.stageIndicatorSize),

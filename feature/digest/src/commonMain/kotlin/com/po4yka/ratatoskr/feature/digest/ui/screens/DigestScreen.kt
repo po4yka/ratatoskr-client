@@ -42,7 +42,7 @@ import com.po4yka.ratatoskr.presentation.state.DigestPreferencesState
 import com.po4yka.ratatoskr.presentation.state.DigestTab
 import com.po4yka.ratatoskr.presentation.state.DigestTriggerState
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -196,7 +196,7 @@ private fun DigestHeader(onBackClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppIconButton(
-            imageVector = CarbonIcons.ArrowLeft,
+            imageVector = AppIcons.ArrowLeft,
             contentDescription = stringResource(Res.string.submit_url_back),
             onClick = onBackClick,
             iconSize = IconSizes.md,
@@ -475,7 +475,7 @@ private fun DigestChannelRow(
             }
         }
         AppIconButton(
-            imageVector = CarbonIcons.Close,
+            imageVector = AppIcons.Close,
             contentDescription = stringResource(Res.string.digest_screen_unsubscribe),
             onClick = onUnsubscribe,
             enabled = !isLoading,
@@ -680,9 +680,9 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
     ) {
         val statusIcon =
             when (item.status) {
-                "delivered", "completed" -> CarbonIcons.CheckmarkFilled
-                "failed" -> CarbonIcons.Close
-                else -> CarbonIcons.CircleOutline
+                "delivered", "completed" -> AppIcons.CheckmarkFilled
+                "failed" -> AppIcons.Close
+                else -> AppIcons.CircleOutline
             }
         val statusColor =
             when (item.status) {

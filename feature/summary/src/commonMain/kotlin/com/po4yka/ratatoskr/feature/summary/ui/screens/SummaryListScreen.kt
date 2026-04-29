@@ -59,7 +59,7 @@ import com.po4yka.ratatoskr.core.ui.components.SummarySearchBar
 import com.po4yka.ratatoskr.core.ui.components.SwipeableSummaryCard
 import com.po4yka.ratatoskr.core.ui.components.RecommendationsSection
 import com.po4yka.ratatoskr.core.ui.components.TrendingTopicsSection
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -268,7 +268,7 @@ private fun SummaryListHeader(
 
         // Add URL button
         AppIconButton(
-            imageVector = CarbonIcons.Add,
+            imageVector = AppIcons.Add,
             contentDescription = stringResource(Res.string.summary_list_submit_url),
             onClick = onSubmitUrlClicked,
             iconSize = IconSizes.md,
@@ -276,7 +276,7 @@ private fun SummaryListHeader(
 
         // Create Digest button
         AppIconButton(
-            imageVector = CarbonIcons.Document,
+            imageVector = AppIcons.Document,
             contentDescription = stringResource(Res.string.summary_list_create_digest),
             onClick = onCreateDigestClicked,
             iconSize = IconSizes.md,
@@ -290,7 +290,7 @@ private fun SummaryListHeader(
                 stringResource(Res.string.summary_list_search)
             }
         AppIconButton(
-            imageVector = if (isSearchActive) CarbonIcons.Close else CarbonIcons.Search,
+            imageVector = if (isSearchActive) AppIcons.Close else AppIcons.Search,
             contentDescription = searchDesc,
             onClick = onToggleSearch,
             iconSize = IconSizes.md,
@@ -300,9 +300,9 @@ private fun SummaryListHeader(
         AppIconButton(
             imageVector =
                 if (layoutMode == LayoutMode.LIST) {
-                    CarbonIcons.Grid
+                    AppIcons.Grid
                 } else {
-                    CarbonIcons.List
+                    AppIcons.List
                 },
             contentDescription =
                 if (layoutMode == LayoutMode.LIST) {
@@ -322,7 +322,7 @@ private fun SummaryListHeader(
 
         // Refresh button
         AppIconButton(
-            imageVector = CarbonIcons.Renew,
+            imageVector = AppIcons.Renew,
             contentDescription = stringResource(Res.string.summary_list_refresh),
             onClick = onRefresh,
             iconSize = IconSizes.md,
@@ -532,7 +532,7 @@ private fun SyncStatusBanner(
                     .padding(horizontal = Spacing.md, vertical = Spacing.xs),
         ) {
             Icon(
-                imageVector = CarbonIcons.WarningAlt,
+                imageVector = AppIcons.WarningAlt,
                 contentDescription = null,
                 tint = AppTheme.colors.textOnColor,
                 modifier = Modifier.size(IconSizes.sm),

@@ -15,7 +15,7 @@ import ratatoskr.core.ui.generated.resources.summary_detail_favorite
 import ratatoskr.core.ui.generated.resources.summary_detail_unfavorite
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -48,7 +48,7 @@ fun SummaryOverflowMenu(
                 expanded = false
                 onFavoriteClick()
             },
-            leadingIcon = if (summary.isFavorited) CarbonIcons.FavoriteFilled else CarbonIcons.Favorite,
+            leadingIcon = if (summary.isFavorited) AppIcons.FavoriteFilled else AppIcons.Favorite,
             leadingIconTint =
                 if (summary.isFavorited) {
                     AppTheme.colors.supportError
@@ -70,7 +70,7 @@ fun SummaryOverflowMenu(
                 }
             },
             enabled = !summary.isRead,
-            leadingIcon = CarbonIcons.CheckmarkFilled,
+            leadingIcon = AppIcons.CheckmarkFilled,
         )
         AppMenuItem(
             label = stringResource(Res.string.summary_detail_add_to_collection),
@@ -78,7 +78,7 @@ fun SummaryOverflowMenu(
                 expanded = false
                 onAddToCollectionClick()
             },
-            leadingIcon = CarbonIcons.Folder,
+            leadingIcon = AppIcons.Folder,
         )
         AppMenuItem(
             label = stringResource(Res.string.collection_view_delete_action),
@@ -86,7 +86,7 @@ fun SummaryOverflowMenu(
                 expanded = false
                 onDeleteClick()
             },
-            leadingIcon = CarbonIcons.TrashCan,
+            leadingIcon = AppIcons.TrashCan,
             isDestructive = true,
         )
     }

@@ -36,7 +36,7 @@ import com.po4yka.ratatoskr.domain.model.Streak
 import com.po4yka.ratatoskr.domain.model.TopicStat
 import com.po4yka.ratatoskr.domain.model.UserStats
 import com.po4yka.ratatoskr.presentation.navigation.StatsComponent
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
@@ -118,7 +118,7 @@ fun StatsScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            imageVector = CarbonIcons.WarningAlt,
+                            imageVector = AppIcons.WarningAlt,
                             contentDescription = stringResource(Res.string.stats_error_icon),
                             tint = AppTheme.colors.supportError,
                             modifier = Modifier.size(Spacing.xl),
@@ -266,7 +266,7 @@ private fun StreakCard(streak: Streak) {
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Icon(
-            imageVector = CarbonIcons.Star,
+            imageVector = AppIcons.Star,
             contentDescription = null,
             tint = AppTheme.colors.supportWarning,
             modifier = Modifier.size(24.dp),
@@ -351,7 +351,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
             )
             if (goalProgress.achieved) {
                 Icon(
-                    imageVector = CarbonIcons.CheckmarkFilled,
+                    imageVector = AppIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.stats_goal_achieved),
                     tint = AppTheme.colors.supportSuccess,
                     modifier = Modifier.size(16.dp),

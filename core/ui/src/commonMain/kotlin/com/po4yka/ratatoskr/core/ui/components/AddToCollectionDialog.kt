@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Collection
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
@@ -125,7 +125,7 @@ private fun CollectionSelectionRow(
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Icon(
-            imageVector = CarbonIcons.Folder,
+            imageVector = AppIcons.Folder,
             contentDescription = null,
             tint = AppTheme.colors.iconPrimary,
             modifier = Modifier.size(IconSizes.sm),

@@ -33,7 +33,7 @@ import ratatoskr.core.ui.generated.resources.summary_card_saved_article
 import ratatoskr.core.ui.generated.resources.summary_detail_mark_read
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -128,7 +128,7 @@ fun SummaryGridCard(
             ) {
                 if (summary.isFullContentCached) {
                     Icon(
-                        imageVector = CarbonIcons.Download,
+                        imageVector = AppIcons.Download,
                         contentDescription = stringResource(Res.string.summary_card_available_offline),
                         tint = AppTheme.colors.iconSecondary,
                         modifier = Modifier.size(IconSizes.xs),
@@ -136,7 +136,7 @@ fun SummaryGridCard(
                 }
                 if (summary.isFavorited) {
                     Icon(
-                        imageVector = CarbonIcons.FavoriteFilled,
+                        imageVector = AppIcons.FavoriteFilled,
                         contentDescription = stringResource(Res.string.summary_card_favorited),
                         tint = AppTheme.colors.supportError,
                         modifier = Modifier.size(IconSizes.xs),
@@ -152,7 +152,7 @@ fun SummaryGridCard(
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
-                            imageVector = CarbonIcons.Checkmark,
+                            imageVector = AppIcons.Checkmark,
                             contentDescription = stringResource(Res.string.summary_detail_mark_read),
                             tint = AppTheme.colors.textOnColor,
                             modifier = Modifier.size(IconSizes.xs),

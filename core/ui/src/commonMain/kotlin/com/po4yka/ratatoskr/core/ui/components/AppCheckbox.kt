@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.icons.CarbonIcons
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 
@@ -62,7 +62,7 @@ fun AppCheckbox(
     ) {
         if (checked) {
             Icon(
-                imageVector = CarbonIcons.Checkmark,
+                imageVector = AppIcons.Checkmark,
                 contentDescription = null,
                 tint = iconTint,
                 modifier = Modifier.size(IconSizes.xs),
