@@ -244,6 +244,14 @@ class ArchitectureBoundaryRulesTest {
                         path = "composeApp/src/androidInstrumentedTest/kotlin/com/po4yka/ratatoskr/ui/SummaryListScreenTest.kt",
                         content = "",
                     ),
+                    SourceFile(
+                        path = "composeApp/src/androidDeviceTest/kotlin/com/po4yka/ratatoskr/ui/SummaryListScreenTest.kt",
+                        content = "",
+                    ),
+                    SourceFile(
+                        path = "composeApp/src/androidHostTest/kotlin/com/po4yka/ratatoskr/ui/SummaryListUiHostTest.kt",
+                        content = "",
+                    ),
                 ),
             )
 

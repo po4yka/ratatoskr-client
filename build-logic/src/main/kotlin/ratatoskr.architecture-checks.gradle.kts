@@ -19,6 +19,8 @@ fun productionSourceTree(path: String) =
             exclude("**/commonTest/**/*.kt")
             exclude("**/androidUnitTest/**/*.kt")
             exclude("**/androidInstrumentedTest/**/*.kt")
+            exclude("**/androidHostTest/**/*.kt")
+            exclude("**/androidDeviceTest/**/*.kt")
             exclude("**/iosTest/**/*.kt")
             exclude("**/desktopTest/**/*.kt")
         }
@@ -61,6 +63,8 @@ val verifyArchitectureBoundaries =
                     exclude("**/commonTest/**/*.kt")
                     exclude("**/androidUnitTest/**/*.kt")
                     exclude("**/androidInstrumentedTest/**/*.kt")
+                    exclude("**/androidHostTest/**/*.kt")
+                    exclude("**/androidDeviceTest/**/*.kt")
                     exclude("**/iosTest/**/*.kt")
                     exclude("**/desktopTest/**/*.kt")
                     exclude("**/build/**")

@@ -193,6 +193,8 @@ internal object ArchitectureBoundaryRules {
         path.contains("/commonTest/") ||
             path.contains("/androidUnitTest/") ||
             path.contains("/androidInstrumentedTest/") ||
+            path.contains("/androidHostTest/") ||
+            path.contains("/androidDeviceTest/") ||
             path.contains("/desktopTest/") ||
             path.contains("/iosTest/")
 
