@@ -28,7 +28,6 @@ kotlin {
             implementation(libs.essenty.instancekeeper)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
-            implementation(libs.carbon.compose)
             implementation(libs.koin.core)
             implementation(libs.koin.annotations)
             implementation(libs.ktor.client.core)
