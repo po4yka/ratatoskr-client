@@ -40,7 +40,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.po4yka.ratatoskr.navigation.MainChildDescriptor
 import com.po4yka.ratatoskr.navigation.MainTab
-import com.gabrieldrn.carbon.Carbon
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.presentation.navigation.MainComponent
 
 /** Minimum width to switch from bottom-bar to side navigation rail layout. */
@@ -66,7 +66,7 @@ fun MainScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(Carbon.theme.background),
+                .background(AppTheme.colors.background),
     ) {
         val isExpanded = maxWidth >= EXPANDED_WIDTH_THRESHOLD
 
@@ -129,7 +129,7 @@ private fun NavigationRail(
             Modifier
                 .width(80.dp)
                 .fillMaxHeight()
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
@@ -181,17 +181,17 @@ private fun RailItem(
     onClick: () -> Unit,
 ) {
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.iconPrimary else Carbon.theme.iconSecondary,
+        targetValue = if (isSelected) AppTheme.colors.iconPrimary else AppTheme.colors.iconSecondary,
         animationSpec = tween(durationMillis = 200),
         label = "railIconColor",
     )
     val textColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.textPrimary else Carbon.theme.textSecondary,
+        targetValue = if (isSelected) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
         animationSpec = tween(durationMillis = 200),
         label = "railTextColor",
     )
     val indicatorColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.borderInteractive else Carbon.theme.layer01,
+        targetValue = if (isSelected) AppTheme.colors.borderInteractive else AppTheme.colors.layer01,
         animationSpec = tween(durationMillis = 200),
         label = "railIndicatorColor",
     )
@@ -231,7 +231,7 @@ private fun RailItem(
             )
             Text(
                 text = label,
-                style = Carbon.typography.label01,
+                style = AppTheme.type.label01,
                 color = textColor,
             )
         }
@@ -249,7 +249,7 @@ private fun BottomNavigation(
             Modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .background(Carbon.theme.layer01),
+                .background(AppTheme.colors.layer01),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -299,17 +299,17 @@ private fun NavItem(
     onClick: () -> Unit,
 ) {
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.iconPrimary else Carbon.theme.iconSecondary,
+        targetValue = if (isSelected) AppTheme.colors.iconPrimary else AppTheme.colors.iconSecondary,
         animationSpec = tween(durationMillis = 200),
         label = "iconColor",
     )
     val textColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.textPrimary else Carbon.theme.textSecondary,
+        targetValue = if (isSelected) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
         animationSpec = tween(durationMillis = 200),
         label = "textColor",
     )
     val indicatorColor by animateColorAsState(
-        targetValue = if (isSelected) Carbon.theme.borderInteractive else Carbon.theme.layer01,
+        targetValue = if (isSelected) AppTheme.colors.borderInteractive else AppTheme.colors.layer01,
         animationSpec = tween(durationMillis = 200),
         label = "indicatorColor",
     )
@@ -346,7 +346,7 @@ private fun NavItem(
             )
             Text(
                 text = label,
-                style = Carbon.typography.label01,
+                style = AppTheme.type.label01,
                 color = textColor,
             )
         }
