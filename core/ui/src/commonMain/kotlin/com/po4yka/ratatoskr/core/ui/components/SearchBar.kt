@@ -30,9 +30,8 @@ import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 
-@Suppress("FunctionNaming")
 @Composable
-fun CarbonSearchField(
+fun AppSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
     placeholder: String,
@@ -118,7 +117,7 @@ fun SummarySearchBar(
                 .padding(horizontal = Spacing.md, vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CarbonSearchField(
+        AppSearchField(
             query = query,
             onQueryChange = onQueryChange,
             placeholder = stringResource(Res.string.search_placeholder),

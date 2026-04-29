@@ -36,7 +36,7 @@ import com.po4yka.ratatoskr.presentation.state.SearchMode
 import com.po4yka.ratatoskr.presentation.state.SearchState
 import com.po4yka.ratatoskr.core.ui.components.AppSpinner
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
-import com.po4yka.ratatoskr.core.ui.components.CarbonSearchField
+import com.po4yka.ratatoskr.core.ui.components.AppSearchField
 import com.po4yka.ratatoskr.core.ui.components.SelectableChip
 import com.po4yka.ratatoskr.core.ui.components.ContextualEmptyState
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateType
@@ -188,7 +188,7 @@ private fun SearchInputRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
-        CarbonSearchField(
+        AppSearchField(
             query = query,
             onQueryChange = onQueryChange,
             onClearQuery = onClearQuery,
