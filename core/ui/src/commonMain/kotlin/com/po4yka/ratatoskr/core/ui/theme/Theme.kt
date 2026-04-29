@@ -4,167 +4,132 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
-import com.gabrieldrn.carbon.CarbonDesignSystem
-import com.gabrieldrn.carbon.Carbon
-import com.gabrieldrn.carbon.foundation.color.Gray100Theme
-import com.gabrieldrn.carbon.foundation.color.WhiteTheme
 
 /**
- * Ratatoskr theme combining Carbon Design System with Material 3.
+ * Ratatoskr theme: project-owned [AppTheme] tokens layered on top of Material 3.
  *
- * This theme wraps CarbonDesignSystem to provide access to Carbon components
- * while maintaining Material 3 theming for existing components.
- *
- * During the Carbon removal migration this also provides [AppColors] / [AppType]
- * via [LocalAppColors] / [LocalAppType] so call sites can be migrated incrementally
- * to `AppTheme.colors.X` / `AppTheme.type.X`. The Carbon wrap will be removed once
- * all call sites are migrated.
+ * Provides [AppColors] and [AppType] via [LocalAppColors] / [LocalAppType] for the
+ * design-system seam (`AppTheme.colors.X` / `AppTheme.type.X`), and bridges those tokens
+ * into a Material 3 [MaterialTheme] so existing Material primitives (Button, OutlinedTextField,
+ * CircularProgressIndicator, ...) pick up the same palette + scale.
  */
 @Composable
 fun RatatoskrTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val carbonTheme = if (darkTheme) Gray100Theme else WhiteTheme
     val appColors = if (darkTheme) darkAppColors else lightAppColors
     val appType = defaultAppType
 
-    CarbonDesignSystem(
-        theme = carbonTheme,
+    CompositionLocalProvider(
+        LocalAppColors provides appColors,
+        LocalAppType provides appType,
     ) {
-        CompositionLocalProvider(
-            LocalAppColors provides appColors,
-            LocalAppType provides appType,
-        ) {
-            val materialColorScheme =
-                rememberCarbonMaterialColorScheme(darkTheme = darkTheme)
-            val materialTypography =
-                rememberCarbonMaterialTypography()
-
-            MaterialTheme(
-                colorScheme = materialColorScheme,
-                typography = materialTypography,
-                content = content,
-            )
-        }
-    }
-}
-
-@Composable
-private fun rememberCarbonMaterialColorScheme(darkTheme: Boolean): ColorScheme {
-    val theme = Carbon.theme
-
-    return remember(
-        darkTheme,
-        theme.background,
-        theme.backgroundInverse,
-        theme.borderSubtle00,
-        theme.iconSecondary,
-        theme.interactive,
-        theme.layer01,
-        theme.layer02,
-        theme.linkPrimary,
-        theme.supportError,
-        theme.textOnColor,
-        theme.textPrimary,
-        theme.textSecondary,
-    ) {
-        if (darkTheme) {
-            androidx.compose.material3.darkColorScheme(
-                primary = theme.interactive,
-                onPrimary = theme.textOnColor,
-                primaryContainer = theme.layer02,
-                onPrimaryContainer = theme.textPrimary,
-                secondary = theme.iconSecondary,
-                onSecondary = theme.textOnColor,
-                secondaryContainer = theme.layer02,
-                onSecondaryContainer = theme.textPrimary,
-                tertiary = theme.linkPrimary,
-                onTertiary = theme.textOnColor,
-                tertiaryContainer = theme.layer02,
-                onTertiaryContainer = theme.textPrimary,
-                error = theme.supportError,
-                onError = theme.textOnColor,
-                errorContainer = theme.supportError,
-                onErrorContainer = theme.textOnColor,
-                background = theme.background,
-                onBackground = theme.textPrimary,
-                surface = theme.layer01,
-                onSurface = theme.textPrimary,
-                surfaceVariant = theme.layer02,
-                onSurfaceVariant = theme.textSecondary,
-                outline = theme.borderSubtle00,
-                outlineVariant = theme.borderSubtle00,
-                inverseSurface = theme.backgroundInverse,
-                inverseOnSurface = theme.textOnColor,
-                inversePrimary = theme.linkPrimary,
-            )
-        } else {
-            androidx.compose.material3.lightColorScheme(
-                primary = theme.interactive,
-                onPrimary = theme.textOnColor,
-                primaryContainer = theme.layer02,
-                onPrimaryContainer = theme.textPrimary,
-                secondary = theme.iconSecondary,
-                onSecondary = theme.textOnColor,
-                secondaryContainer = theme.layer02,
-                onSecondaryContainer = theme.textPrimary,
-                tertiary = theme.linkPrimary,
-                onTertiary = theme.textOnColor,
-                tertiaryContainer = theme.layer02,
-                onTertiaryContainer = theme.textPrimary,
-                error = theme.supportError,
-                onError = theme.textOnColor,
-                errorContainer = theme.supportError,
-                onErrorContainer = theme.textOnColor,
-                background = theme.background,
-                onBackground = theme.textPrimary,
-                surface = theme.layer01,
-                onSurface = theme.textPrimary,
-                surfaceVariant = theme.layer02,
-                onSurfaceVariant = theme.textSecondary,
-                outline = theme.borderSubtle00,
-                outlineVariant = theme.borderSubtle00,
-                inverseSurface = theme.backgroundInverse,
-                inverseOnSurface = theme.textOnColor,
-                inversePrimary = theme.linkPrimary,
-            )
-        }
-    }
-}
-
-@Composable
-private fun rememberCarbonMaterialTypography(): Typography {
-    val typography = Carbon.typography
-
-    return remember(
-        typography.body01,
-        typography.bodyCompact01,
-        typography.heading02,
-        typography.heading03,
-        typography.heading04,
-        typography.headingCompact01,
-        typography.label01,
-    ) {
-        Typography(
-            displayLarge = typography.heading02,
-            displayMedium = typography.heading03,
-            displaySmall = typography.heading04,
-            headlineLarge = typography.heading02,
-            headlineMedium = typography.heading03,
-            headlineSmall = typography.heading04,
-            titleLarge = typography.headingCompact01,
-            titleMedium = typography.headingCompact01,
-            titleSmall = typography.label01,
-            bodyLarge = typography.body01,
-            bodyMedium = typography.bodyCompact01,
-            bodySmall = typography.label01,
-            labelLarge = typography.label01,
-            labelMedium = typography.label01,
-            labelSmall = typography.label01,
+        MaterialTheme(
+            colorScheme = appColors.toMaterialColorScheme(darkTheme),
+            typography = appType.toMaterialTypography(),
+            content = content,
         )
     }
 }
+
+/**
+ * Bridge [AppColors] into a Material 3 [ColorScheme].
+ *
+ * Slot mapping is preserved from the previous Carbon-bridged scheme so the visual surface stays
+ * the same: `interactive→primary`, `iconSecondary→secondary`, `linkPrimary→tertiary`,
+ * `layer01→surface`, `layer02→surfaceVariant`, etc.
+ */
+private fun AppColors.toMaterialColorScheme(darkTheme: Boolean): ColorScheme =
+    if (darkTheme) {
+        darkColorScheme(
+            primary = interactive,
+            onPrimary = textOnColor,
+            primaryContainer = layer02,
+            onPrimaryContainer = textPrimary,
+            secondary = iconSecondary,
+            onSecondary = textOnColor,
+            secondaryContainer = layer02,
+            onSecondaryContainer = textPrimary,
+            tertiary = linkPrimary,
+            onTertiary = textOnColor,
+            tertiaryContainer = layer02,
+            onTertiaryContainer = textPrimary,
+            error = supportError,
+            onError = textOnColor,
+            errorContainer = supportError,
+            onErrorContainer = textOnColor,
+            background = background,
+            onBackground = textPrimary,
+            surface = layer01,
+            onSurface = textPrimary,
+            surfaceVariant = layer02,
+            onSurfaceVariant = textSecondary,
+            outline = borderSubtle00,
+            outlineVariant = borderSubtle00,
+            inverseSurface = backgroundInverse,
+            inverseOnSurface = textOnColor,
+            inversePrimary = linkPrimary,
+        )
+    } else {
+        lightColorScheme(
+            primary = interactive,
+            onPrimary = textOnColor,
+            primaryContainer = layer02,
+            onPrimaryContainer = textPrimary,
+            secondary = iconSecondary,
+            onSecondary = textOnColor,
+            secondaryContainer = layer02,
+            onSecondaryContainer = textPrimary,
+            tertiary = linkPrimary,
+            onTertiary = textOnColor,
+            tertiaryContainer = layer02,
+            onTertiaryContainer = textPrimary,
+            error = supportError,
+            onError = textOnColor,
+            errorContainer = supportError,
+            onErrorContainer = textOnColor,
+            background = background,
+            onBackground = textPrimary,
+            surface = layer01,
+            onSurface = textPrimary,
+            surfaceVariant = layer02,
+            onSurfaceVariant = textSecondary,
+            outline = borderSubtle00,
+            outlineVariant = borderSubtle00,
+            inverseSurface = backgroundInverse,
+            inverseOnSurface = textOnColor,
+            inversePrimary = linkPrimary,
+        )
+    }
+
+/**
+ * Bridge [AppType] into a Material 3 [Typography].
+ *
+ * Slot mapping is preserved from the previous Carbon-bridged scheme: heading02/03/04 cover
+ * display + headline slots, headingCompact01 covers titleLarge / titleMedium, label01 covers
+ * the title-small / label / body-small slots, body01 / bodyCompact01 cover body-large /
+ * body-medium.
+ */
+private fun AppType.toMaterialTypography(): Typography =
+    Typography(
+        displayLarge = heading02,
+        displayMedium = heading03,
+        displaySmall = heading04,
+        headlineLarge = heading02,
+        headlineMedium = heading03,
+        headlineSmall = heading04,
+        titleLarge = headingCompact01,
+        titleMedium = headingCompact01,
+        titleSmall = label01,
+        bodyLarge = body01,
+        bodyMedium = bodyCompact01,
+        bodySmall = label01,
+        labelLarge = label01,
+        labelMedium = label01,
+        labelSmall = label01,
+    )
