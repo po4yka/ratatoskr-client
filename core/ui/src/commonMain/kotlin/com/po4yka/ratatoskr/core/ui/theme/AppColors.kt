@@ -5,12 +5,12 @@ package com.po4yka.ratatoskr.core.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Project-owned color tokens. Field set mirrors the Carbon tokens that were referenced from the
- * codebase before Carbon Design System was removed. Seed values were captured one-time from
- * Carbon's `WhiteTheme` (light) and `Gray100Theme` (dark); the project owns these values henceforth.
+ * Project-owned color tokens. Field set mirrors the tokens referenced from the codebase before
+ * the previous design system was removed. Seed values were captured one-time from the previous
+ * light + dark themes; the project owns these values henceforth.
  *
- * The token names intentionally mirror the Carbon names to keep the codemod purely mechanical.
- * Future design-system work can rename or recolor these in place.
+ * The token names are kept as-is to keep the removal codemod purely mechanical. Future
+ * design-system work can rename or recolor these in place.
  */
 data class AppColors(
     val background: Color,
@@ -37,7 +37,7 @@ data class AppColors(
     val textPlaceholder: Color,
 )
 
-/** Light token set, seeded from Carbon's `WhiteTheme`. */
+/** Light token set, seeded from the previous design system's light theme. */
 val lightAppColors: AppColors =
     AppColors(
         background = Color(0xFFFFFFFF),
@@ -64,7 +64,7 @@ val lightAppColors: AppColors =
         textPlaceholder = Color(0x66161616),
     )
 
-/** Dark token set, seeded from Carbon's `Gray100Theme`. */
+/** Dark token set, seeded from the previous design system's dark theme. */
 val darkAppColors: AppColors =
     AppColors(
         background = Color(0xFF161616),
