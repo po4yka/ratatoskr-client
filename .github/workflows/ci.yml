@@ -114,7 +114,7 @@ jobs:
 
       - name: Run Android tests
         if: matrix.platform == 'android'
-        run: ./gradlew :composeApp:testDebugUnitTest --no-daemon
+        run: ./gradlew :composeApp:testAndroidHostTest --no-daemon
 
       # iOS-specific tasks
       - name: Build iOS frameworks
