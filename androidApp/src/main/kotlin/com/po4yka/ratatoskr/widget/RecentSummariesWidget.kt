@@ -2,7 +2,6 @@ package com.po4yka.ratatoskr.widget
 
 import android.content.Context
 import androidx.glance.GlanceId
-import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.provideContent
 import com.po4yka.ratatoskr.domain.usecase.GetSummariesUseCase
@@ -20,9 +19,7 @@ class RecentSummariesWidget : GlanceAppWidget(), KoinComponent {
         val summaries = getSummariesUseCase(page = 1, pageSize = 5).firstOrNull().orEmpty()
 
         provideContent {
-            GlanceTheme {
-                RecentSummariesContent(summaries = summaries)
-            }
+            RecentSummariesContent(summaries = summaries)
         }
     }
 }
