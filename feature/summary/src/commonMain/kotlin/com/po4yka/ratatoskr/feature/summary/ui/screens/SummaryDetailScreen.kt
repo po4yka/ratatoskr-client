@@ -20,8 +20,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -40,22 +40,17 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import androidx.compose.material3.LinearProgressIndicator
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.MarkdownElement
-import com.mikepenz.markdown.model.DefaultMarkdownColors
-import com.mikepenz.markdown.model.DefaultMarkdownTypography
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.feature.summary.ui.markdown.rememberFrostMarkdownColors
+import com.po4yka.ratatoskr.feature.summary.ui.markdown.rememberFrostMarkdownComponents
+import com.po4yka.ratatoskr.feature.summary.ui.markdown.rememberFrostMarkdownTypography
 import com.po4yka.ratatoskr.domain.model.AudioStatus
 import com.po4yka.ratatoskr.domain.model.FeedbackRating
 import com.po4yka.ratatoskr.domain.model.Highlight
-import com.po4yka.ratatoskr.domain.model.HighlightColor
 import com.po4yka.ratatoskr.domain.model.ProcessingStage
 import com.po4yka.ratatoskr.domain.model.ReadingPreferences
 import com.po4yka.ratatoskr.domain.model.Summary
@@ -75,10 +70,6 @@ import com.po4yka.ratatoskr.core.ui.components.ResummarizeConfirmDialog
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.components.TagChip
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.HighlightBlue
-import com.po4yka.ratatoskr.core.ui.theme.HighlightGreen
-import com.po4yka.ratatoskr.core.ui.theme.HighlightPink
-import com.po4yka.ratatoskr.core.ui.theme.HighlightYellow
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.util.extractDomain
@@ -366,7 +357,7 @@ private fun AudioPlayerRow(
     val isPlaying = status == AudioStatus.PLAYING
     val isActive = audioState != null && status != AudioStatus.ERROR
 
-    HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+    FrostDivider()
     Row(
         modifier =
             Modifier
@@ -615,45 +606,13 @@ private fun SummaryDetailContent(
             modifier = Modifier.fillMaxWidth().height(2.dp),
         )
 
-        val textPrimary = AppTheme.colors.textPrimary
-        val layer01 = AppTheme.colors.layer01
-        val borderSubtle00 = AppTheme.colors.borderSubtle00
-        val markdownColors =
-            remember(textPrimary, layer01, borderSubtle00) {
-                DefaultMarkdownColors(
-                    text = textPrimary,
-                    codeBackground = layer01,
-                    inlineCodeBackground = layer01,
-                    dividerColor = borderSubtle00,
-                    tableBackground = layer01,
-                )
-            }
-
-        val heading04 = AppTheme.type.heading04
-        val heading03 = AppTheme.type.heading03
-        val headingCompact01 = AppTheme.type.headingCompact01
-        val bodyCompact01 = AppTheme.type.bodyCompact01
-        val body01 = AppTheme.type.body01
+        val markdownColors = rememberFrostMarkdownColors()
         val markdownTypography =
-            remember(
-                readingPreferences.fontSizeScale,
-                readingPreferences.lineSpacingScale,
-                heading04,
-                heading03,
-                headingCompact01,
-                bodyCompact01,
-                body01,
-            ) {
-                buildMarkdownTypography(
-                    fontScale = readingPreferences.fontSizeScale,
-                    lineScale = readingPreferences.lineSpacingScale,
-                    heading04 = heading04,
-                    heading03 = heading03,
-                    headingCompact01 = headingCompact01,
-                    bodyCompact01 = bodyCompact01,
-                    body01 = body01,
-                )
-            }
+            rememberFrostMarkdownTypography(
+                scale = readingPreferences.fontSizeScale,
+                lineScale = readingPreferences.lineSpacingScale,
+            )
+        val markdownComponents = rememberFrostMarkdownComponents()
 
         val markdownContent = summary.fullContent ?: summary.content
         if (markdownContent.isBlank()) {
@@ -672,6 +631,7 @@ private fun SummaryDetailContent(
                 content = markdownContent,
                 colors = markdownColors,
                 typography = markdownTypography,
+                components = markdownComponents,
                 imageTransformer = imageTransformer,
                 modifier = Modifier.fillMaxSize().weight(1f),
                 loading = {
@@ -690,7 +650,7 @@ private fun SummaryDetailContent(
                     ) {
                         item(key = "header") { ArticleHeader(summary = summary) }
                         item(key = "divider_top") {
-                            HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+                            FrostDivider()
                             Spacer(modifier = Modifier.height(Spacing.md))
                         }
                         item(key = "fallback_text") {
@@ -714,7 +674,7 @@ private fun SummaryDetailContent(
                         item(key = "header") { ArticleHeader(summary = summary) }
 
                         item(key = "divider_top") {
-                            HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+                            FrostDivider()
                             Spacer(modifier = Modifier.height(Spacing.md))
                         }
 
@@ -731,14 +691,10 @@ private fun SummaryDetailContent(
                                         .fillMaxWidth()
                                         .then(
                                             if (isHighlighted) {
+                                                // TODO: migrate to AtomMark spans in a follow-up — current implementation
+                                                // collapses hues to ink-alpha per Frost two-color rule.
                                                 Modifier.background(
-                                                    color =
-                                                        when (highlight?.color) {
-                                                            HighlightColor.GREEN -> HighlightGreen.copy(alpha = 0.15f)
-                                                            HighlightColor.BLUE -> HighlightBlue.copy(alpha = 0.15f)
-                                                            HighlightColor.PINK -> HighlightPink.copy(alpha = 0.15f)
-                                                            else -> HighlightYellow.copy(alpha = 0.2f)
-                                                        },
+                                                    color = AppTheme.frostColors.ink.copy(alpha = 0.08f),
                                                 )
                                             } else {
                                                 Modifier
@@ -853,7 +809,7 @@ private fun ArticleHeader(summary: Summary) {
 private fun ArticleFooter(sourceUrl: String) {
     Column {
         Spacer(modifier = Modifier.height(Spacing.lg))
-        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+        FrostDivider()
         Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
@@ -874,42 +830,6 @@ private fun ArticleFooter(sourceUrl: String) {
                     .clickable { uriHandler.openUri(sourceUrl) },
         )
     }
-}
-
-private fun buildMarkdownTypography(
-    fontScale: Float,
-    lineScale: Float,
-    heading04: TextStyle,
-    heading03: TextStyle,
-    headingCompact01: TextStyle,
-    bodyCompact01: TextStyle,
-    body01: TextStyle,
-): DefaultMarkdownTypography {
-    fun TextStyle.scaled(): TextStyle =
-        copy(
-            fontSize = fontSize * fontScale,
-            lineHeight = if (lineHeight.isSp) lineHeight * lineScale else lineHeight,
-        )
-
-    val scaledBody = body01.scaled()
-    return DefaultMarkdownTypography(
-        h1 = heading04.scaled(),
-        h2 = heading03.scaled(),
-        h3 = headingCompact01.scaled(),
-        h4 = bodyCompact01.copy(fontWeight = FontWeight.Bold).scaled(),
-        h5 = bodyCompact01.copy(fontWeight = FontWeight.Medium).scaled(),
-        h6 = bodyCompact01.scaled(),
-        paragraph = scaledBody,
-        text = scaledBody,
-        quote = scaledBody.copy(fontStyle = FontStyle.Italic),
-        code = scaledBody.copy(fontFamily = FontFamily.Monospace),
-        inlineCode = scaledBody.copy(fontFamily = FontFamily.Monospace),
-        bullet = scaledBody,
-        list = scaledBody,
-        ordered = scaledBody,
-        textLink = TextLinkStyles(),
-        table = scaledBody,
-    )
 }
 
 @Composable
