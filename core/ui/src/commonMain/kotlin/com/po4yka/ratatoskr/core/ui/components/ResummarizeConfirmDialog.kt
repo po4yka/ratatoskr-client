@@ -1,9 +1,8 @@
 package com.po4yka.ratatoskr.core.ui.components
 
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.collections_cancel
@@ -22,20 +21,22 @@ fun ResummarizeConfirmDialog(
         onDismissRequest = onDismiss,
         title = stringResource(Res.string.resummarize_confirm_title),
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.collections_cancel))
-            }
+            BracketButton(
+                label = stringResource(Res.string.collections_cancel),
+                onClick = onDismiss,
+            )
         },
         confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(stringResource(Res.string.resummarize_confirm_action))
-            }
+            BracketButton(
+                label = stringResource(Res.string.resummarize_confirm_action),
+                onClick = onConfirm,
+            )
         },
     ) {
-        Text(
-            stringResource(Res.string.resummarize_confirm_message),
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textSecondary,
+        FrostText(
+            text = stringResource(Res.string.resummarize_confirm_message),
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
     }
 }

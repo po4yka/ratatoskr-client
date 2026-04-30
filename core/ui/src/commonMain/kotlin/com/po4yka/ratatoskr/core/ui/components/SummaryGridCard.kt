@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +34,6 @@ import ratatoskr.core.ui.generated.resources.summary_detail_mark_read
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.util.extractDomain
@@ -95,7 +94,7 @@ fun SummaryGridCard(
                         Modifier
                             .fillMaxWidth()
                             .height(100.dp)
-                            .clip(RoundedCornerShape(Dimensions.cardCornerRadius)),
+                            .clip(RectangleShape),
                 )
             }
 
@@ -147,7 +146,7 @@ fun SummaryGridCard(
                         modifier =
                             Modifier
                                 .size(20.dp)
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(RectangleShape)
                                 .background(AppTheme.colors.supportSuccess),
                         contentAlignment = Alignment.Center,
                     ) {

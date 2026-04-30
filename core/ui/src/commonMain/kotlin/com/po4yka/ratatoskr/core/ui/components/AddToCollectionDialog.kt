@@ -12,11 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Collection
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
@@ -43,12 +43,11 @@ fun AddToCollectionDialog(
         onDismissRequest = { if (!isAdding) onDismiss() },
         title = stringResource(Res.string.add_to_collection_title),
         dismissButton = {
-            TextButton(
+            BracketButton(
+                label = stringResource(Res.string.collections_cancel),
                 onClick = onDismiss,
                 enabled = !isAdding,
-            ) {
-                Text(stringResource(Res.string.collections_cancel))
-            }
+            )
         },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
@@ -60,10 +59,10 @@ fun AddToCollectionDialog(
                     AppSmallSpinner()
                 }
             } else if (collections.isEmpty()) {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.add_to_collection_empty),
-                    style = AppTheme.type.bodyCompact01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoBody,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             } else {
                 LazyColumn(
@@ -88,19 +87,19 @@ fun AddToCollectionDialog(
                     horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 ) {
                     AppSmallSpinner()
-                    Text(
+                    FrostText(
                         text = stringResource(Res.string.add_to_collection_adding),
-                        style = AppTheme.type.bodyCompact01,
-                        color = AppTheme.colors.textSecondary,
+                        style = AppTheme.frostType.monoBody,
+                        color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     )
                 }
             }
 
             error?.let {
-                Text(
+                FrostText(
                     text = it,
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.spark,
                 )
             }
         }
@@ -131,24 +130,23 @@ private fun CollectionSelectionRow(
             modifier = Modifier.size(IconSizes.sm),
         )
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            FrostText(
                 text = collection.name,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
             )
             collection.description?.let {
-                Text(
+                FrostText(
                     text = it,
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
-                    maxLines = 1,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
         }
-        Text(
+        FrostText(
             text = collection.count.toString(),
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
     }
 }

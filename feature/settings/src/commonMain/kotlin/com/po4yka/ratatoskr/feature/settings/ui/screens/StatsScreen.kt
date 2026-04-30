@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -76,7 +76,6 @@ import org.jetbrains.compose.resources.stringResource
 private const val MINUTES_PER_HOUR = 60
 private const val PROGRESS_INDICATOR_SIZE = 48
 private const val SUMMARY_CARD_WEIGHT = 1f
-private const val STAT_CARD_CORNER_RADIUS = 4
 
 @Suppress("FunctionNaming")
 @Composable
@@ -259,7 +258,7 @@ private fun StreakCard(streak: Streak) {
                 .semantics(mergeDescendants = true) { contentDescription = streakDesc }
                 .background(
                     color = AppTheme.colors.layer01,
-                    shape = RoundedCornerShape(STAT_CARD_CORNER_RADIUS.dp),
+                    shape = RectangleShape,
                 )
                 .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
@@ -328,7 +327,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                 .semantics(mergeDescendants = true) { contentDescription = goalDesc }
                 .background(
                     color = AppTheme.colors.layer01,
-                    shape = RoundedCornerShape(STAT_CARD_CORNER_RADIUS.dp),
+                    shape = RectangleShape,
                 )
                 .padding(Spacing.sm),
     ) {
@@ -366,7 +365,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                     .height(4.dp)
                     .background(
                         color = AppTheme.colors.layer02,
-                        shape = RoundedCornerShape(2.dp),
+                        shape = RectangleShape,
                     ),
         ) {
             Box(
@@ -381,7 +380,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                                 } else {
                                     AppTheme.colors.borderInteractive
                                 },
-                            shape = RoundedCornerShape(2.dp),
+                            shape = RectangleShape,
                         ),
             )
         }
@@ -459,7 +458,7 @@ private fun StatCard(
                 .semantics(mergeDescendants = true) {}
                 .background(
                     color = AppTheme.colors.layer01,
-                    shape = RoundedCornerShape(STAT_CARD_CORNER_RADIUS.dp),
+                    shape = RectangleShape,
                 )
                 .padding(Spacing.sm),
     ) {
@@ -534,7 +533,7 @@ private fun TopicChip(
             Modifier
                 .background(
                     color = AppTheme.colors.layer01,
-                    shape = RoundedCornerShape(Dimensions.chipCornerRadius),
+                    shape = RectangleShape,
                 )
                 .padding(horizontal = Spacing.sm, vertical = Spacing.xxs),
         verticalAlignment = Alignment.CenterVertically,
@@ -606,7 +605,7 @@ private fun LanguageRow(
                     .height(4.dp)
                     .background(
                         color = AppTheme.colors.layer02,
-                        shape = RoundedCornerShape(2.dp),
+                        shape = RectangleShape,
                     ),
         ) {
             Box(
@@ -616,7 +615,7 @@ private fun LanguageRow(
                         .height(4.dp)
                         .background(
                             color = AppTheme.colors.borderInteractive,
-                            shape = RoundedCornerShape(2.dp),
+                            shape = RectangleShape,
                         ),
             )
         }

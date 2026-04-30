@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -361,7 +361,7 @@ private fun TabItem(
                     .height(2.dp)
                     .background(
                         color = indicatorColor,
-                        shape = RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp),
+                        shape = RectangleShape,
                     ),
         )
     }
@@ -784,7 +784,7 @@ private fun CollaboratorRow(
                 .fillMaxWidth()
                 .background(
                     AppTheme.colors.layer01,
-                    RoundedCornerShape(Dimensions.cardCornerRadius),
+                    RectangleShape,
                 )
                 .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
@@ -864,7 +864,7 @@ private fun InviteLinkSection(
                         .fillMaxWidth()
                         .background(
                             AppTheme.colors.layer01,
-                            RoundedCornerShape(Dimensions.cardCornerRadius),
+                            RectangleShape,
                         )
                         .padding(Spacing.sm),
                 verticalArrangement = Arrangement.spacedBy(Spacing.xxs),

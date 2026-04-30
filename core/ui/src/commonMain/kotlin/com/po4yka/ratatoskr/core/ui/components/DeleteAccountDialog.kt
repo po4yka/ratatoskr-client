@@ -5,11 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButtonVariant
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.delete_account_confirmation_label
@@ -48,27 +47,33 @@ fun DeleteAccountDialog(
         onDismissRequest = { if (!isDeleting) onDismiss() },
         title = stringResource(Res.string.settings_delete_account),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.delete_account_confirmation_warning),
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
         )
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.delete_account_confirmation_prompt, confirmationText),
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
 
-        OutlinedTextField(
+        BracketField(
             value = confirmationInput,
             onValueChange = { confirmationInput = it },
-            label = { Text(stringResource(Res.string.delete_account_confirmation_label)) },
-            placeholder = { Text(confirmationText) },
-            isError = error != null,
-            supportingText = error?.let { { Text(it) } },
+            label = stringResource(Res.string.delete_account_confirmation_label),
+            enabled = !isDeleting,
             modifier = Modifier.fillMaxWidth(),
         )
+
+        error?.let {
+            FrostText(
+                text = it,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -76,31 +81,24 @@ fun DeleteAccountDialog(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            OutlinedButton(
+            BracketButton(
+                label = stringResource(Res.string.settings_cancel),
                 onClick = onDismiss,
                 enabled = !isDeleting,
                 modifier = Modifier.weight(1f),
-            ) {
-                Text(stringResource(Res.string.settings_cancel))
-            }
-            Button(
-                onClick = onConfirm,
-                enabled = canConfirm,
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = AppTheme.colors.supportError,
-                        contentColor = AppTheme.colors.textOnColor,
-                    ),
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
+            )
+            BracketButton(
+                label =
                     if (isDeleting) {
                         stringResource(Res.string.delete_account_deleting)
                     } else {
                         stringResource(Res.string.settings_delete_account)
                     },
-                )
-            }
+                onClick = onConfirm,
+                enabled = canConfirm,
+                variant = BracketButtonVariant.Critical,
+                modifier = Modifier.weight(1f),
+            )
         }
 
         if (isDeleting) {
