@@ -70,6 +70,7 @@ Active Koin bootstrap uses `composeApp/.../di/KoinInitializer.kt` plus platform 
 - Feature components own retained ViewModel instances and expose screen dependencies through component APIs.
 - `composeApp` screens render feature state and call component methods or ViewModel intents.
 - Cross-cutting UI glue, such as image URL transformation for proxied images, is provided once at the app layer and consumed by reusable composables.
+- UI is built on the Frost design system. Material 3 substrate has been removed from commonMain. Foundation primitives in `core/ui/.../components/foundation/`; brand atoms in `core/ui/.../components/frost/`.
 
 ## Sync
 

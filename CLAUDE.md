@@ -60,18 +60,21 @@ Shared runtime config is centralized in `core/common/src/commonMain/kotlin/com/p
 
 ## Design System
 
-Frost is the project-owned design system: editorial monospace minimalism,
-two-color rule (ink + page), single critical accent (spark `#DC3545`),
-0 corner radius, no shadows, no Material elevation. Canonical spec lives
-in `DESIGN.md` (DESIGN.md format, https://github.com/google-labs-code/design.md)
-at the repo root.
+Frost is the project-owned design system and is now live across all screens,
+components, and platform widgets. Editorial monospace minimalism: two-color rule
+(ink `#1C242C` / `#E8ECF0` dark + page `#F0F2F5` / `#12161C` dark), single
+critical accent (spark `#DC3545`, never flips), 0 corner radius, no shadows,
+no Material elevation. Canonical spec lives in `DESIGN.md` (DESIGN.md format,
+https://github.com/google-labs-code/design.md) at the repo root — read it
+before adding tokens, components, colors, shapes, or motion.
 
-The current `core/ui/.../theme/AppColors.kt` and `AppType.kt` carry seed
-values from the previous IBM Carbon-derived theme so the codemod removing
-the old design system stayed mechanical. Those values (`#0F62FE` interactive,
-`#24A148` success, IBM-style scale) are migration debt; new Compose code must
-not bind to them. Read `DESIGN.md` before adding tokens, components, colors,
-shapes, or motion.
+Frost primitives live in:
+- `core/ui/src/commonMain/kotlin/com/po4yka/ratatoskr/core/ui/components/frost/`
+- `core/ui/src/commonMain/kotlin/com/po4yka/ratatoskr/core/ui/components/foundation/`
+
+Legacy `App*` components in `core/ui/.../components/` are transitional shims.
+New code must use Frost atoms directly. `AppColors.kt` and `AppType.kt` carry
+residual IBM Carbon-derived seed values — do not bind new code to those values.
 
 ## Architecture
 
@@ -118,7 +121,7 @@ Do not "fix" those exceptions by force-converting them to annotations without un
 - Secure storage uses Tink AEAD + DataStore.
 - Networking uses OkHttp.
 - Background work uses WorkManager.
-- Widgets use Glance and are exempt from AppTheme rules.
+- Widgets use Glance with hardcoded Frost INK/PAGE color constants (exempt from AppTheme, but must follow Frost visual rules).
 
 ### iOS
 
@@ -160,6 +163,6 @@ The SKIE plugin is configured in Gradle but currently disabled in `composeApp/bu
 
 ### Add Shared UI Behavior
 
-- Prefer project components in `core/ui/.../components/` before inventing new patterns.
+- Prefer Frost atoms (`BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`) in `core/ui/.../components/frost/` before inventing new patterns. Legacy `App*` shims remain but are transitional.
 - Use Compose Resources instead of hardcoded UI text.
 - Keep accessibility semantics in mind; the repo already uses headings and live regions in screens such as `SummaryListScreen`.

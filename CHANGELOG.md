@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- Replaced the Material 3 / IBM Carbon residual styling with the
+  Frost design system across all screens, components, and
+  platform widgets. INK + PAGE two-color rule with a single
+  SPARK accent for critical signals; 0 corner radius; no shadows
+  or elevation.
+- Reader mode: SummaryDetailScreen body now renders in Source
+  Serif 4 italic via the Frost markdown theme; pull-quotes
+  detected from blockquotes and rendered as `PullQuote`.
+- Dark mode driven by ink/page inversion (spark constant).
+- JetBrains Mono and Source Serif 4 fonts bundled as Compose
+  Resources.
+- Removed `markdown-renderer-m3` dependency in favor of a
+  project-owned Frost markdown theme.
+
 ## [Unreleased] — Renamed to Ratatoskr Client
 
 ### Breaking
