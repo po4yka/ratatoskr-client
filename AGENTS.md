@@ -58,6 +58,21 @@ api.timeout.seconds=30
 
 Shared runtime config is centralized in `core/common/src/commonMain/kotlin/com/po4yka/ratatoskr/util/config/AppConfig.kt`.
 
+## Design System
+
+Frost is the project-owned design system: editorial monospace minimalism,
+two-color rule (ink + page), single critical accent (spark `#DC3545`),
+0 corner radius, no shadows, no Material elevation. Canonical spec lives
+in `DESIGN.md` (DESIGN.md format, https://github.com/google-labs-code/design.md)
+at the repo root.
+
+The current `core/ui/.../theme/AppColors.kt` and `AppType.kt` carry seed
+values from the previous IBM Carbon-derived theme so the codemod removing
+the old design system stayed mechanical. Those values (`#0F62FE` interactive,
+`#24A148` success, IBM-style scale) are migration debt; new Compose code must
+not bind to them. Read `DESIGN.md` before adding tokens, components, colors,
+shapes, or motion.
+
 ## Architecture
 
 - Modules are split by responsibility:
