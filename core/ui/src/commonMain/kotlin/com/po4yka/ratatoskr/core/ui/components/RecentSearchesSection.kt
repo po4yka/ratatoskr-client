@@ -8,23 +8,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import ratatoskr.core.ui.generated.resources.Res
-import ratatoskr.core.ui.generated.resources.recent_searches_clear_all
-import ratatoskr.core.ui.generated.resources.recent_searches_remove
-import ratatoskr.core.ui.generated.resources.recent_searches_title
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
+import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
+import ratatoskr.core.ui.generated.resources.Res
+import ratatoskr.core.ui.generated.resources.recent_searches_clear_all
+import ratatoskr.core.ui.generated.resources.recent_searches_remove
+import ratatoskr.core.ui.generated.resources.recent_searches_title
 
 /**
  * Section that displays recent search queries with ability to reuse or delete them.
@@ -41,7 +43,9 @@ fun RecentSearchesSection(
 ) {
     if (searches.isEmpty()) return
 
-    LayerCard(
+    val ink = AppTheme.frostColors.ink
+
+    BrutalistCard(
         modifier =
             modifier
                 .fillMaxWidth()
@@ -59,12 +63,10 @@ fun RecentSearchesSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
+                SectionHeading(
                     text = stringResource(Res.string.recent_searches_title),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
+                    modifier = Modifier.weight(1f),
                 )
-
                 AppTextButton(
                     label = stringResource(Res.string.recent_searches_clear_all),
                     onClick = onClearAll,
@@ -96,6 +98,8 @@ private fun RecentSearchItem(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val ink = AppTheme.frostColors.ink
+
     Row(
         modifier =
             modifier
@@ -114,14 +118,13 @@ private fun RecentSearchItem(
             Icon(
                 imageVector = AppIcons.Search,
                 contentDescription = null,
-                tint = AppTheme.colors.iconSecondary,
+                tint = ink.copy(alpha = AppTheme.alpha.secondary),
                 modifier = Modifier.size(IconSizes.xs),
             )
-
-            Text(
+            FrostText(
                 text = query,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoBody,
+                color = ink,
             )
         }
 
@@ -131,7 +134,7 @@ private fun RecentSearchItem(
             onClick = onDelete,
             buttonSize = Dimensions.compactIconButtonSize,
             iconSize = IconSizes.xs,
-            tint = AppTheme.colors.iconSecondary,
+            tint = ink.copy(alpha = AppTheme.alpha.secondary),
         )
     }
 }

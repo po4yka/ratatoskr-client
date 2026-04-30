@@ -1,5 +1,6 @@
 package com.po4yka.ratatoskr.core.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,20 +11,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
+import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.theme.Dimensions
+import com.po4yka.ratatoskr.core.ui.theme.Spacing
+import com.po4yka.ratatoskr.domain.model.Summary
+import com.po4yka.ratatoskr.util.extractDomain
+import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.insights_fallback_source
 import ratatoskr.core.ui.generated.resources.insights_title
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.domain.model.Summary
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
-import com.po4yka.ratatoskr.util.extractDomain
-import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming")
 @Composable
@@ -34,7 +38,9 @@ fun InsightsSection(
 ) {
     if (insights.isEmpty()) return
 
-    LayerCard(
+    val ink = AppTheme.frostColors.ink
+
+    BrutalistCard(
         modifier =
             modifier
                 .fillMaxWidth()
@@ -46,10 +52,8 @@ fun InsightsSection(
                     .fillMaxWidth()
                     .padding(vertical = Spacing.md),
         ) {
-            Text(
+            SectionHeading(
                 text = stringResource(Res.string.insights_title),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
                 modifier =
                     Modifier
                         .padding(horizontal = Spacing.md)
@@ -81,10 +85,13 @@ private fun InsightCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LayerCard(
-        modifier = modifier.width(Dimensions.recommendationCardWidth),
-        onClick = onClick,
-        backgroundColor = AppTheme.colors.layer02,
+    val ink = AppTheme.frostColors.ink
+
+    BrutalistCard(
+        modifier =
+            modifier
+                .width(Dimensions.recommendationCardWidth)
+                .clickable(role = Role.Button, onClick = onClick),
     ) {
         Column {
             if (summary.imageUrl != null) {
@@ -99,20 +106,20 @@ private fun InsightCard(
             }
 
             Column(modifier = Modifier.padding(Spacing.sm)) {
-                Text(
+                FrostText(
                     text = summary.title,
-                    style = AppTheme.type.headingCompact01,
-                    color = AppTheme.colors.textPrimary,
+                    style = AppTheme.frostType.monoEmph,
+                    color = ink,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
 
                 Spacer(modifier = Modifier.height(Spacing.xxs))
 
-                Text(
+                FrostText(
                     text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.insights_fallback_source),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoSm,
+                    color = ink.copy(alpha = AppTheme.alpha.secondary),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )

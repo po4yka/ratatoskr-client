@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
-import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Collection
 
@@ -38,26 +38,26 @@ fun CollectionItem(
         Icon(
             imageVector = getIconForName(collection.iconName),
             contentDescription = collection.name,
-            tint = AppTheme.colors.iconPrimary,
+            tint = AppTheme.frostColors.ink,
             modifier = Modifier.size(24.dp),
         )
 
         Spacer(modifier = Modifier.width(16.dp))
 
         // Name
-        Text(
+        FrostText(
             text = collection.name,
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.weight(1f),
         )
 
         // Count (if > 0)
         if (collection.count > 0) {
-            Text(
+            FrostText(
                 text = collection.count.toString(),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
     }

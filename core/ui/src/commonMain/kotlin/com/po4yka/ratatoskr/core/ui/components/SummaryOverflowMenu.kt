@@ -5,6 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.domain.model.Summary
+import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.collection_view_delete_action
 import ratatoskr.core.ui.generated.resources.summary_card_already_read
@@ -13,10 +17,6 @@ import ratatoskr.core.ui.generated.resources.summary_card_more_options
 import ratatoskr.core.ui.generated.resources.summary_detail_add_to_collection
 import ratatoskr.core.ui.generated.resources.summary_detail_favorite
 import ratatoskr.core.ui.generated.resources.summary_detail_unfavorite
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.domain.model.Summary
-import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SummaryOverflowMenu(
@@ -53,7 +53,7 @@ fun SummaryOverflowMenu(
                 if (summary.isFavorited) {
                     AppTheme.colors.supportError
                 } else {
-                    AppTheme.colors.iconSecondary
+                    AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
                 },
         )
         AppMenuItem(

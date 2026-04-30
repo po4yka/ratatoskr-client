@@ -1,25 +1,25 @@
 package com.po4yka.ratatoskr.core.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import ratatoskr.core.ui.generated.resources.Res
-import ratatoskr.core.ui.generated.resources.a11y_navigate_back
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
+import ratatoskr.core.ui.generated.resources.Res
+import ratatoskr.core.ui.generated.resources.a11y_navigate_back
 
 /**
  * Standardized screen header component for consistent header styling across the app.
@@ -47,34 +47,37 @@ fun ScreenHeader(
             Dimensions.headerHeight
         }
 
-    Row(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .height(headerHeight)
-                .background(AppTheme.colors.background)
-                .padding(horizontal = Spacing.md),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // Back button (optional)
-        if (onBackClick != null) {
-            AppIconButton(
-                imageVector = AppIcons.ArrowLeft,
-                contentDescription = stringResource(Res.string.a11y_navigate_back),
-                onClick = onBackClick,
+    androidx.compose.foundation.layout.Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(headerHeight)
+                    .padding(horizontal = Spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // Back button (optional)
+            if (onBackClick != null) {
+                AppIconButton(
+                    imageVector = AppIcons.ArrowLeft,
+                    contentDescription = stringResource(Res.string.a11y_navigate_back),
+                    onClick = onBackClick,
+                )
+            }
+
+            // Title — mono uppercase per Frost editorial spec
+            FrostText(
+                text = title.uppercase(),
+                style = AppTheme.frostType.monoEmph,
+                color = AppTheme.frostColors.ink,
+                modifier = Modifier.weight(1f).semantics { heading() },
             )
+
+            // Action buttons (optional)
+            actions?.invoke(this)
         }
-
-        // Title
-        Text(
-            text = title,
-            style = AppTheme.type.heading04,
-            color = AppTheme.colors.textPrimary,
-            modifier = Modifier.weight(1f).semantics { heading() },
-        )
-
-        // Action buttons (optional)
-        actions?.invoke(this)
+        // Hairline bottom border
+        FrostDivider(alpha = AppTheme.border.separatorAlpha)
     }
 }
 
@@ -93,7 +96,7 @@ fun HeaderIconButton(
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    tint: androidx.compose.ui.graphics.Color = AppTheme.colors.iconPrimary,
+    tint: androidx.compose.ui.graphics.Color = AppTheme.frostColors.ink,
 ) {
     AppIconButton(
         imageVector = icon,

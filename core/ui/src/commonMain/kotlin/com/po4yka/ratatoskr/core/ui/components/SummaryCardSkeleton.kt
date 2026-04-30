@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,15 +18,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 @Suppress("FunctionNaming")
@@ -33,8 +32,8 @@ import com.po4yka.ratatoskr.core.ui.theme.Spacing
 fun SummaryCardSkeleton(modifier: Modifier = Modifier) {
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
     val alpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.7f,
+        initialValue = AppTheme.alpha.quiet,
+        targetValue = AppTheme.alpha.secondary,
         animationSpec =
             infiniteRepeatable(
                 animation = tween(durationMillis = 1000, easing = LinearEasing),
@@ -43,14 +42,14 @@ fun SummaryCardSkeleton(modifier: Modifier = Modifier) {
         label = "shimmer_alpha",
     )
 
-    val shimmerColor = AppTheme.colors.layer02.copy(alpha = alpha)
+    val shimmerColor = AppTheme.frostColors.ink.copy(alpha = alpha)
 
     Row(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
-                .background(AppTheme.colors.layer01)
+                .background(AppTheme.frostColors.page)
+                .border(AppTheme.border.hairline, AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha))
                 .padding(Spacing.md),
     ) {
         // Thumbnail placeholder
@@ -104,7 +103,6 @@ private fun SkeletonBox(
     Box(
         modifier =
             modifier
-                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
-                .background(color),
+                .background(color, RectangleShape),
     )
 }
