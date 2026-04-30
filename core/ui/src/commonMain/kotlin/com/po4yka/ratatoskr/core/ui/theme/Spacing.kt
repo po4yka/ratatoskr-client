@@ -3,8 +3,11 @@ package com.po4yka.ratatoskr.core.ui.theme
 import androidx.compose.ui.unit.dp
 
 /**
- * Spacing scale for consistent padding and margins throughout the app.
- * Based on a 4dp grid system.
+ * Spacing scale aligned to the Frost 8dp cell grid.
+ * Slot names are migration aliases — new code should use AppTheme.spacing (FrostSpacing) instead.
+ *
+ * Changes from previous scale:
+ *   sm: 12dp -> 8dp (snapped to cell grid)
  */
 object Spacing {
     /** 4.dp - Tight spacing for compact elements */
@@ -13,8 +16,8 @@ object Spacing {
     /** 8.dp - Internal component spacing */
     val xs = 8.dp
 
-    /** 12.dp - Item spacing in lists */
-    val sm = 12.dp
+    /** 8.dp - Item spacing in lists (was 12dp; snapped to Frost cell grid) */
+    val sm = 8.dp
 
     /** 16.dp - Standard content padding */
     val md = 16.dp
