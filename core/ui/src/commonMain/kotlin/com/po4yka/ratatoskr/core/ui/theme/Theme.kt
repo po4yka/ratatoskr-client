@@ -16,6 +16,10 @@ import androidx.compose.runtime.CompositionLocalProvider
  * design-system seam (`AppTheme.colors.X` / `AppTheme.type.X`), and bridges those tokens
  * into a Material 3 [MaterialTheme] so existing Material primitives (Button, OutlinedTextField,
  * CircularProgressIndicator, ...) pick up the same palette + scale.
+ *
+ * Also provides Frost tokens via [LocalFrostColors], [LocalFrostType], [LocalFrostSpacing],
+ * [LocalFrostAlpha], [LocalFrostBorder], and [LocalFrostMotion]. Access via [AppTheme.frostColors],
+ * [AppTheme.spacing], [AppTheme.alpha], [AppTheme.border], [AppTheme.motion].
  */
 @Composable
 fun RatatoskrTheme(
@@ -23,11 +27,19 @@ fun RatatoskrTheme(
     content: @Composable () -> Unit,
 ) {
     val appColors = if (darkTheme) darkAppColors else lightAppColors
-    val appType = defaultAppType
+    val appType = rememberDefaultAppType()
+    val frostColors = if (darkTheme) frostDark else frostLight
+    val frostType = rememberFrostType()
 
     CompositionLocalProvider(
         LocalAppColors provides appColors,
         LocalAppType provides appType,
+        LocalFrostColors provides frostColors,
+        LocalFrostType provides frostType,
+        LocalFrostSpacing provides frostSpacingDefault,
+        LocalFrostAlpha provides frostAlphaDefault,
+        LocalFrostBorder provides frostBorderDefault,
+        LocalFrostMotion provides frostMotionDefault,
     ) {
         MaterialTheme(
             colorScheme = appColors.toMaterialColorScheme(darkTheme),

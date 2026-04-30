@@ -4,6 +4,8 @@ import androidx.compose.ui.unit.dp
 
 /**
  * Common dimension constants for consistent UI sizing throughout the app.
+ * Corner radius constants are set to 0.dp per Frost (no rounded corners).
+ * Constants are retained for migration ergonomics and will be removed in the final migration commit.
  */
 object Dimensions {
     /** 64.dp - Height for main screen headers (bottom nav screens) */
@@ -12,14 +14,14 @@ object Dimensions {
     /** 56.dp - Height for detail screen headers (with back button) */
     val detailHeaderHeight = 56.dp
 
-    /** 4.dp - Standard corner radius for cards */
-    val cardCornerRadius = 4.dp
+    /** 0.dp per Frost — constant retained for migration ergonomics */
+    val cardCornerRadius = 0.dp
 
-    /** 8.dp - Corner radius for dialogs and modals */
-    val dialogCornerRadius = 8.dp
+    /** 0.dp per Frost — constant retained for migration ergonomics */
+    val dialogCornerRadius = 0.dp
 
-    /** 16.dp - Corner radius for chips and pills */
-    val chipCornerRadius = 16.dp
+    /** 0.dp per Frost — constant retained for migration ergonomics */
+    val chipCornerRadius = 0.dp
 
     /** 24.dp - Shared dialog padding */
     val dialogPadding = 24.dp
@@ -39,8 +41,8 @@ object Dimensions {
     /** 20.dp - Checkbox visual size */
     val checkboxSize = 20.dp
 
-    /** 2.dp - Checkbox corner radius */
-    val checkboxCornerRadius = 2.dp
+    /** 0.dp per Frost — constant retained for migration ergonomics */
+    val checkboxCornerRadius = 0.dp
 
     /** 4.dp - Shared progress bar thickness */
     val progressBarThickness = 4.dp
@@ -54,8 +56,8 @@ object Dimensions {
     /** 200.dp - Shared dropdown menu width */
     val menuWidth = 200.dp
 
-    /** 8.dp - Corner radius for status pills */
-    val badgeCornerRadius = 8.dp
+    /** 0.dp per Frost — constant retained for migration ergonomics */
+    val badgeCornerRadius = 0.dp
 
     /** 6.dp - Horizontal padding for compact status pills */
     val badgeHorizontalPadding = 6.dp
