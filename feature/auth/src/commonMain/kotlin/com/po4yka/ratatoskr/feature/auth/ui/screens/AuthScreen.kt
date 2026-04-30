@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -79,18 +76,18 @@ fun AuthScreen(
             )
 
             // App Title
-            Text(
+            FrostText(
                 text = stringResource(Res.string.auth_app_title),
-                style = AppTheme.type.heading04,
+                style = AppTheme.type.heading04.copy(textAlign = TextAlign.Center),
                 color = AppTheme.colors.textPrimary,
-                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
             )
 
-            Text(
+            FrostText(
                 text = stringResource(Res.string.auth_subtitle),
-                style = AppTheme.type.bodyCompact01,
+                style = AppTheme.type.bodyCompact01.copy(textAlign = TextAlign.Center),
                 color = AppTheme.colors.textSecondary,
-                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -107,20 +104,19 @@ fun AuthScreen(
                 ) {
                     AppSmallSpinner()
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
+                    FrostText(
                         text = stringResource(Res.string.auth_logging_in),
                         style = AppTheme.type.bodyCompact01,
                         color = AppTheme.colors.textSecondary,
                     )
                 }
             } else {
-                Button(
+                BracketButton(
+                    label = stringResource(Res.string.auth_login_with_telegram),
                     onClick = { showTelegramLogin = true },
                     enabled = !state.isLoading,
                     modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(Res.string.auth_login_with_telegram))
-                }
+                )
             }
 
             if (showTelegramLogin) {
@@ -136,12 +132,11 @@ fun AuthScreen(
 
             // Developer Login (Secret Key)
             var showDevLogin by remember { mutableStateOf(false) }
-            TextButton(
+            BracketButton(
+                label = stringResource(Res.string.auth_developer_login),
                 onClick = { showDevLogin = true },
                 enabled = !state.isLoading,
-            ) {
-                Text(stringResource(Res.string.auth_developer_login))
-            }
+            )
 
             if (showDevLogin) {
                 DeveloperLoginDialog(
@@ -161,11 +156,10 @@ fun AuthScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .clip(RectangleShape)
                             .background(AppTheme.colors.supportErrorInverse)
                             .padding(16.dp),
                 ) {
-                    Text(
+                    FrostText(
                         text = error,
                         style = AppTheme.type.bodyCompact01,
                         color = AppTheme.colors.textOnColorDisabled,
@@ -210,12 +204,12 @@ private fun FeatureItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(
+        FrostText(
             text = icon,
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textSecondary,
         )
-        Text(
+        FrostText(
             text = text,
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textSecondary,

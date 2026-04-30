@@ -24,7 +24,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -259,7 +259,7 @@ private fun SummaryListHeader(
                 .padding(horizontal = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        FrostText(
             text = title,
             style = AppTheme.type.heading04,
             color = AppTheme.colors.textPrimary,
@@ -538,7 +538,7 @@ private fun SyncStatusBanner(
                 modifier = Modifier.size(IconSizes.sm),
             )
             Spacer(modifier = Modifier.width(Spacing.xs))
-            Text(
+            FrostText(
                 text = text,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textOnColor,

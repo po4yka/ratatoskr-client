@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -123,7 +123,7 @@ fun StatsScreen(
                             modifier = Modifier.size(Spacing.xl),
                         )
                         Spacer(modifier = Modifier.height(Spacing.sm))
-                        Text(
+                        FrostText(
                             text = state.error ?: stringResource(Res.string.stats_error_default),
                             style = AppTheme.type.bodyCompact01,
                             color = AppTheme.colors.supportError,
@@ -154,7 +154,7 @@ private fun StatsHeader() {
                 .padding(horizontal = Spacing.md),
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.stats_title),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -227,7 +227,7 @@ private fun GoalsAndStreaksSection(
     goalsProgress: List<GoalProgress>,
 ) {
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.stats_goals_and_streaks),
             style = AppTheme.type.heading02,
             color = AppTheme.colors.textPrimary,
@@ -271,24 +271,24 @@ private fun StreakCard(streak: Streak) {
             modifier = Modifier.size(24.dp),
         )
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.stats_current_streak, streak.currentStreak),
                 style = AppTheme.type.heading03,
                 color = AppTheme.colors.textPrimary,
             )
-            Text(
+            FrostText(
                 text = stringResource(Res.string.stats_best_streak, streak.longestStreak),
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
             )
         }
         Column(horizontalAlignment = Alignment.End) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.stats_this_week, streak.weekCount),
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
             )
-            Text(
+            FrostText(
                 text = stringResource(Res.string.stats_this_month, streak.monthCount),
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
@@ -343,7 +343,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                     goalProgress.currentCount,
                     goalProgress.targetCount,
                 )
-            Text(
+            FrostText(
                 text = goalLabel,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textPrimary,
@@ -391,7 +391,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
 @Composable
 private fun SummarySection(stats: UserStats) {
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.stats_overview),
             style = AppTheme.type.heading02,
             color = AppTheme.colors.textPrimary,
@@ -462,13 +462,13 @@ private fun StatCard(
                 )
                 .padding(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = value,
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
         )
         Spacer(modifier = Modifier.height(2.dp))
-        Text(
+        FrostText(
             text = label,
             style = AppTheme.type.label01,
             color = AppTheme.colors.textSecondary,
@@ -481,7 +481,7 @@ private fun StatCard(
 @Composable
 private fun TopicsSection(topics: List<TopicStat>) {
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.stats_top_topics),
             style = AppTheme.type.heading02,
             color = AppTheme.colors.textPrimary,
@@ -504,7 +504,7 @@ private fun TopicsSection(topics: List<TopicStat>) {
 @Composable
 private fun DomainsSection(domains: List<DomainStat>) {
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.stats_top_sources),
             style = AppTheme.type.heading02,
             color = AppTheme.colors.textPrimary,
@@ -538,13 +538,13 @@ private fun TopicChip(
                 .padding(horizontal = Spacing.sm, vertical = Spacing.xxs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        FrostText(
             text = label,
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textPrimary,
         )
         Spacer(modifier = Modifier.width(Spacing.xxs))
-        Text(
+        FrostText(
             text = count.toString(),
             style = AppTheme.type.label01,
             color = AppTheme.colors.textSecondary,
@@ -556,7 +556,7 @@ private fun TopicChip(
 @Composable
 private fun LanguageSection(distribution: Map<String, Int>) {
     Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.stats_languages),
             style = AppTheme.type.heading02,
             color = AppTheme.colors.textPrimary,
@@ -586,12 +586,12 @@ private fun LanguageRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
+            FrostText(
                 text = language.uppercase(),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textPrimary,
             )
-            Text(
+            FrostText(
                 text = count.toString(),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textSecondary,
@@ -625,10 +625,7 @@ private fun LanguageRow(
 @Suppress("FunctionNaming")
 @Composable
 private fun SectionDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(horizontal = Spacing.md),
-        color = AppTheme.colors.borderSubtle00,
-    )
+    FrostDivider(modifier = Modifier.padding(horizontal = Spacing.md))
     Spacer(modifier = Modifier.height(Spacing.lg))
 }
 

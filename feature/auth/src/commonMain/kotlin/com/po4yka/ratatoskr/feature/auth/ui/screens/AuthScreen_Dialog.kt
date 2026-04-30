@@ -9,10 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,19 +64,20 @@ fun DeveloperLoginDialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
         title = stringResource(Res.string.auth_developer_login),
     ) {
+        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions/isError/supportingText
         OutlinedTextField(
             value = userId,
             onValueChange = {
                 userId = it
                 isUserIdError = it.toIntOrNull() == null && it.isNotEmpty()
             },
-            label = { Text(stringResource(Res.string.auth_developer_user_id_label)) },
-            placeholder = { Text(stringResource(Res.string.auth_developer_user_id_placeholder)) },
+            label = { FrostText(stringResource(Res.string.auth_developer_user_id_label)) },
+            placeholder = { FrostText(stringResource(Res.string.auth_developer_user_id_placeholder)) },
             isError = isUserIdError,
             enabled = !isLoading,
             supportingText =
                 if (isUserIdError) {
-                    { Text(userIdErrorText) }
+                    { FrostText(userIdErrorText) }
                 } else {
                     null
                 },
@@ -92,8 +92,8 @@ fun DeveloperLoginDialog(
         OutlinedTextField(
             value = clientId,
             onValueChange = { clientId = it },
-            label = { Text(stringResource(Res.string.auth_developer_client_id_label)) },
-            placeholder = { Text(stringResource(Res.string.auth_developer_client_id_placeholder)) },
+            label = { FrostText(stringResource(Res.string.auth_developer_client_id_label)) },
+            placeholder = { FrostText(stringResource(Res.string.auth_developer_client_id_placeholder)) },
             enabled = !isLoading,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth(),
@@ -102,8 +102,8 @@ fun DeveloperLoginDialog(
         OutlinedTextField(
             value = secret,
             onValueChange = { secret = it },
-            label = { Text(stringResource(Res.string.auth_developer_secret_label)) },
-            placeholder = { Text(stringResource(Res.string.auth_developer_secret_placeholder)) },
+            label = { FrostText(stringResource(Res.string.auth_developer_secret_label)) },
+            placeholder = { FrostText(stringResource(Res.string.auth_developer_secret_placeholder)) },
             enabled = !isLoading,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions =
@@ -133,7 +133,7 @@ fun DeveloperLoginDialog(
                 onCheckedChange = { rememberCredentials = it },
                 enabled = !isLoading,
             )
-            Text(
+            FrostText(
                 text = stringResource(Res.string.auth_developer_remember_credentials),
                 style = AppTheme.type.body01,
                 color =
@@ -146,7 +146,7 @@ fun DeveloperLoginDialog(
         }
 
         if (error != null) {
-            Text(
+            FrostText(
                 text = error,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
@@ -160,19 +160,19 @@ fun DeveloperLoginDialog(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            OutlinedButton(
+            BracketButton(
+                label = stringResource(Res.string.settings_cancel),
                 onClick = onDismiss,
                 enabled = !isLoading,
-            ) {
-                Text(stringResource(Res.string.settings_cancel))
-            }
+            )
 
             Spacer(modifier = Modifier.width(8.dp))
 
             if (isLoading) {
                 AppSmallSpinner()
             } else {
-                Button(
+                BracketButton(
+                    label = stringResource(Res.string.auth_developer_login_action),
                     onClick = {
                         val uid = userId.toIntOrNull()
                         if (uid != null && clientId.isNotBlank() && secret.isNotBlank()) {
@@ -182,9 +182,7 @@ fun DeveloperLoginDialog(
                     enabled =
                         !isLoading && !isUserIdError &&
                             userId.isNotBlank() && clientId.isNotBlank() && secret.isNotBlank(),
-                ) {
-                    Text(stringResource(Res.string.auth_developer_login_action))
-                }
+                )
             }
         }
     }

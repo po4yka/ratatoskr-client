@@ -24,13 +24,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -41,10 +40,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import androidx.compose.material3.Button
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextButton
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.domain.model.BatchUrlEntry
 import com.po4yka.ratatoskr.domain.model.BatchUrlStatus
 import com.po4yka.ratatoskr.domain.model.ProcessingStage
@@ -267,7 +264,7 @@ fun SubmitURLScreen(
                     }
                 } else if (state.recentRequests.isEmpty()) {
                     item {
-                        Text(
+                        FrostText(
                             text = stringResource(Res.string.submit_url_no_recent_requests),
                             style = AppTheme.type.bodyCompact01,
                             color = AppTheme.colors.textSecondary,
@@ -333,7 +330,6 @@ private fun ModeChip(
     Box(
         modifier =
             Modifier
-                .clip(shape)
                 .background(backgroundColor)
                 .border(1.dp, borderColor, shape)
                 .clickable(onClick = onClick)
@@ -344,7 +340,7 @@ private fun ModeChip(
                 },
         contentAlignment = Alignment.Center,
     ) {
-        Text(
+        FrostText(
             text = label,
             style = AppTheme.type.bodyCompact01,
             color = textColor,
@@ -367,7 +363,7 @@ private fun BatchInputSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.submit_url_batch_prompt),
             style = AppTheme.type.body01,
             color = AppTheme.colors.textSecondary,
@@ -381,7 +377,7 @@ private fun BatchInputSection(
             minHeight = 180.dp,
         )
 
-        Text(
+        FrostText(
             text =
                 if (urlCount == 1) {
                     stringResource(Res.string.submit_url_batch_detected_singular, urlCount)
@@ -392,13 +388,12 @@ private fun BatchInputSection(
             color = AppTheme.colors.textSecondary,
         )
 
-        Button(
+        BracketButton(
+            label = stringResource(Res.string.submit_url_batch_submit_all),
             onClick = onSubmitBatch,
             enabled = urlCount > 0,
             modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(stringResource(Res.string.submit_url_batch_submit_all))
-        }
+        )
     }
 }
 
@@ -419,20 +414,22 @@ private fun BatchProgressHeader(
                 .padding(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.submit_url_batch_progress, completedCount, totalCount),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
             modifier = Modifier.weight(1f),
         )
         if (isBatchSubmitting) {
-            TextButton(onClick = onCancel) {
-                Text(stringResource(Res.string.submit_url_batch_cancel))
-            }
+            BracketButton(
+                label = stringResource(Res.string.submit_url_batch_cancel),
+                onClick = onCancel,
+            )
         } else {
-            TextButton(onClick = onReset) {
-                Text(stringResource(Res.string.submit_url_batch_submit_more))
-            }
+            BracketButton(
+                label = stringResource(Res.string.submit_url_batch_submit_more),
+                onClick = onReset,
+            )
         }
     }
 }
@@ -468,7 +465,7 @@ private fun BatchUrlEntryRow(
                 AppSmallSpinner()
             }
             BatchUrlStatus.SUBMITTING -> {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.common_percent, (entry.progress * 100).toInt()),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.linkPrimary,
@@ -503,7 +500,7 @@ private fun BatchUrlEntryRow(
 
         // URL text
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            FrostText(
                 text = entry.url,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textPrimary,
@@ -512,7 +509,7 @@ private fun BatchUrlEntryRow(
             )
             val entryError = entry.error
             if (entry.status == BatchUrlStatus.FAILED && entryError != null) {
-                Text(
+                FrostText(
                     text = entryError,
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.supportError,
@@ -521,7 +518,7 @@ private fun BatchUrlEntryRow(
                 )
             }
             if (entry.isDuplicate && entry.status == BatchUrlStatus.SKIPPED) {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.submit_url_batch_duplicate_skipped),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.textSecondary,
@@ -532,15 +529,17 @@ private fun BatchUrlEntryRow(
         // Action buttons
         when (entry.status) {
             BatchUrlStatus.FAILED -> {
-                TextButton(onClick = onRetry) {
-                    Text(stringResource(Res.string.submit_url_batch_retry))
-                }
+                BracketButton(
+                    label = stringResource(Res.string.submit_url_batch_retry),
+                    onClick = onRetry,
+                )
             }
             BatchUrlStatus.SKIPPED -> {
                 if (entry.isDuplicate) {
-                    TextButton(onClick = onSubmitAnyway) {
-                        Text(stringResource(Res.string.submit_url_batch_submit_anyway))
-                    }
+                    BracketButton(
+                        label = stringResource(Res.string.submit_url_batch_submit_anyway),
+                        onClick = onSubmitAnyway,
+                    )
                 }
             }
             else -> {}
@@ -567,7 +566,7 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
             iconSize = IconSizes.md,
         )
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.submit_url_title),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -593,17 +592,18 @@ private fun URLInputSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.submit_url_enter_prompt),
             style = AppTheme.type.body01,
             color = AppTheme.colors.textSecondary,
         )
 
+        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions/isError
         OutlinedTextField(
             value = url,
             onValueChange = onUrlChanged,
-            label = { Text(stringResource(Res.string.submit_url_label)) },
-            placeholder = { Text(stringResource(Res.string.submit_url_placeholder)) },
+            label = { FrostText(stringResource(Res.string.submit_url_label)) },
+            placeholder = { FrostText(stringResource(Res.string.submit_url_placeholder)) },
             enabled = !isLoading,
             isError = hasError,
             keyboardOptions =
@@ -623,7 +623,7 @@ private fun URLInputSection(
 
         when (submitError) {
             is SubmitUrlError.InvalidUrl -> {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.submit_url_error_invalid_url),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.supportError,
@@ -631,32 +631,33 @@ private fun URLInputSection(
             }
             is SubmitUrlError.DuplicateUrl -> {
                 Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                    Text(
+                    FrostText(
                         text = stringResource(Res.string.submit_url_error_duplicate),
                         style = AppTheme.type.label01,
                         color = AppTheme.colors.supportError,
                     )
-                    TextButton(onClick = onViewLibrary) {
-                        Text(stringResource(Res.string.submit_url_error_view_library))
-                    }
+                    BracketButton(
+                        label = stringResource(Res.string.submit_url_error_view_library),
+                        onClick = onViewLibrary,
+                    )
                 }
             }
             is SubmitUrlError.NetworkError -> {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.submit_url_error_network),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.supportError,
                 )
             }
             is SubmitUrlError.ServerError -> {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.submit_url_error_server),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.supportError,
                 )
             }
             is SubmitUrlError.Unknown -> {
-                Text(
+                FrostText(
                     text = submitError.message,
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.supportError,
@@ -664,7 +665,7 @@ private fun URLInputSection(
             }
             null -> {
                 if (error != null) {
-                    Text(
+                    FrostText(
                         text = error,
                         style = AppTheme.type.label01,
                         color = AppTheme.colors.supportError,
@@ -679,13 +680,12 @@ private fun URLInputSection(
             } else {
                 stringResource(Res.string.submit_url_submit)
             }
-        Button(
+        BracketButton(
+            label = submitLabel,
             onClick = onSubmit,
             enabled = !isLoading && url.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(submitLabel)
-        }
+        )
     }
 }
 
@@ -715,14 +715,14 @@ private fun DuplicateWarningSection(
                 tint = AppTheme.colors.supportWarning,
                 modifier = Modifier.size(IconSizes.md),
             )
-            Text(
+            FrostText(
                 text = stringResource(Res.string.submit_url_duplicate_title),
                 style = AppTheme.type.headingCompact01,
                 color = AppTheme.colors.textPrimary,
             )
         }
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.submit_url_duplicate_message),
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textSecondary,
@@ -733,27 +733,24 @@ private fun DuplicateWarningSection(
             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             if (summaryId != null) {
-                Button(
+                BracketButton(
+                    label = stringResource(Res.string.submit_url_view_existing),
                     onClick = { onViewExisting(summaryId) },
                     modifier = Modifier.weight(1f),
-                ) {
-                    Text(stringResource(Res.string.submit_url_view_existing))
-                }
+                )
             }
 
-            androidx.compose.material3.OutlinedButton(
+            BracketButton(
+                label = stringResource(Res.string.submit_url_submit_anyway),
                 onClick = onForceSubmit,
                 modifier = Modifier.weight(1f),
-            ) {
-                Text(stringResource(Res.string.submit_url_submit_anyway))
-            }
+            )
 
-            TextButton(
+            BracketButton(
+                label = stringResource(Res.string.submit_url_cancel),
                 onClick = onDismiss,
                 modifier = Modifier.weight(1f),
-            ) {
-                Text(stringResource(Res.string.submit_url_cancel))
-            }
+            )
         }
     }
 }
@@ -769,14 +766,19 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
                 .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.submit_url_processing),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
         )
 
-        LinearProgressIndicator(
-            modifier = Modifier.fillMaxWidth(),
+        // note: Frost two-color rule — indeterminate progress rendered as ink hairline bar
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .background(AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha)),
         )
 
         Row(
@@ -784,14 +786,14 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             AppSmallSpinner()
-            Text(
+            FrostText(
                 text = state.message ?: stringResource(Res.string.submit_url_processing_default_message),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textSecondary,
             )
         }
 
-        Text(
+        FrostText(
             text =
                 stringResource(
                     Res.string.submit_url_processing_stage,
@@ -832,7 +834,7 @@ private fun CompletionSection() {
             tint = AppTheme.colors.supportSuccess,
             modifier = Modifier.size(IconSizes.md),
         )
-        Text(
+        FrostText(
             text = stringResource(Res.string.submit_url_success),
             style = AppTheme.type.body01,
             color = AppTheme.colors.supportSuccess,
@@ -852,7 +854,7 @@ private fun RequestHistoryHeader(
                 .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.submit_url_request_history),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -920,7 +922,7 @@ private fun RequestHistoryItem(
         Spacer(modifier = Modifier.width(Spacing.sm))
 
         // URL text (truncated)
-        Text(
+        FrostText(
             text = request.url,
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textPrimary,

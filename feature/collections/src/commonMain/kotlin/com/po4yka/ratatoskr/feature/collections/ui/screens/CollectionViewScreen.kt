@@ -20,9 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,11 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextButton
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButtonVariant
 import com.po4yka.ratatoskr.core.ui.components.AppSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.CollaboratorRole
@@ -189,7 +187,7 @@ private fun CollectionViewHeader(
 
             Spacer(modifier = Modifier.width(Spacing.xs))
 
-            Text(
+            FrostText(
                 text = collection?.name ?: stringResource(Res.string.collection_view_default_title),
                 style = AppTheme.type.heading03,
                 color = AppTheme.colors.textPrimary,
@@ -204,7 +202,7 @@ private fun CollectionViewHeader(
             CollectionInfoSection(collection = collection)
         }
 
-        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+        FrostDivider()
     }
 }
 
@@ -220,7 +218,7 @@ private fun CollectionInfoSection(collection: Collection) {
     ) {
         val description = collection.description
         if (!description.isNullOrBlank()) {
-            Text(
+            FrostText(
                 text = description,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textSecondary,
@@ -234,14 +232,14 @@ private fun CollectionInfoSection(collection: Collection) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.collection_view_items_count, collection.count),
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
             )
 
             if (collection.isShared) {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.collection_view_shared),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.linkPrimary,
@@ -289,7 +287,7 @@ private fun CollectionTabBar(
         )
     }
 
-    HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+    FrostDivider()
 }
 
 @Suppress("FunctionNaming")
@@ -344,7 +342,7 @@ private fun TabItem(
                 tint = iconColor,
                 modifier = Modifier.size(20.dp),
             )
-            Text(
+            FrostText(
                 text = label,
                 style = AppTheme.type.bodyCompact01,
                 color = textColor,
@@ -464,7 +462,7 @@ private fun SettingsTabContent(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.collection_view_system_readonly),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textSecondary,
@@ -479,7 +477,7 @@ private fun SettingsTabContent(
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         item {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.collection_view_settings_title),
                 style = AppTheme.type.heading03,
                 color = AppTheme.colors.textPrimary,
@@ -536,23 +534,24 @@ private fun CollectionEditForm(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.collection_view_name),
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
             )
+            // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
             OutlinedTextField(
                 value = editedName,
                 onValueChange = onNameChange,
-                label = { Text(stringResource(Res.string.collection_view_name)) },
-                placeholder = { Text(stringResource(Res.string.collections_name_placeholder)) },
+                label = { FrostText(stringResource(Res.string.collection_view_name)) },
+                placeholder = { FrostText(stringResource(Res.string.collections_name_placeholder)) },
                 enabled = !isUpdating,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.collection_view_description),
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
@@ -567,22 +566,20 @@ private fun CollectionEditForm(
             )
         }
 
-        Button(
-            onClick = onSave,
-            enabled = !isUpdating,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
+        BracketButton(
+            label =
                 if (isUpdating) {
                     stringResource(Res.string.collection_view_saving)
                 } else {
                     stringResource(Res.string.collection_view_save_changes)
                 },
-            )
-        }
+            onClick = onSave,
+            enabled = !isUpdating,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         if (updateError != null) {
-            Text(
+            FrostText(
                 text = updateError,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.supportError,
@@ -599,38 +596,29 @@ private fun CollectionDangerZone(
     onShowDeleteDialog: () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        HorizontalDivider(
-            color = AppTheme.colors.borderSubtle00,
-            modifier = Modifier.padding(vertical = Spacing.xs),
-        )
+        FrostDivider(modifier = Modifier.padding(vertical = Spacing.xs))
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.collection_view_danger_zone),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.supportError,
         )
 
-        Button(
-            onClick = onShowDeleteDialog,
-            enabled = !isDeleting,
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = AppTheme.colors.supportError,
-                    contentColor = AppTheme.colors.textOnColor,
-                ),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
+        BracketButton(
+            label =
                 if (isDeleting) {
                     stringResource(Res.string.collection_view_deleting)
                 } else {
                     stringResource(Res.string.collection_view_delete_collection)
                 },
-            )
-        }
+            onClick = onShowDeleteDialog,
+            enabled = !isDeleting,
+            variant = BracketButtonVariant.Critical,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         if (deleteError != null) {
-            Text(
+            FrostText(
                 text = deleteError,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.supportError,
@@ -649,24 +637,20 @@ private fun DeleteCollectionDialog(
         onDismissRequest = onDismiss,
         title = stringResource(Res.string.collection_view_delete_dialog_title),
         confirmButton = {
-            Button(
+            BracketButton(
+                label = stringResource(Res.string.collection_view_delete_action),
                 onClick = onConfirm,
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = AppTheme.colors.supportError,
-                        contentColor = AppTheme.colors.textOnColor,
-                    ),
-            ) {
-                Text(stringResource(Res.string.collection_view_delete_action))
-            }
+                variant = BracketButtonVariant.Critical,
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.collections_cancel))
-            }
+            BracketButton(
+                label = stringResource(Res.string.collections_cancel),
+                onClick = onDismiss,
+            )
         },
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.collection_view_delete_dialog_message),
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textSecondary,
@@ -687,7 +671,7 @@ private fun SharingTabContent(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.collection_view_system_unshareable),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textSecondary,
@@ -730,7 +714,7 @@ private fun CollaboratorsList(
     error: String?,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.collection_view_collaborators),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -746,7 +730,7 @@ private fun CollaboratorsList(
                 }
             }
             collaborators.isEmpty() -> {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.collection_view_no_collaborators),
                     style = AppTheme.type.bodyCompact01,
                     color = AppTheme.colors.textSecondary,
@@ -763,7 +747,7 @@ private fun CollaboratorsList(
         }
 
         if (error != null) {
-            Text(
+            FrostText(
                 text = error,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.supportError,
@@ -790,12 +774,12 @@ private fun CollaboratorRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.collection_view_user, collaborator.userId ?: 0),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textPrimary,
             )
-            Text(
+            FrostText(
                 text = collaboratorRoleLabel(collaborator.role),
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
@@ -832,30 +816,25 @@ private fun InviteLinkSection(
     onCreateInviteLink: (CollaboratorRole) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        HorizontalDivider(
-            color = AppTheme.colors.borderSubtle00,
-            modifier = Modifier.padding(vertical = Spacing.xs),
-        )
+        FrostDivider(modifier = Modifier.padding(vertical = Spacing.xs))
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.collection_view_invite_link),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
         )
 
-        OutlinedButton(
-            onClick = { onCreateInviteLink(CollaboratorRole.Viewer) },
-            enabled = !isCreatingInvite,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
+        BracketButton(
+            label =
                 if (isCreatingInvite) {
                     stringResource(Res.string.collection_view_creating_invite)
                 } else {
                     stringResource(Res.string.collection_view_create_invite_viewer)
                 },
-            )
-        }
+            onClick = { onCreateInviteLink(CollaboratorRole.Viewer) },
+            enabled = !isCreatingInvite,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         if (inviteLink != null) {
             Column(
@@ -869,19 +848,19 @@ private fun InviteLinkSection(
                         .padding(Spacing.sm),
                 verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
             ) {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.collection_view_invite_token),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.textSecondary,
                 )
-                Text(
+                FrostText(
                     text = inviteLink.token,
                     style = AppTheme.type.bodyCompact01,
                     color = AppTheme.colors.textPrimary,
                 )
                 val expiresAt = inviteLink.expiresAt
                 if (expiresAt != null) {
-                    Text(
+                    FrostText(
                         text = stringResource(Res.string.collection_view_expires, expiresAt),
                         style = AppTheme.type.label01,
                         color = AppTheme.colors.textSecondary,
@@ -891,7 +870,7 @@ private fun InviteLinkSection(
         }
 
         if (inviteError != null) {
-            Text(
+            FrostText(
                 text = inviteError,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.supportError,

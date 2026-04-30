@@ -12,12 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.custom_digest_view_default_title
 import ratatoskr.core.ui.generated.resources.custom_digest_view_delete
@@ -25,7 +26,6 @@ import ratatoskr.core.ui.generated.resources.custom_digest_view_error
 import ratatoskr.core.ui.generated.resources.custom_digest_view_failed
 import ratatoskr.core.ui.generated.resources.custom_digest_view_generating
 import ratatoskr.core.ui.generated.resources.custom_digest_view_not_found
-import androidx.compose.material3.LinearProgressIndicator
 import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.CustomDigestStatus
@@ -88,9 +88,15 @@ fun CustomDigestViewScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    // Two-color ink progress bar — no M3 LinearProgressIndicator
+                    Box(
+                        modifier =
+                            Modifier.fillMaxWidth().height(
+                                2.dp,
+                            ).background(AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha)),
+                    )
                     Spacer(modifier = Modifier.height(Spacing.sm))
-                    Text(
+                    FrostText(
                         text = stringResource(Res.string.custom_digest_view_generating),
                         style = AppTheme.type.body01,
                         color = AppTheme.colors.textSecondary,
@@ -104,7 +110,7 @@ fun CustomDigestViewScreen(
                     modifier = Modifier.fillMaxSize().padding(horizontal = Spacing.md),
                 ) {
                     item {
-                        Text(
+                        FrostText(
                             text = state.digest!!.content!!,
                             style = AppTheme.type.body01,
                             color = AppTheme.colors.textPrimary,
@@ -127,14 +133,14 @@ fun CustomDigestViewScreen(
                         modifier = Modifier.size(IconSizes.xl),
                     )
                     Spacer(modifier = Modifier.height(Spacing.sm))
-                    Text(
+                    FrostText(
                         text = stringResource(Res.string.custom_digest_view_failed),
                         style = AppTheme.type.heading03,
                         color = AppTheme.colors.supportError,
                     )
                     state.error?.let { errorText ->
                         Spacer(modifier = Modifier.height(Spacing.xs))
-                        Text(
+                        FrostText(
                             text = errorText,
                             style = AppTheme.type.bodyCompact01,
                             color = AppTheme.colors.textSecondary,
@@ -148,7 +154,7 @@ fun CustomDigestViewScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(
+                    FrostText(
                         text = stringResource(Res.string.custom_digest_view_not_found),
                         style = AppTheme.type.bodyCompact01,
                         color = AppTheme.colors.textSecondary,
