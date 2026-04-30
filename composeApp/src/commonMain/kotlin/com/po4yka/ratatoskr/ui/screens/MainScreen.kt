@@ -1,9 +1,9 @@
 package com.po4yka.ratatoskr.ui.screens
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -17,31 +17,40 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import ratatoskr.core.ui.generated.resources.Res
-import ratatoskr.core.ui.generated.resources.nav_collections
-import ratatoskr.core.ui.generated.resources.nav_read_later
-import ratatoskr.core.ui.generated.resources.nav_search
-import ratatoskr.core.ui.generated.resources.nav_settings
-import ratatoskr.core.ui.generated.resources.nav_stats
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.stack.ChildStack
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIndication
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.navigation.MainChildDescriptor
 import com.po4yka.ratatoskr.navigation.MainTab
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.presentation.navigation.MainComponent
+import org.jetbrains.compose.resources.stringResource
+import ratatoskr.core.ui.generated.resources.Res
+import ratatoskr.core.ui.generated.resources.nav_collections
+import ratatoskr.core.ui.generated.resources.nav_read_later
+import ratatoskr.core.ui.generated.resources.nav_search
+import ratatoskr.core.ui.generated.resources.nav_settings
+import ratatoskr.core.ui.generated.resources.nav_stats
 
 /** Minimum width to switch from bottom-bar to side navigation rail layout. */
 private val EXPANDED_WIDTH_THRESHOLD = 600.dp
@@ -117,19 +126,30 @@ private fun ScreenContent(childStack: ChildStack<*, MainChildDescriptor>) {
     ) { child -> child.instance.render() }
 }
 
-/** Vertical navigation rail shown on large screens. */
+/** Vertical navigation rail shown on large screens (96 dp wide, Frost-styled). */
 @Suppress("FunctionNaming")
 @Composable
 private fun NavigationRail(
     activeChild: MainChildDescriptor,
     onTabSelected: (MainTab) -> Unit,
 ) {
+    val ink = AppTheme.frostColors.ink
     Column(
         modifier =
             Modifier
-                .width(80.dp)
+                .width(96.dp)
                 .fillMaxHeight()
-                .background(AppTheme.colors.layer01),
+                .background(AppTheme.frostColors.page)
+                .drawBehind {
+                    // Trailing hairline border (right edge, facing content)
+                    drawLine(
+                        color = ink,
+                        start = Offset(size.width, 0f),
+                        end = Offset(size.width, size.height),
+                        strokeWidth = 1.dp.toPx(),
+                    )
+                }
+                .selectableGroup(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
@@ -180,40 +200,45 @@ private fun RailItem(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val iconColor by animateColorAsState(
-        targetValue = if (isSelected) AppTheme.colors.iconPrimary else AppTheme.colors.iconSecondary,
-        animationSpec = tween(durationMillis = 200),
-        label = "railIconColor",
+    val ink = AppTheme.frostColors.ink
+    val motionSpec = AppTheme.motion.toast
+
+    val alpha by animateFloatAsState(
+        targetValue = if (isSelected) AppTheme.alpha.active else AppTheme.alpha.inactive,
+        animationSpec = motionSpec,
+        label = "railAlpha",
     )
-    val textColor by animateColorAsState(
-        targetValue = if (isSelected) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
-        animationSpec = tween(durationMillis = 200),
-        label = "railTextColor",
-    )
-    val indicatorColor by animateColorAsState(
-        targetValue = if (isSelected) AppTheme.colors.borderInteractive else AppTheme.colors.layer01,
-        animationSpec = tween(durationMillis = 200),
-        label = "railIndicatorColor",
-    )
+
+    val interactionSource = remember { MutableInteractionSource() }
 
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClick),
+                .height(64.dp)
+                .drawBehind {
+                    // 4 dp leading ink hairline for selected item
+                    if (isSelected) {
+                        drawRect(
+                            color = ink,
+                            topLeft = Offset(0f, 0f),
+                            size = Size(4.dp.toPx(), size.height),
+                        )
+                    }
+                }
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = FrostIndication,
+                    onClick = onClick,
+                )
+                .semantics {
+                    role = Role.Tab
+                    selected = isSelected
+                },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Left active indicator bar
-        Box(
-            modifier =
-                Modifier
-                    .width(3.dp)
-                    .height(48.dp)
-                    .background(
-                        color = indicatorColor,
-                        shape = RectangleShape,
-                    ),
-        )
+        // Leading indicator width placeholder so content stays centered
+        Spacer(modifier = Modifier.width(4.dp))
 
         Column(
             modifier =
@@ -226,30 +251,43 @@ private fun RailItem(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = iconColor,
+                tint = ink.copy(alpha = alpha),
                 modifier = Modifier.size(24.dp),
             )
-            Text(
-                text = label,
-                style = AppTheme.type.label01,
-                color = textColor,
+            FrostText(
+                text = label.uppercase(),
+                style = AppTheme.frostType.monoXs,
+                color = ink.copy(alpha = alpha),
+                maxLines = 1,
             )
         }
     }
 }
 
+/** Bottom navigation bar shown on compact screens (Frost-styled, 56 dp tall). */
 @Suppress("FunctionNaming")
 @Composable
 private fun BottomNavigation(
     activeChild: MainChildDescriptor,
     onTabSelected: (MainTab) -> Unit,
 ) {
+    val ink = AppTheme.frostColors.ink
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(64.dp)
-                .background(AppTheme.colors.layer01),
+                .height(56.dp)
+                .background(AppTheme.frostColors.page)
+                .drawBehind {
+                    // Top hairline border separating nav from content
+                    drawLine(
+                        color = ink,
+                        start = Offset(0f, 0f),
+                        end = Offset(size.width, 0f),
+                        strokeWidth = 1.dp.toPx(),
+                    )
+                }
+                .selectableGroup(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -298,57 +336,56 @@ private fun NavItem(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val iconColor by animateColorAsState(
-        targetValue = if (isSelected) AppTheme.colors.iconPrimary else AppTheme.colors.iconSecondary,
-        animationSpec = tween(durationMillis = 200),
-        label = "iconColor",
+    val ink = AppTheme.frostColors.ink
+    val motionSpec = AppTheme.motion.toast
+
+    val alpha by animateFloatAsState(
+        targetValue = if (isSelected) AppTheme.alpha.active else AppTheme.alpha.inactive,
+        animationSpec = motionSpec,
+        label = "navAlpha",
     )
-    val textColor by animateColorAsState(
-        targetValue = if (isSelected) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
-        animationSpec = tween(durationMillis = 200),
-        label = "textColor",
-    )
-    val indicatorColor by animateColorAsState(
-        targetValue = if (isSelected) AppTheme.colors.borderInteractive else AppTheme.colors.layer01,
-        animationSpec = tween(durationMillis = 200),
-        label = "indicatorColor",
-    )
+
+    val interactionSource = remember { MutableInteractionSource() }
 
     Column(
         modifier =
             Modifier
-                .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp),
+                .height(56.dp)
+                .padding(horizontal = 12.dp)
+                .drawBehind {
+                    // 4 dp ink hairline at the top edge for the selected item
+                    if (isSelected) {
+                        drawRect(
+                            color = ink,
+                            topLeft = Offset(0f, 0f),
+                            size = Size(size.width, 4.dp.toPx()),
+                        )
+                    }
+                }
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = FrostIndication,
+                    onClick = onClick,
+                )
+                .semantics {
+                    role = Role.Tab
+                    selected = isSelected
+                },
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        // Top indicator bar for active tab
-        Box(
-            modifier =
-                Modifier
-                    .width(48.dp)
-                    .height(3.dp)
-                    .background(
-                        color = indicatorColor,
-                        shape = RectangleShape,
-                    ),
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = ink.copy(alpha = alpha),
+            modifier = Modifier.size(24.dp),
         )
-
-        Column(
-            modifier = Modifier.padding(top = 6.dp, bottom = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = iconColor,
-                modifier = Modifier.size(24.dp),
-            )
-            Text(
-                text = label,
-                style = AppTheme.type.label01,
-                color = textColor,
-            )
-        }
+        Spacer(modifier = Modifier.height(2.dp))
+        FrostText(
+            text = label.uppercase(),
+            style = AppTheme.frostType.monoXs,
+            color = ink.copy(alpha = alpha),
+            maxLines = 1,
+        )
     }
 }
