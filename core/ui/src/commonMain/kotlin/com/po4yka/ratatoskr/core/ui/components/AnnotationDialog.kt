@@ -3,14 +3,12 @@ package com.po4yka.ratatoskr.core.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
-import ratatoskr.core.ui.generated.resources.annotation_dialog_helper
 import ratatoskr.core.ui.generated.resources.annotation_dialog_placeholder
 import ratatoskr.core.ui.generated.resources.annotation_dialog_save
 import ratatoskr.core.ui.generated.resources.annotation_dialog_title
@@ -31,24 +29,25 @@ fun AnnotationDialog(
         title = stringResource(Res.string.annotation_dialog_title),
         modifier = modifier,
         dismissButton = {
-            TextButton(onClick = onCancel) {
-                Text(stringResource(Res.string.collections_cancel))
-            }
+            BracketButton(
+                label = stringResource(Res.string.collections_cancel),
+                onClick = onCancel,
+            )
         },
         confirmButton = {
-            Button(onClick = onSave) {
-                Text(stringResource(Res.string.annotation_dialog_save))
-            }
+            BracketButton(
+                label = stringResource(Res.string.annotation_dialog_save),
+                onClick = onSave,
+            )
         },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            TextArea(
+            BracketField(
                 value = draft,
                 onValueChange = onDraftChange,
-                placeholderText = stringResource(Res.string.annotation_dialog_placeholder),
-                helperText = stringResource(Res.string.annotation_dialog_helper),
+                label = stringResource(Res.string.annotation_dialog_placeholder),
+                multiline = true,
                 modifier = Modifier.fillMaxWidth(),
-                maxLines = 6,
             )
         }
     }

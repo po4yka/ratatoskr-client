@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
@@ -211,7 +211,7 @@ private fun RailItem(
                     .height(48.dp)
                     .background(
                         color = indicatorColor,
-                        shape = RoundedCornerShape(topEnd = 2.dp, bottomEnd = 2.dp),
+                        shape = RectangleShape,
                     ),
         )
 
@@ -329,7 +329,7 @@ private fun NavItem(
                     .height(3.dp)
                     .background(
                         color = indicatorColor,
-                        shape = RoundedCornerShape(bottomStart = 2.dp, bottomEnd = 2.dp),
+                        shape = RectangleShape,
                     ),
         )
 

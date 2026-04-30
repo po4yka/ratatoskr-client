@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,6 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.FeedbackIssue
 import com.po4yka.ratatoskr.domain.model.FeedbackRating
@@ -61,30 +60,28 @@ fun FeedbackDialog(
         onDismissRequest = { if (!isSubmitting) onDismiss() },
         title = stringResource(Res.string.feedback_dialog_title),
         dismissButton = {
-            TextButton(
+            BracketButton(
+                label = stringResource(Res.string.collections_cancel),
                 onClick = onDismiss,
                 enabled = !isSubmitting,
-            ) {
-                Text(stringResource(Res.string.collections_cancel))
-            }
+            )
         },
         confirmButton = {
-            Button(
+            BracketButton(
+                label = stringResource(Res.string.feedback_dialog_submit),
                 onClick = {
                     val commentValue = comment.trim().ifEmpty { null }
                     onSubmit(rating, checkedIssues.toList(), commentValue)
                 },
                 enabled = !isSubmitting,
-            ) {
-                Text(stringResource(Res.string.feedback_dialog_submit))
-            }
+            )
         },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.feedback_dialog_prompt),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
             FeedbackIssue.entries.forEach { issue ->
                 Row(
@@ -113,10 +110,10 @@ fun FeedbackDialog(
                         },
                         enabled = !isSubmitting,
                     )
-                    Text(
+                    FrostText(
                         text = issue.displayName(),
-                        style = AppTheme.type.bodyCompact01,
-                        color = AppTheme.colors.textPrimary,
+                        style = AppTheme.frostType.monoBody,
+                        color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
                         modifier = Modifier.padding(start = Spacing.xs),
                     )
                 }
@@ -135,10 +132,10 @@ fun FeedbackDialog(
                     horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 ) {
                     AppSmallSpinner()
-                    Text(
+                    FrostText(
                         text = stringResource(Res.string.feedback_dialog_submitting),
-                        style = AppTheme.type.bodyCompact01,
-                        color = AppTheme.colors.textSecondary,
+                        style = AppTheme.frostType.monoBody,
+                        color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     )
                 }
             }

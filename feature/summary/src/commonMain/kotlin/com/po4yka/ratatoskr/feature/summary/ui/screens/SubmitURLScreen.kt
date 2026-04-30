@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -325,7 +325,7 @@ private fun ModeChip(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(Spacing.md)
+    val shape = RectangleShape
     val backgroundColor = if (isSelected) AppTheme.colors.backgroundInverse else AppTheme.colors.layer01
     val textColor = if (isSelected) AppTheme.colors.textOnColor else AppTheme.colors.textSecondary
     val borderColor = if (isSelected) AppTheme.colors.backgroundInverse else AppTheme.colors.borderSubtle00

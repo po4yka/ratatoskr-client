@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +33,7 @@ fun TextArea(
     minHeight: androidx.compose.ui.unit.Dp = Dimensions.textAreaMinHeight,
     maxLines: Int = Int.MAX_VALUE,
 ) {
-    val shape = RoundedCornerShape(Dimensions.cardCornerRadius)
+    val shape = RectangleShape
     val borderColor =
         if (errorText != null) {
             AppTheme.colors.supportError

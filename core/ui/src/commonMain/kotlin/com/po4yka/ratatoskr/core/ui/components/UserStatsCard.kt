@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,7 +33,6 @@ import ratatoskr.core.ui.generated.resources.user_stats_unavailable
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.TopicStat
 import com.po4yka.ratatoskr.domain.model.UserStats
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 
@@ -52,7 +51,7 @@ fun UserStatsCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
+                .clip(RectangleShape)
                 .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
@@ -212,7 +211,7 @@ private fun TopicChip(
         color = AppTheme.colors.textOnColor,
         modifier =
             modifier
-                .clip(RoundedCornerShape(Spacing.sm))
+                .clip(RectangleShape)
                 .background(AppTheme.colors.linkPrimary)
                 .padding(horizontal = Spacing.xs, vertical = Spacing.xxs),
     )
