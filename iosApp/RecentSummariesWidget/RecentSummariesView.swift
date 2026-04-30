@@ -1,9 +1,29 @@
 import SwiftUI
 import WidgetKit
 
+// Frost design system color constants for widget surfaces.
+// INK flips between light and dark; PAGE inverts; SPARK never changes.
+private extension Color {
+    static let frostInk = Color(light: Color(red: 0.11, green: 0.14, blue: 0.17),
+                                dark: Color(red: 0.91, green: 0.93, blue: 0.94))
+    static let frostPage = Color(light: Color(red: 0.94, green: 0.95, blue: 0.96),
+                                 dark: Color(red: 0.07, green: 0.09, blue: 0.11))
+    static let frostInkMuted = Color(light: Color(red: 0.29, green: 0.33, blue: 0.41),
+                                     dark: Color(red: 0.63, green: 0.68, blue: 0.75))
+
+    init(light: Color, dark: Color) {
+        self.init(uiColor: UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(dark)
+                : UIColor(light)
+        })
+    }
+}
+
 /// Widget view showing recent summaries
 struct RecentSummariesView: View {
     let entry: RecentSummariesEntry
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         if entry.snapshot.summaries.isEmpty {
@@ -17,20 +37,20 @@ struct RecentSummariesView: View {
 /// Empty state when no summaries are available
 private struct EmptyStateView: View {
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "doc.text.magnifyingglass")
-                .font(.system(size: 36))
-                .foregroundColor(.secondary)
+        ZStack {
+            Color.frostPage
+            VStack(spacing: 8) {
+                Text("NO SUMMARIES YET")
+                    .font(.system(.caption, design: .monospaced))
+                    .fontWeight(.bold)
+                    .foregroundColor(.frostInk)
 
-            Text("No summaries yet")
-                .font(.headline)
-                .foregroundColor(.primary)
-
-            Text("Submit a URL to get started")
-                .font(.caption)
-                .foregroundColor(.secondary)
+                Text("Submit a URL to get started")
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(.frostInkMuted)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -39,26 +59,35 @@ private struct SummariesListView: View {
     let summaries: [RecentSummarySnapshotItem]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Header
-            HStack {
-                Image(systemName: "book.fill")
-                    .foregroundColor(.blue)
-                Text("Recent Summaries")
-                    .font(.headline)
-                    .fontWeight(.bold)
-                Spacer()
-            }
-            .padding(.bottom, 4)
+        ZStack {
+            Color.frostPage
+            VStack(alignment: .leading, spacing: 0) {
+                // Header
+                HStack {
+                    Text("RECENT SUMMARIES")
+                        .font(.system(.caption2, design: .monospaced))
+                        .fontWeight(.bold)
+                        .foregroundColor(.frostInk)
+                    Spacer()
+                }
+                .padding(.horizontal, 12)
+                .padding(.top, 10)
+                .padding(.bottom, 6)
 
-            // Summaries
-            ForEach(summaries, id: \.id) { summary in
-                SummaryItemView(summary: summary)
-            }
+                // Hairline border under header
+                Color.frostInk
+                    .frame(height: 1)
 
-            Spacer()
+                // Summaries
+                ForEach(summaries, id: \.id) { summary in
+                    SummaryItemView(summary: summary)
+                    Color.frostInk
+                        .frame(height: 1)
+                }
+
+                Spacer(minLength: 0)
+            }
         }
-        .padding()
     }
 }
 
@@ -68,38 +97,37 @@ private struct SummaryItemView: View {
 
     var body: some View {
         Link(destination: summary.deepLink) {
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(summary.title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
+                    .font(.system(.caption, design: .monospaced))
+                    .fontWeight(.bold)
+                    .foregroundColor(.frostInk)
                     .lineLimit(2)
 
                 Text(summary.excerpt)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(.frostInkMuted)
                     .lineLimit(2)
 
                 HStack(spacing: 8) {
                     if let readingTimeMinutes = summary.readingTimeMinutes {
-                        Label("\(readingTimeMinutes) min", systemImage: "clock")
-                            .font(.caption2)
-                            .foregroundColor(.blue)
+                        Text("\(readingTimeMinutes) MIN")
+                            .font(.system(size: 9, design: .monospaced))
+                            .foregroundColor(.frostInkMuted)
                     }
 
                     if let domain = summary.domain {
-                        Label(domain, systemImage: "globe")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                        Text(domain.uppercased())
+                            .font(.system(size: 9, design: .monospaced))
+                            .foregroundColor(.frostInkMuted)
                             .lineLimit(1)
                     }
 
                     Spacer()
                 }
             }
-            .padding(10)
-            .background(Color(.systemBackground))
-            .cornerRadius(8)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
         }
     }
 }
