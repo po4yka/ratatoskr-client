@@ -1,39 +1,30 @@
 package com.po4yka.ratatoskr.core.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.material3.Text
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.IngestLine
+import com.po4yka.ratatoskr.core.ui.components.frost.IngestState
+import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadge
+import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadgeSeverity
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.theme.Spacing
+import com.po4yka.ratatoskr.domain.model.RequestStatus
+import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
-import ratatoskr.core.ui.generated.resources.progress_stages_completed
-import ratatoskr.core.ui.generated.resources.progress_stages_failed
 import ratatoskr.core.ui.generated.resources.progress_stages_processing_summary
 import ratatoskr.core.ui.generated.resources.progress_stages_ready
 import ratatoskr.core.ui.generated.resources.progress_stages_submitted
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.domain.model.RequestStatus
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
-import org.jetbrains.compose.resources.stringResource
 
 /**
- * Progress indicator showing request processing stages.
- *
- * Material 3 [LinearProgressIndicator] backs the bar. The semantic states (Active / Success / Error)
- * that Carbon's `ProgressBarState` carried are expressed by the choice of color and progress value
- * at each call site.
+ * Progress indicator showing request processing stages as Frost status badges with IngestLine
+ * connectors. Replaces M3 LinearProgressIndicator.
  */
 @Suppress("FunctionNaming", "unused") // Composable naming convention; Public API
 @Composable
@@ -41,54 +32,41 @@ fun ProgressIndicatorWithStages(
     status: RequestStatus,
     modifier: Modifier = Modifier,
 ) {
+    val ink = AppTheme.frostColors.ink
+
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Overall progress bar
-        when (status) {
-            RequestStatus.PENDING, RequestStatus.PROCESSING -> {
-                // Indeterminate: omit `progress` argument.
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-            RequestStatus.COMPLETED -> {
-                LinearProgressIndicator(
-                    progress = { 1f },
-                    modifier = Modifier.fillMaxWidth(),
-                    color = AppTheme.colors.supportSuccess,
-                )
-            }
-            RequestStatus.FAILED -> {
-                LinearProgressIndicator(
-                    progress = { 1f },
-                    modifier = Modifier.fillMaxWidth(),
-                    color = AppTheme.colors.supportError,
-                )
-            }
-        }
+        // Overall ingest line indicator
+        IngestLine(
+            state =
+                when (status) {
+                    RequestStatus.PENDING, RequestStatus.PROCESSING -> IngestState.Active
+                    RequestStatus.COMPLETED -> IngestState.Idle
+                    RequestStatus.FAILED -> IngestState.Error
+                },
+            modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.md),
+        )
 
-        Spacer(modifier = Modifier.height(Spacing.md))
-
-        // Stage indicators
+        // Stage indicators as StatusBadge rows
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            StageIndicator(
+            FrostStageRow(
                 title = stringResource(Res.string.progress_stages_submitted),
                 isCompleted = true,
                 isCurrent = status == RequestStatus.PENDING,
                 isFailed = false,
             )
-
-            StageIndicator(
+            FrostStageRow(
                 title = stringResource(Res.string.progress_stages_processing_summary),
                 isCompleted = status == RequestStatus.COMPLETED || status == RequestStatus.FAILED,
                 isCurrent = status == RequestStatus.PROCESSING,
                 isFailed = status == RequestStatus.FAILED,
             )
-
-            StageIndicator(
+            FrostStageRow(
                 title = stringResource(Res.string.progress_stages_ready),
                 isCompleted = status == RequestStatus.COMPLETED,
                 isCurrent = false,
@@ -98,60 +76,33 @@ fun ProgressIndicatorWithStages(
     }
 }
 
-@Suppress("FunctionNaming") // Composable naming convention
+@Suppress("FunctionNaming")
 @Composable
-private fun StageIndicator(
+private fun FrostStageRow(
     title: String,
     isCompleted: Boolean,
     isCurrent: Boolean,
     isFailed: Boolean,
 ) {
+    val ink = AppTheme.frostColors.ink
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        // Stage icon
         when {
-            isFailed -> {
-                Icon(
-                    imageVector = AppIcons.Close,
-                    contentDescription = stringResource(Res.string.progress_stages_failed, title),
-                    tint = AppTheme.colors.supportError,
-                    modifier = Modifier.size(Dimensions.stageIndicatorSize),
-                )
-            }
-            isCompleted -> {
-                Icon(
-                    imageVector = AppIcons.Checkmark,
-                    contentDescription = stringResource(Res.string.progress_stages_completed, title),
-                    tint = AppTheme.colors.supportSuccess,
-                    modifier = Modifier.size(Dimensions.stageIndicatorSize),
-                )
-            }
-            isCurrent -> {
-                AppSmallSpinner(
-                    modifier = Modifier.size(Dimensions.stageIndicatorSize),
-                )
-            }
-            else -> {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(Dimensions.stageIndicatorSize)
-                            .background(AppTheme.colors.layer02, shape = androidx.compose.foundation.shape.CircleShape),
-                )
-            }
+            isFailed -> StatusBadge(label = "✗", severity = StatusBadgeSeverity.Alarm)
+            isCompleted -> StatusBadge(label = "✓", severity = StatusBadgeSeverity.Info)
+            isCurrent -> AppSmallSpinner()
+            else -> StatusBadge(label = "·", severity = StatusBadgeSeverity.Info)
         }
-
-        // Stage title
-        Text(
+        FrostText(
             text = title,
-            style = AppTheme.type.bodyCompact01,
+            style = AppTheme.frostType.monoBody,
             color =
                 when {
-                    isFailed -> AppTheme.colors.supportError
-                    isCompleted || isCurrent -> AppTheme.colors.textPrimary
-                    else -> AppTheme.colors.textSecondary
+                    isFailed -> ink
+                    isCompleted || isCurrent -> ink
+                    else -> ink.copy(alpha = AppTheme.alpha.secondary)
                 },
         )
     }

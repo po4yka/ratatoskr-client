@@ -1,25 +1,21 @@
 package com.po4yka.ratatoskr.core.ui.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 
+// TODO: callers should migrate to BracketIconButton directly;
+//   AppIconButton is a transitional shim
 @Composable
 fun AppIconButton(
     imageVector: ImageVector,
@@ -27,36 +23,21 @@ fun AppIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    tint: Color = AppTheme.colors.iconPrimary,
-    buttonSize: Dp = Dimensions.iconButtonSize,
+    tint: Color = AppTheme.frostColors.ink,
+    @Suppress("UNUSED_PARAMETER") buttonSize: Dp = Dimensions.iconButtonSize,
     iconSize: Dp = IconSizes.md,
-    shape: Shape = CircleShape,
+    @Suppress("UNUSED_PARAMETER") shape: Shape = RectangleShape,
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-
-    Box(
-        modifier =
-            modifier
-                .size(buttonSize)
-                .clip(shape)
-                .clickable(
-                    enabled = enabled,
-                    role = Role.Button,
-                    interactionSource = interactionSource,
-                    indication = null,
-                    onClick = onClick,
-                ),
-        contentAlignment = Alignment.Center,
+    BracketIconButton(
+        onClick = onClick,
+        contentDescription = contentDescription,
+        enabled = enabled,
+        modifier = modifier,
     ) {
         Icon(
             imageVector = imageVector,
-            contentDescription = contentDescription,
-            tint =
-                if (enabled) {
-                    tint
-                } else {
-                    AppTheme.colors.iconDisabled
-                },
+            contentDescription = null,
+            tint = if (enabled) tint else AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.inactive),
             modifier = Modifier.size(iconSize),
         )
     }

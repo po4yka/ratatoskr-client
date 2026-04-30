@@ -22,6 +22,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.frost.IngestLine
+import com.po4yka.ratatoskr.core.ui.components.frost.IngestState
 import kotlin.math.roundToInt
 
 private const val REFRESH_TRIGGER_PX = 200f
@@ -55,7 +57,6 @@ fun PullToRefreshContainer(
                     available: Offset,
                     source: NestedScrollSource,
                 ): Offset {
-                    // When pulling down and we have offset, consume the scroll to reduce offset
                     if (pullOffset > 0f && available.y < 0f) {
                         val consumed = available.y.coerceAtLeast(-pullOffset)
                         pullOffset += consumed
@@ -69,7 +70,6 @@ fun PullToRefreshContainer(
                     available: Offset,
                     source: NestedScrollSource,
                 ): Offset {
-                    // When there's leftover downward scroll (at top of list), use it to pull
                     if (available.y > 0f && !isRefreshing) {
                         val newOffset = (pullOffset + available.y * 0.5f).coerceIn(0f, MAX_PULL_PX)
                         pullOffset = newOffset
@@ -95,7 +95,7 @@ fun PullToRefreshContainer(
     Box(
         modifier = modifier.nestedScroll(nestedScrollConnection),
     ) {
-        // Refresh indicator
+        // Frost mono refresh indicator — replaces M3 PullToRefreshIndicator
         if (pullOffset > 0f || isRefreshing) {
             Box(
                 modifier =
@@ -104,12 +104,12 @@ fun PullToRefreshContainer(
                         .padding(top = 16.dp),
                 contentAlignment = Alignment.TopCenter,
             ) {
-                AppSpinner(
+                IngestLine(
+                    state = if (isRefreshing) IngestState.Active else IngestState.Idle,
                     modifier =
-                        Modifier
-                            .offset {
-                                IntOffset(0, ((pullOffset / 2f) - 24.dp.toPx()).roundToInt())
-                            },
+                        Modifier.offset {
+                            IntOffset(0, ((pullOffset / 2f) - 24.dp.toPx()).roundToInt())
+                        },
                 )
             }
         }

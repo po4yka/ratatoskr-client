@@ -1,36 +1,35 @@
 package com.po4yka.ratatoskr.core.ui.components
 
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 
 /**
  * Project-owned spinner shim (48 dp default).
  *
- * Backs onto Material 3 [CircularProgressIndicator]; introduced as a thin wrapper so call sites
- * can swap the backing impl without re-touching each one. Pass `Modifier.size(...)` to override
- * the diameter — the modifier wins because it is applied after the default.
+ * Backs onto Frost [FrostSpinner]; introduced as a thin wrapper so call sites
+ * can swap the backing impl without re-touching each one.
+ *
+ * TODO: callers should migrate to FrostSpinner directly; AppSpinner is a transitional shim
  */
 @Composable
-fun AppSpinner(modifier: Modifier = Modifier.size(48.dp)) {
-    CircularProgressIndicator(
+fun AppSpinner(modifier: Modifier = Modifier) {
+    FrostSpinner(
         modifier = modifier,
-        color = AppTheme.colors.interactive,
+        size = 48.dp,
     )
 }
 
 /**
- * Smaller spinner variant (16 dp). Stroke width is reduced so the smaller diameter still reads
- * as a spinner.
+ * Smaller spinner variant (16 dp).
+ *
+ * TODO: callers should migrate to FrostSpinner directly; AppSmallSpinner is a transitional shim
  */
 @Composable
-fun AppSmallSpinner(modifier: Modifier = Modifier.size(16.dp)) {
-    CircularProgressIndicator(
+fun AppSmallSpinner(modifier: Modifier = Modifier) {
+    FrostSpinner(
         modifier = modifier,
-        color = AppTheme.colors.interactive,
-        strokeWidth = 2.dp,
+        size = 16.dp,
     )
 }

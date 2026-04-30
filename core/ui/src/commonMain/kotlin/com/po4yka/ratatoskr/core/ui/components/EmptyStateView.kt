@@ -7,16 +7,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
@@ -138,6 +137,7 @@ fun EmptyStateView(
     onAction: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
+    val ink = AppTheme.frostColors.ink
     Column(
         modifier =
             modifier
@@ -149,34 +149,33 @@ fun EmptyStateView(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = AppTheme.colors.iconSecondary,
+            tint = ink.copy(alpha = AppTheme.alpha.secondary),
             modifier = Modifier.size(IconSizes.xl),
         )
 
         Spacer(modifier = Modifier.height(Spacing.lg))
 
-        Text(
+        FrostText(
             text = title,
-            style = AppTheme.type.heading04,
-            color = AppTheme.colors.textPrimary,
-            textAlign = TextAlign.Center,
+            style = AppTheme.frostType.monoEmph,
+            color = ink,
+            modifier =
+                Modifier.then(
+                    Modifier.padding(horizontal = Spacing.md),
+                ),
         )
 
         Spacer(modifier = Modifier.height(Spacing.sm))
 
-        Text(
+        FrostText(
             text = message,
-            style = AppTheme.type.body01,
-            color = AppTheme.colors.textSecondary,
-            textAlign = TextAlign.Center,
+            style = AppTheme.frostType.monoBody,
+            color = ink.copy(alpha = AppTheme.alpha.secondary),
         )
 
         if (actionText != null && onAction != null) {
             Spacer(modifier = Modifier.height(Spacing.xl))
-
-            Button(onClick = onAction) {
-                Text(actionText)
-            }
+            BracketButton(label = actionText, onClick = onAction)
         }
     }
 }

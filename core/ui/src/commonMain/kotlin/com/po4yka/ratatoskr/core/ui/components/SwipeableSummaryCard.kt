@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,14 +21,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.theme.Dimensions
+import com.po4yka.ratatoskr.core.ui.theme.Spacing
+import com.po4yka.ratatoskr.domain.model.Summary
+import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.summary_card_accessibility_favorited
 import ratatoskr.core.ui.generated.resources.summary_card_accessibility_read_article
@@ -40,12 +46,6 @@ import ratatoskr.core.ui.generated.resources.swipeable_summary_archive
 import ratatoskr.core.ui.generated.resources.swipeable_summary_archive_action
 import ratatoskr.core.ui.generated.resources.swipeable_summary_delete_action
 import ratatoskr.core.ui.generated.resources.swipeable_summary_mark_read_action
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.domain.model.Summary
-import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
-import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 private const val SWIPE_THRESHOLD = 100f
@@ -71,13 +71,13 @@ fun SwipeableSummaryCard(
         label = "swipe_offset",
     )
 
-    // Background colors based on swipe direction
+    // Swipe action colors: ink-alpha for archive, spark for delete
     val leftBackgroundColor by animateColorAsState(
         targetValue =
             if (offsetX < -SWIPE_THRESHOLD / 2) {
-                AppTheme.colors.supportWarning
+                AppTheme.frostColors.ink.copy(alpha = 0.18f)
             } else {
-                AppTheme.colors.layer02
+                AppTheme.frostColors.ink.copy(alpha = 0.06f)
             },
         label = "left_bg_color",
     )
@@ -85,9 +85,9 @@ fun SwipeableSummaryCard(
     val rightBackgroundColor by animateColorAsState(
         targetValue =
             if (offsetX > SWIPE_THRESHOLD / 2) {
-                AppTheme.colors.supportSuccess
+                AppTheme.frostColors.spark.copy(alpha = 0.18f)
             } else {
-                AppTheme.colors.layer02
+                AppTheme.frostColors.ink.copy(alpha = 0.06f)
             },
         label = "right_bg_color",
     )
@@ -120,7 +120,7 @@ fun SwipeableSummaryCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(Dimensions.cardCornerRadius))
+                .clip(RectangleShape)
                 .semantics {
                     contentDescription = cardDescription
                     customActions =
@@ -159,7 +159,7 @@ fun SwipeableSummaryCard(
                 Icon(
                     imageVector = AppIcons.Checkmark,
                     contentDescription = stringResource(Res.string.summary_card_mark_read),
-                    tint = AppTheme.colors.textOnColor,
+                    tint = AppTheme.frostColors.ink,
                     modifier =
                         Modifier
                             .padding(start = Spacing.lg)
@@ -179,7 +179,7 @@ fun SwipeableSummaryCard(
                 Icon(
                     imageVector = AppIcons.Archive,
                     contentDescription = stringResource(Res.string.swipeable_summary_archive),
-                    tint = AppTheme.colors.textOnColor,
+                    tint = AppTheme.frostColors.ink,
                     modifier =
                         Modifier
                             .padding(end = Spacing.lg)

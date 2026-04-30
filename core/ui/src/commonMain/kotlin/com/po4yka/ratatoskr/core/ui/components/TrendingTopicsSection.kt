@@ -4,19 +4,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
-import ratatoskr.core.ui.generated.resources.Res
-import ratatoskr.core.ui.generated.resources.trending_topics_title
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
+import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
+import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
+import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
+import ratatoskr.core.ui.generated.resources.Res
+import ratatoskr.core.ui.generated.resources.trending_topics_title
 
 /**
  * Section that displays trending topics as clickable chips.
@@ -32,7 +30,7 @@ fun TrendingTopicsSection(
 ) {
     if (topics.isEmpty()) return
 
-    LayerCard(
+    BrutalistCard(
         modifier =
             modifier
                 .fillMaxWidth()
@@ -44,10 +42,8 @@ fun TrendingTopicsSection(
                     .fillMaxWidth()
                     .padding(Spacing.md),
         ) {
-            Text(
+            SectionHeading(
                 text = stringResource(Res.string.trending_topics_title),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
                 modifier = Modifier.padding(bottom = Spacing.sm),
             )
 
@@ -57,33 +53,13 @@ fun TrendingTopicsSection(
                 verticalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
                 topics.forEach { topic ->
-                    TrendingTopicChip(
-                        topic = topic,
-                        onClick = { onTopicClick(topic) },
+                    MultiSelectChip(
+                        label = topic,
+                        selected = true,
+                        onToggle = { onTopicClick(topic) },
                     )
                 }
             }
         }
     }
-}
-
-@Suppress("FunctionNaming")
-@Composable
-private fun TrendingTopicChip(
-    topic: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    SelectableChip(
-        label = topic,
-        selected = true,
-        onClick = onClick,
-        modifier = modifier,
-        role = Role.Button,
-        contentPadding =
-            PaddingValues(
-                horizontal = Spacing.sm,
-                vertical = Dimensions.badgeVerticalPadding + Spacing.xxs,
-            ),
-    )
 }

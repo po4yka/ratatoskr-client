@@ -8,20 +8,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.material3.Text
-import ratatoskr.core.ui.generated.resources.Res
-import ratatoskr.core.ui.generated.resources.error_view_title
-import ratatoskr.core.ui.generated.resources.settings_retry
-import androidx.compose.material3.Button
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadge
+import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadgeSeverity
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
+import ratatoskr.core.ui.generated.resources.Res
+import ratatoskr.core.ui.generated.resources.error_view_title
+import ratatoskr.core.ui.generated.resources.settings_retry
 
 /** Reusable error-state view. */
 @Composable
@@ -30,6 +31,7 @@ fun ErrorView(
     onRetry: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
+    val ink = AppTheme.frostColors.ink
     Column(
         modifier =
             modifier
@@ -38,37 +40,43 @@ fun ErrorView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        // Alarm severity badge with spark hairline
+        StatusBadge(
+            label = stringResource(Res.string.error_view_title),
+            severity = StatusBadgeSeverity.Alarm,
+        )
+
+        Spacer(modifier = Modifier.height(Spacing.md))
+
         Icon(
             imageVector = AppIcons.WarningAlt,
-            contentDescription = stringResource(Res.string.error_view_title),
-            tint = AppTheme.colors.supportError,
+            contentDescription = null,
+            tint = ink.copy(alpha = AppTheme.alpha.secondary),
             modifier = Modifier.size(IconSizes.xl),
         )
 
         Spacer(modifier = Modifier.height(Spacing.md))
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.error_view_title),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
-            textAlign = TextAlign.Center,
+            style = AppTheme.frostType.monoEmph,
+            color = ink,
         )
 
         Spacer(modifier = Modifier.height(Spacing.xs))
 
-        Text(
+        FrostText(
             text = message,
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textSecondary,
-            textAlign = TextAlign.Center,
+            style = AppTheme.frostType.monoBody,
+            color = ink.copy(alpha = AppTheme.alpha.secondary),
         )
 
         if (onRetry != null) {
             Spacer(modifier = Modifier.height(Spacing.lg))
-
-            Button(onClick = onRetry) {
-                Text(stringResource(Res.string.settings_retry))
-            }
+            BracketButton(
+                label = stringResource(Res.string.settings_retry),
+                onClick = onRetry,
+            )
         }
     }
 }

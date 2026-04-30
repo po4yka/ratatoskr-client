@@ -10,18 +10,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.theme.Dimensions
+import com.po4yka.ratatoskr.core.ui.theme.IconSizes
+import com.po4yka.ratatoskr.domain.model.SortOrder
+import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.sort_menu_alphabetical
 import ratatoskr.core.ui.generated.resources.sort_menu_description
 import ratatoskr.core.ui.generated.resources.sort_menu_newest
 import ratatoskr.core.ui.generated.resources.sort_menu_oldest
 import ratatoskr.core.ui.generated.resources.sort_menu_selected
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.domain.model.SortOrder
-import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
-import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import org.jetbrains.compose.resources.stringResource
 
 /**
  * Sort options menu with trigger button and dropdown.
@@ -61,7 +61,7 @@ fun SortOptionsMenu(
                                 Icon(
                                     imageVector = AppIcons.Checkmark,
                                     contentDescription = stringResource(Res.string.sort_menu_selected),
-                                    tint = AppTheme.colors.iconPrimary,
+                                    tint = AppTheme.frostColors.ink,
                                     modifier = Modifier.size(IconSizes.xs),
                                 )
                             }

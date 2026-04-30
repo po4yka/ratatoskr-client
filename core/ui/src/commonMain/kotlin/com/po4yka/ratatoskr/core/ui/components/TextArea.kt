@@ -8,14 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -33,37 +31,25 @@ fun TextArea(
     minHeight: androidx.compose.ui.unit.Dp = Dimensions.textAreaMinHeight,
     maxLines: Int = Int.MAX_VALUE,
 ) {
-    val shape = RectangleShape
+    val ink = AppTheme.frostColors.ink
     val borderColor =
         if (errorText != null) {
-            AppTheme.colors.supportError
+            AppTheme.frostColors.spark
         } else {
-            AppTheme.colors.borderSubtle00
+            ink.copy(alpha = AppTheme.border.separatorAlpha)
         }
-    val textColor =
-        if (enabled) {
-            AppTheme.colors.textPrimary
-        } else {
-            AppTheme.colors.textDisabled
-        }
-    val supportingTextColor =
-        if (enabled) {
-            AppTheme.colors.textSecondary
-        } else {
-            AppTheme.colors.textDisabled
-        }
-    val textStyle: TextStyle =
-        AppTheme.type.bodyCompact01.copy(color = textColor)
+    val textAlpha = if (enabled) AppTheme.alpha.active else AppTheme.alpha.inactive
+    val supportingAlpha = if (enabled) AppTheme.alpha.secondary else AppTheme.alpha.inactive
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
     ) {
         if (!label.isNullOrBlank()) {
-            Text(
+            FrostText(
                 text = label,
-                style = AppTheme.type.label01,
-                color = supportingTextColor,
+                style = AppTheme.frostType.monoSm,
+                color = ink.copy(alpha = supportingAlpha),
             )
         }
 
@@ -71,8 +57,8 @@ fun TextArea(
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,
-            textStyle = textStyle,
-            cursorBrush = SolidColor(AppTheme.colors.linkPrimary),
+            textStyle = AppTheme.frostType.monoBody.copy(color = ink.copy(alpha = textAlpha)),
+            cursorBrush = SolidColor(ink),
             maxLines = maxLines,
             modifier = Modifier.fillMaxWidth(),
             decorationBox = { innerTextField ->
@@ -81,25 +67,17 @@ fun TextArea(
                         Modifier
                             .fillMaxWidth()
                             .heightIn(min = minHeight)
-                            .clip(shape)
-                            .background(
-                                if (enabled) {
-                                    AppTheme.colors.background
-                                } else {
-                                    AppTheme.colors.layer02
-                                },
-                            )
-                            .border(Dimensions.borderWidth, borderColor, shape)
+                            .background(AppTheme.frostColors.page, RectangleShape)
+                            .border(AppTheme.border.hairline, borderColor, RectangleShape)
                             .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
                 ) {
                     if (value.isEmpty() && !placeholderText.isNullOrBlank()) {
-                        Text(
+                        FrostText(
                             text = placeholderText,
-                            style = AppTheme.type.bodyCompact01,
-                            color = AppTheme.colors.textPlaceholder,
+                            style = AppTheme.frostType.monoBody,
+                            color = ink.copy(alpha = AppTheme.alpha.inactive),
                         )
                     }
-
                     innerTextField()
                 }
             },
@@ -107,17 +85,17 @@ fun TextArea(
 
         when {
             errorText != null ->
-                Text(
+                FrostText(
                     text = errorText,
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoSm,
+                    color = ink, // Never red text per Frost spark policy
                 )
 
             !helperText.isNullOrBlank() ->
-                Text(
+                FrostText(
                     text = helperText,
-                    style = AppTheme.type.label01,
-                    color = supportingTextColor,
+                    style = AppTheme.frostType.monoSm,
+                    color = ink.copy(alpha = supportingAlpha),
                 )
         }
     }

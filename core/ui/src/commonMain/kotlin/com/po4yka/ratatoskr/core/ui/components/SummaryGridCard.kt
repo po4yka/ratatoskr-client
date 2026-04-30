@@ -1,25 +1,34 @@
 package com.po4yka.ratatoskr.core.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
+import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.theme.IconSizes
+import com.po4yka.ratatoskr.core.ui.theme.Spacing
+import com.po4yka.ratatoskr.domain.model.Summary
+import com.po4yka.ratatoskr.util.extractDomain
+import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.custom_digest_create_read_time
 import ratatoskr.core.ui.generated.resources.summary_card_accessibility_favorited
@@ -31,13 +40,6 @@ import ratatoskr.core.ui.generated.resources.summary_card_available_offline
 import ratatoskr.core.ui.generated.resources.summary_card_favorited
 import ratatoskr.core.ui.generated.resources.summary_card_saved_article
 import ratatoskr.core.ui.generated.resources.summary_detail_mark_read
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.domain.model.Summary
-import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
-import com.po4yka.ratatoskr.util.extractDomain
-import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod", "LongParameterList")
 @Composable
@@ -74,15 +76,16 @@ fun SummaryGridCard(
             }
         }
 
-    LayerCard(
+    BrutalistCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .semantics { contentDescription = cardDescription },
-        onClick = onClick,
+                .semantics { contentDescription = cardDescription }
+                .clickable(role = Role.Button, onClick = onClick),
+        contentPadding = Spacing.xs,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(Spacing.xs),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             // Hero image
@@ -103,10 +106,10 @@ fun SummaryGridCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top,
             ) {
-                Text(
+                FrostText(
                     text = summary.title,
-                    style = AppTheme.type.headingCompact01,
-                    color = AppTheme.colors.textPrimary,
+                    style = AppTheme.frostType.monoEmph,
+                    color = AppTheme.frostColors.ink,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
@@ -129,7 +132,7 @@ fun SummaryGridCard(
                     Icon(
                         imageVector = AppIcons.Download,
                         contentDescription = stringResource(Res.string.summary_card_available_offline),
-                        tint = AppTheme.colors.iconSecondary,
+                        tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                         modifier = Modifier.size(IconSizes.xs),
                     )
                 }
@@ -161,7 +164,7 @@ fun SummaryGridCard(
             }
 
             // Source and reading time
-            Text(
+            FrostText(
                 text =
                     buildString {
                         append(source)
@@ -170,8 +173,8 @@ fun SummaryGridCard(
                             append(stringResource(Res.string.custom_digest_create_read_time, it))
                         }
                     },
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoSm,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

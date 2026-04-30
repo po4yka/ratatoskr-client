@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,8 +28,10 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
@@ -65,9 +66,8 @@ fun AppMenu(
                 clippingEnabled = false,
             ),
     ) {
-        LayerCard(
-            modifier = modifier.widthIn(min = Dimensions.menuWidth),
-        ) {
+        // Rectangle menu body — 0dp radius, hairline border via BrutalistCard
+        BrutalistCard(modifier = modifier.widthIn(min = Dimensions.menuWidth)) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 content = content,
@@ -83,7 +83,7 @@ fun AppMenuItem(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     leadingIcon: ImageVector? = null,
-    leadingIconTint: Color = AppTheme.colors.iconSecondary,
+    leadingIconTint: Color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
     isDestructive: Boolean = false,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
@@ -91,7 +91,7 @@ fun AppMenuItem(
         if (isDestructive) {
             AppTheme.colors.supportError
         } else {
-            AppTheme.colors.textPrimary
+            AppTheme.frostColors.ink
         }
 
     Row(
@@ -114,17 +114,17 @@ fun AppMenuItem(
                     if (enabled) {
                         if (isDestructive) AppTheme.colors.supportError else leadingIconTint
                     } else {
-                        AppTheme.colors.iconDisabled
+                        AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.inactive)
                     },
                 modifier = Modifier.size(IconSizes.xs),
             )
             Spacer(modifier = Modifier.width(Spacing.sm))
         }
 
-        Text(
+        FrostText(
             text = label,
-            style = AppTheme.type.bodyCompact01,
-            color = if (enabled) contentColor else AppTheme.colors.textDisabled,
+            style = AppTheme.frostType.monoBody,
+            color = if (enabled) contentColor else AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.inactive),
             modifier = Modifier.weight(1f),
         )
 
@@ -170,7 +170,7 @@ fun AppOverflowMenuButton(
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    tint: Color = AppTheme.colors.iconSecondary,
+    tint: Color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
 ) {
     AppIconButton(
         imageVector = AppIcons.OverflowMenuVertical,
