@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,8 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DigestFormat
@@ -76,14 +76,15 @@ fun CustomDigestCreateScreen(
             onBackClick = component::onBackClicked,
         )
 
-        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+        FrostDivider()
 
         // Title input
+        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
         OutlinedTextField(
             value = state.title,
             onValueChange = { viewModel.setTitle(it) },
-            label = { Text(stringResource(Res.string.custom_digest_create_title_label)) },
-            placeholder = { Text(stringResource(Res.string.custom_digest_create_title_placeholder)) },
+            label = { FrostText(stringResource(Res.string.custom_digest_create_title_label)) },
+            placeholder = { FrostText(stringResource(Res.string.custom_digest_create_title_placeholder)) },
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -111,7 +112,7 @@ fun CustomDigestCreateScreen(
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { viewModel.onSearchChanged(it) },
-            label = { Text(stringResource(Res.string.custom_digest_create_search_label)) },
+            label = { FrostText(stringResource(Res.string.custom_digest_create_search_label)) },
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -138,7 +139,7 @@ fun CustomDigestCreateScreen(
                         isSelected = summary.id in state.selectedIds,
                         onClick = { viewModel.toggleSelection(summary.id) },
                     )
-                    HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+                    FrostDivider()
                 }
                 if (filtered.isEmpty()) {
                     item {
@@ -146,7 +147,7 @@ fun CustomDigestCreateScreen(
                             modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(
+                            FrostText(
                                 text = stringResource(Res.string.custom_digest_create_no_articles),
                                 style = AppTheme.type.bodyCompact01,
                                 color = AppTheme.colors.textSecondary,
@@ -157,7 +158,7 @@ fun CustomDigestCreateScreen(
             }
         }
 
-        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+        FrostDivider()
 
         // Bottom bar
         Row(
@@ -169,28 +170,26 @@ fun CustomDigestCreateScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.custom_digest_create_selected_count, state.selectedIds.size),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textSecondary,
             )
-            Button(
-                onClick = { viewModel.createDigest() },
-                enabled = state.selectedIds.isNotEmpty() && !state.isCreating,
-            ) {
-                Text(
+            BracketButton(
+                label =
                     if (state.isCreating) {
                         stringResource(Res.string.custom_digest_create_creating)
                     } else {
                         stringResource(Res.string.custom_digest_create_generate)
                     },
-                )
-            }
+                onClick = { viewModel.createDigest() },
+                enabled = state.selectedIds.isNotEmpty() && !state.isCreating,
+            )
         }
 
         // Error message
         state.error?.let { errorText ->
-            Text(
+            FrostText(
                 text = errorText,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
@@ -238,7 +237,7 @@ private fun SelectableSummaryRow(
         Spacer(modifier = Modifier.width(Spacing.sm))
 
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            FrostText(
                 text = summary.title,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textPrimary,
@@ -247,7 +246,7 @@ private fun SelectableSummaryRow(
             )
             summary.readingTimeMin?.let { readTime ->
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(
+                FrostText(
                     text = stringResource(Res.string.custom_digest_create_read_time, readTime),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.textSecondary,

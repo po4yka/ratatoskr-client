@@ -12,11 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -134,7 +133,7 @@ fun CollectionsScreen(
 
                 trashCollection?.let {
                     item {
-                        HorizontalDivider(color = AppTheme.colors.borderSubtle00)
+                        FrostDivider()
                         CollectionItem(
                             collection = it,
                             onClick = { component.onCollectionClicked(it.id) },
@@ -168,7 +167,7 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
                 .padding(horizontal = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.collections_title),
             style = AppTheme.type.heading04,
             color = AppTheme.colors.textPrimary,
@@ -187,7 +186,7 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
 @Suppress("FunctionNaming")
 @Composable
 private fun SectionHeader(title: String) {
-    Text(
+    FrostText(
         text = title,
         style = AppTheme.type.label01,
         color = AppTheme.colors.textSecondary,
@@ -214,42 +213,42 @@ private fun CreateCollectionDialog(
         onDismissRequest = { if (!isCreating) onDismiss() },
         title = stringResource(Res.string.collections_create_dialog_title),
         confirmButton = {
-            Button(
+            BracketButton(
+                label = stringResource(Res.string.collections_create),
                 onClick = { onConfirm(name, description) },
                 enabled = name.isNotBlank() && !isCreating,
-            ) {
-                Text(stringResource(Res.string.collections_create))
-            }
+            )
         },
         dismissButton = {
-            TextButton(
+            BracketButton(
+                label = stringResource(Res.string.collections_cancel),
                 onClick = onDismiss,
                 enabled = !isCreating,
-            ) {
-                Text(stringResource(Res.string.collections_cancel))
-            }
+            )
         },
     ) {
+        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text(stringResource(Res.string.collections_name_label)) },
-            placeholder = { Text(stringResource(Res.string.collections_name_placeholder)) },
+            label = { FrostText(stringResource(Res.string.collections_name_label)) },
+            placeholder = { FrostText(stringResource(Res.string.collections_name_placeholder)) },
             enabled = !isCreating,
             modifier = Modifier.fillMaxWidth(),
         )
 
+        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
         OutlinedTextField(
             value = description,
             onValueChange = { description = it },
-            label = { Text(stringResource(Res.string.collections_description_label)) },
-            placeholder = { Text(stringResource(Res.string.collections_description_placeholder)) },
+            label = { FrostText(stringResource(Res.string.collections_description_label)) },
+            placeholder = { FrostText(stringResource(Res.string.collections_description_placeholder)) },
             enabled = !isCreating,
             modifier = Modifier.fillMaxWidth(),
         )
 
         if (createError != null) {
-            Text(
+            FrostText(
                 text = createError,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
@@ -262,7 +261,7 @@ private fun CreateCollectionDialog(
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
                 AppSmallSpinner()
-                Text(
+                FrostText(
                     text = stringResource(Res.string.collections_creating),
                     style = AppTheme.type.bodyCompact01,
                     color = AppTheme.colors.textSecondary,

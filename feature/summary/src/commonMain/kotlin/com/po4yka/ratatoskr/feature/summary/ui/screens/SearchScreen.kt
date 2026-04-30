@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Text
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -145,7 +145,7 @@ private fun SearchScreenHeader(
                     .padding(horizontal = Spacing.md),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.search_title),
                 style = AppTheme.type.heading03,
                 color = AppTheme.colors.textPrimary,
@@ -253,7 +253,7 @@ private fun SearchFiltersPanel(
                 .background(AppTheme.colors.layer01)
                 .padding(Spacing.md),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.search_filters),
             style = AppTheme.type.label01,
             color = AppTheme.colors.textSecondary,
@@ -312,7 +312,7 @@ private fun SearchFiltersPanel(
         // Language filter (semantic mode only)
         if (state.searchMode == SearchMode.SEMANTIC) {
             Spacer(modifier = Modifier.height(Spacing.sm))
-            Text(
+            FrostText(
                 text = stringResource(Res.string.search_language),
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,

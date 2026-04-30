@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,11 +26,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Button
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextButton
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DigestChannel
@@ -201,7 +198,7 @@ private fun DigestHeader(onBackClick: () -> Unit) {
             onClick = onBackClick,
             iconSize = IconSizes.md,
         )
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_digest_channels),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -238,7 +235,7 @@ private fun DigestTabBar(
                         .padding(vertical = Spacing.sm),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
+                FrostText(
                     text = label,
                     style = AppTheme.type.bodyCompact01,
                     color = if (isSelected) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
@@ -319,7 +316,7 @@ private fun ChannelsTab(
 
         channels.error?.let { error ->
             item {
-                Text(
+                FrostText(
                     text = error,
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.supportError,
@@ -336,16 +333,29 @@ private fun ChannelSlotUsage(
     maxSlots: Int,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.digest_screen_subscriptions, usedSlots, maxSlots),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
         )
         if (maxSlots > 0) {
-            LinearProgressIndicator(
-                progress = { usedSlots.toFloat() / maxSlots.toFloat() },
-                modifier = Modifier.fillMaxWidth(),
-            )
+            // note: Frost two-color rule — deterministic progress bar in ink
+            val fraction = (usedSlots.toFloat() / maxSlots.toFloat()).coerceIn(0f, 1f)
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .background(AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha)),
+            ) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(fraction)
+                            .height(4.dp)
+                            .background(AppTheme.frostColors.ink),
+                )
+            }
         }
     }
 }
@@ -367,39 +377,38 @@ private fun AddChannelForm(
                 .padding(Spacing.md),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.digest_screen_add_channel),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
         )
+        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
         OutlinedTextField(
             value = username,
             onValueChange = onUsernameChanged,
-            label = { Text(stringResource(Res.string.digest_screen_channel_username)) },
-            placeholder = { Text(stringResource(Res.string.digest_screen_channel_placeholder)) },
+            label = { FrostText(stringResource(Res.string.digest_screen_channel_username)) },
+            placeholder = { FrostText(stringResource(Res.string.digest_screen_channel_placeholder)) },
             enabled = !isSubscribing,
             modifier = Modifier.fillMaxWidth(),
         )
         if (subscribeError != null) {
-            Text(
+            FrostText(
                 text = subscribeError,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
             )
         }
-        Button(
-            onClick = onSubscribe,
-            enabled = !isSubscribing && username.isNotBlank(),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
+        BracketButton(
+            label =
                 if (isSubscribing) {
                     stringResource(Res.string.digest_screen_subscribing)
                 } else {
                     stringResource(Res.string.digest_screen_subscribe)
                 },
-            )
-        }
+            onClick = onSubscribe,
+            enabled = !isSubscribing && username.isNotBlank(),
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -413,22 +422,20 @@ private fun TriggerDigestSection(
 ) {
     Column {
         Spacer(modifier = Modifier.height(Spacing.md))
-        OutlinedButton(
-            onClick = onTrigger,
-            enabled = !isTriggering,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
+        BracketButton(
+            label =
                 if (isTriggering) {
                     stringResource(Res.string.digest_screen_triggering)
                 } else {
                     stringResource(Res.string.digest_screen_trigger_now)
                 },
-            )
-        }
+            onClick = onTrigger,
+            enabled = !isTriggering,
+            modifier = Modifier.fillMaxWidth(),
+        )
         if (triggerSuccess) {
             Spacer(modifier = Modifier.height(Spacing.xs))
-            Text(
+            FrostText(
                 text = stringResource(Res.string.digest_screen_trigger_success),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.supportSuccess,
@@ -436,7 +443,7 @@ private fun TriggerDigestSection(
         }
         if (triggerError != null) {
             Spacer(modifier = Modifier.height(Spacing.xs))
-            Text(
+            FrostText(
                 text = triggerError,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
@@ -461,13 +468,13 @@ private fun DigestChannelRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            FrostText(
                 text = channel.username,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textPrimary,
             )
             channel.subscribedAt?.let {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.digest_screen_subscribed, it),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.textSecondary,
@@ -523,11 +530,12 @@ private fun DigestPreferencesForm(
     val enabled = !preferences.isSaving
 
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
         OutlinedTextField(
             value = preferences.editedDeliveryTime ?: preferences.preferences.deliveryTime,
             onValueChange = actions::onDeliveryTimeChanged,
-            label = { Text(stringResource(Res.string.digest_screen_delivery_time)) },
-            placeholder = { Text(stringResource(Res.string.digest_screen_delivery_time_placeholder)) },
+            label = { FrostText(stringResource(Res.string.digest_screen_delivery_time)) },
+            placeholder = { FrostText(stringResource(Res.string.digest_screen_delivery_time_placeholder)) },
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -535,8 +543,8 @@ private fun DigestPreferencesForm(
         OutlinedTextField(
             value = preferences.editedTimezone ?: preferences.preferences.timezone,
             onValueChange = actions::onTimezoneChanged,
-            label = { Text(stringResource(Res.string.digest_screen_timezone)) },
-            placeholder = { Text(stringResource(Res.string.digest_screen_timezone_placeholder)) },
+            label = { FrostText(stringResource(Res.string.digest_screen_timezone)) },
+            placeholder = { FrostText(stringResource(Res.string.digest_screen_timezone_placeholder)) },
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -544,8 +552,8 @@ private fun DigestPreferencesForm(
         OutlinedTextField(
             value = preferences.editedHoursLookback ?: preferences.preferences.hoursLookback.toString(),
             onValueChange = actions::onHoursLookbackChanged,
-            label = { Text(stringResource(Res.string.digest_screen_hours_lookback)) },
-            placeholder = { Text(stringResource(Res.string.digest_screen_hours_lookback_placeholder)) },
+            label = { FrostText(stringResource(Res.string.digest_screen_hours_lookback)) },
+            placeholder = { FrostText(stringResource(Res.string.digest_screen_hours_lookback_placeholder)) },
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -553,8 +561,8 @@ private fun DigestPreferencesForm(
         OutlinedTextField(
             value = preferences.editedMaxPosts ?: preferences.preferences.maxPostsPerDigest.toString(),
             onValueChange = actions::onMaxPostsChanged,
-            label = { Text(stringResource(Res.string.digest_screen_max_posts)) },
-            placeholder = { Text(stringResource(Res.string.digest_screen_max_posts_placeholder)) },
+            label = { FrostText(stringResource(Res.string.digest_screen_max_posts)) },
+            placeholder = { FrostText(stringResource(Res.string.digest_screen_max_posts_placeholder)) },
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -562,14 +570,14 @@ private fun DigestPreferencesForm(
         OutlinedTextField(
             value = preferences.editedMinRelevance ?: preferences.preferences.minRelevanceScore.toString(),
             onValueChange = actions::onMinRelevanceChanged,
-            label = { Text(stringResource(Res.string.digest_screen_min_relevance)) },
-            placeholder = { Text(stringResource(Res.string.digest_screen_min_relevance_placeholder)) },
+            label = { FrostText(stringResource(Res.string.digest_screen_min_relevance)) },
+            placeholder = { FrostText(stringResource(Res.string.digest_screen_min_relevance_placeholder)) },
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
         preferences.saveError?.let { error ->
-            Text(
+            FrostText(
                 text = error,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
@@ -577,26 +585,24 @@ private fun DigestPreferencesForm(
         }
 
         preferences.error?.let { error ->
-            Text(
+            FrostText(
                 text = error,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
             )
         }
 
-        Button(
-            onClick = actions::savePreferences,
-            enabled = !preferences.isSaving,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
+        BracketButton(
+            label =
                 if (preferences.isSaving) {
                     stringResource(Res.string.digest_screen_saving_preferences)
                 } else {
                     stringResource(Res.string.digest_screen_save_preferences)
                 },
-            )
-        }
+            onClick = actions::savePreferences,
+            enabled = !preferences.isSaving,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -621,7 +627,7 @@ private fun HistoryTab(
             }
         } else if (history.items.isEmpty()) {
             item {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.digest_screen_no_history),
                     style = AppTheme.type.bodyCompact01,
                     color = AppTheme.colors.textSecondary,
@@ -638,26 +644,24 @@ private fun HistoryTab(
 
             if (history.hasMore) {
                 item {
-                    TextButton(
-                        onClick = { actions.loadHistory(loadMore = true) },
-                        enabled = !history.isLoading,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(
+                    BracketButton(
+                        label =
                             if (history.isLoading) {
                                 stringResource(Res.string.digest_screen_loading_more)
                             } else {
                                 stringResource(Res.string.digest_screen_load_more)
                             },
-                        )
-                    }
+                        onClick = { actions.loadHistory(loadMore = true) },
+                        enabled = !history.isLoading,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
             }
         }
 
         history.error?.let { error ->
             item {
-                Text(
+                FrostText(
                     text = error,
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.supportError,
@@ -707,12 +711,12 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
         Spacer(modifier = Modifier.width(Spacing.sm))
 
         Column(modifier = Modifier.weight(1f)) {
-            Text(
+            FrostText(
                 text = item.deliveredAt,
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textPrimary,
             )
-            Text(
+            FrostText(
                 text =
                     stringResource(
                         Res.string.digest_screen_history_channels_posts,

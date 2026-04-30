@@ -11,22 +11,20 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -34,10 +32,9 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.OutlinedButton
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButtonVariant
 import com.po4yka.ratatoskr.domain.model.SyncPhase
 import com.po4yka.ratatoskr.domain.model.SyncProgress
 import com.po4yka.ratatoskr.presentation.navigation.SettingsComponent
@@ -239,7 +236,7 @@ private fun SettingsContent(
             isLoading = state.account.isLoadingStats,
         )
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_account_binding),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -275,7 +272,7 @@ private fun SettingsContent(
 
         Spacer(modifier = Modifier.height(Spacing.md))
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_reading_goals),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -290,7 +287,7 @@ private fun SettingsContent(
 
         Spacer(modifier = Modifier.height(Spacing.md))
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_data_management),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -320,7 +317,7 @@ private fun SettingsContent(
 
         Spacer(modifier = Modifier.height(Spacing.md))
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_security),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -378,7 +375,7 @@ private fun LegalSection() {
     Column(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_legal),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.textPrimary,
@@ -433,7 +430,7 @@ private fun LegalRow(
             tint = AppTheme.colors.iconSecondary,
             modifier = Modifier.size(IconSizes.sm),
         )
-        Text(
+        FrostText(
             text = label,
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textPrimary,
@@ -448,7 +445,7 @@ private fun DangerZoneSection(onDeleteAccount: () -> Unit) {
     Column(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_danger_zone),
             style = AppTheme.type.heading03,
             color = AppTheme.colors.supportError,
@@ -458,27 +455,22 @@ private fun DangerZoneSection(onDeleteAccount: () -> Unit) {
         SettingsSectionCard(
             verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.settings_delete_account),
                 style = AppTheme.type.headingCompact01,
                 color = AppTheme.colors.textPrimary,
             )
-            Text(
+            FrostText(
                 text = stringResource(Res.string.settings_delete_account_description),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textSecondary,
             )
-            Button(
+            BracketButton(
+                label = stringResource(Res.string.settings_delete_account),
                 onClick = onDeleteAccount,
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = AppTheme.colors.supportError,
-                        contentColor = AppTheme.colors.textOnColor,
-                    ),
+                variant = BracketButtonVariant.Critical,
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(stringResource(Res.string.settings_delete_account))
-            }
+            )
         }
     }
 }
@@ -494,7 +486,7 @@ private fun AccountBindingCard(
     SettingsSectionCard(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_telegram_account),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
@@ -503,28 +495,27 @@ private fun AccountBindingCard(
         when {
             telegramState.isLoading -> {
                 AppSmallSpinner()
-                Text(
+                FrostText(
                     text = stringResource(Res.string.settings_loading),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.textSecondary,
                 )
             }
             telegramState.error != null -> {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.settings_error_prefix, telegramState.error.orEmpty()),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.supportError,
                 )
-                OutlinedButton(
+                BracketButton(
+                    label = stringResource(Res.string.settings_retry),
                     onClick = onRetryLinkStatus,
                     modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(Res.string.settings_retry))
-                }
+                )
             }
             telegramState.linkStatus?.linked == true -> {
                 val linkStatus = telegramState.linkStatus
-                Text(
+                FrostText(
                     text =
                         stringResource(
                             Res.string.settings_linked_to,
@@ -533,29 +524,24 @@ private fun AccountBindingCard(
                     style = AppTheme.type.bodyCompact01,
                     color = AppTheme.colors.textSecondary,
                 )
-                OutlinedButton(
+                BracketButton(
+                    label = stringResource(Res.string.settings_unlink_telegram),
                     onClick = onUnlink,
-                    colors =
-                        ButtonDefaults.outlinedButtonColors(
-                            contentColor = AppTheme.colors.supportError,
-                        ),
+                    variant = BracketButtonVariant.Critical,
                     modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(Res.string.settings_unlink_telegram))
-                }
+                )
             }
             else -> {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.settings_link_telegram_prompt),
                     style = AppTheme.type.bodyCompact01,
                     color = AppTheme.colors.textSecondary,
                 )
-                Button(
+                BracketButton(
+                    label = stringResource(Res.string.settings_begin_linking),
                     onClick = onBeginLink,
                     modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(Res.string.settings_begin_linking))
-                }
+                )
             }
         }
     }
@@ -572,25 +558,25 @@ private fun LinkNonceCard(
     SettingsSectionCard(
         verticalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_linking_code),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
         )
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_linking_code_prompt),
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textSecondary,
         )
         SelectionContainer {
-            Text(
+            FrostText(
                 text = nonce,
                 style = AppTheme.type.heading03,
                 color = AppTheme.colors.textPrimary,
                 modifier = Modifier.padding(vertical = Spacing.xs),
             )
         }
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_check_status_prompt),
             style = AppTheme.type.label01,
             color = AppTheme.colors.textSecondary,
@@ -599,20 +585,18 @@ private fun LinkNonceCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
-            Button(
+            BracketButton(
+                label = stringResource(Res.string.settings_check_status),
                 onClick = onCheckStatus,
                 enabled = !isLoading,
                 modifier = Modifier.weight(1f),
-            ) {
-                Text(stringResource(Res.string.settings_check_status))
-            }
-            OutlinedButton(
+            )
+            BracketButton(
+                label = stringResource(Res.string.settings_cancel),
                 onClick = onCancel,
                 enabled = !isLoading,
                 modifier = Modifier.weight(1f),
-            ) {
-                Text(stringResource(Res.string.settings_cancel))
-            }
+            )
         }
     }
 }
@@ -628,12 +612,12 @@ private fun SyncCard(
     SettingsSectionCard(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_synchronization),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
         )
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_sync_prompt),
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textSecondary,
@@ -645,17 +629,16 @@ private fun SyncCard(
                 onCancelSync = onCancelSync,
             )
         } else {
-            Button(
+            BracketButton(
+                label = stringResource(Res.string.settings_import_from_backend),
                 onClick = onImport,
                 enabled = !isTelegramLoading,
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(stringResource(Res.string.settings_import_from_backend))
-            }
+            )
         }
 
         syncState.downloadError?.let { error ->
-            Text(
+            FrostText(
                 text = stringResource(Res.string.settings_sync_failed, error),
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
@@ -674,17 +657,17 @@ private fun CacheManagementCard(
     SettingsSectionCard(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_cached_content),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
         )
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_cache_prompt),
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textSecondary,
         )
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_cache_size, formatCacheSize(cacheSize)),
             style = AppTheme.type.label01,
             color = AppTheme.colors.textSecondary,
@@ -692,13 +675,12 @@ private fun CacheManagementCard(
         if (isClearing) {
             AppSmallSpinner()
         } else {
-            OutlinedButton(
+            BracketButton(
+                label = stringResource(Res.string.settings_clear_cache),
                 onClick = onClearCache,
                 enabled = cacheSize > 0,
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(stringResource(Res.string.settings_clear_cache))
-            }
+            )
         }
     }
 }
@@ -731,22 +713,30 @@ private fun SyncProgressSection(
                 Res.string.a11y_sync_progress,
                 getSyncPhaseText(progress?.phase),
             )
+        // Two-color ink progress bar — no M3 LinearProgressIndicator
         progress?.progressFraction?.let { fraction ->
-            LinearProgressIndicator(
-                progress = { fraction },
+            Box(
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .height(Dimensions.progressBarThickness)
-                        .clip(RectangleShape)
+                        .background(AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha))
                         .semantics { contentDescription = syncProgressDesc },
-            )
-        } ?: LinearProgressIndicator(
+            ) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(fraction.coerceIn(0f, 1f))
+                            .height(Dimensions.progressBarThickness)
+                            .background(AppTheme.frostColors.ink),
+                )
+            }
+        } ?: Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .height(Dimensions.progressBarThickness)
-                    .clip(RectangleShape)
+                    .background(AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha))
                     .semantics { contentDescription = syncProgressDesc },
         )
 
@@ -772,7 +762,7 @@ private fun SyncProgressHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AppSmallSpinner()
-            Text(
+            FrostText(
                 text = phaseText,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
@@ -805,7 +795,7 @@ private fun SyncProgressDetails(progress: SyncProgress) {
             } else {
                 stringResource(Res.string.settings_sync_items_processed, progress.processedItems)
             }
-        Text(
+        FrostText(
             text = itemsText,
             style = AppTheme.type.label01,
             color = AppTheme.colors.textSecondary,
@@ -821,7 +811,7 @@ private fun SyncProgressDetails(progress: SyncProgress) {
                 } else {
                     stringResource(Res.string.settings_sync_batch_current, progress.currentBatch)
                 }
-            Text(
+            FrostText(
                 text = batchText,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
@@ -830,7 +820,7 @@ private fun SyncProgressDetails(progress: SyncProgress) {
     }
 
     if (progress.errorCount > 0) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_sync_failed_items, progress.errorCount),
             style = AppTheme.type.label01,
             color = AppTheme.colors.supportWarning,
@@ -849,12 +839,12 @@ private fun LanguagePreferenceCard(
     SettingsSectionCard(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_language),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
         )
-        Text(
+        FrostText(
             text = stringResource(Res.string.settings_language_prompt),
             style = AppTheme.type.bodyCompact01,
             color = AppTheme.colors.textSecondary,
@@ -930,12 +920,12 @@ private fun DigestNavigationRow(onClick: () -> Unit) {
                 modifier = Modifier.size(IconSizes.md),
             )
             Column(modifier = Modifier.weight(1f)) {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.settings_digest_channels),
                     style = AppTheme.type.headingCompact01,
                     color = AppTheme.colors.textPrimary,
                 )
-                Text(
+                FrostText(
                     text = stringResource(Res.string.settings_digest_channels_description),
                     style = AppTheme.type.bodyCompact01,
                     color = AppTheme.colors.textSecondary,
@@ -977,7 +967,7 @@ private fun ReadingGoalsCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.settings_daily_reading_goal),
                 style = AppTheme.type.headingCompact01,
                 color = AppTheme.colors.textPrimary,
@@ -988,7 +978,7 @@ private fun ReadingGoalsCard(
                 } else {
                     stringResource(Res.string.settings_goal_disabled)
                 }
-            Text(
+            FrostText(
                 text = toggleText,
                 style = AppTheme.type.label01,
                 color = if (isEnabled) AppTheme.colors.supportSuccess else AppTheme.colors.textSecondary,
@@ -1001,7 +991,7 @@ private fun ReadingGoalsCard(
         }
 
         if (goal != null) {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.settings_goal_target, goal.dailyTargetMin),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textSecondary,
@@ -1028,24 +1018,24 @@ private fun ReadingGoalsCard(
                     horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
                 ) {
                     Column {
-                        Text(
+                        FrostText(
                             text = goal.currentStreakDays.toString(),
                             style = AppTheme.type.heading03,
                             color = AppTheme.colors.textPrimary,
                         )
-                        Text(
+                        FrostText(
                             text = stringResource(Res.string.settings_current_streak),
                             style = AppTheme.type.label01,
                             color = AppTheme.colors.textSecondary,
                         )
                     }
                     Column {
-                        Text(
+                        FrostText(
                             text = goal.longestStreakDays.toString(),
                             style = AppTheme.type.heading03,
                             color = AppTheme.colors.textPrimary,
                         )
-                        Text(
+                        FrostText(
                             text = stringResource(Res.string.settings_longest_streak),
                             style = AppTheme.type.label01,
                             color = AppTheme.colors.textSecondary,
@@ -1054,7 +1044,7 @@ private fun ReadingGoalsCard(
                 }
             }
         } else {
-            Text(
+            FrostText(
                 text = stringResource(Res.string.settings_goal_enable_prompt),
                 style = AppTheme.type.bodyCompact01,
                 color = AppTheme.colors.textSecondary,
