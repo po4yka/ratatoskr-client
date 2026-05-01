@@ -18,7 +18,8 @@ import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.telegram_auth_close
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.feature.auth.util.UrlDecoder
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.domain.model.TelegramAuthData
 import com.po4yka.ratatoskr.util.config.AppConfig
 import com.po4yka.ratatoskr.util.redactQueryAndFragment
@@ -58,11 +59,15 @@ fun TelegramAuthScreen(
     ) {
         // Close button
         Box(Modifier.padding(top = 16.dp, start = 16.dp)) {
-            AppIconButton(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(Res.string.telegram_auth_close),
+            BracketIconButton(
                 onClick = onDismiss,
-            )
+                contentDescription = stringResource(Res.string.telegram_auth_close),
+            ) {
+                FrostIcon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                )
+            }
         }
 
         // WebView for authentication

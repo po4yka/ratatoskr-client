@@ -13,6 +13,8 @@ import com.po4yka.ratatoskr.core.ui.components.frost.IngestLine
 import com.po4yka.ratatoskr.core.ui.components.frost.IngestState
 import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadge
 import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadgeSeverity
+import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.RequestStatus
 import org.jetbrains.compose.resources.stringResource
@@ -91,7 +93,7 @@ private fun FrostStageRow(
         when {
             isFailed -> StatusBadge(label = "✗", severity = StatusBadgeSeverity.Alarm)
             isCompleted -> StatusBadge(label = "✓", severity = StatusBadgeSeverity.Info)
-            isCurrent -> AppSmallSpinner()
+            isCurrent -> FrostSpinner(size = 16.dp)
             else -> StatusBadge(label = "·", severity = StatusBadgeSeverity.Info)
         }
         FrostText(

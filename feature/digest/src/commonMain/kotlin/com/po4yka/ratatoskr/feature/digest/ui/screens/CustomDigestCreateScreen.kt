@@ -28,13 +28,13 @@ import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
-import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostCheckbox
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
+import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DigestFormat
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.presentation.navigation.CustomDigestCreateComponent
-import com.po4yka.ratatoskr.core.ui.components.AppCheckbox
-import com.po4yka.ratatoskr.core.ui.components.SelectableChip
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.custom_digest_create_creating
@@ -121,7 +121,7 @@ fun CustomDigestCreateScreen(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                AppSmallSpinner()
+                FrostSpinner(size = 16.dp)
             }
         } else {
             val filtered = state.filteredSummaries
@@ -202,10 +202,10 @@ private fun FormatChip(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    SelectableChip(
+    MultiSelectChip(
         label = label,
         selected = isSelected,
-        onClick = onClick,
+        onToggle = onClick,
     )
 }
 
@@ -225,7 +225,7 @@ private fun SelectableSummaryRow(
                 .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AppCheckbox(
+        FrostCheckbox(
             checked = isSelected,
             onCheckedChange = { onClick() },
         )

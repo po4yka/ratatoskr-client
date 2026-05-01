@@ -38,7 +38,9 @@ import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButtonVariant
-import com.po4yka.ratatoskr.core.ui.components.AppSpinner
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDialog
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.CollaboratorRole
 import com.po4yka.ratatoskr.domain.model.Collection
@@ -50,8 +52,6 @@ import com.po4yka.ratatoskr.presentation.state.CollectionItemsState
 import com.po4yka.ratatoskr.presentation.state.CollectionSettingsState
 import com.po4yka.ratatoskr.presentation.state.CollectionSharingState
 import com.po4yka.ratatoskr.presentation.state.CollectionViewTab
-import com.po4yka.ratatoskr.core.ui.components.AppDialog
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.TextArea
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateView
 import com.po4yka.ratatoskr.core.ui.components.ErrorView
@@ -175,12 +175,16 @@ private fun CollectionViewHeader(
                     .padding(horizontal = AppTheme.spacing.cell),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AppIconButton(
-                imageVector = AppIcons.ArrowLeft,
-                contentDescription = stringResource(Res.string.a11y_navigate_back),
+            BracketIconButton(
                 onClick = onBackClick,
-                iconSize = IconSizes.md,
-            )
+                contentDescription = stringResource(Res.string.a11y_navigate_back),
+            ) {
+                FrostIcon(
+                    imageVector = AppIcons.ArrowLeft,
+                    contentDescription = null,
+                    modifier = Modifier.size(IconSizes.md),
+                )
+            }
 
             Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
 
@@ -423,7 +427,7 @@ private fun ItemsTabContent(
                                     .padding(AppTheme.spacing.line),
                             contentAlignment = Alignment.Center,
                         ) {
-                            AppSpinner(modifier = Modifier.size(44.dp))
+                            FrostSpinner(modifier = Modifier.size(44.dp), size = 44.dp)
                         }
                     }
                 }
@@ -437,7 +441,7 @@ private fun ItemsTabContent(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            AppSpinner(modifier = Modifier.size(88.dp))
+            FrostSpinner(modifier = Modifier.size(88.dp), size = 88.dp)
         }
     }
 }
@@ -628,20 +632,18 @@ private fun DeleteCollectionDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AppDialog(
+    FrostDialog(
         onDismissRequest = onDismiss,
         title = stringResource(Res.string.collection_view_delete_dialog_title),
-        confirmButton = {
+        actions = {
+            BracketButton(
+                label = stringResource(Res.string.collections_cancel),
+                onClick = onDismiss,
+            )
             BracketButton(
                 label = stringResource(Res.string.collection_view_delete_action),
                 onClick = onConfirm,
                 variant = BracketButtonVariant.Critical,
-            )
-        },
-        dismissButton = {
-            BracketButton(
-                label = stringResource(Res.string.collections_cancel),
-                onClick = onDismiss,
             )
         },
     ) {
@@ -721,7 +723,7 @@ private fun CollaboratorsList(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSpinner(modifier = Modifier.size(44.dp))
+                    FrostSpinner(modifier = Modifier.size(44.dp), size = 44.dp)
                 }
             }
             collaborators.isEmpty() -> {
@@ -782,14 +784,17 @@ private fun CollaboratorRow(
         }
 
         if (collaborator.role != CollaboratorRole.Owner && collaborator.userId != null) {
-            AppIconButton(
-                imageVector = AppIcons.Close,
-                contentDescription = stringResource(Res.string.collection_view_remove),
+            BracketIconButton(
                 onClick = { onRemove(collaborator.userId!!) },
-                tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
-                buttonSize = 32.dp,
-                iconSize = IconSizes.sm,
-            )
+                contentDescription = stringResource(Res.string.collection_view_remove),
+            ) {
+                FrostIcon(
+                    imageVector = AppIcons.Close,
+                    contentDescription = null,
+                    tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
         }
     }
 }

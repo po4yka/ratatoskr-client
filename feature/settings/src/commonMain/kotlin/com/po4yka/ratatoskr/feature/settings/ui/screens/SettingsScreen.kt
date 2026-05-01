@@ -43,11 +43,11 @@ import com.po4yka.ratatoskr.presentation.state.SettingsState
 import com.po4yka.ratatoskr.presentation.state.SyncSettingsState
 import com.po4yka.ratatoskr.presentation.state.TelegramLinkState
 import com.po4yka.ratatoskr.domain.model.Request
-import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
-import com.po4yka.ratatoskr.core.ui.components.LayerCard
 import com.po4yka.ratatoskr.core.ui.components.DeleteAccountDialog
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
-import com.po4yka.ratatoskr.core.ui.components.SelectableChip
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
+import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
 import com.po4yka.ratatoskr.core.ui.components.RequestHistorySection
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.components.SessionsSection
@@ -350,10 +350,13 @@ private fun SettingsSectionCard(
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(AppTheme.spacing.cell),
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    LayerCard(
-        modifier = modifier.fillMaxWidth(),
-        onClick = onClick,
-    ) {
+    val clickModifier =
+        if (onClick != null) {
+            Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
+        } else {
+            Modifier
+        }
+    BrutalistCard(modifier = modifier.fillMaxWidth().then(clickModifier)) {
         Column(
             modifier =
                 Modifier
@@ -492,7 +495,7 @@ private fun AccountBindingCard(
 
         when {
             telegramState.isLoading -> {
-                AppSmallSpinner()
+                FrostSpinner(size = 16.dp)
                 FrostText(
                     text = stringResource(Res.string.settings_loading),
                     style = AppTheme.frostType.monoXs,
@@ -671,7 +674,7 @@ private fun CacheManagementCard(
             color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
         if (isClearing) {
-            AppSmallSpinner()
+            FrostSpinner(size = 16.dp)
         } else {
             BracketButton(
                 label = stringResource(Res.string.settings_clear_cache),
@@ -759,21 +762,24 @@ private fun SyncProgressHeader(
             horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AppSmallSpinner()
+            FrostSpinner(size = 16.dp)
             FrostText(
                 text = phaseText,
                 style = AppTheme.frostType.monoXs,
                 color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
-        AppIconButton(
-            imageVector = AppIcons.Close,
-            contentDescription = stringResource(Res.string.settings_cancel_sync),
+        BracketIconButton(
             onClick = onCancelSync,
-            tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
-            buttonSize = 32.dp,
-            iconSize = IconSizes.xs,
-        )
+            contentDescription = stringResource(Res.string.settings_cancel_sync),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.Close,
+                contentDescription = null,
+                tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                modifier = Modifier.size(IconSizes.xs),
+            )
+        }
     }
 }
 
@@ -849,7 +855,7 @@ private fun LanguagePreferenceCard(
         )
 
         if (isLoading) {
-            AppSmallSpinner()
+            FrostSpinner(size = 16.dp)
         } else {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -887,11 +893,11 @@ private fun LanguageChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SelectableChip(
+    MultiSelectChip(
         label = label,
         selected = isSelected,
         enabled = isEnabled,
-        onClick = onClick,
+        onToggle = onClick,
         modifier = modifier,
     )
 }
@@ -899,9 +905,12 @@ private fun LanguageChip(
 @Suppress("FunctionNaming")
 @Composable
 private fun DigestNavigationRow(onClick: () -> Unit) {
-    LayerCard(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onClick,
+    BrutalistCard(
+        modifier =
+            Modifier.fillMaxWidth().clickable(
+                role = androidx.compose.ui.semantics.Role.Button,
+                onClick = onClick,
+            ),
     ) {
         Row(
             modifier =
@@ -1008,11 +1017,11 @@ private fun ReadingGoalsCard(
             ) {
                 val targets = listOf(5, 10, 15, 20, 30, 45, 60)
                 targets.forEach { minutes ->
-                    SelectableChip(
+                    MultiSelectChip(
                         label = stringResource(Res.string.user_stats_minutes_short, minutes),
                         selected = goal.dailyTargetMin == minutes,
                         enabled = isEnabled,
-                        onClick = { onTargetChanged(minutes) },
+                        onToggle = { onTargetChanged(minutes) },
                     )
                 }
             }

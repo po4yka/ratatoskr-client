@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -37,11 +38,16 @@ fun SortOptionsMenu(
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = modifier) {
-        AppIconButton(
-            imageVector = AppIcons.SortAscending,
-            contentDescription = stringResource(Res.string.sort_menu_description, currentSortOrder.displayName()),
+        BracketIconButton(
             onClick = { expanded = true },
-        )
+            contentDescription = stringResource(Res.string.sort_menu_description, currentSortOrder.displayName()),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.SortAscending,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
 
         AppMenu(
             expanded = expanded,

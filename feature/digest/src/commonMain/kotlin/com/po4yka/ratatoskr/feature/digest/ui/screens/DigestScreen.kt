@@ -28,7 +28,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
-import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DigestChannel
 import com.po4yka.ratatoskr.domain.model.DigestHistoryItem
@@ -38,7 +39,6 @@ import com.po4yka.ratatoskr.presentation.state.DigestHistoryState
 import com.po4yka.ratatoskr.presentation.state.DigestPreferencesState
 import com.po4yka.ratatoskr.presentation.state.DigestTab
 import com.po4yka.ratatoskr.presentation.state.DigestTriggerState
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import ratatoskr.core.ui.generated.resources.Res
@@ -184,12 +184,16 @@ private fun DigestHeader(onBackClick: () -> Unit) {
                 .padding(horizontal = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AppIconButton(
-            imageVector = AppIcons.ArrowLeft,
-            contentDescription = stringResource(Res.string.submit_url_back),
+        BracketIconButton(
             onClick = onBackClick,
-            iconSize = IconSizes.md,
-        )
+            contentDescription = stringResource(Res.string.submit_url_back),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.ArrowLeft,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
         FrostText(
             text = stringResource(Res.string.settings_digest_channels),
             style = AppTheme.frostType.monoEmph,
@@ -278,7 +282,7 @@ private fun ChannelsTab(
                     modifier = Modifier.fillMaxWidth().padding(24.dp),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSmallSpinner()
+                    FrostSpinner(size = 16.dp)
                 }
             }
         } else {
@@ -478,14 +482,25 @@ private fun DigestChannelRow(
                 )
             }
         }
-        AppIconButton(
-            imageVector = AppIcons.Close,
-            contentDescription = stringResource(Res.string.digest_screen_unsubscribe),
+        BracketIconButton(
             onClick = onUnsubscribe,
+            contentDescription = stringResource(Res.string.digest_screen_unsubscribe),
             enabled = !isLoading,
-            tint = AppTheme.frostColors.spark,
-            iconSize = IconSizes.sm,
-        )
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.Close,
+                contentDescription = null,
+                tint =
+                    if (!isLoading) {
+                        AppTheme.frostColors.spark
+                    } else {
+                        AppTheme.frostColors.ink.copy(
+                            alpha = AppTheme.alpha.inactive,
+                        )
+                    },
+                modifier = Modifier.size(IconSizes.sm),
+            )
+        }
     }
 }
 
@@ -500,7 +515,7 @@ private fun PreferencesTab(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            AppSmallSpinner()
+            FrostSpinner(size = 16.dp)
         }
         return
     }
@@ -613,7 +628,7 @@ private fun HistoryTab(
                     modifier = Modifier.fillMaxWidth().padding(24.dp),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSmallSpinner()
+                    FrostSpinner(size = 16.dp)
                 }
             }
         } else if (history.items.isEmpty()) {

@@ -5,13 +5,16 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import androidx.compose.ui.unit.dp
@@ -57,11 +60,16 @@ fun ScreenHeader(
         ) {
             // Back button (optional)
             if (onBackClick != null) {
-                AppIconButton(
-                    imageVector = AppIcons.ArrowLeft,
-                    contentDescription = stringResource(Res.string.a11y_navigate_back),
+                BracketIconButton(
                     onClick = onBackClick,
-                )
+                    contentDescription = stringResource(Res.string.a11y_navigate_back),
+                ) {
+                    FrostIcon(
+                        imageVector = AppIcons.ArrowLeft,
+                        contentDescription = null,
+                        modifier = Modifier.size(IconSizes.md),
+                    )
+                }
             }
 
             // Title — mono uppercase per Frost editorial spec
@@ -78,31 +86,4 @@ fun ScreenHeader(
         // Hairline bottom border
         FrostDivider(alpha = AppTheme.border.separatorAlpha)
     }
-}
-
-/**
- * Standardized header icon button for consistent icon styling in headers.
- *
- * @param icon The icon to display
- * @param contentDescription Accessibility description for the icon
- * @param onClick Callback when the button is clicked
- * @param modifier Modifier for the button container
- */
-@Suppress("FunctionNaming")
-@Composable
-fun HeaderIconButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    contentDescription: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    tint: androidx.compose.ui.graphics.Color = AppTheme.frostColors.ink,
-) {
-    AppIconButton(
-        imageVector = icon,
-        contentDescription = contentDescription,
-        onClick = onClick,
-        modifier = modifier,
-        tint = tint,
-        iconSize = IconSizes.md,
-    )
 }

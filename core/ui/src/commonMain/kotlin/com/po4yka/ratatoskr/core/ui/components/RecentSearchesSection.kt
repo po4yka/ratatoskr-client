@@ -14,8 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
@@ -66,7 +67,7 @@ fun RecentSearchesSection(
                     text = stringResource(Res.string.recent_searches_title),
                     modifier = Modifier.weight(1f),
                 )
-                AppTextButton(
+                BracketButton(
                     label = stringResource(Res.string.recent_searches_clear_all),
                     onClick = onClearAll,
                 )
@@ -127,13 +128,16 @@ private fun RecentSearchItem(
             )
         }
 
-        AppIconButton(
-            imageVector = AppIcons.Close,
-            contentDescription = stringResource(Res.string.recent_searches_remove, query),
+        BracketIconButton(
             onClick = onDelete,
-            buttonSize = 32.dp,
-            iconSize = IconSizes.xs,
-            tint = ink.copy(alpha = AppTheme.alpha.secondary),
-        )
+            contentDescription = stringResource(Res.string.recent_searches_remove, query),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.Close,
+                contentDescription = null,
+                tint = ink.copy(alpha = AppTheme.alpha.secondary),
+                modifier = Modifier.size(IconSizes.xs),
+            )
+        }
     }
 }

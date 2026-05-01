@@ -55,20 +55,19 @@ import com.po4yka.ratatoskr.domain.model.ProcessingStage
 import com.po4yka.ratatoskr.domain.model.ReadingPreferences
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.presentation.navigation.SummaryDetailComponent
-import com.po4yka.ratatoskr.core.ui.components.AppSpinner
 import com.po4yka.ratatoskr.core.ui.components.AddToCollectionDialog
 import com.po4yka.ratatoskr.core.ui.components.AnnotationDialog
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.FeedbackDialog
 import com.po4yka.ratatoskr.core.ui.components.ErrorView
-import com.po4yka.ratatoskr.core.ui.components.HeaderIconButton
 import com.po4yka.ratatoskr.core.ui.components.LocalImageUrlTransformer
 import com.po4yka.ratatoskr.core.ui.components.ProxiedImage
 import com.po4yka.ratatoskr.core.ui.components.ProxiedImageTransformer
 import com.po4yka.ratatoskr.core.ui.components.ReadingSettingsPanel
 import com.po4yka.ratatoskr.core.ui.components.ResummarizeConfirmDialog
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
-import com.po4yka.ratatoskr.core.ui.components.TagChip
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.util.extractDomain
@@ -261,7 +260,7 @@ fun SummaryDetailScreen(
                             .weight(1f),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSpinner(modifier = Modifier.size(88.dp))
+                    FrostSpinner(modifier = Modifier.size(88.dp))
                 }
             }
 
@@ -385,7 +384,7 @@ private fun AudioPlayerRow(
                 } else {
                     stringResource(Res.string.audio_loading)
                 }
-            AppSpinner(
+            FrostSpinner(
                 modifier = Modifier.size(IconSizes.sm).semantics { contentDescription = audioLoadingDesc },
             )
         } else {
@@ -395,13 +394,16 @@ private fun AudioPlayerRow(
                 } else {
                     stringResource(Res.string.audio_play_narration)
                 }
-            AppIconButton(
-                imageVector = if (isPlaying) AppIcons.PauseFilled else AppIcons.PlayFilled,
-                contentDescription = playPauseDesc,
+            BracketIconButton(
                 onClick = onPlayPause,
-                buttonSize = IconSizes.sm,
-                iconSize = IconSizes.sm,
-            )
+                contentDescription = playPauseDesc,
+            ) {
+                FrostIcon(
+                    imageVector = if (isPlaying) AppIcons.PauseFilled else AppIcons.PlayFilled,
+                    contentDescription = null,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
         }
 
         val generatingText = stringResource(Res.string.audio_generating)
@@ -434,14 +436,17 @@ private fun AudioPlayerRow(
         )
 
         if (isActive && !isLoading) {
-            AppIconButton(
-                imageVector = AppIcons.Close,
-                contentDescription = stringResource(Res.string.audio_stop_narration),
+            BracketIconButton(
                 onClick = onStop,
-                tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
-                buttonSize = IconSizes.sm,
-                iconSize = IconSizes.sm,
-            )
+                contentDescription = stringResource(Res.string.audio_stop_narration),
+            ) {
+                FrostIcon(
+                    imageVector = AppIcons.Close,
+                    contentDescription = null,
+                    tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
         }
     }
 }
@@ -478,52 +483,72 @@ private fun SummaryDetailHeader(
                     } else {
                         stringResource(Res.string.summary_detail_favorite)
                     }
-                HeaderIconButton(
-                    icon =
-                        if (s.isFavorited) {
-                            AppIcons.FavoriteFilled
-                        } else {
-                            AppIcons.Favorite
-                        },
-                    contentDescription = favoriteDesc,
+                BracketIconButton(
                     onClick = onFavoriteClick,
-                    tint =
-                        if (s.isFavorited) {
-                            AppTheme.frostColors.spark
-                        } else {
-                            AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
-                        },
-                )
+                    contentDescription = favoriteDesc,
+                ) {
+                    FrostIcon(
+                        imageVector =
+                            if (s.isFavorited) {
+                                AppIcons.FavoriteFilled
+                            } else {
+                                AppIcons.Favorite
+                            },
+                        contentDescription = null,
+                        tint =
+                            if (s.isFavorited) {
+                                AppTheme.frostColors.spark
+                            } else {
+                                AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
+                            },
+                        modifier = Modifier.size(IconSizes.md),
+                    )
+                }
 
-                HeaderIconButton(
-                    icon = AppIcons.ThumbsUp,
-                    contentDescription = stringResource(Res.string.summary_detail_thumbs_up),
+                BracketIconButton(
                     onClick = onThumbsUpClick,
-                    tint =
-                        if (feedbackRating == FeedbackRating.UP) {
-                            AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
-                        } else {
-                            AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
-                        },
-                )
+                    contentDescription = stringResource(Res.string.summary_detail_thumbs_up),
+                ) {
+                    FrostIcon(
+                        imageVector = AppIcons.ThumbsUp,
+                        contentDescription = null,
+                        tint =
+                            if (feedbackRating == FeedbackRating.UP) {
+                                AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
+                            } else {
+                                AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
+                            },
+                        modifier = Modifier.size(IconSizes.md),
+                    )
+                }
 
-                HeaderIconButton(
-                    icon = AppIcons.ThumbsDown,
-                    contentDescription = stringResource(Res.string.summary_detail_thumbs_down),
+                BracketIconButton(
                     onClick = onThumbsDownClick,
-                    tint =
-                        if (feedbackRating == FeedbackRating.DOWN) {
-                            AppTheme.frostColors.spark
-                        } else {
-                            AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
-                        },
-                )
+                    contentDescription = stringResource(Res.string.summary_detail_thumbs_down),
+                ) {
+                    FrostIcon(
+                        imageVector = AppIcons.ThumbsDown,
+                        contentDescription = null,
+                        tint =
+                            if (feedbackRating == FeedbackRating.DOWN) {
+                                AppTheme.frostColors.spark
+                            } else {
+                                AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
+                            },
+                        modifier = Modifier.size(IconSizes.md),
+                    )
+                }
 
-                HeaderIconButton(
-                    icon = AppIcons.Folder,
-                    contentDescription = stringResource(Res.string.summary_detail_add_to_collection),
+                BracketIconButton(
                     onClick = onAddToCollectionClick,
-                )
+                    contentDescription = stringResource(Res.string.summary_detail_add_to_collection),
+                ) {
+                    FrostIcon(
+                        imageVector = AppIcons.Folder,
+                        contentDescription = null,
+                        modifier = Modifier.size(IconSizes.md),
+                    )
+                }
 
                 val highlightDesc =
                     if (isHighlightModeActive) {
@@ -531,19 +556,24 @@ private fun SummaryDetailHeader(
                     } else {
                         stringResource(Res.string.summary_detail_highlight_mode)
                     }
-                HeaderIconButton(
-                    icon = if (isHighlightModeActive) AppIcons.BookmarkAdd else AppIcons.Bookmark,
-                    contentDescription = highlightDesc,
+                BracketIconButton(
                     onClick = onHighlightModeClick,
-                    tint =
-                        if (isHighlightModeActive) {
-                            AppTheme.frostColors.ink
-                        } else {
-                            AppTheme.frostColors.ink.copy(
-                                alpha = AppTheme.alpha.secondary,
-                            )
-                        },
-                )
+                    contentDescription = highlightDesc,
+                ) {
+                    FrostIcon(
+                        imageVector = if (isHighlightModeActive) AppIcons.BookmarkAdd else AppIcons.Bookmark,
+                        contentDescription = null,
+                        tint =
+                            if (isHighlightModeActive) {
+                                AppTheme.frostColors.ink
+                            } else {
+                                AppTheme.frostColors.ink.copy(
+                                    alpha = AppTheme.alpha.secondary,
+                                )
+                            },
+                        modifier = Modifier.size(IconSizes.md),
+                    )
+                }
 
                 val readDesc =
                     if (s.isRead) {
@@ -565,25 +595,40 @@ private fun SummaryDetailHeader(
                     modifier = Modifier.size(IconSizes.sm),
                 )
 
-                HeaderIconButton(
-                    icon = AppIcons.Settings,
-                    contentDescription = stringResource(Res.string.summary_detail_reading_settings),
+                BracketIconButton(
                     onClick = onReadingSettingsClick,
-                )
+                    contentDescription = stringResource(Res.string.summary_detail_reading_settings),
+                ) {
+                    FrostIcon(
+                        imageVector = AppIcons.Settings,
+                        contentDescription = null,
+                        modifier = Modifier.size(IconSizes.md),
+                    )
+                }
 
-                HeaderIconButton(
-                    icon = AppIcons.Renew,
-                    contentDescription = stringResource(Res.string.summary_detail_re_summarize),
+                BracketIconButton(
                     onClick = { if (!isResummarizing) onResummarizeClick() },
-                    tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                    contentDescription = stringResource(Res.string.summary_detail_re_summarize),
                     modifier = Modifier.alpha(if (isResummarizing) 0.4f else 1f),
-                )
+                ) {
+                    FrostIcon(
+                        imageVector = AppIcons.Renew,
+                        contentDescription = null,
+                        tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                        modifier = Modifier.size(IconSizes.md),
+                    )
+                }
 
-                HeaderIconButton(
-                    icon = AppIcons.Share,
-                    contentDescription = stringResource(Res.string.summary_detail_share),
+                BracketIconButton(
                     onClick = onShareClick,
-                )
+                    contentDescription = stringResource(Res.string.summary_detail_share),
+                ) {
+                    FrostIcon(
+                        imageVector = AppIcons.Share,
+                        contentDescription = null,
+                        modifier = Modifier.size(IconSizes.md),
+                    )
+                }
             }
         },
     )
@@ -682,7 +727,7 @@ private fun SummaryDetailContent(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        AppSpinner(modifier = Modifier.size(48.dp))
+                        FrostSpinner(modifier = Modifier.size(48.dp))
                     }
                 },
                 error = { _ ->
@@ -840,7 +885,14 @@ private fun ArticleHeader(summary: Summary) {
                 horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                 verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
-                summary.tags.forEach { tag -> TagChip(tag = tag) }
+                summary.tags.forEach { tag ->
+                    MultiSelectChip(
+                        label = tag,
+                        selected = false,
+                        onToggle = {},
+                        enabled = false,
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(AppTheme.spacing.line))
         }
