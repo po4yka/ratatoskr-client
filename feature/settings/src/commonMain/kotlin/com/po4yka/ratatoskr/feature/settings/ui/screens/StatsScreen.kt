@@ -28,7 +28,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.po4yka.ratatoskr.core.ui.components.AppSpinner
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DomainStat
 import com.po4yka.ratatoskr.domain.model.GoalProgress
@@ -98,7 +98,8 @@ fun StatsScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSpinner(
+                    FrostSpinner(
+                        size = PROGRESS_INDICATOR_SIZE.dp,
                         modifier =
                             Modifier.size(PROGRESS_INDICATOR_SIZE.dp)
                                 .semantics { contentDescription = loadingDesc },

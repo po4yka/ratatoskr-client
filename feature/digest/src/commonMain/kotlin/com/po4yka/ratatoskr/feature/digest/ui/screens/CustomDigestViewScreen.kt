@@ -26,11 +26,11 @@ import ratatoskr.core.ui.generated.resources.custom_digest_view_error
 import ratatoskr.core.ui.generated.resources.custom_digest_view_failed
 import ratatoskr.core.ui.generated.resources.custom_digest_view_generating
 import ratatoskr.core.ui.generated.resources.custom_digest_view_not_found
-import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.CustomDigestStatus
 import com.po4yka.ratatoskr.presentation.navigation.CustomDigestViewComponent
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -57,15 +57,19 @@ fun CustomDigestViewScreen(
             onBackClick = component::onBackClicked,
             actions = {
                 if (state.digest != null) {
-                    AppIconButton(
-                        imageVector = AppIcons.TrashCan,
-                        contentDescription = stringResource(Res.string.custom_digest_view_delete),
+                    BracketIconButton(
                         onClick = {
                             viewModel.deleteDigest(component.digestId) { component.onBackClicked() }
                         },
-                        tint = AppTheme.frostColors.spark,
-                        iconSize = IconSizes.md,
-                    )
+                        contentDescription = stringResource(Res.string.custom_digest_view_delete),
+                    ) {
+                        FrostIcon(
+                            imageVector = AppIcons.TrashCan,
+                            contentDescription = null,
+                            tint = AppTheme.frostColors.spark,
+                            modifier = Modifier.size(IconSizes.md),
+                        )
+                    }
                 }
             },
         )
@@ -76,7 +80,7 @@ fun CustomDigestViewScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSmallSpinner()
+                    FrostSpinner(size = 16.dp)
                 }
             }
 

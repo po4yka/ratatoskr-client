@@ -22,6 +22,8 @@ import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
 import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadge
 import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadgeSeverity
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
+import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.domain.model.Session
@@ -121,7 +123,7 @@ fun SessionsSection(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                AppSmallSpinner()
+                                FrostSpinner(size = 16.dp)
                                 FrostText(
                                     text = stringResource(Res.string.sessions_loading),
                                     style = AppTheme.frostType.monoSm,

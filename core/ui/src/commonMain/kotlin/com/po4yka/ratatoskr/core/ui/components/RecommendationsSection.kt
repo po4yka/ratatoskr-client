@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -19,9 +20,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -123,15 +126,18 @@ private fun RecommendationCard(
                     }
                 }
             }
-            AppIconButton(
-                imageVector = AppIcons.Close,
-                contentDescription = stringResource(Res.string.recommendations_dismiss),
+            BracketIconButton(
                 onClick = onDismiss,
-                tint = ink.copy(alpha = AppTheme.alpha.secondary),
-                iconSize = IconSizes.xs,
-                buttonSize = IconSizes.lg,
+                contentDescription = stringResource(Res.string.recommendations_dismiss),
                 modifier = Modifier.align(Alignment.TopEnd),
-            )
+            ) {
+                FrostIcon(
+                    imageVector = AppIcons.Close,
+                    contentDescription = null,
+                    tint = ink.copy(alpha = AppTheme.alpha.secondary),
+                    modifier = Modifier.size(IconSizes.xs),
+                )
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,7 +15,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDialog
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostCheckbox
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.FeedbackIssue
 import com.po4yka.ratatoskr.domain.model.FeedbackRating
@@ -55,17 +59,15 @@ fun FeedbackDialog(
     var checkedIssues by remember { mutableStateOf(setOf<FeedbackIssue>()) }
     var comment by remember { mutableStateOf("") }
 
-    AppDialog(
+    FrostDialog(
         onDismissRequest = { if (!isSubmitting) onDismiss() },
         title = stringResource(Res.string.feedback_dialog_title),
-        dismissButton = {
+        actions = {
             BracketButton(
                 label = stringResource(Res.string.collections_cancel),
                 onClick = onDismiss,
                 enabled = !isSubmitting,
             )
-        },
-        confirmButton = {
             BracketButton(
                 label = stringResource(Res.string.feedback_dialog_submit),
                 onClick = {
@@ -97,7 +99,7 @@ fun FeedbackDialog(
                             },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    AppCheckbox(
+                    FrostCheckbox(
                         checked = issue in checkedIssues,
                         onCheckedChange = { checked ->
                             checkedIssues =
@@ -130,7 +132,7 @@ fun FeedbackDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                 ) {
-                    AppSmallSpinner()
+                    FrostSpinner(size = 16.dp)
                     FrostText(
                         text = stringResource(Res.string.feedback_dialog_submitting),
                         style = AppTheme.frostType.monoBody,

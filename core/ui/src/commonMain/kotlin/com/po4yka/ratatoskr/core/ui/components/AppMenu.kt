@@ -29,6 +29,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
@@ -171,13 +172,16 @@ fun AppOverflowMenuButton(
     modifier: Modifier = Modifier,
     tint: Color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
 ) {
-    AppIconButton(
-        imageVector = AppIcons.OverflowMenuVertical,
-        contentDescription = contentDescription,
+    BracketIconButton(
         onClick = onClick,
+        contentDescription = contentDescription,
         modifier = modifier,
-        tint = tint,
-        buttonSize = 32.dp,
-        iconSize = IconSizes.sm,
-    )
+    ) {
+        FrostIcon(
+            imageVector = AppIcons.OverflowMenuVertical,
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier.size(IconSizes.sm),
+        )
+    }
 }

@@ -15,8 +15,10 @@ import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDialog
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Collection
@@ -39,10 +41,10 @@ fun AddToCollectionDialog(
     onCollectionSelected: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AppDialog(
+    FrostDialog(
         onDismissRequest = { if (!isAdding) onDismiss() },
         title = stringResource(Res.string.add_to_collection_title),
-        dismissButton = {
+        actions = {
             BracketButton(
                 label = stringResource(Res.string.collections_cancel),
                 onClick = onDismiss,
@@ -56,7 +58,7 @@ fun AddToCollectionDialog(
                     modifier = Modifier.fillMaxWidth().padding(24.dp),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSmallSpinner()
+                    FrostSpinner(size = 16.dp)
                 }
             } else if (collections.isEmpty()) {
                 FrostText(
@@ -86,7 +88,7 @@ fun AddToCollectionDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                 ) {
-                    AppSmallSpinner()
+                    FrostSpinner(size = 16.dp)
                     FrostText(
                         text = stringResource(Res.string.add_to_collection_adding),
                         style = AppTheme.frostType.monoBody,

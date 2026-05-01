@@ -45,8 +45,8 @@ import com.po4yka.ratatoskr.domain.model.RequestStatus
 import com.po4yka.ratatoskr.presentation.navigation.SubmitURLComponent
 import com.po4yka.ratatoskr.presentation.state.SubmitURLState
 import com.po4yka.ratatoskr.presentation.state.SubmitUrlError
-import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.components.TextArea
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -251,7 +251,7 @@ fun SubmitURLScreen(
                                     .padding(24.dp),
                             contentAlignment = Alignment.Center,
                         ) {
-                            AppSmallSpinner()
+                            FrostSpinner(size = 16.dp)
                         }
                     }
                 } else if (state.recentRequests.isEmpty()) {
@@ -468,7 +468,7 @@ private fun BatchUrlEntryRow(
                 )
             }
             BatchUrlStatus.CHECKING -> {
-                AppSmallSpinner()
+                FrostSpinner(size = 16.dp)
             }
             BatchUrlStatus.SUBMITTING -> {
                 FrostText(
@@ -565,12 +565,16 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
                 .padding(horizontal = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AppIconButton(
-            imageVector = AppIcons.ArrowLeft,
-            contentDescription = stringResource(Res.string.submit_url_back),
+        BracketIconButton(
             onClick = onBackClick,
-            iconSize = IconSizes.md,
-        )
+            contentDescription = stringResource(Res.string.submit_url_back),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.ArrowLeft,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
 
         FrostText(
             text = stringResource(Res.string.submit_url_title),
@@ -773,7 +777,7 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
-            AppSmallSpinner()
+            FrostSpinner(size = 16.dp)
             FrostText(
                 text = state.message ?: stringResource(Res.string.submit_url_processing_default_message),
                 style = AppTheme.frostType.monoBody,
@@ -855,12 +859,16 @@ private fun RequestHistoryHeader(
             } else {
                 stringResource(Res.string.submit_url_show_history)
             }
-        AppIconButton(
-            imageVector = if (showHistory) AppIcons.ChevronUp else AppIcons.ChevronDown,
-            contentDescription = historyDesc,
+        BracketIconButton(
             onClick = onToggle,
-            iconSize = IconSizes.md,
-        )
+            contentDescription = historyDesc,
+        ) {
+            FrostIcon(
+                imageVector = if (showHistory) AppIcons.ChevronUp else AppIcons.ChevronDown,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
     }
 }
 
@@ -920,12 +928,16 @@ private fun RequestHistoryItem(
 
         // Retry button for failed requests
         if (request.status == RequestStatus.FAILED) {
-            AppIconButton(
-                imageVector = AppIcons.Renew,
-                contentDescription = stringResource(Res.string.settings_retry),
+            BracketIconButton(
                 onClick = onRetry,
-                iconSize = IconSizes.sm,
-            )
+                contentDescription = stringResource(Res.string.settings_retry),
+            ) {
+                FrostIcon(
+                    imageVector = AppIcons.Renew,
+                    contentDescription = null,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
         }
     }
 }

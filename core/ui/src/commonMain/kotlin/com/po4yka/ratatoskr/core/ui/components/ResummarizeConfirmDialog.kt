@@ -1,6 +1,7 @@
 package com.po4yka.ratatoskr.core.ui.components
 
 import androidx.compose.runtime.Composable
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDialog
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
@@ -17,16 +18,14 @@ fun ResummarizeConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AppDialog(
+    FrostDialog(
         onDismissRequest = onDismiss,
         title = stringResource(Res.string.resummarize_confirm_title),
-        dismissButton = {
+        actions = {
             BracketButton(
                 label = stringResource(Res.string.collections_cancel),
                 onClick = onDismiss,
             )
-        },
-        confirmButton = {
             BracketButton(
                 label = stringResource(Res.string.resummarize_confirm_action),
                 onClick = onConfirm,

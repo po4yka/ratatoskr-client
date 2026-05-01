@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
@@ -87,13 +87,16 @@ fun AppSearchField(
         )
 
         if (query.isNotEmpty()) {
-            AppIconButton(
-                imageVector = AppIcons.Close,
-                contentDescription = stringResource(Res.string.search_clear),
+            BracketIconButton(
                 onClick = clearQuery,
-                buttonSize = 32.dp,
-                iconSize = IconSizes.xs,
-            )
+                contentDescription = stringResource(Res.string.search_clear),
+            ) {
+                FrostIcon(
+                    imageVector = AppIcons.Close,
+                    contentDescription = null,
+                    modifier = Modifier.size(IconSizes.xs),
+                )
+            }
         }
 
         trailingContent()
@@ -126,12 +129,15 @@ fun SummarySearchBar(
 
         Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
 
-        AppIconButton(
-            imageVector = AppIcons.Close,
-            contentDescription = stringResource(Res.string.summary_list_close_search),
+        BracketIconButton(
             onClick = onClose,
-            buttonSize = 32.dp,
-            iconSize = IconSizes.sm,
-        )
+            contentDescription = stringResource(Res.string.summary_list_close_search),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.Close,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.sm),
+            )
+        }
     }
 }

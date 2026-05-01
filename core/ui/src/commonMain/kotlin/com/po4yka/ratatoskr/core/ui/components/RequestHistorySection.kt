@@ -19,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
 import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadge
@@ -127,7 +129,7 @@ fun RequestHistorySection(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                AppSmallSpinner()
+                                FrostSpinner(size = 16.dp)
                                 FrostText(
                                     text = stringResource(Res.string.request_history_loading),
                                     style = AppTheme.frostType.monoSm,
@@ -203,13 +205,16 @@ private fun RequestItem(
             }
 
             if (isFailed) {
-                AppIconButton(
-                    imageVector = AppIcons.Renew,
-                    contentDescription = stringResource(Res.string.request_history_retry),
+                BracketIconButton(
                     onClick = onRetry,
-                    buttonSize = 32.dp,
-                    iconSize = IconSizes.xs,
-                )
+                    contentDescription = stringResource(Res.string.request_history_retry),
+                ) {
+                    FrostIcon(
+                        imageVector = AppIcons.Renew,
+                        contentDescription = null,
+                        modifier = Modifier.size(IconSizes.xs),
+                    )
+                }
             }
         }
     }

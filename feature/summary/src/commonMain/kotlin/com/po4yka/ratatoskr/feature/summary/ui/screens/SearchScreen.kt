@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,17 +28,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.presentation.navigation.SearchComponent
 import com.po4yka.ratatoskr.presentation.state.SearchMode
 import com.po4yka.ratatoskr.presentation.state.SearchState
-import com.po4yka.ratatoskr.core.ui.components.AppSpinner
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.AppSearchField
-import com.po4yka.ratatoskr.core.ui.components.SelectableChip
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.components.ContextualEmptyState
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateType
 import com.po4yka.ratatoskr.core.ui.components.InsightsSection
@@ -150,12 +150,16 @@ private fun SearchScreenHeader(
                 modifier = Modifier.weight(1f),
             )
 
-            AppIconButton(
-                imageVector = AppIcons.Filter,
-                contentDescription = stringResource(Res.string.search_toggle_filters),
+            BracketIconButton(
                 onClick = onFilterClick,
-                iconSize = IconSizes.sm,
-            )
+                contentDescription = stringResource(Res.string.search_toggle_filters),
+            ) {
+                FrostIcon(
+                    imageVector = AppIcons.Filter,
+                    contentDescription = null,
+                    modifier = Modifier.size(IconSizes.sm),
+                )
+            }
         }
 
         SearchInputRow(
@@ -228,11 +232,10 @@ private fun SearchModeChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SelectableChip(
+    MultiSelectChip(
         label = label,
         selected = isSelected,
-        onClick = onClick,
-        role = Role.RadioButton,
+        onToggle = onClick,
         modifier = modifier,
     )
 }
@@ -348,10 +351,10 @@ private fun ReadFilterChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SelectableChip(
+    MultiSelectChip(
         label = label,
         selected = isSelected,
-        onClick = onClick,
+        onToggle = onClick,
         modifier = modifier,
     )
 }
@@ -430,7 +433,7 @@ private fun SearchScreenContent(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                AppSpinner(modifier = Modifier.size(48.dp))
+                FrostSpinner(modifier = Modifier.size(48.dp))
             }
         }
 
@@ -518,7 +521,7 @@ private fun SearchResultsList(
                             .padding(AppTheme.spacing.line),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSpinner(modifier = Modifier.size(24.dp))
+                    FrostSpinner(modifier = Modifier.size(24.dp))
                 }
             }
         }

@@ -44,9 +44,9 @@ import com.po4yka.ratatoskr.domain.model.SortOrder
 import com.po4yka.ratatoskr.presentation.navigation.SummaryListComponent
 import com.po4yka.ratatoskr.presentation.state.LayoutMode
 import com.po4yka.ratatoskr.presentation.state.SummaryListState
-import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import com.po4yka.ratatoskr.core.ui.components.ContextualEmptyState
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateType
 import com.po4yka.ratatoskr.core.ui.components.FilterChipsRow
 import com.po4yka.ratatoskr.core.ui.components.PullToRefreshContainer
@@ -265,20 +265,28 @@ private fun SummaryListHeader(
         )
 
         // Add URL button
-        AppIconButton(
-            imageVector = AppIcons.Add,
-            contentDescription = stringResource(Res.string.summary_list_submit_url),
+        BracketIconButton(
             onClick = onSubmitUrlClicked,
-            iconSize = IconSizes.md,
-        )
+            contentDescription = stringResource(Res.string.summary_list_submit_url),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.Add,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
 
         // Create Digest button
-        AppIconButton(
-            imageVector = AppIcons.Document,
-            contentDescription = stringResource(Res.string.summary_list_create_digest),
+        BracketIconButton(
             onClick = onCreateDigestClicked,
-            iconSize = IconSizes.md,
-        )
+            contentDescription = stringResource(Res.string.summary_list_create_digest),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.Document,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
 
         // Search toggle
         val searchDesc =
@@ -287,30 +295,38 @@ private fun SummaryListHeader(
             } else {
                 stringResource(Res.string.summary_list_search)
             }
-        AppIconButton(
-            imageVector = if (isSearchActive) AppIcons.Close else AppIcons.Search,
-            contentDescription = searchDesc,
+        BracketIconButton(
             onClick = onToggleSearch,
-            iconSize = IconSizes.md,
-        )
+            contentDescription = searchDesc,
+        ) {
+            FrostIcon(
+                imageVector = if (isSearchActive) AppIcons.Close else AppIcons.Search,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
 
         // Layout toggle
-        AppIconButton(
-            imageVector =
-                if (layoutMode == LayoutMode.LIST) {
-                    AppIcons.Grid
-                } else {
-                    AppIcons.List
-                },
+        BracketIconButton(
+            onClick = onToggleLayout,
             contentDescription =
                 if (layoutMode == LayoutMode.LIST) {
                     stringResource(Res.string.summary_list_switch_to_grid)
                 } else {
                     stringResource(Res.string.summary_list_switch_to_list)
                 },
-            onClick = onToggleLayout,
-            iconSize = IconSizes.md,
-        )
+        ) {
+            FrostIcon(
+                imageVector =
+                    if (layoutMode == LayoutMode.LIST) {
+                        AppIcons.Grid
+                    } else {
+                        AppIcons.List
+                    },
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
 
         // Sort menu
         SortOptionsMenu(
@@ -319,12 +335,16 @@ private fun SummaryListHeader(
         )
 
         // Refresh button
-        AppIconButton(
-            imageVector = AppIcons.Renew,
-            contentDescription = stringResource(Res.string.summary_list_refresh),
+        BracketIconButton(
             onClick = onRefresh,
-            iconSize = IconSizes.md,
-        )
+            contentDescription = stringResource(Res.string.summary_list_refresh),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.Renew,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
     }
 }
 
@@ -481,7 +501,7 @@ private fun SummaryListView(
                             .padding(AppTheme.spacing.line),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSmallSpinner()
+                    FrostSpinner(size = 16.dp)
                 }
             }
         }
@@ -609,7 +629,7 @@ private fun SummaryGridView(
                             .padding(AppTheme.spacing.line),
                     contentAlignment = Alignment.Center,
                 ) {
-                    AppSmallSpinner()
+                    FrostSpinner(size = 16.dp)
                 }
             }
         }

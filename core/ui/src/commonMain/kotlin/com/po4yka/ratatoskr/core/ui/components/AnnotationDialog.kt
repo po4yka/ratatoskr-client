@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDialog
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
@@ -24,17 +25,15 @@ fun AnnotationDialog(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    AppDialog(
+    FrostDialog(
         onDismissRequest = onCancel,
         title = stringResource(Res.string.annotation_dialog_title),
         modifier = modifier,
-        dismissButton = {
+        actions = {
             BracketButton(
                 label = stringResource(Res.string.collections_cancel),
                 onClick = onCancel,
             )
-        },
-        confirmButton = {
             BracketButton(
                 label = stringResource(Res.string.annotation_dialog_save),
                 onClick = onSave,

@@ -12,8 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDialog
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButtonVariant
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
@@ -43,7 +45,7 @@ fun DeleteAccountDialog(
     var confirmationInput by remember { mutableStateOf("") }
     val canConfirm = confirmationInput == confirmationText && !isDeleting
 
-    AppDialog(
+    FrostDialog(
         onDismissRequest = { if (!isDeleting) onDismiss() },
         title = stringResource(Res.string.settings_delete_account),
     ) {
@@ -106,7 +108,7 @@ fun DeleteAccountDialog(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
-                AppSmallSpinner()
+                FrostSpinner(size = 16.dp)
             }
         }
     }

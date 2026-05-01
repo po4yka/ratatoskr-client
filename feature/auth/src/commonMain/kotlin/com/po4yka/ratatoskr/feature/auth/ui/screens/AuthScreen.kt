@@ -27,7 +27,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.AppLogo
-import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.a11y_loading
 import ratatoskr.core.ui.generated.resources.auth_app_title
@@ -102,7 +102,7 @@ fun AuthScreen(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth().semantics { contentDescription = loadingDesc },
                 ) {
-                    AppSmallSpinner()
+                    FrostSpinner(size = 16.dp)
                     Spacer(modifier = Modifier.width(8.dp))
                     FrostText(
                         text = stringResource(Res.string.auth_logging_in),

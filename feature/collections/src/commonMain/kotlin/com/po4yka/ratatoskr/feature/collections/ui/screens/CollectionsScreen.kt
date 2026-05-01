@@ -24,12 +24,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDialog
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.CollectionType
 import com.po4yka.ratatoskr.presentation.navigation.CollectionsComponent
-import com.po4yka.ratatoskr.core.ui.components.AppDialog
-import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.CollectionItem
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateView
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
@@ -171,12 +172,16 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
             modifier = Modifier.weight(1f),
         )
 
-        AppIconButton(
-            imageVector = AppIcons.Add,
-            contentDescription = stringResource(Res.string.collections_new),
+        BracketIconButton(
             onClick = onCreateClick,
-            iconSize = IconSizes.md,
-        )
+            contentDescription = stringResource(Res.string.collections_new),
+        ) {
+            FrostIcon(
+                imageVector = AppIcons.Add,
+                contentDescription = null,
+                modifier = Modifier.size(IconSizes.md),
+            )
+        }
     }
 }
 
@@ -206,21 +211,19 @@ private fun CreateCollectionDialog(
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    AppDialog(
+    FrostDialog(
         onDismissRequest = { if (!isCreating) onDismiss() },
         title = stringResource(Res.string.collections_create_dialog_title),
-        confirmButton = {
-            BracketButton(
-                label = stringResource(Res.string.collections_create),
-                onClick = { onConfirm(name, description) },
-                enabled = name.isNotBlank() && !isCreating,
-            )
-        },
-        dismissButton = {
+        actions = {
             BracketButton(
                 label = stringResource(Res.string.collections_cancel),
                 onClick = onDismiss,
                 enabled = !isCreating,
+            )
+            BracketButton(
+                label = stringResource(Res.string.collections_create),
+                onClick = { onConfirm(name, description) },
+                enabled = name.isNotBlank() && !isCreating,
             )
         },
     ) {
@@ -253,7 +256,7 @@ private fun CreateCollectionDialog(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
-                AppSmallSpinner()
+                FrostSpinner(size = 16.dp)
                 FrostText(
                     text = stringResource(Res.string.collections_creating),
                     style = AppTheme.frostType.monoBody,

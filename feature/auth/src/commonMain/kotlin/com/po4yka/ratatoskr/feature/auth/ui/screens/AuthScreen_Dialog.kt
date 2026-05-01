@@ -20,9 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DeveloperCredentials
-import com.po4yka.ratatoskr.core.ui.components.AppCheckbox
-import com.po4yka.ratatoskr.core.ui.components.AppDialog
-import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDialog
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostCheckbox
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.auth_developer_client_id_label
 import ratatoskr.core.ui.generated.resources.auth_developer_login
@@ -53,7 +53,7 @@ fun DeveloperLoginDialog(
 
     val userIdErrorText = stringResource(Res.string.auth_developer_user_id_error)
 
-    AppDialog(
+    FrostDialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
         title = stringResource(Res.string.auth_developer_login),
     ) {
@@ -101,7 +101,7 @@ fun DeveloperLoginDialog(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            AppCheckbox(
+            FrostCheckbox(
                 checked = rememberCredentials,
                 onCheckedChange = { rememberCredentials = it },
                 enabled = !isLoading,
@@ -142,7 +142,7 @@ fun DeveloperLoginDialog(
             Spacer(modifier = Modifier.width(8.dp))
 
             if (isLoading) {
-                AppSmallSpinner()
+                FrostSpinner(size = 16.dp)
             } else {
                 BracketButton(
                     label = stringResource(Res.string.auth_developer_login_action),

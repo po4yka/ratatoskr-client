@@ -14,6 +14,8 @@ import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
 import com.po4yka.ratatoskr.core.ui.components.frost.RowDigest
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
+import androidx.compose.ui.unit.dp
+import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.UserStats
 import org.jetbrains.compose.resources.stringResource
@@ -60,7 +62,7 @@ fun UserStatsCard(
                         horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        AppSmallSpinner()
+                        FrostSpinner(size = 16.dp)
                         FrostText(
                             text = stringResource(Res.string.user_stats_loading),
                             style = AppTheme.frostType.monoSm,
