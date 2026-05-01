@@ -23,7 +23,7 @@ Guidance for UI work in `composeApp/`.
 - The app theme entry point is `RatatoskrTheme` in `core/ui/.../theme/Theme.kt`.
 - Use `FrostText` (`core/ui/.../components/foundation/`) for text; `androidx.compose.material3.Icon` is retained as a thin wrapper but should be re-exported as `FrostIcon` going forward.
 - Reuse `Spacing`, `Dimensions`, and `IconSizes` from `core/ui/.../theme/`.
-- Prefer Frost atoms directly: `BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`. Legacy `App*` wrappers (`AppCheckbox`, `AppDialog`, `AppIconButton`, `LayerCard`, `AppMenu`/`AppMenuItem`/`AppOverflowMenuButton`, `SelectableChip`, `AppSlider`, `TextArea`, `AppTextButton`) are transitional shims — prefer Frost primitives directly for new code.
+- Prefer Frost atoms directly: `BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`.
 
 Widgets are the main exception: Glance UI is platform-specific and uses hardcoded Frost INK/PAGE constants directly, not via AppTheme.
 
@@ -39,7 +39,7 @@ Widgets are the main exception: Glance UI is platform-specific and uses hardcode
 
 Prefer extending existing components before creating new abstractions. Useful anchors:
 
-- Frost atoms: `BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`
+- Frost atoms: `BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`
 - list/detail cards: `SummaryCard`, `SummaryGridCard`, `SwipeableSummaryCard`
 - state views: `ErrorView`, `ContextualEmptyState`, `SummaryCardSkeleton`
 - search/filter: `SummarySearchBar`, `FilterChipsRow`, `SortOptionsMenu`
@@ -55,4 +55,4 @@ The app-level `App.kt` provider for image URL transformation is also intentional
 ## Icons
 
 - Project icons live in `core/ui/.../icons/AppIcons.kt`.
-- New icons should stay 32x32 and use `AppTheme.colors.*` at call sites.
+- New icons should stay 32x32 and use Frost ink/page/spark tokens at call sites.

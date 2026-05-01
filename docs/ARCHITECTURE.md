@@ -15,7 +15,6 @@ Ratatoskr is a Kotlin Multiplatform app with:
 - `androidApp/` for Android application entrypoints, widgets, and workers
 - `iosApp/` for the SwiftUI host app plus native share/widget source
 
-Legacy migration residue remains in the repo but is off-graph.
 
 ## Dependency Direction
 
@@ -70,7 +69,7 @@ Active Koin bootstrap uses `composeApp/.../di/KoinInitializer.kt` plus platform 
 - Feature components own retained ViewModel instances and expose screen dependencies through component APIs.
 - `composeApp` screens render feature state and call component methods or ViewModel intents.
 - Cross-cutting UI glue, such as image URL transformation for proxied images, is provided once at the app layer and consumed by reusable composables.
-- UI is built on the Frost design system. Material 3 substrate has been removed from commonMain. Foundation primitives in `core/ui/.../components/foundation/`; brand atoms in `core/ui/.../components/frost/`.
+- UI is built on the Frost design system. Foundation primitives live in `core/ui/.../components/foundation/`; brand atoms in `core/ui/.../components/frost/`.
 
 ## Sync
 

@@ -99,8 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   optional descriptions, item management, collaborator invites, and OPML import.
 - Channel digest subscriptions: subscribe to Telegram channels and receive scheduled
   AI-generated digest summaries via the bot.
-- IBM Carbon Design System UI (`carbon-compose` library) used throughout all screens,
-  providing consistent theming, typography, and accessible components.
+- IBM Carbon Design System UI used throughout all screens for initial theming,
+  typography, and accessible components (replaced by Frost in a subsequent release).
 - English and Russian (EN/RU) localisation for all user-facing strings.
 - Home screen widgets for recent summaries (Android Glance, iOS WidgetKit).
 - Share-sheet extension (iOS) and Share Intent (Android) for submitting URLs
