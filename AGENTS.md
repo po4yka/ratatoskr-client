@@ -25,8 +25,8 @@ Project guidance for Codex when working in this repository.
 ./gradlew :core:common:allTests :core:data:allTests
 ./gradlew :feature:summary:allTests :feature:settings:allTests
 
-# Android unit tests
-./gradlew :composeApp:testDebugUnitTest
+# composeApp tests (KMP — covers Android, iOS sim, JVM/desktop)
+./gradlew :composeApp:allTests
 
 # Code quality
 ./gradlew ktlintCheck detekt

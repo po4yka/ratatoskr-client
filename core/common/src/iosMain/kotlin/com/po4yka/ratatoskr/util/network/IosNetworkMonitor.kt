@@ -33,7 +33,7 @@ class IosNetworkMonitor : NetworkMonitor {
     }
 
     private fun setupMonitor() {
-        nw_path_monitor_set_update_handler(monitor) { path: nw_path_t? ->
+        nw_path_monitor_set_update_handler(monitor) { path: nw_path_t ->
             val pathStatus = path?.let { nw_path_get_status(it) }
             val status =
                 if (pathStatus == nw_path_status_satisfied) {
