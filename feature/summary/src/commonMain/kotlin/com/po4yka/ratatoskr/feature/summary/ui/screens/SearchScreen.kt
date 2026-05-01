@@ -45,9 +45,7 @@ import com.po4yka.ratatoskr.core.ui.components.RecentSearchesSection
 import com.po4yka.ratatoskr.core.ui.components.SummaryCard
 import com.po4yka.ratatoskr.core.ui.components.TrendingTopicsSection
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.search_filter_all
 import ratatoskr.core.ui.generated.resources.search_filter_read
@@ -81,7 +79,7 @@ fun SearchScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         // Search Header with search bar and mode toggle
         SearchScreenHeader(
@@ -135,20 +133,20 @@ private fun SearchScreenHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01),
+                .background(AppTheme.frostColors.page),
     ) {
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(Dimensions.detailHeaderHeight)
-                    .padding(horizontal = Spacing.md),
+                    .height(56.dp)
+                    .padding(horizontal = AppTheme.spacing.line),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             FrostText(
                 text = stringResource(Res.string.search_title),
-                style = AppTheme.type.heading03,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoEmph,
+                color = AppTheme.frostColors.ink,
                 modifier = Modifier.weight(1f),
             )
 
@@ -183,10 +181,10 @@ private fun SearchInputRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = Spacing.md)
-                .padding(bottom = Spacing.sm),
+                .padding(horizontal = AppTheme.spacing.line)
+                .padding(bottom = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         AppSearchField(
             query = query,
@@ -197,7 +195,7 @@ private fun SearchInputRow(
         )
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             SearchModeChip(
@@ -250,20 +248,20 @@ private fun SearchFiltersPanel(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.md),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.line),
     ) {
         FrostText(
             text = stringResource(Res.string.search_filters),
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
-            modifier = Modifier.padding(bottom = Spacing.sm),
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+            modifier = Modifier.padding(bottom = AppTheme.spacing.cell),
         )
 
         // Read filter row
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             ReadFilterChip(
                 label = stringResource(Res.string.search_filter_all),
@@ -311,16 +309,16 @@ private fun SearchFiltersPanel(
 
         // Language filter (semantic mode only)
         if (state.searchMode == SearchMode.SEMANTIC) {
-            Spacer(modifier = Modifier.height(Spacing.sm))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
             FrostText(
                 text = stringResource(Res.string.search_language),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
-                modifier = Modifier.padding(bottom = Spacing.xs),
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                modifier = Modifier.padding(bottom = AppTheme.spacing.cell),
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
                 ReadFilterChip(
                     label = stringResource(Res.string.search_language_all),
@@ -377,7 +375,7 @@ private fun SearchScreenContent(
         state.query.isEmpty() -> {
             LazyColumn(
                 modifier = modifier.fillMaxSize(),
-                contentPadding = PaddingValues(vertical = Spacing.xs),
+                contentPadding = PaddingValues(vertical = AppTheme.spacing.cell),
             ) {
                 // Trending topics
                 if (state.trendingTopics.isNotEmpty()) {
@@ -497,8 +495,8 @@ private fun SearchResultsList(
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        contentPadding = PaddingValues(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         items(
             items = results,
@@ -517,7 +515,7 @@ private fun SearchResultsList(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(Spacing.md),
+                            .padding(AppTheme.spacing.line),
                     contentAlignment = Alignment.Center,
                 ) {
                     AppSpinner(modifier = Modifier.size(24.dp))

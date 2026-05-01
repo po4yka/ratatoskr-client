@@ -49,9 +49,7 @@ import com.po4yka.ratatoskr.core.ui.components.AppSmallSpinner
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.TextArea
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.submit_url_back
 import ratatoskr.core.ui.generated.resources.submit_url_batch_cancel
@@ -121,7 +119,7 @@ fun SubmitURLScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         // Header with back button
         SubmitURLHeader(
@@ -133,12 +131,12 @@ fun SubmitURLScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(horizontal = Spacing.md),
-            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+                    .padding(horizontal = AppTheme.spacing.line),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line),
         ) {
             // Mode toggle
             item {
-                Spacer(modifier = Modifier.height(Spacing.sm))
+                Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
                 BatchModeToggle(
                     isBatchMode = state.isBatchMode,
                     onToggle = { viewModel.toggleBatchMode() },
@@ -236,7 +234,7 @@ fun SubmitURLScreen(
 
             // Request history section
             item {
-                Spacer(modifier = Modifier.height(Spacing.md))
+                Spacer(modifier = Modifier.height(AppTheme.spacing.line))
                 RequestHistoryHeader(
                     showHistory = state.showHistory,
                     onToggle = { viewModel.toggleHistoryVisibility() },
@@ -250,7 +248,7 @@ fun SubmitURLScreen(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(Spacing.lg),
+                                    .padding(24.dp),
                             contentAlignment = Alignment.Center,
                         ) {
                             AppSmallSpinner()
@@ -260,9 +258,9 @@ fun SubmitURLScreen(
                     item {
                         FrostText(
                             text = stringResource(Res.string.submit_url_no_recent_requests),
-                            style = AppTheme.type.bodyCompact01,
-                            color = AppTheme.colors.textSecondary,
-                            modifier = Modifier.padding(vertical = Spacing.md),
+                            style = AppTheme.frostType.monoBody,
+                            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                            modifier = Modifier.padding(vertical = AppTheme.spacing.line),
                         )
                     }
                 } else {
@@ -280,7 +278,7 @@ fun SubmitURLScreen(
 
             // Bottom padding
             item {
-                Spacer(modifier = Modifier.height(Spacing.xl))
+                Spacer(modifier = Modifier.height(AppTheme.spacing.padPage))
             }
         }
     }
@@ -294,7 +292,7 @@ private fun BatchModeToggle(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         ModeChip(
             label = stringResource(Res.string.submit_url_mode_single),
@@ -317,9 +315,23 @@ private fun ModeChip(
     onClick: () -> Unit,
 ) {
     val shape = RectangleShape
-    val backgroundColor = if (isSelected) AppTheme.colors.backgroundInverse else AppTheme.colors.layer01
-    val textColor = if (isSelected) AppTheme.colors.textOnColor else AppTheme.colors.textSecondary
-    val borderColor = if (isSelected) AppTheme.colors.backgroundInverse else AppTheme.colors.borderSubtle00
+    val backgroundColor = if (isSelected) AppTheme.frostColors.ink else AppTheme.frostColors.page
+    val textColor =
+        if (isSelected) {
+            AppTheme.frostColors.page
+        } else {
+            AppTheme.frostColors.ink.copy(
+                alpha = AppTheme.alpha.secondary,
+            )
+        }
+    val borderColor =
+        if (isSelected) {
+            AppTheme.frostColors.ink
+        } else {
+            AppTheme.frostColors.ink.copy(
+                alpha = AppTheme.border.separatorAlpha,
+            )
+        }
 
     Box(
         modifier =
@@ -327,7 +339,7 @@ private fun ModeChip(
                 .background(backgroundColor)
                 .border(1.dp, borderColor, shape)
                 .clickable(onClick = onClick)
-                .padding(horizontal = Spacing.md, vertical = Spacing.xs)
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell)
                 .semantics {
                     role = Role.Tab
                     selected = isSelected
@@ -336,7 +348,7 @@ private fun ModeChip(
     ) {
         FrostText(
             text = label,
-            style = AppTheme.type.bodyCompact01,
+            style = AppTheme.frostType.monoBody,
             color = textColor,
         )
     }
@@ -355,12 +367,12 @@ private fun BatchInputSection(
             .count { it.startsWith("http://") || it.startsWith("https://") }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.submit_url_batch_prompt),
-            style = AppTheme.type.body01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
 
         TextArea(
@@ -378,8 +390,8 @@ private fun BatchInputSection(
                 } else {
                     stringResource(Res.string.submit_url_batch_detected_plural, urlCount)
                 },
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
 
         BracketButton(
@@ -404,14 +416,14 @@ private fun BatchProgressHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.md),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.line),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FrostText(
             text = stringResource(Res.string.submit_url_batch_progress, completedCount, totalCount),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.weight(1f),
         )
         if (isBatchSubmitting) {
@@ -440,10 +452,10 @@ private fun BatchUrlEntryRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.sm),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         // Status indicator
         when (entry.status) {
@@ -451,7 +463,7 @@ private fun BatchUrlEntryRow(
                 FrostIcon(
                     imageVector = AppIcons.CircleOutline,
                     contentDescription = stringResource(Res.string.submit_url_batch_pending),
-                    tint = AppTheme.colors.iconSecondary,
+                    tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     modifier = Modifier.size(IconSizes.sm),
                 )
             }
@@ -461,16 +473,16 @@ private fun BatchUrlEntryRow(
             BatchUrlStatus.SUBMITTING -> {
                 FrostText(
                     text = stringResource(Res.string.common_percent, (entry.progress * 100).toInt()),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.linkPrimary,
-                    modifier = Modifier.width(Spacing.xl),
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink,
+                    modifier = Modifier.width(AppTheme.spacing.padPage),
                 )
             }
             BatchUrlStatus.COMPLETED -> {
                 FrostIcon(
                     imageVector = AppIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.submit_url_batch_completed),
-                    tint = AppTheme.colors.supportSuccess,
+                    tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
                     modifier = Modifier.size(IconSizes.sm),
                 )
             }
@@ -478,7 +490,7 @@ private fun BatchUrlEntryRow(
                 FrostIcon(
                     imageVector = AppIcons.Close,
                     contentDescription = stringResource(Res.string.submit_url_batch_failed),
-                    tint = AppTheme.colors.supportError,
+                    tint = AppTheme.frostColors.spark,
                     modifier = Modifier.size(IconSizes.sm),
                 )
             }
@@ -486,7 +498,7 @@ private fun BatchUrlEntryRow(
                 FrostIcon(
                     imageVector = AppIcons.Close,
                     contentDescription = stringResource(Res.string.submit_url_batch_skipped),
-                    tint = AppTheme.colors.iconSecondary,
+                    tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     modifier = Modifier.size(IconSizes.sm),
                 )
             }
@@ -496,8 +508,8 @@ private fun BatchUrlEntryRow(
         Column(modifier = Modifier.weight(1f)) {
             FrostText(
                 text = entry.url,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -505,8 +517,8 @@ private fun BatchUrlEntryRow(
             if (entry.status == BatchUrlStatus.FAILED && entryError != null) {
                 FrostText(
                     text = entryError,
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.spark,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -514,8 +526,8 @@ private fun BatchUrlEntryRow(
             if (entry.isDuplicate && entry.status == BatchUrlStatus.SKIPPED) {
                 FrostText(
                     text = stringResource(Res.string.submit_url_batch_duplicate_skipped),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
         }
@@ -548,9 +560,9 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(Dimensions.detailHeaderHeight)
-                .background(AppTheme.colors.layer01)
-                .padding(horizontal = Spacing.xs),
+                .height(56.dp)
+                .background(AppTheme.frostColors.page)
+                .padding(horizontal = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppIconButton(
@@ -562,8 +574,8 @@ private fun SubmitURLHeader(onBackClick: () -> Unit) {
 
         FrostText(
             text = stringResource(Res.string.submit_url_title),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.weight(1f),
         )
     }
@@ -581,12 +593,12 @@ private fun URLInputSection(
     onViewLibrary: () -> Unit = {},
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.submit_url_enter_prompt),
-            style = AppTheme.type.body01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
 
         BracketField(
@@ -601,16 +613,16 @@ private fun URLInputSection(
             is SubmitUrlError.InvalidUrl -> {
                 FrostText(
                     text = stringResource(Res.string.submit_url_error_invalid_url),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.spark,
                 )
             }
             is SubmitUrlError.DuplicateUrl -> {
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell)) {
                     FrostText(
                         text = stringResource(Res.string.submit_url_error_duplicate),
-                        style = AppTheme.type.label01,
-                        color = AppTheme.colors.supportError,
+                        style = AppTheme.frostType.monoXs,
+                        color = AppTheme.frostColors.spark,
                     )
                     BracketButton(
                         label = stringResource(Res.string.submit_url_error_view_library),
@@ -621,30 +633,30 @@ private fun URLInputSection(
             is SubmitUrlError.NetworkError -> {
                 FrostText(
                     text = stringResource(Res.string.submit_url_error_network),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.spark,
                 )
             }
             is SubmitUrlError.ServerError -> {
                 FrostText(
                     text = stringResource(Res.string.submit_url_error_server),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.spark,
                 )
             }
             is SubmitUrlError.Unknown -> {
                 FrostText(
                     text = submitError.message,
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.spark,
                 )
             }
             null -> {
                 if (error != null) {
                     FrostText(
                         text = error,
-                        style = AppTheme.type.label01,
-                        color = AppTheme.colors.supportError,
+                        style = AppTheme.frostType.monoXs,
+                        color = AppTheme.frostColors.spark,
                     )
                 }
             }
@@ -677,36 +689,36 @@ private fun DuplicateWarningSection(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             FrostIcon(
                 imageVector = AppIcons.WarningAlt,
                 contentDescription = stringResource(Res.string.submit_url_duplicate_warning),
-                tint = AppTheme.colors.supportWarning,
+                tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 modifier = Modifier.size(IconSizes.md),
             )
             FrostText(
                 text = stringResource(Res.string.submit_url_duplicate_title),
-                style = AppTheme.type.headingCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoEmph,
+                color = AppTheme.frostColors.ink,
             )
         }
 
         FrostText(
             text = stringResource(Res.string.submit_url_duplicate_message),
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             if (summaryId != null) {
                 BracketButton(
@@ -738,14 +750,14 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.submit_url_processing),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
 
         // note: Frost two-color rule — indeterminate progress rendered as ink hairline bar
@@ -759,13 +771,13 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             AppSmallSpinner()
             FrostText(
                 text = state.message ?: stringResource(Res.string.submit_url_processing_default_message),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
 
@@ -775,8 +787,8 @@ private fun SubmissionProgressSection(state: SubmitURLState) {
                     Res.string.submit_url_processing_stage,
                     processingStageLabel(state.stage),
                 ),
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
     }
 }
@@ -799,21 +811,21 @@ private fun CompletionSection() {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.md),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.line),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostIcon(
             imageVector = AppIcons.CheckmarkFilled,
             contentDescription = stringResource(Res.string.submit_url_batch_completed),
-            tint = AppTheme.colors.supportSuccess,
+            tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
             modifier = Modifier.size(IconSizes.md),
         )
         FrostText(
             text = stringResource(Res.string.submit_url_success),
-            style = AppTheme.type.body01,
-            color = AppTheme.colors.supportSuccess,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
         )
     }
 }
@@ -832,8 +844,8 @@ private fun RequestHistoryHeader(
     ) {
         FrostText(
             text = stringResource(Res.string.submit_url_request_history),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.weight(1f),
         )
 
@@ -862,8 +874,8 @@ private fun RequestHistoryItem(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.sm),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Status icon
@@ -876,10 +888,10 @@ private fun RequestHistoryItem(
             }
         val statusColor =
             when (request.status) {
-                RequestStatus.COMPLETED -> AppTheme.colors.supportSuccess
-                RequestStatus.FAILED -> AppTheme.colors.supportError
-                RequestStatus.PROCESSING -> AppTheme.colors.linkPrimary
-                RequestStatus.PENDING -> AppTheme.colors.iconSecondary
+                RequestStatus.COMPLETED -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
+                RequestStatus.FAILED -> AppTheme.frostColors.spark
+                RequestStatus.PROCESSING -> AppTheme.frostColors.ink
+                RequestStatus.PENDING -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
             }
 
         FrostIcon(
@@ -895,13 +907,13 @@ private fun RequestHistoryItem(
             modifier = Modifier.size(IconSizes.sm),
         )
 
-        Spacer(modifier = Modifier.width(Spacing.sm))
+        Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
 
         // URL text (truncated)
         FrostText(
             text = request.url,
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink,
             maxLines = 1,
             modifier = Modifier.weight(1f),
         )

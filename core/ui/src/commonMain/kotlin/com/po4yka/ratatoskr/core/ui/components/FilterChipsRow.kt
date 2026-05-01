@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.ReadFilter
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
@@ -30,9 +30,9 @@ fun FilterChipsRow(
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
-        modifier = modifier.padding(vertical = Spacing.sm),
-        contentPadding = PaddingValues(horizontal = Spacing.md),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+        modifier = modifier.padding(vertical = AppTheme.spacing.cell),
+        contentPadding = PaddingValues(horizontal = AppTheme.spacing.line),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Read filter chips

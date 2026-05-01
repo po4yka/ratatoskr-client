@@ -25,13 +25,13 @@ import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 @Composable
 fun rememberFrostMarkdownColors(): MarkdownColors {
     val ink = AppTheme.frostColors.ink
-    val borderSubtle = AppTheme.colors.borderSubtle00
-    return remember(ink, borderSubtle) {
+    val divider = ink.copy(alpha = AppTheme.border.separatorAlpha)
+    return remember(ink) {
         DefaultMarkdownColors(
             text = ink,
             codeBackground = ink.copy(alpha = 0.08f),
             inlineCodeBackground = ink.copy(alpha = 0.08f),
-            dividerColor = borderSubtle,
+            dividerColor = divider,
             tableBackground = ink.copy(alpha = 0.04f),
         )
     }

@@ -75,7 +75,7 @@ fun MainScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         val isExpanded = maxWidth >= EXPANDED_WIDTH_THRESHOLD
 

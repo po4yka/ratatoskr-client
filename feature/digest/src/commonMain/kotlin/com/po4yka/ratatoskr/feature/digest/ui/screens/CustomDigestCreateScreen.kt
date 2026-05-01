@@ -36,7 +36,6 @@ import com.po4yka.ratatoskr.presentation.navigation.CustomDigestCreateComponent
 import com.po4yka.ratatoskr.core.ui.components.AppCheckbox
 import com.po4yka.ratatoskr.core.ui.components.SelectableChip
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.custom_digest_create_creating
 import ratatoskr.core.ui.generated.resources.custom_digest_create_detailed
@@ -67,7 +66,7 @@ fun CustomDigestCreateScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         ScreenHeader(
             title = stringResource(Res.string.custom_digest_create_title),
@@ -85,13 +84,13 @@ fun CustomDigestCreateScreen(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+                    .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         )
 
         // Format toggle: Brief / Detailed
         Row(
-            modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.xs),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            modifier = Modifier.padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             FormatChip(
                 label = stringResource(Res.string.custom_digest_create_brief),
@@ -113,7 +112,7 @@ fun CustomDigestCreateScreen(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                    .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         )
 
         // Summary list
@@ -128,7 +127,7 @@ fun CustomDigestCreateScreen(
             val filtered = state.filteredSummaries
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(bottom = Spacing.sm),
+                contentPadding = PaddingValues(bottom = AppTheme.spacing.cell),
             ) {
                 items(filtered, key = { it.id }) { summary ->
                     SelectableSummaryRow(
@@ -141,13 +140,13 @@ fun CustomDigestCreateScreen(
                 if (filtered.isEmpty()) {
                     item {
                         Box(
-                            modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+                            modifier = Modifier.fillMaxWidth().padding(24.dp),
                             contentAlignment = Alignment.Center,
                         ) {
                             FrostText(
                                 text = stringResource(Res.string.custom_digest_create_no_articles),
-                                style = AppTheme.type.bodyCompact01,
-                                color = AppTheme.colors.textSecondary,
+                                style = AppTheme.frostType.monoBody,
+                                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                             )
                         }
                     }
@@ -162,15 +161,15 @@ fun CustomDigestCreateScreen(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .background(AppTheme.colors.layer01)
-                    .padding(Spacing.md),
+                    .background(AppTheme.frostColors.page)
+                    .padding(AppTheme.spacing.line),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             FrostText(
                 text = stringResource(Res.string.custom_digest_create_selected_count, state.selectedIds.size),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
             BracketButton(
                 label =
@@ -188,9 +187,9 @@ fun CustomDigestCreateScreen(
         state.error?.let { errorText ->
             FrostText(
                 text = errorText,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
-                modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
+                modifier = Modifier.padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
             )
         }
     }
@@ -222,8 +221,8 @@ private fun SelectableSummaryRow(
             Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onClick)
-                .background(if (isSelected) AppTheme.colors.layer02 else AppTheme.colors.background)
-                .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+                .background(if (isSelected) AppTheme.frostColors.page else AppTheme.frostColors.page)
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppCheckbox(
@@ -231,13 +230,13 @@ private fun SelectableSummaryRow(
             onCheckedChange = { onClick() },
         )
 
-        Spacer(modifier = Modifier.width(Spacing.sm))
+        Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
 
         Column(modifier = Modifier.weight(1f)) {
             FrostText(
                 text = summary.title,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -245,8 +244,8 @@ private fun SelectableSummaryRow(
                 Spacer(modifier = Modifier.height(2.dp))
                 FrostText(
                     text = stringResource(Res.string.custom_digest_create_read_time, readTime),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
         }

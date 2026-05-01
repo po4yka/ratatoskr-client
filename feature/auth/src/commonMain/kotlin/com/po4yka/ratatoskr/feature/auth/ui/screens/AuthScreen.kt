@@ -58,7 +58,7 @@ fun AuthScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -78,15 +78,15 @@ fun AuthScreen(
             // App Title
             FrostText(
                 text = stringResource(Res.string.auth_app_title),
-                style = AppTheme.type.heading04.copy(textAlign = TextAlign.Center),
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoEmph.copy(textAlign = TextAlign.Center),
+                color = AppTheme.frostColors.ink,
                 modifier = Modifier.fillMaxWidth(),
             )
 
             FrostText(
                 text = stringResource(Res.string.auth_subtitle),
-                style = AppTheme.type.bodyCompact01.copy(textAlign = TextAlign.Center),
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody.copy(textAlign = TextAlign.Center),
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -106,8 +106,8 @@ fun AuthScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     FrostText(
                         text = stringResource(Res.string.auth_logging_in),
-                        style = AppTheme.type.bodyCompact01,
-                        color = AppTheme.colors.textSecondary,
+                        style = AppTheme.frostType.monoBody,
+                        color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     )
                 }
             } else {
@@ -156,13 +156,13 @@ fun AuthScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .background(AppTheme.colors.supportErrorInverse)
+                            .background(AppTheme.frostColors.spark.copy(alpha = AppTheme.alpha.secondary))
                             .padding(16.dp),
                 ) {
                     FrostText(
                         text = error,
-                        style = AppTheme.type.bodyCompact01,
-                        color = AppTheme.colors.textOnColorDisabled,
+                        style = AppTheme.frostType.monoBody,
+                        color = AppTheme.frostColors.page,
                     )
                 }
             }
@@ -206,13 +206,13 @@ private fun FeatureItem(
     ) {
         FrostText(
             text = icon,
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
         FrostText(
             text = text,
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
     }
 }

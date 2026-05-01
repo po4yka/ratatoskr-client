@@ -57,9 +57,7 @@ import com.po4yka.ratatoskr.core.ui.components.EmptyStateView
 import com.po4yka.ratatoskr.core.ui.components.ErrorView
 import com.po4yka.ratatoskr.core.ui.components.SummaryCard
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.a11y_navigate_back
 import ratatoskr.core.ui.generated.resources.collection_view_collaborators
@@ -111,7 +109,7 @@ fun CollectionViewScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         // Header with back button and collection info
         CollectionViewHeader(
@@ -166,15 +164,15 @@ private fun CollectionViewHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01),
+                .background(AppTheme.frostColors.page),
     ) {
         // Top row with back button
         Row(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(Dimensions.detailHeaderHeight)
-                    .padding(horizontal = Spacing.xs),
+                    .height(56.dp)
+                    .padding(horizontal = AppTheme.spacing.cell),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AppIconButton(
@@ -184,12 +182,12 @@ private fun CollectionViewHeader(
                 iconSize = IconSizes.md,
             )
 
-            Spacer(modifier = Modifier.width(Spacing.xs))
+            Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
 
             FrostText(
                 text = collection?.name ?: stringResource(Res.string.collection_view_default_title),
-                style = AppTheme.type.heading03,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoEmph,
+                color = AppTheme.frostColors.ink,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
@@ -212,36 +210,36 @@ private fun CollectionInfoSection(collection: Collection) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = Spacing.md)
-                .padding(bottom = Spacing.md),
+                .padding(horizontal = AppTheme.spacing.line)
+                .padding(bottom = AppTheme.spacing.line),
     ) {
         val description = collection.description
         if (!description.isNullOrBlank()) {
             FrostText(
                 text = description,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            Spacer(modifier = Modifier.height(Spacing.xs))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
         }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             FrostText(
                 text = stringResource(Res.string.collection_view_items_count, collection.count),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
 
             if (collection.isShared) {
                 FrostText(
                     text = stringResource(Res.string.collection_view_shared),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.linkPrimary,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink,
                 )
             }
         }
@@ -259,7 +257,7 @@ private fun CollectionTabBar(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01),
+                .background(AppTheme.frostColors.page),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         TabItem(
@@ -301,9 +299,9 @@ private fun TabItem(
     val iconColor by animateColorAsState(
         targetValue =
             when {
-                !enabled -> AppTheme.colors.iconDisabled
-                isSelected -> AppTheme.colors.iconPrimary
-                else -> AppTheme.colors.iconSecondary
+                !enabled -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.inactive)
+                isSelected -> AppTheme.frostColors.ink
+                else -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
             },
         animationSpec = tween(durationMillis = 200),
         label = "iconColor",
@@ -311,15 +309,15 @@ private fun TabItem(
     val textColor by animateColorAsState(
         targetValue =
             when {
-                !enabled -> AppTheme.colors.textDisabled
-                isSelected -> AppTheme.colors.textPrimary
-                else -> AppTheme.colors.textSecondary
+                !enabled -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.inactive)
+                isSelected -> AppTheme.frostColors.ink
+                else -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
             },
         animationSpec = tween(durationMillis = 200),
         label = "textColor",
     )
     val indicatorColor by animateColorAsState(
-        targetValue = if (isSelected && enabled) AppTheme.colors.borderInteractive else AppTheme.colors.layer01,
+        targetValue = if (isSelected && enabled) AppTheme.frostColors.ink else AppTheme.frostColors.page,
         animationSpec = tween(durationMillis = 200),
         label = "indicatorColor",
     )
@@ -328,12 +326,12 @@ private fun TabItem(
         modifier =
             Modifier
                 .clickable(enabled = enabled, onClick = onClick)
-                .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                .padding(horizontal = 24.dp, vertical = AppTheme.spacing.cell),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xxs + 2.dp),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.gapInline + 2.dp),
         ) {
             FrostIcon(
                 imageVector = icon,
@@ -343,12 +341,12 @@ private fun TabItem(
             )
             FrostText(
                 text = label,
-                style = AppTheme.type.bodyCompact01,
+                style = AppTheme.frostType.monoBody,
                 color = textColor,
             )
         }
 
-        Spacer(modifier = Modifier.height(Spacing.xs))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
 
         // Bottom indicator
         Box(
@@ -406,8 +404,8 @@ private fun ItemsTabContent(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(Spacing.md),
-                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+                contentPadding = PaddingValues(AppTheme.spacing.line),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
                 items(items = items.items, key = { it.id }) { summary ->
                     SummaryCard(
@@ -422,7 +420,7 @@ private fun ItemsTabContent(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(Spacing.md),
+                                    .padding(AppTheme.spacing.line),
                             contentAlignment = Alignment.Center,
                         ) {
                             AppSpinner(modifier = Modifier.size(44.dp))
@@ -463,8 +461,8 @@ private fun SettingsTabContent(
         ) {
             FrostText(
                 text = stringResource(Res.string.collection_view_system_readonly),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
         return
@@ -472,14 +470,14 @@ private fun SettingsTabContent(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        contentPadding = PaddingValues(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line),
     ) {
         item {
             FrostText(
                 text = stringResource(Res.string.collection_view_settings_title),
-                style = AppTheme.type.heading03,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoEmph,
+                color = AppTheme.frostColors.ink,
             )
         }
 
@@ -531,12 +529,12 @@ private fun CollectionEditForm(
     onSave: () -> Unit,
     updateError: String?,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line)) {
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell)) {
             FrostText(
                 text = stringResource(Res.string.collection_view_name),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
             BracketField(
                 value = editedName,
@@ -547,11 +545,11 @@ private fun CollectionEditForm(
             )
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell)) {
             FrostText(
                 text = stringResource(Res.string.collection_view_description),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
             TextArea(
                 label = stringResource(Res.string.collection_view_description),
@@ -578,8 +576,8 @@ private fun CollectionEditForm(
         if (updateError != null) {
             FrostText(
                 text = updateError,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.spark,
             )
         }
     }
@@ -592,13 +590,13 @@ private fun CollectionDangerZone(
     deleteError: String?,
     onShowDeleteDialog: () -> Unit,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        FrostDivider(modifier = Modifier.padding(vertical = Spacing.xs))
+    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line)) {
+        FrostDivider(modifier = Modifier.padding(vertical = AppTheme.spacing.cell))
 
         FrostText(
             text = stringResource(Res.string.collection_view_danger_zone),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.supportError,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.spark,
         )
 
         BracketButton(
@@ -617,8 +615,8 @@ private fun CollectionDangerZone(
         if (deleteError != null) {
             FrostText(
                 text = deleteError,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.spark,
             )
         }
     }
@@ -649,8 +647,8 @@ private fun DeleteCollectionDialog(
     ) {
         FrostText(
             text = stringResource(Res.string.collection_view_delete_dialog_message),
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
     }
 }
@@ -670,8 +668,8 @@ private fun SharingTabContent(
         ) {
             FrostText(
                 text = stringResource(Res.string.collection_view_system_unshareable),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
         return
@@ -679,8 +677,8 @@ private fun SharingTabContent(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        contentPadding = PaddingValues(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line),
     ) {
         item {
             CollaboratorsList(
@@ -710,11 +708,11 @@ private fun CollaboratorsList(
     onRemoveCollaborator: (Int) -> Unit,
     error: String?,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line)) {
         FrostText(
             text = stringResource(Res.string.collection_view_collaborators),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
 
         when {
@@ -729,8 +727,8 @@ private fun CollaboratorsList(
             collaborators.isEmpty() -> {
                 FrostText(
                     text = stringResource(Res.string.collection_view_no_collaborators),
-                    style = AppTheme.type.bodyCompact01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoBody,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
             else -> {
@@ -746,8 +744,8 @@ private fun CollaboratorsList(
         if (error != null) {
             FrostText(
                 text = error,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.spark,
             )
         }
     }
@@ -764,22 +762,22 @@ private fun CollaboratorRow(
             Modifier
                 .fillMaxWidth()
                 .background(
-                    AppTheme.colors.layer01,
+                    AppTheme.frostColors.page,
                     RectangleShape,
                 )
-                .padding(Spacing.sm),
+                .padding(AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             FrostText(
                 text = stringResource(Res.string.collection_view_user, collaborator.userId ?: 0),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink,
             )
             FrostText(
                 text = collaboratorRoleLabel(collaborator.role),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
 
@@ -788,8 +786,8 @@ private fun CollaboratorRow(
                 imageVector = AppIcons.Close,
                 contentDescription = stringResource(Res.string.collection_view_remove),
                 onClick = { onRemove(collaborator.userId!!) },
-                tint = AppTheme.colors.iconSecondary,
-                buttonSize = Dimensions.compactIconButtonSize,
+                tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                buttonSize = 32.dp,
                 iconSize = IconSizes.sm,
             )
         }
@@ -812,13 +810,13 @@ private fun InviteLinkSection(
     inviteError: String?,
     onCreateInviteLink: (CollaboratorRole) -> Unit,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        FrostDivider(modifier = Modifier.padding(vertical = Spacing.xs))
+    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line)) {
+        FrostDivider(modifier = Modifier.padding(vertical = AppTheme.spacing.cell))
 
         FrostText(
             text = stringResource(Res.string.collection_view_invite_link),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
 
         BracketButton(
@@ -839,28 +837,28 @@ private fun InviteLinkSection(
                     Modifier
                         .fillMaxWidth()
                         .background(
-                            AppTheme.colors.layer01,
+                            AppTheme.frostColors.page,
                             RectangleShape,
                         )
-                        .padding(Spacing.sm),
-                verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
+                        .padding(AppTheme.spacing.cell),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.gapInline),
             ) {
                 FrostText(
                     text = stringResource(Res.string.collection_view_invite_token),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
                 FrostText(
                     text = inviteLink.token,
-                    style = AppTheme.type.bodyCompact01,
-                    color = AppTheme.colors.textPrimary,
+                    style = AppTheme.frostType.monoBody,
+                    color = AppTheme.frostColors.ink,
                 )
                 val expiresAt = inviteLink.expiresAt
                 if (expiresAt != null) {
                     FrostText(
                         text = stringResource(Res.string.collection_view_expires, expiresAt),
-                        style = AppTheme.type.label01,
-                        color = AppTheme.colors.textSecondary,
+                        style = AppTheme.frostType.monoXs,
+                        color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     )
                 }
             }
@@ -869,8 +867,8 @@ private fun InviteLinkSection(
         if (inviteError != null) {
             FrostText(
                 text = inviteError,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.spark,
             )
         }
     }

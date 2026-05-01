@@ -53,9 +53,7 @@ import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.components.SessionsSection
 import com.po4yka.ratatoskr.core.ui.components.UserStatsCard
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import kotlin.math.round
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.a11y_sync_progress
@@ -158,7 +156,7 @@ fun SettingsScreen(component: SettingsComponent) {
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         SettingsHeader()
 
@@ -227,8 +225,8 @@ private fun SettingsContent(
         modifier =
             Modifier
                 .fillMaxSize()
-                .padding(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+                .padding(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line),
     ) {
         // User Stats Card
         UserStatsCard(
@@ -238,8 +236,8 @@ private fun SettingsContent(
 
         FrostText(
             text = stringResource(Res.string.settings_account_binding),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
 
@@ -270,12 +268,12 @@ private fun SettingsContent(
             onLanguageChanged = onLanguageChanged,
         )
 
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
 
         FrostText(
             text = stringResource(Res.string.settings_reading_goals),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
 
@@ -285,12 +283,12 @@ private fun SettingsContent(
             onTargetChanged = onGoalTargetChanged,
         )
 
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
 
         FrostText(
             text = stringResource(Res.string.settings_data_management),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
 
@@ -315,12 +313,12 @@ private fun SettingsContent(
             onRetryRequest = onRetryRequest,
         )
 
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
 
         FrostText(
             text = stringResource(Res.string.settings_security),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
 
@@ -331,11 +329,11 @@ private fun SettingsContent(
             onToggleExpanded = onToggleSessions,
         )
 
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
 
         LegalSection()
 
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
 
         DangerZoneSection(
             onDeleteAccount = onShowDeleteConfirmation,
@@ -348,8 +346,8 @@ private fun SettingsContent(
 private fun SettingsSectionCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    contentPadding: PaddingValues = PaddingValues(Spacing.md),
-    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(Spacing.sm),
+    contentPadding: PaddingValues = PaddingValues(16.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(AppTheme.spacing.cell),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     LayerCard(
@@ -373,12 +371,12 @@ private fun LegalSection() {
     val uriHandler = LocalUriHandler.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.settings_legal),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
 
@@ -395,9 +393,9 @@ private fun LegalSection() {
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Spacing.md)
-                        .height(Dimensions.borderWidth)
-                        .background(AppTheme.colors.borderSubtle00),
+                        .padding(horizontal = AppTheme.spacing.line)
+                        .height(1.dp)
+                        .background(AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha)),
             )
 
             LegalRow(
@@ -420,20 +418,20 @@ private fun LegalRow(
                 .fillMaxWidth()
                 .semantics { role = Role.Button }
                 .clickable(onClick = onClick)
-                .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostIcon(
             imageVector = AppIcons.Document,
             contentDescription = null,
-            tint = AppTheme.colors.iconSecondary,
+            tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             modifier = Modifier.size(IconSizes.sm),
         )
         FrostText(
             text = label,
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.weight(1f),
         )
     }
@@ -443,27 +441,27 @@ private fun LegalRow(
 @Composable
 private fun DangerZoneSection(onDeleteAccount: () -> Unit) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.settings_danger_zone),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.supportError,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.spark,
             modifier = Modifier.semantics { heading() },
         )
 
         SettingsSectionCard(
-            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             FrostText(
                 text = stringResource(Res.string.settings_delete_account),
-                style = AppTheme.type.headingCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoEmph,
+                color = AppTheme.frostColors.ink,
             )
             FrostText(
                 text = stringResource(Res.string.settings_delete_account_description),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
             BracketButton(
                 label = stringResource(Res.string.settings_delete_account),
@@ -484,12 +482,12 @@ private fun AccountBindingCard(
     onUnlink: () -> Unit,
 ) {
     SettingsSectionCard(
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.settings_telegram_account),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
 
         when {
@@ -497,15 +495,15 @@ private fun AccountBindingCard(
                 AppSmallSpinner()
                 FrostText(
                     text = stringResource(Res.string.settings_loading),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
             telegramState.error != null -> {
                 FrostText(
                     text = stringResource(Res.string.settings_error_prefix, telegramState.error.orEmpty()),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.spark,
                 )
                 BracketButton(
                     label = stringResource(Res.string.settings_retry),
@@ -521,8 +519,8 @@ private fun AccountBindingCard(
                             Res.string.settings_linked_to,
                             linkStatus?.username ?: stringResource(Res.string.settings_unknown_username),
                         ),
-                    style = AppTheme.type.bodyCompact01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoBody,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
                 BracketButton(
                     label = stringResource(Res.string.settings_unlink_telegram),
@@ -534,8 +532,8 @@ private fun AccountBindingCard(
             else -> {
                 FrostText(
                     text = stringResource(Res.string.settings_link_telegram_prompt),
-                    style = AppTheme.type.bodyCompact01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoBody,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
                 BracketButton(
                     label = stringResource(Res.string.settings_begin_linking),
@@ -556,34 +554,34 @@ private fun LinkNonceCard(
     onCancel: () -> Unit,
 ) {
     SettingsSectionCard(
-        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.settings_linking_code),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
         FrostText(
             text = stringResource(Res.string.settings_linking_code_prompt),
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
         SelectionContainer {
             FrostText(
                 text = nonce,
-                style = AppTheme.type.heading03,
-                color = AppTheme.colors.textPrimary,
-                modifier = Modifier.padding(vertical = Spacing.xs),
+                style = AppTheme.frostType.monoEmph,
+                color = AppTheme.frostColors.ink,
+                modifier = Modifier.padding(vertical = AppTheme.spacing.cell),
             )
         }
         FrostText(
             text = stringResource(Res.string.settings_check_status_prompt),
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             BracketButton(
                 label = stringResource(Res.string.settings_check_status),
@@ -610,17 +608,17 @@ private fun SyncCard(
     onCancelSync: () -> Unit,
 ) {
     SettingsSectionCard(
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.settings_synchronization),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
         FrostText(
             text = stringResource(Res.string.settings_sync_prompt),
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
 
         if (syncState.isDownloading) {
@@ -640,8 +638,8 @@ private fun SyncCard(
         syncState.downloadError?.let { error ->
             FrostText(
                 text = stringResource(Res.string.settings_sync_failed, error),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
             )
         }
     }
@@ -655,22 +653,22 @@ private fun CacheManagementCard(
     onClearCache: () -> Unit,
 ) {
     SettingsSectionCard(
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.settings_cached_content),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
         FrostText(
             text = stringResource(Res.string.settings_cache_prompt),
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
         FrostText(
             text = stringResource(Res.string.settings_cache_size, formatCacheSize(cacheSize)),
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
         if (isClearing) {
             AppSmallSpinner()
@@ -719,7 +717,7 @@ private fun SyncProgressSection(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(Dimensions.progressBarThickness)
+                        .height(4.dp)
                         .background(AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha))
                         .semantics { contentDescription = syncProgressDesc },
             ) {
@@ -727,7 +725,7 @@ private fun SyncProgressSection(
                     modifier =
                         Modifier
                             .fillMaxWidth(fraction.coerceIn(0f, 1f))
-                            .height(Dimensions.progressBarThickness)
+                            .height(4.dp)
                             .background(AppTheme.frostColors.ink),
                 )
             }
@@ -735,7 +733,7 @@ private fun SyncProgressSection(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(Dimensions.progressBarThickness)
+                    .height(4.dp)
                     .background(AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha))
                     .semantics { contentDescription = syncProgressDesc },
         )
@@ -758,22 +756,22 @@ private fun SyncProgressHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AppSmallSpinner()
             FrostText(
                 text = phaseText,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
         AppIconButton(
             imageVector = AppIcons.Close,
             contentDescription = stringResource(Res.string.settings_cancel_sync),
             onClick = onCancelSync,
-            tint = AppTheme.colors.iconSecondary,
-            buttonSize = Dimensions.compactIconButtonSize,
+            tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+            buttonSize = 32.dp,
             iconSize = IconSizes.xs,
         )
     }
@@ -797,8 +795,8 @@ private fun SyncProgressDetails(progress: SyncProgress) {
             }
         FrostText(
             text = itemsText,
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
         if (progress.currentBatch > 0) {
             val batchText =
@@ -813,8 +811,8 @@ private fun SyncProgressDetails(progress: SyncProgress) {
                 }
             FrostText(
                 text = batchText,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
     }
@@ -822,8 +820,8 @@ private fun SyncProgressDetails(progress: SyncProgress) {
     if (progress.errorCount > 0) {
         FrostText(
             text = stringResource(Res.string.settings_sync_failed_items, progress.errorCount),
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.supportWarning,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
     }
 }
@@ -837,17 +835,17 @@ private fun LanguagePreferenceCard(
     onLanguageChanged: (String) -> Unit,
 ) {
     SettingsSectionCard(
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.settings_language),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
         FrostText(
             text = stringResource(Res.string.settings_language_prompt),
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
 
         if (isLoading) {
@@ -855,7 +853,7 @@ private fun LanguagePreferenceCard(
         } else {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
                 LanguageChip(
                     label = stringResource(Res.string.settings_language_auto),
@@ -909,26 +907,26 @@ private fun DigestNavigationRow(onClick: () -> Unit) {
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(Spacing.md),
+                    .padding(AppTheme.spacing.line),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             FrostIcon(
                 imageVector = AppIcons.Notification,
                 contentDescription = stringResource(Res.string.settings_digest_icon),
-                tint = AppTheme.colors.iconPrimary,
+                tint = AppTheme.frostColors.ink,
                 modifier = Modifier.size(IconSizes.md),
             )
             Column(modifier = Modifier.weight(1f)) {
                 FrostText(
                     text = stringResource(Res.string.settings_digest_channels),
-                    style = AppTheme.type.headingCompact01,
-                    color = AppTheme.colors.textPrimary,
+                    style = AppTheme.frostType.monoEmph,
+                    color = AppTheme.frostColors.ink,
                 )
                 FrostText(
                     text = stringResource(Res.string.settings_digest_channels_description),
-                    style = AppTheme.type.bodyCompact01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoBody,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
         }
@@ -960,7 +958,7 @@ private fun ReadingGoalsCard(
     val isEnabled = goal?.isEnabled ?: false
 
     SettingsSectionCard(
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
@@ -969,8 +967,8 @@ private fun ReadingGoalsCard(
         ) {
             FrostText(
                 text = stringResource(Res.string.settings_daily_reading_goal),
-                style = AppTheme.type.headingCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoEmph,
+                color = AppTheme.frostColors.ink,
             )
             val toggleText =
                 if (isEnabled) {
@@ -980,25 +978,32 @@ private fun ReadingGoalsCard(
                 }
             FrostText(
                 text = toggleText,
-                style = AppTheme.type.label01,
-                color = if (isEnabled) AppTheme.colors.supportSuccess else AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color =
+                    if (isEnabled) {
+                        AppTheme.frostColors.ink.copy(
+                            alpha = AppTheme.alpha.active,
+                        )
+                    } else {
+                        AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
+                    },
                 modifier =
                     Modifier
                         .semantics { role = Role.Button }
                         .clickable(onClick = onToggleEnabled)
-                        .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+                        .padding(horizontal = AppTheme.spacing.cell, vertical = AppTheme.spacing.cell),
             )
         }
 
         if (goal != null) {
             FrostText(
                 text = stringResource(Res.string.settings_goal_target, goal.dailyTargetMin),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 val targets = listOf(5, 10, 15, 20, 30, 45, 60)
@@ -1015,30 +1020,30 @@ private fun ReadingGoalsCard(
             if (goal.currentStreakDays > 0 || goal.longestStreakDays > 0) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
                     Column {
                         FrostText(
                             text = goal.currentStreakDays.toString(),
-                            style = AppTheme.type.heading03,
-                            color = AppTheme.colors.textPrimary,
+                            style = AppTheme.frostType.monoEmph,
+                            color = AppTheme.frostColors.ink,
                         )
                         FrostText(
                             text = stringResource(Res.string.settings_current_streak),
-                            style = AppTheme.type.label01,
-                            color = AppTheme.colors.textSecondary,
+                            style = AppTheme.frostType.monoXs,
+                            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                         )
                     }
                     Column {
                         FrostText(
                             text = goal.longestStreakDays.toString(),
-                            style = AppTheme.type.heading03,
-                            color = AppTheme.colors.textPrimary,
+                            style = AppTheme.frostType.monoEmph,
+                            color = AppTheme.frostColors.ink,
                         )
                         FrostText(
                             text = stringResource(Res.string.settings_longest_streak),
-                            style = AppTheme.type.label01,
-                            color = AppTheme.colors.textSecondary,
+                            style = AppTheme.frostType.monoXs,
+                            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                         )
                     }
                 }
@@ -1046,8 +1051,8 @@ private fun ReadingGoalsCard(
         } else {
             FrostText(
                 text = stringResource(Res.string.settings_goal_enable_prompt),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
     }

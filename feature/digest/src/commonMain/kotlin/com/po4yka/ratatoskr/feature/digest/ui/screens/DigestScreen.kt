@@ -40,9 +40,7 @@ import com.po4yka.ratatoskr.presentation.state.DigestTab
 import com.po4yka.ratatoskr.presentation.state.DigestTriggerState
 import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.digest_screen_add_channel
 import ratatoskr.core.ui.generated.resources.digest_screen_channel_username
@@ -115,7 +113,7 @@ fun DigestScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         // Header
         DigestHeader(onBackClick = component::onBackClicked)
@@ -181,9 +179,9 @@ private fun DigestHeader(onBackClick: () -> Unit) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(Dimensions.detailHeaderHeight)
-                .background(AppTheme.colors.layer01)
-                .padding(horizontal = Spacing.xs),
+                .height(56.dp)
+                .background(AppTheme.frostColors.page)
+                .padding(horizontal = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppIconButton(
@@ -194,8 +192,8 @@ private fun DigestHeader(onBackClick: () -> Unit) {
         )
         FrostText(
             text = stringResource(Res.string.settings_digest_channels),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
     }
 }
@@ -210,7 +208,7 @@ private fun DigestTabBar(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01),
+                .background(AppTheme.frostColors.page),
     ) {
         DigestTab.entries.forEach { tab ->
             val isSelected = tab == selectedTab
@@ -226,13 +224,20 @@ private fun DigestTabBar(
                         .weight(1f)
                         .semantics { role = Role.Tab }
                         .clickable { onTabSelected(tab) }
-                        .padding(vertical = Spacing.sm),
+                        .padding(vertical = AppTheme.spacing.cell),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 FrostText(
                     text = label,
-                    style = AppTheme.type.bodyCompact01,
-                    color = if (isSelected) AppTheme.colors.textPrimary else AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoBody,
+                    color =
+                        if (isSelected) {
+                            AppTheme.frostColors.ink
+                        } else {
+                            AppTheme.frostColors.ink.copy(
+                                alpha = AppTheme.alpha.secondary,
+                            )
+                        },
                 )
                 if (isSelected) {
                     Spacer(modifier = Modifier.height(4.dp))
@@ -241,7 +246,7 @@ private fun DigestTabBar(
                             Modifier
                                 .width(48.dp)
                                 .height(2.dp)
-                                .background(AppTheme.colors.borderInteractive),
+                                .background(AppTheme.frostColors.ink),
                     )
                 }
             }
@@ -257,8 +262,8 @@ private fun ChannelsTab(
     actions: DigestActions,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        modifier = Modifier.fillMaxSize().padding(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line),
     ) {
         item {
             ChannelSlotUsage(
@@ -270,7 +275,7 @@ private fun ChannelsTab(
         if (channels.isLoading && channels.subscriptionInfo.channels.isEmpty()) {
             item {
                 Box(
-                    modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+                    modifier = Modifier.fillMaxWidth().padding(24.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     AppSmallSpinner()
@@ -312,8 +317,8 @@ private fun ChannelsTab(
             item {
                 FrostText(
                     text = error,
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.spark,
                 )
             }
         }
@@ -326,11 +331,11 @@ private fun ChannelSlotUsage(
     usedSlots: Int,
     maxSlots: Int,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell)) {
         FrostText(
             text = stringResource(Res.string.digest_screen_subscriptions, usedSlots, maxSlots),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
         if (maxSlots > 0) {
             // note: Frost two-color rule — deterministic progress bar in ink
@@ -367,14 +372,14 @@ private fun AddChannelForm(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = stringResource(Res.string.digest_screen_add_channel),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
         BracketField(
             value = username,
@@ -386,8 +391,8 @@ private fun AddChannelForm(
         if (subscribeError != null) {
             FrostText(
                 text = subscribeError,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
             )
         }
         BracketButton(
@@ -413,7 +418,7 @@ private fun TriggerDigestSection(
     onTrigger: () -> Unit,
 ) {
     Column {
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
         BracketButton(
             label =
                 if (isTriggering) {
@@ -426,19 +431,19 @@ private fun TriggerDigestSection(
             modifier = Modifier.fillMaxWidth(),
         )
         if (triggerSuccess) {
-            Spacer(modifier = Modifier.height(Spacing.xs))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
             FrostText(
                 text = stringResource(Res.string.digest_screen_trigger_success),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.supportSuccess,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
             )
         }
         if (triggerError != null) {
-            Spacer(modifier = Modifier.height(Spacing.xs))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
             FrostText(
                 text = triggerError,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
             )
         }
     }
@@ -455,21 +460,21 @@ private fun DigestChannelRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.sm),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             FrostText(
                 text = channel.username,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink,
             )
             channel.subscribedAt?.let {
                 FrostText(
                     text = stringResource(Res.string.digest_screen_subscribed, it),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
         }
@@ -478,7 +483,7 @@ private fun DigestChannelRow(
             contentDescription = stringResource(Res.string.digest_screen_unsubscribe),
             onClick = onUnsubscribe,
             enabled = !isLoading,
-            tint = AppTheme.colors.supportError,
+            tint = AppTheme.frostColors.spark,
             iconSize = IconSizes.sm,
         )
     }
@@ -501,8 +506,8 @@ private fun PreferencesTab(
     }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        modifier = Modifier.fillMaxSize().padding(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line),
     ) {
         item {
             DigestPreferencesForm(
@@ -521,7 +526,7 @@ private fun DigestPreferencesForm(
 ) {
     val enabled = !preferences.isSaving
 
-    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line)) {
         BracketField(
             value = preferences.editedDeliveryTime ?: preferences.preferences.deliveryTime,
             onValueChange = actions::onDeliveryTimeChanged,
@@ -565,16 +570,16 @@ private fun DigestPreferencesForm(
         preferences.saveError?.let { error ->
             FrostText(
                 text = error,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
             )
         }
 
         preferences.error?.let { error ->
             FrostText(
                 text = error,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
             )
         }
 
@@ -599,13 +604,13 @@ private fun HistoryTab(
     actions: DigestActions,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(Spacing.md),
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        modifier = Modifier.fillMaxSize().padding(AppTheme.spacing.line),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         if (history.isLoading && history.items.isEmpty()) {
             item {
                 Box(
-                    modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+                    modifier = Modifier.fillMaxWidth().padding(24.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     AppSmallSpinner()
@@ -615,9 +620,9 @@ private fun HistoryTab(
             item {
                 FrostText(
                     text = stringResource(Res.string.digest_screen_no_history),
-                    style = AppTheme.type.bodyCompact01,
-                    color = AppTheme.colors.textSecondary,
-                    modifier = Modifier.padding(Spacing.md),
+                    style = AppTheme.frostType.monoBody,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                    modifier = Modifier.padding(AppTheme.spacing.line),
                 )
             }
         } else {
@@ -649,8 +654,8 @@ private fun HistoryTab(
             item {
                 FrostText(
                     text = error,
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.supportError,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.spark,
                 )
             }
         }
@@ -664,8 +669,8 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(Spacing.sm),
+                .background(AppTheme.frostColors.page)
+                .padding(AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val statusIcon =
@@ -676,9 +681,9 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
             }
         val statusColor =
             when (item.status) {
-                "delivered", "completed" -> AppTheme.colors.supportSuccess
-                "failed" -> AppTheme.colors.supportError
-                else -> AppTheme.colors.iconSecondary
+                "delivered", "completed" -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
+                "failed" -> AppTheme.frostColors.spark
+                else -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
             }
 
         FrostIcon(
@@ -694,13 +699,13 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
             modifier = Modifier.size(IconSizes.sm),
         )
 
-        Spacer(modifier = Modifier.width(Spacing.sm))
+        Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
 
         Column(modifier = Modifier.weight(1f)) {
             FrostText(
                 text = item.deliveredAt,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink,
             )
             FrostText(
                 text =
@@ -709,8 +714,8 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
                         item.channelCount,
                         item.postCount,
                     ),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
     }

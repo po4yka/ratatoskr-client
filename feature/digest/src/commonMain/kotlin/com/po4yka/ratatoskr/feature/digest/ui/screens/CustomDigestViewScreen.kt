@@ -34,7 +34,6 @@ import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod", "CyclomaticComplexMethod")
@@ -50,7 +49,7 @@ fun CustomDigestViewScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         ScreenHeader(
             title = state.digest?.title ?: stringResource(Res.string.custom_digest_view_default_title),
@@ -64,7 +63,7 @@ fun CustomDigestViewScreen(
                         onClick = {
                             viewModel.deleteDigest(component.digestId) { component.onBackClicked() }
                         },
-                        tint = AppTheme.colors.supportError,
+                        tint = AppTheme.frostColors.spark,
                         iconSize = IconSizes.md,
                     )
                 }
@@ -84,7 +83,7 @@ fun CustomDigestViewScreen(
             state.digest?.status == CustomDigestStatus.GENERATING ||
                 state.digest?.status == CustomDigestStatus.PENDING -> {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(Spacing.lg),
+                    modifier = Modifier.fillMaxSize().padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
@@ -95,11 +94,11 @@ fun CustomDigestViewScreen(
                                 2.dp,
                             ).background(AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha)),
                     )
-                    Spacer(modifier = Modifier.height(Spacing.sm))
+                    Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
                     FrostText(
                         text = stringResource(Res.string.custom_digest_view_generating),
-                        style = AppTheme.type.body01,
-                        color = AppTheme.colors.textSecondary,
+                        style = AppTheme.frostType.monoBody,
+                        color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     )
                 }
             }
@@ -107,14 +106,14 @@ fun CustomDigestViewScreen(
             state.digest?.status == CustomDigestStatus.COMPLETED &&
                 state.digest?.content != null -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = Spacing.md),
+                    modifier = Modifier.fillMaxSize().padding(horizontal = AppTheme.spacing.line),
                 ) {
                     item {
                         FrostText(
                             text = state.digest!!.content!!,
-                            style = AppTheme.type.body01,
-                            color = AppTheme.colors.textPrimary,
-                            modifier = Modifier.padding(vertical = Spacing.md),
+                            style = AppTheme.frostType.monoBody,
+                            color = AppTheme.frostColors.ink,
+                            modifier = Modifier.padding(vertical = AppTheme.spacing.line),
                         )
                     }
                 }
@@ -122,28 +121,28 @@ fun CustomDigestViewScreen(
 
             state.digest?.status == CustomDigestStatus.FAILED -> {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(Spacing.lg),
+                    modifier = Modifier.fillMaxSize().padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
                     FrostIcon(
                         imageVector = AppIcons.WarningAlt,
                         contentDescription = stringResource(Res.string.custom_digest_view_error),
-                        tint = AppTheme.colors.supportError,
+                        tint = AppTheme.frostColors.spark,
                         modifier = Modifier.size(IconSizes.xl),
                     )
-                    Spacer(modifier = Modifier.height(Spacing.sm))
+                    Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
                     FrostText(
                         text = stringResource(Res.string.custom_digest_view_failed),
-                        style = AppTheme.type.heading03,
-                        color = AppTheme.colors.supportError,
+                        style = AppTheme.frostType.monoEmph,
+                        color = AppTheme.frostColors.spark,
                     )
                     state.error?.let { errorText ->
-                        Spacer(modifier = Modifier.height(Spacing.xs))
+                        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
                         FrostText(
                             text = errorText,
-                            style = AppTheme.type.bodyCompact01,
-                            color = AppTheme.colors.textSecondary,
+                            style = AppTheme.frostType.monoBody,
+                            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                         )
                     }
                 }
@@ -156,8 +155,8 @@ fun CustomDigestViewScreen(
                 ) {
                     FrostText(
                         text = stringResource(Res.string.custom_digest_view_not_found),
-                        style = AppTheme.type.bodyCompact01,
-                        color = AppTheme.colors.textSecondary,
+                        style = AppTheme.frostType.monoBody,
+                        color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     )
                 }
             }

@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 // TODO: callers should migrate to MultiSelectChip directly;
 //   SelectableChip is a transitional shim
@@ -19,8 +19,8 @@ fun SelectableChip(
     @Suppress("UNUSED_PARAMETER") role: Role = Role.RadioButton,
     @Suppress("UNUSED_PARAMETER") contentPadding: PaddingValues =
         PaddingValues(
-            horizontal = Spacing.md,
-            vertical = Spacing.xs,
+            horizontal = 16.dp,
+            vertical = 8.dp,
         ),
 ) {
     MultiSelectChip(

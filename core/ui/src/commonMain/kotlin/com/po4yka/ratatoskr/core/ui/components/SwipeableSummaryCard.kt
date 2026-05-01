@@ -30,10 +30,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.Summary
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
@@ -162,8 +161,8 @@ fun SwipeableSummaryCard(
                     tint = AppTheme.frostColors.ink,
                     modifier =
                         Modifier
-                            .padding(start = Spacing.lg)
-                            .size(Dimensions.stageIndicatorSize),
+                            .padding(start = 24.dp)
+                            .size(24.dp),
                 )
             }
 
@@ -182,8 +181,8 @@ fun SwipeableSummaryCard(
                     tint = AppTheme.frostColors.ink,
                     modifier =
                         Modifier
-                            .padding(end = Spacing.lg)
-                            .size(Dimensions.stageIndicatorSize),
+                            .padding(end = 24.dp)
+                            .size(24.dp),
                 )
             }
         }

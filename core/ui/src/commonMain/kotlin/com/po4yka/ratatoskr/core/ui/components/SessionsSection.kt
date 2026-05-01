@@ -24,7 +24,6 @@ import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadgeSeverity
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.Session
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
@@ -63,7 +62,7 @@ fun SessionsSection(
                     Modifier
                         .fillMaxWidth()
                         .clickable(onClick = onToggleExpanded)
-                        .padding(Spacing.md),
+                        .padding(AppTheme.spacing.line),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -111,9 +110,9 @@ fun SessionsSection(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = Spacing.md)
-                            .padding(bottom = Spacing.md),
-                    verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                            .padding(horizontal = AppTheme.spacing.line)
+                            .padding(bottom = AppTheme.spacing.line),
+                    verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                 ) {
                     when {
                         isLoading -> {
@@ -127,7 +126,7 @@ fun SessionsSection(
                                     text = stringResource(Res.string.sessions_loading),
                                     style = AppTheme.frostType.monoSm,
                                     color = ink.copy(alpha = AppTheme.alpha.secondary),
-                                    modifier = Modifier.padding(start = Spacing.xs),
+                                    modifier = Modifier.padding(start = AppTheme.spacing.cell),
                                 )
                             }
                         }
@@ -160,9 +159,9 @@ private fun SessionItem(
 
     BrutalistCard(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = Spacing.sm,
+        contentPadding = AppTheme.spacing.cell,
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.gapInline)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
