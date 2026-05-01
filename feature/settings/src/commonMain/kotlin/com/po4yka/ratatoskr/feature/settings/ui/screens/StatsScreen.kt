@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import androidx.compose.runtime.Composable
@@ -116,7 +116,7 @@ fun StatsScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
+                        FrostIcon(
                             imageVector = AppIcons.WarningAlt,
                             contentDescription = stringResource(Res.string.stats_error_icon),
                             tint = AppTheme.colors.supportError,
@@ -264,7 +264,7 @@ private fun StreakCard(streak: Streak) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Icon(
+        FrostIcon(
             imageVector = AppIcons.Star,
             contentDescription = null,
             tint = AppTheme.colors.supportWarning,
@@ -349,7 +349,7 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                 color = AppTheme.colors.textPrimary,
             )
             if (goalProgress.achieved) {
-                Icon(
+                FrostIcon(
                     imageVector = AppIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.stats_goal_achieved),
                     tint = AppTheme.colors.supportSuccess,

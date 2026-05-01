@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -129,7 +129,7 @@ fun SummaryGridCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (summary.isFullContentCached) {
-                    Icon(
+                    FrostIcon(
                         imageVector = AppIcons.Download,
                         contentDescription = stringResource(Res.string.summary_card_available_offline),
                         tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
@@ -137,7 +137,7 @@ fun SummaryGridCard(
                     )
                 }
                 if (summary.isFavorited) {
-                    Icon(
+                    FrostIcon(
                         imageVector = AppIcons.FavoriteFilled,
                         contentDescription = stringResource(Res.string.summary_card_favorited),
                         tint = AppTheme.colors.supportError,
@@ -153,7 +153,7 @@ fun SummaryGridCard(
                                 .background(AppTheme.colors.supportSuccess),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(
+                        FrostIcon(
                             imageVector = AppIcons.Checkmark,
                             contentDescription = stringResource(Res.string.summary_detail_mark_read),
                             tint = AppTheme.colors.textOnColor,

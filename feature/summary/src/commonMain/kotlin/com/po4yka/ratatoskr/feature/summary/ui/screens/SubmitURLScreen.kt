@@ -21,7 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -448,7 +448,7 @@ private fun BatchUrlEntryRow(
         // Status indicator
         when (entry.status) {
             BatchUrlStatus.PENDING -> {
-                Icon(
+                FrostIcon(
                     imageVector = AppIcons.CircleOutline,
                     contentDescription = stringResource(Res.string.submit_url_batch_pending),
                     tint = AppTheme.colors.iconSecondary,
@@ -467,7 +467,7 @@ private fun BatchUrlEntryRow(
                 )
             }
             BatchUrlStatus.COMPLETED -> {
-                Icon(
+                FrostIcon(
                     imageVector = AppIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.submit_url_batch_completed),
                     tint = AppTheme.colors.supportSuccess,
@@ -475,7 +475,7 @@ private fun BatchUrlEntryRow(
                 )
             }
             BatchUrlStatus.FAILED -> {
-                Icon(
+                FrostIcon(
                     imageVector = AppIcons.Close,
                     contentDescription = stringResource(Res.string.submit_url_batch_failed),
                     tint = AppTheme.colors.supportError,
@@ -483,7 +483,7 @@ private fun BatchUrlEntryRow(
                 )
             }
             BatchUrlStatus.SKIPPED -> {
-                Icon(
+                FrostIcon(
                     imageVector = AppIcons.Close,
                     contentDescription = stringResource(Res.string.submit_url_batch_skipped),
                     tint = AppTheme.colors.iconSecondary,
@@ -685,7 +685,7 @@ private fun DuplicateWarningSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
-            Icon(
+            FrostIcon(
                 imageVector = AppIcons.WarningAlt,
                 contentDescription = stringResource(Res.string.submit_url_duplicate_warning),
                 tint = AppTheme.colors.supportWarning,
@@ -804,7 +804,7 @@ private fun CompletionSection() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
-        Icon(
+        FrostIcon(
             imageVector = AppIcons.CheckmarkFilled,
             contentDescription = stringResource(Res.string.submit_url_batch_completed),
             tint = AppTheme.colors.supportSuccess,
@@ -882,7 +882,7 @@ private fun RequestHistoryItem(
                 RequestStatus.PENDING -> AppTheme.colors.iconSecondary
             }
 
-        Icon(
+        FrostIcon(
             imageVector = statusIcon,
             contentDescription =
                 when (request.status) {

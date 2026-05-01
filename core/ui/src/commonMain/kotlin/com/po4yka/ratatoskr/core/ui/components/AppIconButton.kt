@@ -1,7 +1,7 @@
 package com.po4yka.ratatoskr.core.ui.components
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,7 +34,7 @@ fun AppIconButton(
         enabled = enabled,
         modifier = modifier,
     ) {
-        Icon(
+        FrostIcon(
             imageVector = imageVector,
             contentDescription = null,
             tint = if (enabled) tint else AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.inactive),

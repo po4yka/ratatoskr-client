@@ -23,7 +23,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -531,7 +531,7 @@ private fun SyncStatusBanner(
                     .background(backgroundColor)
                     .padding(horizontal = Spacing.md, vertical = Spacing.xs),
         ) {
-            Icon(
+            FrostIcon(
                 imageVector = AppIcons.WarningAlt,
                 contentDescription = null,
                 tint = AppTheme.colors.textOnColor,
