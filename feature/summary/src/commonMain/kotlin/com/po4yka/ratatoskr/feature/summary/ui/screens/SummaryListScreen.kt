@@ -54,8 +54,8 @@ import com.po4yka.ratatoskr.core.ui.components.ReadingGoalCard
 import com.po4yka.ratatoskr.core.ui.components.RecentSearchesSection
 import com.po4yka.ratatoskr.core.ui.components.SortOptionsMenu
 import com.po4yka.ratatoskr.core.ui.components.SummaryCardSkeleton
-import com.po4yka.ratatoskr.core.ui.components.SummaryGridCard
 import com.po4yka.ratatoskr.core.ui.components.SummarySearchBar
+import com.po4yka.ratatoskr.core.ui.components.SummaryCard
 import com.po4yka.ratatoskr.core.ui.components.SwipeableSummaryCard
 import com.po4yka.ratatoskr.core.ui.components.RecommendationsSection
 import com.po4yka.ratatoskr.core.ui.components.TrendingTopicsSection
@@ -593,12 +593,9 @@ private fun SummaryGridView(
             key = { it.id },
             contentType = { "summary_grid_card" },
         ) { summary ->
-            SummaryGridCard(
+            SummaryCard(
                 summary = summary,
                 onClick = { onSummaryClick(summary.id) },
-                onDeleteClick = { onDelete(summary.id) },
-                onMarkReadClick = { onMarkRead(summary.id) },
-                onFavoriteClick = { onFavoriteClick(summary.id) },
             )
         }
 

@@ -5,34 +5,18 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 
 /**
- * Project-owned theme object exposing the active [AppColors], [AppType], and Frost tokens
- * via composition locals.
+ * Project-owned theme object exposing the active Frost tokens via composition locals.
  *
  * Usage from Composables:
  * ```
- * Text(
- *     text = "Hello",
- *     color = AppTheme.colors.textPrimary,
- *     style = AppTheme.type.body01,
- * )
- * // Frost tokens:
  * Box(Modifier.background(AppTheme.frostColors.page))
  * Spacer(Modifier.height(AppTheme.spacing.line))
+ * Text(text = "x", color = AppTheme.frostColors.ink, style = AppTheme.frostType.monoBody)
  * ```
  *
  * Wired up by [RatatoskrTheme] in [Theme.kt].
  */
 object AppTheme {
-    val colors: AppColors
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalAppColors.current
-
-    val type: AppType
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalAppType.current
-
     val frostColors: FrostColors
         @Composable
         @ReadOnlyComposable
@@ -63,16 +47,6 @@ object AppTheme {
         @ReadOnlyComposable
         get() = LocalFrostMotion.current
 }
-
-internal val LocalAppColors =
-    staticCompositionLocalOf<AppColors> {
-        error("LocalAppColors not provided. Wrap your UI in RatatoskrTheme().")
-    }
-
-internal val LocalAppType =
-    staticCompositionLocalOf<AppType> {
-        error("LocalAppType not provided. Wrap your UI in RatatoskrTheme().")
-    }
 
 internal val LocalFrostColors =
     staticCompositionLocalOf<FrostColors> {

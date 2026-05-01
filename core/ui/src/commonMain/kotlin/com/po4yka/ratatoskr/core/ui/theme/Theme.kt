@@ -20,14 +20,11 @@ val LocalContentColor = compositionLocalOf<Color> { Color.Unspecified }
 val LocalTextStyle = compositionLocalOf<TextStyle> { TextStyle.Default }
 
 /**
- * Ratatoskr theme: project-owned [AppTheme] tokens.
+ * Ratatoskr theme: project-owned Frost tokens.
  *
- * Provides [AppColors] and [AppType] via [LocalAppColors] / [LocalAppType] for the
- * design-system seam (`AppTheme.colors.X` / `AppTheme.type.X`).
- *
- * Also provides Frost tokens via [LocalFrostColors], [LocalFrostType], [LocalFrostSpacing],
+ * Provides Frost tokens via [LocalFrostColors], [LocalFrostType], [LocalFrostSpacing],
  * [LocalFrostAlpha], [LocalFrostBorder], and [LocalFrostMotion]. Access via [AppTheme.frostColors],
- * [AppTheme.spacing], [AppTheme.alpha], [AppTheme.border], [AppTheme.motion].
+ * [AppTheme.frostType], [AppTheme.spacing], [AppTheme.alpha], [AppTheme.border], [AppTheme.motion].
  *
  * [LocalContentColor] and [LocalTextStyle] are provided with Frost ink / monoBody defaults so
  * composables that read them don't need a Material dependency.
@@ -37,14 +34,10 @@ fun RatatoskrTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val appColors = if (darkTheme) darkAppColors else lightAppColors
-    val appType = rememberDefaultAppType()
     val frostColors = if (darkTheme) frostDark else frostLight
     val frostType = rememberFrostType()
 
     CompositionLocalProvider(
-        LocalAppColors provides appColors,
-        LocalAppType provides appType,
         LocalFrostColors provides frostColors,
         LocalFrostType provides frostType,
         LocalFrostSpacing provides frostSpacingDefault,
