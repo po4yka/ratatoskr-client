@@ -72,10 +72,6 @@ Frost primitives live in:
 - `core/ui/src/commonMain/kotlin/com/po4yka/ratatoskr/core/ui/components/frost/`
 - `core/ui/src/commonMain/kotlin/com/po4yka/ratatoskr/core/ui/components/foundation/`
 
-Legacy `App*` components in `core/ui/.../components/` are transitional shims.
-New code must use Frost atoms directly. `AppColors.kt` and `AppType.kt` carry
-residual IBM Carbon-derived seed values — do not bind new code to those values.
-
 ## Architecture
 
 - Modules are split by responsibility:
@@ -163,6 +159,6 @@ The SKIE plugin is configured in Gradle but currently disabled in `composeApp/bu
 
 ### Add Shared UI Behavior
 
-- Prefer Frost atoms (`BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`) in `core/ui/.../components/frost/` before inventing new patterns. Legacy `App*` shims remain but are transitional.
+- Prefer Frost atoms (`BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`) in `core/ui/.../components/frost/` or `core/ui/.../components/foundation/` before inventing new patterns.
 - Use Compose Resources instead of hardcoded UI text.
 - Keep accessibility semantics in mind; the repo already uses headings and live regions in screens such as `SummaryListScreen`.

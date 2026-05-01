@@ -19,15 +19,13 @@ Guidance for UI work in `composeApp/`.
 
 ## Design System
 
-- The app theme is `RatatoskrTheme` in `core/ui/.../theme/Theme.kt`.
-- Material 3 is the component substrate; project-owned `AppTheme` tokens are the design system.
-- Use `AppTheme.colors.*` for surfaces, icons, and semantic colors.
-- Use `AppTheme.type.*` for text styles.
-- Use Material 3 `Text` and `Icon` for primitives.
+- Frost is the design system. Material 3 is removed from `commonMain`. Use Frost primitives in `core/ui/src/commonMain/kotlin/com/po4yka/ratatoskr/core/ui/components/frost/` and foundation primitives in `core/ui/src/commonMain/kotlin/com/po4yka/ratatoskr/core/ui/components/foundation/`.
+- The app theme entry point is `RatatoskrTheme` in `core/ui/.../theme/Theme.kt`.
+- Use `FrostText` (`core/ui/.../components/foundation/`) for text; `FrostIcon` for icons.
 - Reuse `Spacing`, `Dimensions`, and `IconSizes` from `core/ui/.../theme/`.
-- Prefer the project wrapper components in `core/ui/.../components/` (`AppCheckbox`, `AppDialog`, `AppIconButton`, `LayerCard`, `AppMenu`/`AppMenuItem`/`AppOverflowMenuButton`, `SelectableChip`, `AppSlider`, `TextArea`, `AppTextButton`) over raw Material 3 equivalents.
+- Prefer Frost atoms directly: `BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`.
 
-Widgets are the main exception: Glance UI is platform-specific and does not follow AppTheme patterns.
+Widgets are the main exception: Glance UI is platform-specific and uses hardcoded Frost INK/PAGE color constants directly, not via RatatoskrTheme.
 
 ## Resources And Accessibility
 
@@ -41,6 +39,7 @@ Widgets are the main exception: Glance UI is platform-specific and does not foll
 
 Prefer extending existing components before creating new abstractions. Useful anchors:
 
+- Frost atoms: `BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`
 - list/detail cards: `SummaryCard`, `SummaryGridCard`, `SwipeableSummaryCard`
 - state views: `ErrorView`, `ContextualEmptyState`, `SummaryCardSkeleton`
 - search/filter: `SummarySearchBar`, `FilterChipsRow`, `SortOptionsMenu`
@@ -56,4 +55,4 @@ The app-level `App.kt` provider for image URL transformation is also intentional
 ## Icons
 
 - Project icons live in `core/ui/.../icons/AppIcons.kt`.
-- New icons should stay 32x32 and use `AppTheme.colors.*` at call sites.
+- New icons should stay 32x32 and use Frost ink/page/spark tokens at call sites.
