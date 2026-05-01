@@ -70,8 +70,8 @@ fun DeveloperLoginDialog(
         if (isUserIdError) {
             FrostText(
                 text = userIdErrorText,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
             )
         }
 
@@ -108,12 +108,12 @@ fun DeveloperLoginDialog(
             )
             FrostText(
                 text = stringResource(Res.string.auth_developer_remember_credentials),
-                style = AppTheme.type.body01,
+                style = AppTheme.frostType.monoBody,
                 color =
                     if (isLoading) {
-                        AppTheme.colors.textDisabled
+                        AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.inactive)
                     } else {
-                        AppTheme.colors.textSecondary
+                        AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
                     },
             )
         }
@@ -121,8 +121,8 @@ fun DeveloperLoginDialog(
         if (error != null) {
             FrostText(
                 text = error,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
             )
         }
 

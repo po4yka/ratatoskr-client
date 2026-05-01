@@ -37,8 +37,6 @@ import com.po4yka.ratatoskr.domain.model.TopicStat
 import com.po4yka.ratatoskr.domain.model.UserStats
 import com.po4yka.ratatoskr.presentation.navigation.StatsComponent
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.a11y_goal_in_progress
 import ratatoskr.core.ui.generated.resources.a11y_goal_progress
@@ -89,7 +87,7 @@ fun StatsScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         StatsHeader()
 
@@ -112,21 +110,21 @@ fun StatsScreen(
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .padding(Spacing.md),
+                            .padding(AppTheme.spacing.line),
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         FrostIcon(
                             imageVector = AppIcons.WarningAlt,
                             contentDescription = stringResource(Res.string.stats_error_icon),
-                            tint = AppTheme.colors.supportError,
-                            modifier = Modifier.size(Spacing.xl),
+                            tint = AppTheme.frostColors.spark,
+                            modifier = Modifier.size(AppTheme.spacing.padPage),
                         )
-                        Spacer(modifier = Modifier.height(Spacing.sm))
+                        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
                         FrostText(
                             text = state.error ?: stringResource(Res.string.stats_error_default),
-                            style = AppTheme.type.bodyCompact01,
-                            color = AppTheme.colors.supportError,
+                            style = AppTheme.frostType.monoBody,
+                            color = AppTheme.frostColors.spark,
                         )
                     }
                 }
@@ -149,15 +147,15 @@ private fun StatsHeader() {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(Dimensions.headerHeight)
-                .background(AppTheme.colors.layer01)
-                .padding(horizontal = Spacing.md),
+                .height(64.dp)
+                .background(AppTheme.frostColors.page)
+                .padding(horizontal = AppTheme.spacing.line),
         verticalArrangement = Arrangement.Center,
     ) {
         FrostText(
             text = stringResource(Res.string.stats_title),
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
     }
@@ -177,13 +175,13 @@ private fun StatsContent(
     ) {
         if (streak != null || goalsProgress.isNotEmpty()) {
             item {
-                Spacer(modifier = Modifier.height(Spacing.md))
+                Spacer(modifier = Modifier.height(AppTheme.spacing.line))
                 GoalsAndStreaksSection(streak = streak, goalsProgress = goalsProgress)
             }
         }
 
         item {
-            Spacer(modifier = Modifier.height(Spacing.md))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.line))
             if (streak != null || goalsProgress.isNotEmpty()) {
                 SectionDivider()
             }
@@ -192,7 +190,7 @@ private fun StatsContent(
 
         if (!stats.favoriteTopics.isNullOrEmpty()) {
             item {
-                Spacer(modifier = Modifier.height(Spacing.lg))
+                Spacer(modifier = Modifier.height(24.dp))
                 SectionDivider()
                 TopicsSection(topics = requireNotNull(stats.favoriteTopics))
             }
@@ -200,7 +198,7 @@ private fun StatsContent(
 
         if (!stats.favoriteDomains.isNullOrEmpty()) {
             item {
-                Spacer(modifier = Modifier.height(Spacing.lg))
+                Spacer(modifier = Modifier.height(24.dp))
                 SectionDivider()
                 DomainsSection(domains = requireNotNull(stats.favoriteDomains))
             }
@@ -208,14 +206,14 @@ private fun StatsContent(
 
         if (!stats.languageDistribution.isNullOrEmpty()) {
             item {
-                Spacer(modifier = Modifier.height(Spacing.lg))
+                Spacer(modifier = Modifier.height(24.dp))
                 SectionDivider()
                 LanguageSection(distribution = requireNotNull(stats.languageDistribution))
             }
         }
 
         item {
-            Spacer(modifier = Modifier.height(Spacing.xl))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.padPage))
         }
     }
 }
@@ -226,23 +224,23 @@ private fun GoalsAndStreaksSection(
     streak: Streak?,
     goalsProgress: List<GoalProgress>,
 ) {
-    Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
+    Column(modifier = Modifier.padding(horizontal = AppTheme.spacing.line)) {
         FrostText(
             text = stringResource(Res.string.stats_goals_and_streaks),
-            style = AppTheme.type.heading02,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
-        Spacer(modifier = Modifier.height(Spacing.sm))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
 
         if (streak != null) {
             StreakCard(streak = streak)
-            Spacer(modifier = Modifier.height(Spacing.sm))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
         }
 
         goalsProgress.forEach { goal ->
             GoalProgressRow(goalProgress = goal)
-            Spacer(modifier = Modifier.height(Spacing.xs))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
         }
     }
 }
@@ -257,41 +255,41 @@ private fun StreakCard(streak: Streak) {
                 .fillMaxWidth()
                 .semantics(mergeDescendants = true) { contentDescription = streakDesc }
                 .background(
-                    color = AppTheme.colors.layer01,
+                    color = AppTheme.frostColors.page,
                     shape = RectangleShape,
                 )
-                .padding(Spacing.sm),
+                .padding(AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostIcon(
             imageVector = AppIcons.Star,
             contentDescription = null,
-            tint = AppTheme.colors.supportWarning,
+            tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             modifier = Modifier.size(24.dp),
         )
         Column(modifier = Modifier.weight(1f)) {
             FrostText(
                 text = stringResource(Res.string.stats_current_streak, streak.currentStreak),
-                style = AppTheme.type.heading03,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoEmph,
+                color = AppTheme.frostColors.ink,
             )
             FrostText(
                 text = stringResource(Res.string.stats_best_streak, streak.longestStreak),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
         Column(horizontalAlignment = Alignment.End) {
             FrostText(
                 text = stringResource(Res.string.stats_this_week, streak.weekCount),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
             FrostText(
                 text = stringResource(Res.string.stats_this_month, streak.monthCount),
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
     }
@@ -326,10 +324,10 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                 .fillMaxWidth()
                 .semantics(mergeDescendants = true) { contentDescription = goalDesc }
                 .background(
-                    color = AppTheme.colors.layer01,
+                    color = AppTheme.frostColors.page,
                     shape = RectangleShape,
                 )
-                .padding(Spacing.sm),
+                .padding(AppTheme.spacing.cell),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -345,26 +343,26 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                 )
             FrostText(
                 text = goalLabel,
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink,
             )
             if (goalProgress.achieved) {
                 FrostIcon(
                     imageVector = AppIcons.CheckmarkFilled,
                     contentDescription = stringResource(Res.string.stats_goal_achieved),
-                    tint = AppTheme.colors.supportSuccess,
+                    tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
                     modifier = Modifier.size(16.dp),
                 )
             }
         }
-        Spacer(modifier = Modifier.height(Spacing.xxs))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.gapInline))
         Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .height(4.dp)
                     .background(
-                        color = AppTheme.colors.layer02,
+                        color = AppTheme.frostColors.page,
                         shape = RectangleShape,
                     ),
         ) {
@@ -376,9 +374,9 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
                         .background(
                             color =
                                 if (goalProgress.achieved) {
-                                    AppTheme.colors.supportSuccess
+                                    AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
                                 } else {
-                                    AppTheme.colors.borderInteractive
+                                    AppTheme.frostColors.ink
                                 },
                             shape = RectangleShape,
                         ),
@@ -390,17 +388,17 @@ private fun GoalProgressRow(goalProgress: GoalProgress) {
 @Suppress("FunctionNaming")
 @Composable
 private fun SummarySection(stats: UserStats) {
-    Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
+    Column(modifier = Modifier.padding(horizontal = AppTheme.spacing.line)) {
         FrostText(
             text = stringResource(Res.string.stats_overview),
-            style = AppTheme.type.heading02,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
-        Spacer(modifier = Modifier.height(Spacing.sm))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             StatCard(
                 label = stringResource(Res.string.stats_total),
@@ -419,10 +417,10 @@ private fun SummarySection(stats: UserStats) {
             )
         }
         if (stats.totalReadingTimeMin != null || stats.averageReadingTimeMin != null) {
-            Spacer(modifier = Modifier.height(Spacing.xs))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
                 val totalTime = stats.totalReadingTimeMin
                 if (totalTime != null) {
@@ -457,21 +455,21 @@ private fun StatCard(
             modifier
                 .semantics(mergeDescendants = true) {}
                 .background(
-                    color = AppTheme.colors.layer01,
+                    color = AppTheme.frostColors.page,
                     shape = RectangleShape,
                 )
-                .padding(Spacing.sm),
+                .padding(AppTheme.spacing.cell),
     ) {
         FrostText(
             text = value,
-            style = AppTheme.type.heading03,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
         Spacer(modifier = Modifier.height(2.dp))
         FrostText(
             text = label,
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
     }
 }
@@ -480,17 +478,17 @@ private fun StatCard(
 @Suppress("FunctionNaming")
 @Composable
 private fun TopicsSection(topics: List<TopicStat>) {
-    Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
+    Column(modifier = Modifier.padding(horizontal = AppTheme.spacing.line)) {
         FrostText(
             text = stringResource(Res.string.stats_top_topics),
-            style = AppTheme.type.heading02,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
-        Spacer(modifier = Modifier.height(Spacing.sm))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             topics.forEach { topic ->
                 TopicChip(label = topic.topic, count = topic.count)
@@ -503,17 +501,17 @@ private fun TopicsSection(topics: List<TopicStat>) {
 @Suppress("FunctionNaming")
 @Composable
 private fun DomainsSection(domains: List<DomainStat>) {
-    Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
+    Column(modifier = Modifier.padding(horizontal = AppTheme.spacing.line)) {
         FrostText(
             text = stringResource(Res.string.stats_top_sources),
-            style = AppTheme.type.heading02,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
-        Spacer(modifier = Modifier.height(Spacing.sm))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             domains.forEach { domain ->
                 TopicChip(label = domain.domain, count = domain.count)
@@ -532,22 +530,22 @@ private fun TopicChip(
         modifier =
             Modifier
                 .background(
-                    color = AppTheme.colors.layer01,
+                    color = AppTheme.frostColors.page,
                     shape = RectangleShape,
                 )
-                .padding(horizontal = Spacing.sm, vertical = Spacing.xxs),
+                .padding(horizontal = AppTheme.spacing.cell, vertical = AppTheme.spacing.gapInline),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FrostText(
             text = label,
-            style = AppTheme.type.bodyCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoBody,
+            color = AppTheme.frostColors.ink,
         )
-        Spacer(modifier = Modifier.width(Spacing.xxs))
+        Spacer(modifier = Modifier.width(AppTheme.spacing.gapInline))
         FrostText(
             text = count.toString(),
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
     }
 }
@@ -555,20 +553,20 @@ private fun TopicChip(
 @Suppress("FunctionNaming")
 @Composable
 private fun LanguageSection(distribution: Map<String, Int>) {
-    Column(modifier = Modifier.padding(horizontal = Spacing.md)) {
+    Column(modifier = Modifier.padding(horizontal = AppTheme.spacing.line)) {
         FrostText(
             text = stringResource(Res.string.stats_languages),
-            style = AppTheme.type.heading02,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
-        Spacer(modifier = Modifier.height(Spacing.sm))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
         val total = distribution.values.sum().takeIf { it > 0 } ?: 1
         distribution.entries
             .sortedByDescending { it.value }
             .forEach { (lang, count) ->
                 LanguageRow(language = lang, count = count, total = total)
-                Spacer(modifier = Modifier.height(Spacing.xs))
+                Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
             }
     }
 }
@@ -588,13 +586,13 @@ private fun LanguageRow(
         ) {
             FrostText(
                 text = language.uppercase(),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textPrimary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink,
             )
             FrostText(
                 text = count.toString(),
-                style = AppTheme.type.bodyCompact01,
-                color = AppTheme.colors.textSecondary,
+                style = AppTheme.frostType.monoBody,
+                color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
             )
         }
         Spacer(modifier = Modifier.height(2.dp))
@@ -604,7 +602,7 @@ private fun LanguageRow(
                     .fillMaxWidth()
                     .height(4.dp)
                     .background(
-                        color = AppTheme.colors.layer02,
+                        color = AppTheme.frostColors.page,
                         shape = RectangleShape,
                     ),
         ) {
@@ -614,7 +612,7 @@ private fun LanguageRow(
                         .fillMaxWidth(fraction)
                         .height(4.dp)
                         .background(
-                            color = AppTheme.colors.borderInteractive,
+                            color = AppTheme.frostColors.ink,
                             shape = RectangleShape,
                         ),
             )
@@ -625,8 +623,8 @@ private fun LanguageRow(
 @Suppress("FunctionNaming")
 @Composable
 private fun SectionDivider() {
-    FrostDivider(modifier = Modifier.padding(horizontal = Spacing.md))
-    Spacer(modifier = Modifier.height(Spacing.lg))
+    FrostDivider(modifier = Modifier.padding(horizontal = AppTheme.spacing.line))
+    Spacer(modifier = Modifier.height(24.dp))
 }
 
 @Composable

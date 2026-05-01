@@ -18,7 +18,6 @@ import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.FeedbackIssue
 import com.po4yka.ratatoskr.domain.model.FeedbackRating
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.collections_cancel
 import ratatoskr.core.ui.generated.resources.feedback_dialog_comment_label
@@ -77,7 +76,7 @@ fun FeedbackDialog(
             )
         },
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell)) {
             FrostText(
                 text = stringResource(Res.string.feedback_dialog_prompt),
                 style = AppTheme.frostType.monoBody,
@@ -114,7 +113,7 @@ fun FeedbackDialog(
                         text = issue.displayName(),
                         style = AppTheme.frostType.monoBody,
                         color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
-                        modifier = Modifier.padding(start = Spacing.xs),
+                        modifier = Modifier.padding(start = AppTheme.spacing.cell),
                     )
                 }
             }
@@ -129,7 +128,7 @@ fun FeedbackDialog(
             if (isSubmitting) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                 ) {
                     AppSmallSpinner()
                     FrostText(

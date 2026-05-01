@@ -13,10 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 @Composable
 fun TextArea(
@@ -28,7 +28,7 @@ fun TextArea(
     helperText: String? = null,
     errorText: String? = null,
     enabled: Boolean = true,
-    minHeight: androidx.compose.ui.unit.Dp = Dimensions.textAreaMinHeight,
+    minHeight: Dp = 100.dp,
     maxLines: Int = Int.MAX_VALUE,
 ) {
     val ink = AppTheme.frostColors.ink
@@ -43,7 +43,7 @@ fun TextArea(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
+        verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.gapInline),
     ) {
         if (!label.isNullOrBlank()) {
             FrostText(
@@ -69,7 +69,7 @@ fun TextArea(
                             .heightIn(min = minHeight)
                             .background(AppTheme.frostColors.page, RectangleShape)
                             .border(AppTheme.border.hairline, borderColor, RectangleShape)
-                            .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+                            .padding(horizontal = AppTheme.spacing.cell, vertical = AppTheme.spacing.cell),
                 ) {
                     if (value.isEmpty() && !placeholderText.isNullOrBlank()) {
                         FrostText(

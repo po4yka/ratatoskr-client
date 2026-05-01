@@ -10,9 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.domain.model.SortOrder
 import org.jetbrains.compose.resources.stringResource
@@ -46,7 +46,7 @@ fun SortOptionsMenu(
         AppMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.width(Dimensions.menuWidth),
+            modifier = Modifier.width(200.dp),
         ) {
             SortOrder.entries.forEach { sortOrder ->
                 AppMenuItem(

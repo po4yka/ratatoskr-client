@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
@@ -25,9 +26,7 @@ import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadge
 import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadgeSeverity
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.Request
 import com.po4yka.ratatoskr.domain.model.RequestStatus
 import org.jetbrains.compose.resources.stringResource
@@ -69,7 +68,7 @@ fun RequestHistorySection(
                     Modifier
                         .fillMaxWidth()
                         .clickable(onClick = onToggleExpanded)
-                        .padding(Spacing.md),
+                        .padding(AppTheme.spacing.line),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -117,9 +116,9 @@ fun RequestHistorySection(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = Spacing.md)
-                            .padding(bottom = Spacing.md),
-                    verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                            .padding(horizontal = AppTheme.spacing.line)
+                            .padding(bottom = AppTheme.spacing.line),
+                    verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                 ) {
                     when {
                         isLoading -> {
@@ -133,7 +132,7 @@ fun RequestHistorySection(
                                     text = stringResource(Res.string.request_history_loading),
                                     style = AppTheme.frostType.monoSm,
                                     color = ink.copy(alpha = AppTheme.alpha.secondary),
-                                    modifier = Modifier.padding(start = Spacing.xs),
+                                    modifier = Modifier.padding(start = AppTheme.spacing.cell),
                                 )
                             }
                         }
@@ -172,7 +171,7 @@ private fun RequestItem(
     BrutalistCard(
         modifier = modifier.fillMaxWidth(),
         critical = isFailed,
-        contentPadding = Spacing.sm,
+        contentPadding = AppTheme.spacing.cell,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -181,7 +180,7 @@ private fun RequestItem(
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.gapInline),
             ) {
                 FrostText(
                     text = request.url,
@@ -191,7 +190,7 @@ private fun RequestItem(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     RequestStatusBadge(status = request.status)
@@ -208,7 +207,7 @@ private fun RequestItem(
                     imageVector = AppIcons.Renew,
                     contentDescription = stringResource(Res.string.request_history_retry),
                     onClick = onRetry,
-                    buttonSize = Dimensions.compactIconButtonSize,
+                    buttonSize = 32.dp,
                     iconSize = IconSizes.xs,
                 )
             }

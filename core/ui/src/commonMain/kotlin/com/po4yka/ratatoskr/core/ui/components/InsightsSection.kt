@@ -20,8 +20,6 @@ import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.util.extractDomain
 import org.jetbrains.compose.resources.stringResource
@@ -44,25 +42,25 @@ fun InsightsSection(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = Spacing.md, vertical = Spacing.xxs),
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.gapInline),
     ) {
         Column(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(vertical = Spacing.md),
+                    .padding(vertical = AppTheme.spacing.line),
         ) {
             SectionHeading(
                 text = stringResource(Res.string.insights_title),
                 modifier =
                     Modifier
-                        .padding(horizontal = Spacing.md)
-                        .padding(bottom = Spacing.sm),
+                        .padding(horizontal = AppTheme.spacing.line)
+                        .padding(bottom = AppTheme.spacing.cell),
             )
 
             LazyRow(
-                contentPadding = PaddingValues(horizontal = Spacing.md),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                contentPadding = PaddingValues(horizontal = AppTheme.spacing.line),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
                 items(
                     items = insights,
@@ -90,7 +88,7 @@ private fun InsightCard(
     BrutalistCard(
         modifier =
             modifier
-                .width(Dimensions.recommendationCardWidth)
+                .width(200.dp)
                 .clickable(role = Role.Button, onClick = onClick),
     ) {
         Column {
@@ -105,7 +103,7 @@ private fun InsightCard(
                 )
             }
 
-            Column(modifier = Modifier.padding(Spacing.sm)) {
+            Column(modifier = Modifier.padding(AppTheme.spacing.cell)) {
                 FrostText(
                     text = summary.title,
                     style = AppTheme.frostType.monoEmph,
@@ -114,7 +112,7 @@ private fun InsightCard(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                Spacer(modifier = Modifier.height(Spacing.xxs))
+                Spacer(modifier = Modifier.height(AppTheme.spacing.gapInline))
 
                 FrostText(
                     text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.insights_fallback_source),

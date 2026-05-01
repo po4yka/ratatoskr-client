@@ -18,14 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.Recommendation
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
@@ -49,11 +48,11 @@ fun RecommendationsSection(
     Column(modifier = modifier) {
         SectionHeading(
             text = stringResource(Res.string.recommendations_title),
-            modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.xs),
+            modifier = Modifier.padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         )
         LazyRow(
-            contentPadding = PaddingValues(horizontal = Spacing.md),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            contentPadding = PaddingValues(horizontal = AppTheme.spacing.line),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             items(recommendations, key = { it.id }) { rec ->
                 RecommendationCard(
@@ -79,9 +78,9 @@ private fun RecommendationCard(
     BrutalistCard(
         modifier =
             modifier
-                .width(Dimensions.recommendationCardWidth)
+                .width(200.dp)
                 .clickable(role = Role.Button, onClick = onClick),
-        contentPadding = Spacing.sm,
+        contentPadding = AppTheme.spacing.cell,
     ) {
         Box {
             Column {
@@ -94,17 +93,17 @@ private fun RecommendationCard(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .height(Dimensions.recommendationCardImageHeight),
+                                .height(120.dp),
                     )
                 } else {
                     Box(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .height(Dimensions.recommendationCardImageHeight),
+                                .height(120.dp),
                     )
                 }
-                Column(modifier = Modifier.padding(Spacing.sm)) {
+                Column(modifier = Modifier.padding(AppTheme.spacing.cell)) {
                     FrostText(
                         text = recommendation.summary.title,
                         style = AppTheme.frostType.monoBody,
@@ -113,7 +112,7 @@ private fun RecommendationCard(
                         overflow = TextOverflow.Ellipsis,
                     )
                     recommendation.reason?.let { reason ->
-                        Spacer(modifier = Modifier.height(Spacing.xxs))
+                        Spacer(modifier = Modifier.height(AppTheme.spacing.gapInline))
                         FrostText(
                             text = reason,
                             style = AppTheme.frostType.monoSm,

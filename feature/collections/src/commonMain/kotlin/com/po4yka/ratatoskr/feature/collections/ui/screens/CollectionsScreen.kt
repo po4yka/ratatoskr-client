@@ -33,9 +33,8 @@ import com.po4yka.ratatoskr.core.ui.components.AppIconButton
 import com.po4yka.ratatoskr.core.ui.components.CollectionItem
 import com.po4yka.ratatoskr.core.ui.components.EmptyStateView
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.collections_cancel
 import ratatoskr.core.ui.generated.resources.collections_create
@@ -68,7 +67,7 @@ fun CollectionsScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         // Header with "New Collection" button
         CollectionsHeader(
@@ -160,15 +159,15 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(Dimensions.headerHeight)
-                .background(AppTheme.colors.background)
-                .padding(horizontal = Spacing.md),
+                .height(64.dp)
+                .background(AppTheme.frostColors.page)
+                .padding(horizontal = AppTheme.spacing.line),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FrostText(
             text = stringResource(Res.string.collections_title),
-            style = AppTheme.type.heading04,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.weight(1f),
         )
 
@@ -186,13 +185,13 @@ private fun CollectionsHeader(onCreateClick: () -> Unit) {
 private fun SectionHeader(title: String) {
     FrostText(
         text = title,
-        style = AppTheme.type.label01,
-        color = AppTheme.colors.textSecondary,
+        style = AppTheme.frostType.monoXs,
+        color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.background)
-                .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                .background(AppTheme.frostColors.page)
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
     )
 }
 
@@ -244,21 +243,21 @@ private fun CreateCollectionDialog(
         if (createError != null) {
             FrostText(
                 text = createError,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
             )
         }
 
         if (isCreating) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
                 AppSmallSpinner()
                 FrostText(
                     text = stringResource(Res.string.collections_creating),
-                    style = AppTheme.type.bodyCompact01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoBody,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
         }

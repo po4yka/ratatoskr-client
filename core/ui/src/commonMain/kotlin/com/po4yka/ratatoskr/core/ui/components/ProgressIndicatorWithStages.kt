@@ -14,7 +14,6 @@ import com.po4yka.ratatoskr.core.ui.components.frost.IngestState
 import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadge
 import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadgeSeverity
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.RequestStatus
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
@@ -46,13 +45,13 @@ fun ProgressIndicatorWithStages(
                     RequestStatus.COMPLETED -> IngestState.Idle
                     RequestStatus.FAILED -> IngestState.Error
                 },
-            modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.md),
+            modifier = Modifier.fillMaxWidth().padding(bottom = AppTheme.spacing.line),
         )
 
         // Stage indicators as StatusBadge rows
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.line),
         ) {
             FrostStageRow(
                 title = stringResource(Res.string.progress_stages_submitted),
@@ -87,7 +86,7 @@ private fun FrostStageRow(
     val ink = AppTheme.frostColors.ink
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         when {
             isFailed -> StatusBadge(label = "✗", severity = StatusBadgeSeverity.Alarm)

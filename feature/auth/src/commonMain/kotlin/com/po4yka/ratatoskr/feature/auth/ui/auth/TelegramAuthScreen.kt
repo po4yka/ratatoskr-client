@@ -54,7 +54,7 @@ fun TelegramAuthScreen(
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         // Close button
         Box(Modifier.padding(top = 16.dp, start = 16.dp)) {

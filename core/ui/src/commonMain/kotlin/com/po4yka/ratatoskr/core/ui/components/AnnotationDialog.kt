@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.annotation_dialog_placeholder
 import ratatoskr.core.ui.generated.resources.annotation_dialog_save
@@ -41,7 +41,7 @@ fun AnnotationDialog(
             )
         },
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell)) {
             BracketField(
                 value = draft,
                 onValueChange = onDraftChange,

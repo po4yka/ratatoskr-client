@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
+import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.trending_topics_title
@@ -34,23 +34,23 @@ fun TrendingTopicsSection(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = Spacing.md, vertical = Spacing.xxs),
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.gapInline),
     ) {
         Column(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(Spacing.md),
+                    .padding(AppTheme.spacing.line),
         ) {
             SectionHeading(
                 text = stringResource(Res.string.trending_topics_title),
-                modifier = Modifier.padding(bottom = Spacing.sm),
+                modifier = Modifier.padding(bottom = AppTheme.spacing.cell),
             )
 
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
                 topics.forEach { topic ->
                     MultiSelectChip(

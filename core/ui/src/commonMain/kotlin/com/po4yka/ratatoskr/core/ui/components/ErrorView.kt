@@ -11,6 +11,7 @@ import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadge
@@ -18,7 +19,6 @@ import com.po4yka.ratatoskr.core.ui.components.frost.StatusBadgeSeverity
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.error_view_title
@@ -36,7 +36,7 @@ fun ErrorView(
         modifier =
             modifier
                 .fillMaxSize()
-                .padding(Spacing.xl),
+                .padding(AppTheme.spacing.padPage),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -46,7 +46,7 @@ fun ErrorView(
             severity = StatusBadgeSeverity.Alarm,
         )
 
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
 
         FrostIcon(
             imageVector = AppIcons.WarningAlt,
@@ -55,7 +55,7 @@ fun ErrorView(
             modifier = Modifier.size(IconSizes.xl),
         )
 
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
 
         FrostText(
             text = stringResource(Res.string.error_view_title),
@@ -63,7 +63,7 @@ fun ErrorView(
             color = ink,
         )
 
-        Spacer(modifier = Modifier.height(Spacing.xs))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
 
         FrostText(
             text = message,
@@ -72,7 +72,7 @@ fun ErrorView(
         )
 
         if (onRetry != null) {
-            Spacer(modifier = Modifier.height(Spacing.lg))
+            Spacer(modifier = Modifier.height(24.dp))
             BracketButton(
                 label = stringResource(Res.string.settings_retry),
                 onClick = onRetry,

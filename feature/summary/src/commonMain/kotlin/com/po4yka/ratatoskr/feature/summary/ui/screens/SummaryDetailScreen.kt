@@ -71,7 +71,6 @@ import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.components.TagChip
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.util.extractDomain
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.audio_error
@@ -126,7 +125,7 @@ fun SummaryDetailScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         // Header
         SummaryDetailHeader(
@@ -152,21 +151,21 @@ fun SummaryDetailScreen(
                     Modifier
                         .fillMaxWidth()
                         .semantics { liveRegion = LiveRegionMode.Polite }
-                        .background(AppTheme.colors.layer02)
-                        .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                        .background(AppTheme.frostColors.page)
+                        .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
                 FrostIcon(
                     imageVector = AppIcons.WifiOff,
                     contentDescription = null,
-                    tint = AppTheme.colors.supportWarning,
+                    tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     modifier = Modifier.size(IconSizes.sm),
                 )
                 FrostText(
                     text = stringResource(Res.string.summary_detail_reading_offline),
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
         }
@@ -175,12 +174,12 @@ fun SummaryDetailScreen(
         state.exportError?.let { exportError ->
             FrostText(
                 text = exportError,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                        .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
             )
         }
 
@@ -191,7 +190,7 @@ fun SummaryDetailScreen(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                        .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
             ) {
                 Box(
                     modifier =
@@ -216,9 +215,9 @@ fun SummaryDetailScreen(
                         } else {
                             processingStageLabel(state.feedback.resummarizeStage)
                         },
-                    style = AppTheme.type.label01,
-                    color = AppTheme.colors.textSecondary,
-                    modifier = Modifier.padding(top = Spacing.xs),
+                    style = AppTheme.frostType.monoXs,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
+                    modifier = Modifier.padding(top = AppTheme.spacing.cell),
                 )
             }
         }
@@ -227,12 +226,12 @@ fun SummaryDetailScreen(
         state.feedback.resummarizeError?.let { errorMessage ->
             FrostText(
                 text = errorMessage,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.supportError,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.spark,
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                        .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
             )
         }
 
@@ -374,10 +373,10 @@ private fun AudioPlayerRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer01)
-                .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                .background(AppTheme.frostColors.page)
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         if (isLoading) {
             val audioLoadingDesc =
@@ -422,8 +421,15 @@ private fun AudioPlayerRow(
             }
         FrostText(
             text = audioLabel,
-            style = AppTheme.type.label01,
-            color = if (status == AudioStatus.ERROR) AppTheme.colors.supportError else AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color =
+                if (status == AudioStatus.ERROR) {
+                    AppTheme.frostColors.spark
+                } else {
+                    AppTheme.frostColors.ink.copy(
+                        alpha = AppTheme.alpha.secondary,
+                    )
+                },
             modifier = Modifier.weight(1f),
         )
 
@@ -432,7 +438,7 @@ private fun AudioPlayerRow(
                 imageVector = AppIcons.Close,
                 contentDescription = stringResource(Res.string.audio_stop_narration),
                 onClick = onStop,
-                tint = AppTheme.colors.iconSecondary,
+                tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 buttonSize = IconSizes.sm,
                 iconSize = IconSizes.sm,
             )
@@ -483,9 +489,9 @@ private fun SummaryDetailHeader(
                     onClick = onFavoriteClick,
                     tint =
                         if (s.isFavorited) {
-                            AppTheme.colors.supportError
+                            AppTheme.frostColors.spark
                         } else {
-                            AppTheme.colors.iconSecondary
+                            AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
                         },
                 )
 
@@ -495,9 +501,9 @@ private fun SummaryDetailHeader(
                     onClick = onThumbsUpClick,
                     tint =
                         if (feedbackRating == FeedbackRating.UP) {
-                            AppTheme.colors.supportSuccess
+                            AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
                         } else {
-                            AppTheme.colors.iconSecondary
+                            AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
                         },
                 )
 
@@ -507,9 +513,9 @@ private fun SummaryDetailHeader(
                     onClick = onThumbsDownClick,
                     tint =
                         if (feedbackRating == FeedbackRating.DOWN) {
-                            AppTheme.colors.supportError
+                            AppTheme.frostColors.spark
                         } else {
-                            AppTheme.colors.iconSecondary
+                            AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
                         },
                 )
 
@@ -529,7 +535,14 @@ private fun SummaryDetailHeader(
                     icon = if (isHighlightModeActive) AppIcons.BookmarkAdd else AppIcons.Bookmark,
                     contentDescription = highlightDesc,
                     onClick = onHighlightModeClick,
-                    tint = if (isHighlightModeActive) AppTheme.colors.linkPrimary else AppTheme.colors.iconSecondary,
+                    tint =
+                        if (isHighlightModeActive) {
+                            AppTheme.frostColors.ink
+                        } else {
+                            AppTheme.frostColors.ink.copy(
+                                alpha = AppTheme.alpha.secondary,
+                            )
+                        },
                 )
 
                 val readDesc =
@@ -541,7 +554,14 @@ private fun SummaryDetailHeader(
                 FrostIcon(
                     imageVector = if (s.isRead) AppIcons.CheckmarkFilled else AppIcons.CircleOutline,
                     contentDescription = readDesc,
-                    tint = if (s.isRead) AppTheme.colors.supportSuccess else AppTheme.colors.iconSecondary,
+                    tint =
+                        if (s.isRead) {
+                            AppTheme.frostColors.ink.copy(
+                                alpha = AppTheme.alpha.active,
+                            )
+                        } else {
+                            AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
+                        },
                     modifier = Modifier.size(IconSizes.sm),
                 )
 
@@ -555,7 +575,7 @@ private fun SummaryDetailHeader(
                     icon = AppIcons.Renew,
                     contentDescription = stringResource(Res.string.summary_detail_re_summarize),
                     onClick = { if (!isResummarizing) onResummarizeClick() },
-                    tint = AppTheme.colors.iconSecondary,
+                    tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                     modifier = Modifier.alpha(if (isResummarizing) 0.4f else 1f),
                 )
 
@@ -645,8 +665,8 @@ private fun SummaryDetailContent(
             ) {
                 FrostText(
                     text = stringResource(Res.string.summary_detail_no_content),
-                    style = AppTheme.type.body01,
-                    color = AppTheme.colors.textSecondary,
+                    style = AppTheme.frostType.monoBody,
+                    color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                 )
             }
         } else {
@@ -668,19 +688,19 @@ private fun SummaryDetailContent(
                 error = { _ ->
                     LazyColumn(
                         state = lazyListState,
-                        contentPadding = PaddingValues(Spacing.md),
+                        contentPadding = PaddingValues(AppTheme.spacing.line),
                         modifier = Modifier.fillMaxSize(),
                     ) {
                         item(key = "header") { ArticleHeader(summary = summary) }
                         item(key = "divider_top") {
                             FrostDivider()
-                            Spacer(modifier = Modifier.height(Spacing.md))
+                            Spacer(modifier = Modifier.height(AppTheme.spacing.line))
                         }
                         item(key = "fallback_text") {
                             FrostText(
                                 text = markdownContent,
-                                style = AppTheme.type.body01,
-                                color = AppTheme.colors.textPrimary,
+                                style = AppTheme.frostType.monoBody,
+                                color = AppTheme.frostColors.ink,
                             )
                         }
                         item(key = "footer") { ArticleFooter(sourceUrl = summary.sourceUrl) }
@@ -691,14 +711,14 @@ private fun SummaryDetailContent(
 
                     LazyColumn(
                         state = lazyListState,
-                        contentPadding = PaddingValues(Spacing.md),
+                        contentPadding = PaddingValues(AppTheme.spacing.line),
                         modifier = Modifier.fillMaxSize(),
                     ) {
                         item(key = "header") { ArticleHeader(summary = summary) }
 
                         item(key = "divider_top") {
                             FrostDivider()
-                            Spacer(modifier = Modifier.height(Spacing.md))
+                            Spacer(modifier = Modifier.height(AppTheme.spacing.line))
                         }
 
                         items(
@@ -750,7 +770,7 @@ private fun SummaryDetailContent(
                                     FrostIcon(
                                         imageVector = AppIcons.WarningAlt,
                                         contentDescription = stringResource(Res.string.summary_detail_has_annotation),
-                                        tint = AppTheme.colors.textSecondary,
+                                        tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
                                         modifier = Modifier.size(12.dp).align(Alignment.TopEnd),
                                     )
                                 }
@@ -772,11 +792,11 @@ private fun ArticleHeader(summary: Summary) {
     Column {
         FrostText(
             text = summary.title,
-            style = AppTheme.type.heading04,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.semantics { heading() },
         )
-        Spacer(modifier = Modifier.height(Spacing.xs))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
 
         if (summary.imageUrl != null) {
             ProxiedImage(
@@ -787,13 +807,13 @@ private fun ArticleHeader(summary: Summary) {
                         .fillMaxWidth()
                         .height(200.dp),
             )
-            Spacer(modifier = Modifier.height(Spacing.md))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.line))
         }
 
         FrostText(
             text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.summary_detail_unknown_source),
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
         val createdAtLabel = formatDate(summary.createdAt)
         val readTimeLabel =
@@ -809,20 +829,20 @@ private fun ArticleHeader(summary: Summary) {
                         append(it)
                     }
                 },
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.textSecondary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
         )
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
 
         if (summary.tags.isNotEmpty()) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             ) {
                 summary.tags.forEach { tag -> TagChip(tag = tag) }
             }
-            Spacer(modifier = Modifier.height(Spacing.md))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.line))
         }
     }
 }
@@ -831,22 +851,22 @@ private fun ArticleHeader(summary: Summary) {
 @Composable
 private fun ArticleFooter(sourceUrl: String) {
     Column {
-        Spacer(modifier = Modifier.height(Spacing.lg))
+        Spacer(modifier = Modifier.height(24.dp))
         FrostDivider()
-        Spacer(modifier = Modifier.height(Spacing.md))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.line))
 
         FrostText(
             text = stringResource(Res.string.summary_detail_original_article),
-            style = AppTheme.type.headingCompact01,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
         )
-        Spacer(modifier = Modifier.height(Spacing.xs))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
 
         val uriHandler = LocalUriHandler.current
         FrostText(
             text = sourceUrl,
-            style = AppTheme.type.label01,
-            color = AppTheme.colors.linkPrimary,
+            style = AppTheme.frostType.monoXs,
+            color = AppTheme.frostColors.ink,
             modifier =
                 Modifier
                     .semantics { role = Role.Button }

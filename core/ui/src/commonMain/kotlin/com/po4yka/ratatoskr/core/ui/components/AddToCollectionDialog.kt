@@ -17,11 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.Collection
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.add_to_collection_adding
 import ratatoskr.core.ui.generated.resources.add_to_collection_empty
@@ -50,10 +50,10 @@ fun AddToCollectionDialog(
             )
         },
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell)) {
             if (isLoading) {
                 Box(
-                    modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+                    modifier = Modifier.fillMaxWidth().padding(24.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     AppSmallSpinner()
@@ -66,7 +66,7 @@ fun AddToCollectionDialog(
                 )
             } else {
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                    verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                 ) {
                     items(
                         items = collections,
@@ -84,7 +84,7 @@ fun AddToCollectionDialog(
             if (isAdding) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                 ) {
                     AppSmallSpinner()
                     FrostText(
@@ -117,16 +117,16 @@ private fun CollectionSelectionRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(AppTheme.colors.layer02)
+                .background(AppTheme.frostColors.page)
                 .clickable(enabled = isEnabled, onClick = onClick)
-                .padding(Spacing.sm),
+                .padding(AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
     ) {
         FrostIcon(
             imageVector = AppIcons.Folder,
             contentDescription = null,
-            tint = AppTheme.colors.iconPrimary,
+            tint = AppTheme.frostColors.ink,
             modifier = Modifier.size(IconSizes.sm),
         )
         Column(modifier = Modifier.weight(1f)) {

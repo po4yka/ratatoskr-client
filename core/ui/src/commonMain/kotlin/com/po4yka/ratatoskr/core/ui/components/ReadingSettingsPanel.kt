@@ -16,7 +16,6 @@ import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketSlider
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.ReadingPreferences
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
@@ -46,7 +45,7 @@ fun ReadingSettingsPanel(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+                    .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         ) {
             FrostText(
                 text = stringResource(Res.string.summary_detail_reading_settings),
@@ -54,7 +53,7 @@ fun ReadingSettingsPanel(
                 color = ink,
             )
 
-            Spacer(modifier = Modifier.height(Spacing.sm))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
 
             // Font size slider
             Row(

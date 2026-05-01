@@ -23,7 +23,6 @@ import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.util.extractDomain
 import org.jetbrains.compose.resources.stringResource
@@ -51,7 +50,7 @@ fun SummaryCard(
             modifier
                 .fillMaxWidth()
                 .clickable(role = Role.Button, onClick = onClick),
-        contentPadding = Spacing.md,
+        contentPadding = AppTheme.spacing.line,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -66,7 +65,7 @@ fun SummaryCard(
                             .size(64.dp)
                             .clip(RectangleShape),
                 )
-                Spacer(modifier = Modifier.width(Spacing.sm))
+                Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
             }
 
             Column(modifier = Modifier.weight(1f)) {
@@ -79,7 +78,7 @@ fun SummaryCard(
                 )
 
                 if (summary.content.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(Spacing.xxs))
+                    Spacer(modifier = Modifier.height(AppTheme.spacing.gapInline))
                     FrostText(
                         text = summary.content.take(150).replace("\n", " "),
                         style = AppTheme.frostType.monoBody,
@@ -89,11 +88,11 @@ fun SummaryCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(Spacing.xxs))
+                Spacer(modifier = Modifier.height(AppTheme.spacing.gapInline))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.xxs),
+                    horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.gapInline),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     FrostText(
@@ -119,7 +118,7 @@ fun SummaryCard(
                         FrostIcon(
                             imageVector = AppIcons.FavoriteFilled,
                             contentDescription = stringResource(Res.string.summary_card_favorited),
-                            tint = AppTheme.colors.supportError,
+                            tint = AppTheme.frostColors.spark,
                             modifier = Modifier.size(IconSizes.xs),
                         )
                     }
@@ -137,14 +136,14 @@ fun SummaryCard(
                         FrostIcon(
                             imageVector = AppIcons.CheckmarkFilled,
                             contentDescription = stringResource(Res.string.summary_detail_mark_read),
-                            tint = AppTheme.colors.supportSuccess,
+                            tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active),
                             modifier = Modifier.size(IconSizes.xs),
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.width(Spacing.xs))
+            Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
 
             SummaryOverflowMenu(
                 summary = summary,

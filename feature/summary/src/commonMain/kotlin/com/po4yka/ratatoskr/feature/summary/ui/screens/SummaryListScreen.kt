@@ -60,9 +60,7 @@ import com.po4yka.ratatoskr.core.ui.components.SwipeableSummaryCard
 import com.po4yka.ratatoskr.core.ui.components.RecommendationsSection
 import com.po4yka.ratatoskr.core.ui.components.TrendingTopicsSection
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.summary_list_close_search
 import ratatoskr.core.ui.generated.resources.summary_list_create_digest
@@ -109,7 +107,7 @@ fun SummaryListScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.background),
+                .background(AppTheme.frostColors.page),
     ) {
         // Header with actions
         SummaryListHeader(
@@ -192,7 +190,7 @@ fun SummaryListScreen(
         if (goalProgress != null && goalProgress.goal.isEnabled) {
             ReadingGoalCard(
                 goalProgress = goalProgress,
-                modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.xxs),
+                modifier = Modifier.padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.gapInline),
             )
         }
 
@@ -254,15 +252,15 @@ private fun SummaryListHeader(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(Dimensions.headerHeight)
-                .background(AppTheme.colors.background)
-                .padding(horizontal = Spacing.md),
+                .height(64.dp)
+                .background(AppTheme.frostColors.page)
+                .padding(horizontal = AppTheme.spacing.line),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FrostText(
             text = title,
-            style = AppTheme.type.heading04,
-            color = AppTheme.colors.textPrimary,
+            style = AppTheme.frostType.monoEmph,
+            color = AppTheme.frostColors.ink,
             modifier = Modifier.weight(1f).semantics { heading() },
         )
 
@@ -480,7 +478,7 @@ private fun SummaryListView(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(Spacing.md),
+                            .padding(AppTheme.spacing.line),
                     contentAlignment = Alignment.Center,
                 ) {
                     AppSmallSpinner()
@@ -511,9 +509,9 @@ private fun SyncStatusBanner(
     // Priority: offline > sync error > stale data
     val (backgroundColor, text) =
         when {
-            isOffline -> AppTheme.colors.supportWarning to offlineText
-            syncError != null -> AppTheme.colors.supportError to syncError
-            else -> AppTheme.colors.supportWarning to staleText
+            isOffline -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary) to offlineText
+            syncError != null -> AppTheme.frostColors.spark to syncError
+            else -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary) to staleText
         }
 
     AnimatedVisibility(
@@ -529,19 +527,19 @@ private fun SyncStatusBanner(
                     .fillMaxWidth()
                     .semantics { liveRegion = LiveRegionMode.Polite }
                     .background(backgroundColor)
-                    .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                    .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         ) {
             FrostIcon(
                 imageVector = AppIcons.WarningAlt,
                 contentDescription = null,
-                tint = AppTheme.colors.textOnColor,
+                tint = AppTheme.frostColors.page,
                 modifier = Modifier.size(IconSizes.sm),
             )
-            Spacer(modifier = Modifier.width(Spacing.xs))
+            Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
             FrostText(
                 text = text,
-                style = AppTheme.type.label01,
-                color = AppTheme.colors.textOnColor,
+                style = AppTheme.frostType.monoXs,
+                color = AppTheme.frostColors.page,
             )
         }
     }
@@ -611,7 +609,7 @@ private fun SummaryGridView(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(Spacing.md),
+                            .padding(AppTheme.spacing.line),
                     contentAlignment = Alignment.Center,
                 ) {
                     AppSmallSpinner()

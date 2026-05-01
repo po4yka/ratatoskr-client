@@ -12,12 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 /**
  * Pre-defined empty state types for common scenarios.
@@ -142,7 +142,7 @@ fun EmptyStateView(
         modifier =
             modifier
                 .fillMaxSize()
-                .padding(horizontal = Spacing.xxl, vertical = Spacing.xl),
+                .padding(horizontal = AppTheme.spacing.gapSection, vertical = AppTheme.spacing.padPage),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -153,7 +153,7 @@ fun EmptyStateView(
             modifier = Modifier.size(IconSizes.xl),
         )
 
-        Spacer(modifier = Modifier.height(Spacing.lg))
+        Spacer(modifier = Modifier.height(24.dp))
 
         FrostText(
             text = title,
@@ -161,11 +161,11 @@ fun EmptyStateView(
             color = ink,
             modifier =
                 Modifier.then(
-                    Modifier.padding(horizontal = Spacing.md),
+                    Modifier.padding(horizontal = AppTheme.spacing.line),
                 ),
         )
 
-        Spacer(modifier = Modifier.height(Spacing.sm))
+        Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
 
         FrostText(
             text = message,
@@ -174,7 +174,7 @@ fun EmptyStateView(
         )
 
         if (actionText != null && onAction != null) {
-            Spacer(modifier = Modifier.height(Spacing.xl))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.padPage))
             BracketButton(label = actionText, onClick = onAction)
         }
     }

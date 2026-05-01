@@ -14,14 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.recent_searches_clear_all
@@ -49,13 +48,13 @@ fun RecentSearchesSection(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = Spacing.md, vertical = Spacing.xxs),
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.gapInline),
     ) {
         Column(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(Spacing.md),
+                    .padding(AppTheme.spacing.line),
         ) {
             // Header with Clear All button
             Row(
@@ -76,7 +75,7 @@ fun RecentSearchesSection(
             // Search items
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
+                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.gapInline),
             ) {
                 searches.forEach { query ->
                     RecentSearchItem(
@@ -106,13 +105,13 @@ private fun RecentSearchItem(
                 .fillMaxWidth()
                 .clickable(onClick = onClick)
                 .semantics { role = Role.Button }
-                .padding(vertical = Spacing.xs),
+                .padding(vertical = AppTheme.spacing.cell),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             FrostIcon(
@@ -132,7 +131,7 @@ private fun RecentSearchItem(
             imageVector = AppIcons.Close,
             contentDescription = stringResource(Res.string.recent_searches_remove, query),
             onClick = onDelete,
-            buttonSize = Dimensions.compactIconButtonSize,
+            buttonSize = 32.dp,
             iconSize = IconSizes.xs,
             tint = ink.copy(alpha = AppTheme.alpha.secondary),
         )

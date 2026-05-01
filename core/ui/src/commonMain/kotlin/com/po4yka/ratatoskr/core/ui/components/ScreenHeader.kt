@@ -14,9 +14,8 @@ import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.a11y_navigate_back
@@ -42,9 +41,9 @@ fun ScreenHeader(
 ) {
     val headerHeight =
         if (isDetailScreen) {
-            Dimensions.detailHeaderHeight
+            56.dp
         } else {
-            Dimensions.headerHeight
+            64.dp
         }
 
     androidx.compose.foundation.layout.Column(modifier = modifier.fillMaxWidth()) {
@@ -53,7 +52,7 @@ fun ScreenHeader(
                 Modifier
                     .fillMaxWidth()
                     .height(headerHeight)
-                    .padding(horizontal = Spacing.md),
+                    .padding(horizontal = AppTheme.spacing.line),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Back button (optional)

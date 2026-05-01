@@ -20,12 +20,11 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.search_clear
@@ -53,7 +52,7 @@ fun AppSearchField(
             modifier
                 .background(AppTheme.frostColors.page, RectangleShape)
                 .border(AppTheme.border.hairline, ink.copy(alpha = AppTheme.border.separatorAlpha), RectangleShape)
-                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+                .padding(horizontal = AppTheme.spacing.cell, vertical = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         FrostIcon(
@@ -69,7 +68,7 @@ fun AppSearchField(
             modifier =
                 Modifier
                     .weight(1f)
-                    .padding(horizontal = Spacing.sm),
+                    .padding(horizontal = AppTheme.spacing.cell),
             singleLine = true,
             textStyle = AppTheme.frostType.monoBody.copy(color = ink),
             cursorBrush = SolidColor(ink),
@@ -92,7 +91,7 @@ fun AppSearchField(
                 imageVector = AppIcons.Close,
                 contentDescription = stringResource(Res.string.search_clear),
                 onClick = clearQuery,
-                buttonSize = Dimensions.compactIconButtonSize,
+                buttonSize = 32.dp,
                 iconSize = IconSizes.xs,
             )
         }
@@ -114,7 +113,7 @@ fun SummarySearchBar(
             modifier
                 .fillMaxWidth()
                 .background(AppTheme.frostColors.page)
-                .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppSearchField(
@@ -125,13 +124,13 @@ fun SummarySearchBar(
             searchIconContentDescription = stringResource(Res.string.summary_list_search),
         )
 
-        Spacer(modifier = Modifier.width(Spacing.xs))
+        Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
 
         AppIconButton(
             imageVector = AppIcons.Close,
             contentDescription = stringResource(Res.string.summary_list_close_search),
             onClick = onClose,
-            buttonSize = Dimensions.compactIconButtonSize,
+            buttonSize = 32.dp,
             iconSize = IconSizes.sm,
         )
     }

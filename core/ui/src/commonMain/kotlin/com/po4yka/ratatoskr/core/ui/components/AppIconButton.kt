@@ -9,9 +9,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 
 // TODO: callers should migrate to BracketIconButton directly;
@@ -24,7 +24,7 @@ fun AppIconButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     tint: Color = AppTheme.frostColors.ink,
-    @Suppress("UNUSED_PARAMETER") buttonSize: Dp = Dimensions.iconButtonSize,
+    @Suppress("UNUSED_PARAMETER") buttonSize: Dp = 40.dp,
     iconSize: Dp = IconSizes.md,
     @Suppress("UNUSED_PARAMETER") shape: Shape = RectangleShape,
 ) {

@@ -15,13 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.ReadingGoalProgress
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
@@ -40,7 +39,7 @@ fun ReadingGoalCard(
 
     BrutalistCard(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = Spacing.md,
+        contentPadding = AppTheme.spacing.line,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -49,7 +48,7 @@ fun ReadingGoalCard(
             // TODO: full Frost mono ring in a follow-up commit; keeping Canvas ring with ink colors
             ReadingGoalProgressRing(progressFraction = goalProgress.progressFraction)
 
-            Spacer(modifier = Modifier.width(Spacing.md))
+            Spacer(modifier = Modifier.width(AppTheme.spacing.line))
 
             Column(modifier = Modifier.weight(1f)) {
                 val readMin = goalProgress.todayReadingSec / 60
@@ -60,15 +59,15 @@ fun ReadingGoalCard(
                     color = ink,
                 )
                 if (goalProgress.goal.currentStreakDays > 0) {
-                    Spacer(modifier = Modifier.height(Spacing.xxs))
+                    Spacer(modifier = Modifier.height(AppTheme.spacing.gapInline))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         FrostIcon(
                             imageVector = AppIcons.Favorite,
                             contentDescription = null,
                             tint = ink.copy(alpha = AppTheme.alpha.secondary),
-                            modifier = Modifier.size(Dimensions.readingGoalInlineIconSize),
+                            modifier = Modifier.size(12.dp),
                         )
-                        Spacer(modifier = Modifier.width(Spacing.xxs))
+                        Spacer(modifier = Modifier.width(AppTheme.spacing.gapInline))
                         FrostText(
                             text = stringResource(Res.string.reading_goal_streak, goalProgress.goal.currentStreakDays),
                             style = AppTheme.frostType.monoSm,
@@ -100,11 +99,11 @@ private fun ReadingGoalProgressRing(
     val trackAlpha = AppTheme.alpha.quiet
 
     Box(
-        modifier = modifier.size(Dimensions.readingGoalRingSize),
+        modifier = modifier.size(56.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Canvas(modifier = Modifier.size(Dimensions.readingGoalRingSize)) {
-            val strokeWidth = Dimensions.readingGoalRingStrokeWidth.toPx()
+        Canvas(modifier = Modifier.size(56.dp)) {
+            val strokeWidth = 6.dp.toPx()
             drawArc(
                 color = ink.copy(alpha = trackAlpha),
                 startAngle = -90f,

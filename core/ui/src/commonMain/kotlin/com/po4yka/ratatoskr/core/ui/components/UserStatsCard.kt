@@ -15,7 +15,6 @@ import com.po4yka.ratatoskr.core.ui.components.frost.MultiSelectChip
 import com.po4yka.ratatoskr.core.ui.components.frost.RowDigest
 import com.po4yka.ratatoskr.core.ui.components.frost.SectionHeading
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import com.po4yka.ratatoskr.domain.model.UserStats
 import org.jetbrains.compose.resources.stringResource
 import ratatoskr.core.ui.generated.resources.Res
@@ -51,14 +50,14 @@ fun UserStatsCard(
     BrutalistCard(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             SectionHeading(text = stringResource(Res.string.user_stats_title))
 
             when {
                 isLoading -> {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                        horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         AppSmallSpinner()
@@ -100,15 +99,15 @@ fun UserStatsCard(
 
                     // Favorite topics chips
                     stats.favoriteTopics?.takeIf { it.isNotEmpty() }?.let { topics ->
-                        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell)) {
                             FrostText(
                                 text = stringResource(Res.string.user_stats_favorite_topics),
                                 style = AppTheme.frostType.monoSm,
                                 color = ink.copy(alpha = AppTheme.alpha.secondary),
                             )
                             FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-                                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                                horizontalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
+                                verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
                             ) {
                                 topics.take(5).forEach { topicStat ->
                                     MultiSelectChip(

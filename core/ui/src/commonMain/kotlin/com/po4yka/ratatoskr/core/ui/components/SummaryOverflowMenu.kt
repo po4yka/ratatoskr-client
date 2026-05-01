@@ -51,7 +51,7 @@ fun SummaryOverflowMenu(
             leadingIcon = if (summary.isFavorited) AppIcons.FavoriteFilled else AppIcons.Favorite,
             leadingIconTint =
                 if (summary.isFavorited) {
-                    AppTheme.colors.supportError
+                    AppTheme.frostColors.spark
                 } else {
                     AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
                 },

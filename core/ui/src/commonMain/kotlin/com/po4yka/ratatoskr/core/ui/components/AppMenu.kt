@@ -32,9 +32,8 @@ import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BrutalistCard
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Dimensions
+import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 @Composable
 fun AppMenu(
@@ -67,7 +66,7 @@ fun AppMenu(
             ),
     ) {
         // Rectangle menu body — 0dp radius, hairline border via BrutalistCard
-        BrutalistCard(modifier = modifier.widthIn(min = Dimensions.menuWidth)) {
+        BrutalistCard(modifier = modifier.widthIn(min = 200.dp)) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 content = content,
@@ -89,7 +88,7 @@ fun AppMenuItem(
 ) {
     val contentColor =
         if (isDestructive) {
-            AppTheme.colors.supportError
+            AppTheme.frostColors.spark
         } else {
             AppTheme.frostColors.ink
         }
@@ -103,7 +102,7 @@ fun AppMenuItem(
                     role = Role.Button,
                     onClick = onClick,
                 )
-                .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+                .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leadingIcon != null) {
@@ -112,13 +111,13 @@ fun AppMenuItem(
                 contentDescription = null,
                 tint =
                     if (enabled) {
-                        if (isDestructive) AppTheme.colors.supportError else leadingIconTint
+                        if (isDestructive) AppTheme.frostColors.spark else leadingIconTint
                     } else {
                         AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.inactive)
                     },
                 modifier = Modifier.size(IconSizes.xs),
             )
-            Spacer(modifier = Modifier.width(Spacing.sm))
+            Spacer(modifier = Modifier.width(AppTheme.spacing.cell))
         }
 
         FrostText(
@@ -178,7 +177,7 @@ fun AppOverflowMenuButton(
         onClick = onClick,
         modifier = modifier,
         tint = tint,
-        buttonSize = Dimensions.compactIconButtonSize,
+        buttonSize = 32.dp,
         iconSize = IconSizes.sm,
     )
 }

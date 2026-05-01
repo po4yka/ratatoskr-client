@@ -25,7 +25,7 @@ fun ProxiedImage(
     AsyncImage(
         model = proxiedUrl,
         contentDescription = contentDescription,
-        modifier = modifier.background(AppTheme.colors.layer02),
+        modifier = modifier.background(AppTheme.frostColors.page),
         contentScale = contentScale,
     )
 }

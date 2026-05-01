@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
-import com.po4yka.ratatoskr.core.ui.theme.Spacing
 
 @Suppress("FunctionNaming")
 @Composable
@@ -50,7 +49,7 @@ fun SummaryCardSkeleton(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .background(AppTheme.frostColors.page)
                 .border(AppTheme.border.hairline, AppTheme.frostColors.ink.copy(alpha = AppTheme.border.separatorAlpha))
-                .padding(Spacing.md),
+                .padding(AppTheme.spacing.line),
     ) {
         // Thumbnail placeholder
         SkeletonBox(
@@ -58,11 +57,11 @@ fun SummaryCardSkeleton(modifier: Modifier = Modifier) {
             color = shimmerColor,
         )
 
-        Spacer(modifier = Modifier.width(Spacing.md))
+        Spacer(modifier = Modifier.width(AppTheme.spacing.line))
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+            verticalArrangement = Arrangement.spacedBy(AppTheme.spacing.cell),
         ) {
             // Title placeholder (2 lines)
             SkeletonBox(
@@ -80,7 +79,7 @@ fun SummaryCardSkeleton(modifier: Modifier = Modifier) {
                 color = shimmerColor,
             )
 
-            Spacer(modifier = Modifier.height(Spacing.xxs))
+            Spacer(modifier = Modifier.height(AppTheme.spacing.gapInline))
 
             // Source placeholder
             SkeletonBox(
