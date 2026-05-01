@@ -779,8 +779,13 @@ private fun SummaryDetailContent(
                                         .fillMaxWidth()
                                         .then(
                                             if (isHighlighted) {
-                                                // TODO: migrate to AtomMark spans in a follow-up — current implementation
-                                                // collapses hues to ink-alpha per Frost two-color rule.
+                                                // TODO: AtomMark passage span wiring requires offset translation from
+                                                // markdown source -> rendered node text. Highlights here are keyed by
+                                                // node.startOffset (whole-node granularity); MarkdownElement renders
+                                                // an opaque AST node so per-character AnnotatedString spans cannot be
+                                                // injected without rewriting the markdown rendering pipeline. The
+                                                // Box.background approach is the correct visual outcome at this level
+                                                // of granularity (ink-alpha 0.08f per DESIGN.md Frost two-color rule).
                                                 Modifier.background(
                                                     color = AppTheme.frostColors.ink.copy(alpha = 0.08f),
                                                 )

@@ -44,6 +44,8 @@ import com.po4yka.ratatoskr.core.ui.components.InsightsSection
 import com.po4yka.ratatoskr.core.ui.components.RecentSearchesSection
 import com.po4yka.ratatoskr.core.ui.components.SummaryCard
 import com.po4yka.ratatoskr.core.ui.components.TrendingTopicsSection
+import com.po4yka.ratatoskr.core.ui.components.frost.MarkRange
+import com.po4yka.ratatoskr.core.ui.components.frost.MarkStyle
 import com.po4yka.ratatoskr.core.ui.icons.AppIcons
 import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import ratatoskr.core.ui.generated.resources.Res
@@ -505,6 +507,16 @@ private fun SearchResultsList(
             items = results,
             key = { it.id },
         ) { summary ->
+            // TODO: AtomMark match-highlight wiring — SummaryCard (core/ui) renders title and body
+            // as plain String fields and does not accept AnnotatedString overloads. Once SummaryCard
+            // exposes titleAnnotated/bodyAnnotated parameters (or is replaced with an inline row),
+            // wire highlights here via:
+            //   val query = state.query  (pass query down to SearchResultsList)
+            //   val titleRanges = remember(summary.title, query) { computeMatchRanges(summary.title, query) }
+            //   val bodySnippet = summary.content.take(150).replace("\n", " ")
+            //   val bodyRanges = remember(bodySnippet, query) { computeMatchRanges(bodySnippet, query) }
+            //   val titleAnnotated = rememberMarkedAnnotatedString(summary.title, titleRanges)
+            //   val bodyAnnotated = rememberMarkedAnnotatedString(bodySnippet, bodyRanges)
             SummaryCard(
                 summary = summary,
                 onClick = { onSummaryClick(summary.id) },
@@ -526,4 +538,31 @@ private fun SearchResultsList(
             }
         }
     }
+}
+
+/**
+ * Computes [MarkRange] spans with [MarkStyle.Match] for every occurrence of each whitespace-
+ * tokenized query term inside [text] (case-insensitive). Empty query returns an empty list.
+ *
+ * Intended for use with [com.po4yka.ratatoskr.core.ui.components.frost.rememberMarkedAnnotatedString].
+ */
+private fun computeMatchRanges(
+    text: String,
+    query: String,
+): List<MarkRange> {
+    if (query.isBlank()) return emptyList()
+    val tokens = query.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+    val ranges = mutableListOf<MarkRange>()
+    val lowerText = text.lowercase()
+    for (token in tokens) {
+        val lowerToken = token.lowercase()
+        var start = 0
+        while (true) {
+            val index = lowerText.indexOf(lowerToken, start)
+            if (index == -1) break
+            ranges += MarkRange(index, index + token.length, MarkStyle.Match)
+            start = index + 1
+        }
+    }
+    return ranges
 }
