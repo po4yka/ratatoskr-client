@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,8 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Text
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -163,7 +163,7 @@ fun SummaryDetailScreen(
                     tint = AppTheme.colors.supportWarning,
                     modifier = Modifier.size(IconSizes.sm),
                 )
-                Text(
+                FrostText(
                     text = stringResource(Res.string.summary_detail_reading_offline),
                     style = AppTheme.type.label01,
                     color = AppTheme.colors.textSecondary,
@@ -173,7 +173,7 @@ fun SummaryDetailScreen(
 
         // Export error banner
         state.exportError?.let { exportError ->
-            Text(
+            FrostText(
                 text = exportError,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
@@ -193,11 +193,23 @@ fun SummaryDetailScreen(
                         .fillMaxWidth()
                         .padding(horizontal = Spacing.md, vertical = Spacing.xs),
             ) {
-                LinearProgressIndicator(
-                    progress = { state.feedback.resummarizeProgress },
-                    modifier = Modifier.fillMaxWidth().semantics { contentDescription = reSummarizeDesc },
-                )
-                Text(
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .background(AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.quiet))
+                            .semantics { contentDescription = reSummarizeDesc },
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(state.feedback.resummarizeProgress)
+                                .fillMaxHeight()
+                                .background(AppTheme.frostColors.ink),
+                    )
+                }
+                FrostText(
                     text =
                         if (state.feedback.resummarizeStage == ProcessingStage.UNSPECIFIED) {
                             stringResource(Res.string.summary_detail_re_summarizing)
@@ -213,7 +225,7 @@ fun SummaryDetailScreen(
 
         // Re-summarize error
         state.feedback.resummarizeError?.let { errorMessage ->
-            Text(
+            FrostText(
                 text = errorMessage,
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.supportError,
@@ -408,7 +420,7 @@ private fun AudioPlayerRow(
                 AudioStatus.ERROR -> audioState?.error ?: audioErrorText
                 AudioStatus.IDLE -> listenText
             }
-        Text(
+        FrostText(
             text = audioLabel,
             style = AppTheme.type.label01,
             color = if (status == AudioStatus.ERROR) AppTheme.colors.supportError else AppTheme.colors.textSecondary,
@@ -601,10 +613,21 @@ private fun SummaryDetailContent(
     val imageTransformer = remember(imageUrlTransformer) { ProxiedImageTransformer(imageUrlTransformer) }
 
     Column(modifier = modifier.fillMaxSize()) {
-        LinearProgressIndicator(
-            progress = { readingProgress },
-            modifier = Modifier.fillMaxWidth().height(2.dp),
-        )
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .background(AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.quiet)),
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth(readingProgress)
+                        .fillMaxHeight()
+                        .background(AppTheme.frostColors.ink),
+            )
+        }
 
         val markdownColors = rememberFrostMarkdownColors()
         val markdownTypography =
@@ -620,7 +643,7 @@ private fun SummaryDetailContent(
                 modifier = Modifier.fillMaxSize().weight(1f),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(
+                FrostText(
                     text = stringResource(Res.string.summary_detail_no_content),
                     style = AppTheme.type.body01,
                     color = AppTheme.colors.textSecondary,
@@ -654,7 +677,7 @@ private fun SummaryDetailContent(
                             Spacer(modifier = Modifier.height(Spacing.md))
                         }
                         item(key = "fallback_text") {
-                            Text(
+                            FrostText(
                                 text = markdownContent,
                                 style = AppTheme.type.body01,
                                 color = AppTheme.colors.textPrimary,
@@ -747,7 +770,7 @@ private fun SummaryDetailContent(
 @Composable
 private fun ArticleHeader(summary: Summary) {
     Column {
-        Text(
+        FrostText(
             text = summary.title,
             style = AppTheme.type.heading04,
             color = AppTheme.colors.textPrimary,
@@ -767,7 +790,7 @@ private fun ArticleHeader(summary: Summary) {
             Spacer(modifier = Modifier.height(Spacing.md))
         }
 
-        Text(
+        FrostText(
             text = extractDomain(summary.sourceUrl) ?: stringResource(Res.string.summary_detail_unknown_source),
             style = AppTheme.type.label01,
             color = AppTheme.colors.textSecondary,
@@ -777,7 +800,7 @@ private fun ArticleHeader(summary: Summary) {
             summary.readingTimeMin?.let {
                 stringResource(Res.string.custom_digest_create_read_time, it)
             }
-        Text(
+        FrostText(
             text =
                 buildString {
                     append(createdAtLabel)
@@ -812,7 +835,7 @@ private fun ArticleFooter(sourceUrl: String) {
         FrostDivider()
         Spacer(modifier = Modifier.height(Spacing.md))
 
-        Text(
+        FrostText(
             text = stringResource(Res.string.summary_detail_original_article),
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
@@ -820,7 +843,7 @@ private fun ArticleFooter(sourceUrl: String) {
         Spacer(modifier = Modifier.height(Spacing.xs))
 
         val uriHandler = LocalUriHandler.current
-        Text(
+        FrostText(
             text = sourceUrl,
             style = AppTheme.type.label01,
             color = AppTheme.colors.linkPrimary,

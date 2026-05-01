@@ -21,22 +21,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
@@ -99,7 +94,6 @@ import ratatoskr.core.ui.generated.resources.submit_url_submitting
 import ratatoskr.core.ui.generated.resources.submit_url_success
 import ratatoskr.core.ui.generated.resources.submit_url_title
 import ratatoskr.core.ui.generated.resources.submit_url_view_existing
-import ratatoskr.core.ui.generated.resources.submit_url_placeholder
 import ratatoskr.core.ui.generated.resources.submit_url_error_invalid_url
 import ratatoskr.core.ui.generated.resources.submit_url_error_duplicate
 import ratatoskr.core.ui.generated.resources.submit_url_error_network
@@ -586,9 +580,6 @@ private fun URLInputSection(
     submitError: SubmitUrlError? = null,
     onViewLibrary: () -> Unit = {},
 ) {
-    val focusManager = LocalFocusManager.current
-    val hasError = error != null || submitError != null
-
     Column(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
@@ -598,26 +589,11 @@ private fun URLInputSection(
             color = AppTheme.colors.textSecondary,
         )
 
-        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions/isError
-        OutlinedTextField(
+        BracketField(
             value = url,
             onValueChange = onUrlChanged,
-            label = { FrostText(stringResource(Res.string.submit_url_label)) },
-            placeholder = { FrostText(stringResource(Res.string.submit_url_placeholder)) },
+            label = stringResource(Res.string.submit_url_label),
             enabled = !isLoading,
-            isError = hasError,
-            keyboardOptions =
-                KeyboardOptions(
-                    keyboardType = KeyboardType.Uri,
-                    imeAction = ImeAction.Done,
-                ),
-            keyboardActions =
-                KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus()
-                        onSubmit()
-                    },
-                ),
             modifier = Modifier.fillMaxWidth(),
         )
 

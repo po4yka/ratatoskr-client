@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,19 +45,14 @@ import com.po4yka.ratatoskr.core.ui.theme.IconSizes
 import com.po4yka.ratatoskr.core.ui.theme.Spacing
 import ratatoskr.core.ui.generated.resources.Res
 import ratatoskr.core.ui.generated.resources.digest_screen_add_channel
-import ratatoskr.core.ui.generated.resources.digest_screen_channel_placeholder
 import ratatoskr.core.ui.generated.resources.digest_screen_channel_username
 import ratatoskr.core.ui.generated.resources.digest_screen_delivery_time
-import ratatoskr.core.ui.generated.resources.digest_screen_delivery_time_placeholder
 import ratatoskr.core.ui.generated.resources.digest_screen_history_channels_posts
 import ratatoskr.core.ui.generated.resources.digest_screen_hours_lookback
-import ratatoskr.core.ui.generated.resources.digest_screen_hours_lookback_placeholder
 import ratatoskr.core.ui.generated.resources.digest_screen_load_more
 import ratatoskr.core.ui.generated.resources.digest_screen_loading_more
 import ratatoskr.core.ui.generated.resources.digest_screen_max_posts
-import ratatoskr.core.ui.generated.resources.digest_screen_max_posts_placeholder
 import ratatoskr.core.ui.generated.resources.digest_screen_min_relevance
-import ratatoskr.core.ui.generated.resources.digest_screen_min_relevance_placeholder
 import ratatoskr.core.ui.generated.resources.digest_screen_no_history
 import ratatoskr.core.ui.generated.resources.digest_screen_saving_preferences
 import ratatoskr.core.ui.generated.resources.digest_screen_save_preferences
@@ -73,7 +68,6 @@ import ratatoskr.core.ui.generated.resources.digest_screen_tab_channels
 import ratatoskr.core.ui.generated.resources.digest_screen_tab_history
 import ratatoskr.core.ui.generated.resources.digest_screen_tab_preferences
 import ratatoskr.core.ui.generated.resources.digest_screen_timezone
-import ratatoskr.core.ui.generated.resources.digest_screen_timezone_placeholder
 import ratatoskr.core.ui.generated.resources.digest_screen_trigger_now
 import ratatoskr.core.ui.generated.resources.digest_screen_trigger_success
 import ratatoskr.core.ui.generated.resources.digest_screen_triggering
@@ -382,12 +376,10 @@ private fun AddChannelForm(
             style = AppTheme.type.headingCompact01,
             color = AppTheme.colors.textPrimary,
         )
-        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
-        OutlinedTextField(
+        BracketField(
             value = username,
             onValueChange = onUsernameChanged,
-            label = { FrostText(stringResource(Res.string.digest_screen_channel_username)) },
-            placeholder = { FrostText(stringResource(Res.string.digest_screen_channel_placeholder)) },
+            label = stringResource(Res.string.digest_screen_channel_username),
             enabled = !isSubscribing,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -530,48 +522,42 @@ private fun DigestPreferencesForm(
     val enabled = !preferences.isSaving
 
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
-        OutlinedTextField(
+        BracketField(
             value = preferences.editedDeliveryTime ?: preferences.preferences.deliveryTime,
             onValueChange = actions::onDeliveryTimeChanged,
-            label = { FrostText(stringResource(Res.string.digest_screen_delivery_time)) },
-            placeholder = { FrostText(stringResource(Res.string.digest_screen_delivery_time_placeholder)) },
+            label = stringResource(Res.string.digest_screen_delivery_time),
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        OutlinedTextField(
+        BracketField(
             value = preferences.editedTimezone ?: preferences.preferences.timezone,
             onValueChange = actions::onTimezoneChanged,
-            label = { FrostText(stringResource(Res.string.digest_screen_timezone)) },
-            placeholder = { FrostText(stringResource(Res.string.digest_screen_timezone_placeholder)) },
+            label = stringResource(Res.string.digest_screen_timezone),
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        OutlinedTextField(
+        BracketField(
             value = preferences.editedHoursLookback ?: preferences.preferences.hoursLookback.toString(),
             onValueChange = actions::onHoursLookbackChanged,
-            label = { FrostText(stringResource(Res.string.digest_screen_hours_lookback)) },
-            placeholder = { FrostText(stringResource(Res.string.digest_screen_hours_lookback_placeholder)) },
+            label = stringResource(Res.string.digest_screen_hours_lookback),
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        OutlinedTextField(
+        BracketField(
             value = preferences.editedMaxPosts ?: preferences.preferences.maxPostsPerDigest.toString(),
             onValueChange = actions::onMaxPostsChanged,
-            label = { FrostText(stringResource(Res.string.digest_screen_max_posts)) },
-            placeholder = { FrostText(stringResource(Res.string.digest_screen_max_posts_placeholder)) },
+            label = stringResource(Res.string.digest_screen_max_posts),
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        OutlinedTextField(
+        BracketField(
             value = preferences.editedMinRelevance ?: preferences.preferences.minRelevanceScore.toString(),
             onValueChange = actions::onMinRelevanceChanged,
-            label = { FrostText(stringResource(Res.string.digest_screen_min_relevance)) },
-            placeholder = { FrostText(stringResource(Res.string.digest_screen_min_relevance_placeholder)) },
+            label = stringResource(Res.string.digest_screen_min_relevance),
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )

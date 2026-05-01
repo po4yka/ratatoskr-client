@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.OutlinedTextField
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
@@ -47,7 +47,6 @@ import ratatoskr.core.ui.generated.resources.custom_digest_create_search_label
 import ratatoskr.core.ui.generated.resources.custom_digest_create_selected_count
 import ratatoskr.core.ui.generated.resources.custom_digest_create_title
 import ratatoskr.core.ui.generated.resources.custom_digest_create_title_label
-import ratatoskr.core.ui.generated.resources.custom_digest_create_title_placeholder
 import ratatoskr.core.ui.generated.resources.custom_digest_create_brief
 import org.jetbrains.compose.resources.stringResource
 
@@ -79,12 +78,10 @@ fun CustomDigestCreateScreen(
         FrostDivider()
 
         // Title input
-        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
-        OutlinedTextField(
+        BracketField(
             value = state.title,
             onValueChange = { viewModel.setTitle(it) },
-            label = { FrostText(stringResource(Res.string.custom_digest_create_title_label)) },
-            placeholder = { FrostText(stringResource(Res.string.custom_digest_create_title_placeholder)) },
+            label = stringResource(Res.string.custom_digest_create_title_label),
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -109,10 +106,10 @@ fun CustomDigestCreateScreen(
         }
 
         // Search bar
-        OutlinedTextField(
+        BracketField(
             value = state.searchQuery,
             onValueChange = { viewModel.onSearchChanged(it) },
-            label = { FrostText(stringResource(Res.string.custom_digest_create_search_label)) },
+            label = stringResource(Res.string.custom_digest_create_search_label),
             modifier =
                 Modifier
                     .fillMaxWidth()
