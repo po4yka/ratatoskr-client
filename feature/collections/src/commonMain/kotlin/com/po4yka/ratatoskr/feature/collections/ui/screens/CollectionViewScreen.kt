@@ -33,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.OutlinedTextField
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
@@ -97,7 +97,6 @@ import ratatoskr.core.ui.generated.resources.collection_view_tab_sharing
 import ratatoskr.core.ui.generated.resources.collection_view_user
 import ratatoskr.core.ui.generated.resources.collections_cancel
 import ratatoskr.core.ui.generated.resources.collections_description_placeholder
-import ratatoskr.core.ui.generated.resources.collections_name_placeholder
 import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming")
@@ -539,12 +538,10 @@ private fun CollectionEditForm(
                 style = AppTheme.type.label01,
                 color = AppTheme.colors.textSecondary,
             )
-            // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
-            OutlinedTextField(
+            BracketField(
                 value = editedName,
                 onValueChange = onNameChange,
-                label = { FrostText(stringResource(Res.string.collection_view_name)) },
-                placeholder = { FrostText(stringResource(Res.string.collections_name_placeholder)) },
+                label = stringResource(Res.string.collection_view_name),
                 enabled = !isUpdating,
                 modifier = Modifier.fillMaxWidth(),
             )

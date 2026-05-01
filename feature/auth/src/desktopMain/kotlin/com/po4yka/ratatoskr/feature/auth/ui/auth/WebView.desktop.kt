@@ -2,7 +2,7 @@ package com.po4yka.ratatoskr.feature.auth.ui.auth
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +25,7 @@ actual fun WebView(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        Text("Opening authentication in browser...")
+        FrostText("Opening authentication in browser...")
     }
 
     // Open URL in default browser

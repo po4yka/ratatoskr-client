@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.OutlinedTextField
+import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostDivider
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
@@ -42,12 +42,10 @@ import ratatoskr.core.ui.generated.resources.collections_create
 import ratatoskr.core.ui.generated.resources.collections_create_dialog_title
 import ratatoskr.core.ui.generated.resources.collections_creating
 import ratatoskr.core.ui.generated.resources.collections_description_label
-import ratatoskr.core.ui.generated.resources.collections_description_placeholder
 import ratatoskr.core.ui.generated.resources.collections_empty_message
 import ratatoskr.core.ui.generated.resources.collections_empty_title
 import ratatoskr.core.ui.generated.resources.collections_loading
 import ratatoskr.core.ui.generated.resources.collections_name_label
-import ratatoskr.core.ui.generated.resources.collections_name_placeholder
 import ratatoskr.core.ui.generated.resources.collections_new
 import ratatoskr.core.ui.generated.resources.collections_section_other
 import ratatoskr.core.ui.generated.resources.collections_section_work
@@ -227,22 +225,18 @@ private fun CreateCollectionDialog(
             )
         },
     ) {
-        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
-        OutlinedTextField(
+        BracketField(
             value = name,
             onValueChange = { name = it },
-            label = { FrostText(stringResource(Res.string.collections_name_label)) },
-            placeholder = { FrostText(stringResource(Res.string.collections_name_placeholder)) },
+            label = stringResource(Res.string.collections_name_label),
             enabled = !isCreating,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        // TODO: Phase D7 — migrate to BracketField once it supports keyboardOptions
-        OutlinedTextField(
+        BracketField(
             value = description,
             onValueChange = { description = it },
-            label = { FrostText(stringResource(Res.string.collections_description_label)) },
-            placeholder = { FrostText(stringResource(Res.string.collections_description_placeholder)) },
+            label = stringResource(Res.string.collections_description_label),
             enabled = !isCreating,
             modifier = Modifier.fillMaxWidth(),
         )
