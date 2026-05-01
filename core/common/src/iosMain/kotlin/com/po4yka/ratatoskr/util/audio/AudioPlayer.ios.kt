@@ -1,5 +1,6 @@
 package com.po4yka.ratatoskr.util.audio
 
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -7,7 +8,7 @@ import platform.AVFAudio.AVAudioPlayer
 import platform.Foundation.NSData
 import platform.Foundation.create
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 actual class AudioPlayer actual constructor() {
     private var player: AVAudioPlayer? = null
 

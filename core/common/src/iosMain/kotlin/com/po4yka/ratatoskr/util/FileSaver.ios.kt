@@ -34,7 +34,7 @@ actual class FileSaver {
                 null,
                 true,
                 null,
-            ) as? NSURL ?: run {
+            ) ?: run {
                 logger.error { "Could not access Documents directory" }
                 return null
             }
@@ -79,7 +79,7 @@ actual class FileSaver {
                 null,
                 true,
                 null,
-            ) as? NSURL ?: throw Exception("Could not access Library directory")
+            ) ?: throw Exception("Could not access Library directory")
 
         logger.info { "Importing database. Copying from $sourcePath to Library directory with name $targetDbName" }
 
