@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -156,7 +156,7 @@ fun SwipeableSummaryCard(
                         .background(rightBackgroundColor),
                 contentAlignment = Alignment.CenterStart,
             ) {
-                Icon(
+                FrostIcon(
                     imageVector = AppIcons.Checkmark,
                     contentDescription = stringResource(Res.string.summary_card_mark_read),
                     tint = AppTheme.frostColors.ink,
@@ -176,7 +176,7 @@ fun SwipeableSummaryCard(
                         .background(leftBackgroundColor),
                 contentAlignment = Alignment.CenterEnd,
             ) {
-                Icon(
+                FrostIcon(
                     imageVector = AppIcons.Archive,
                     contentDescription = stringResource(Res.string.swipeable_summary_archive),
                     tint = AppTheme.frostColors.ink,

@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -126,7 +126,7 @@ fun CustomDigestViewScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Icon(
+                    FrostIcon(
                         imageVector = AppIcons.WarningAlt,
                         contentDescription = stringResource(Res.string.custom_digest_view_error),
                         tint = AppTheme.colors.supportError,

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +56,7 @@ fun AppSearchField(
                 .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
+        FrostIcon(
             imageVector = AppIcons.Search,
             contentDescription = searchIconContentDescription,
             tint = ink.copy(alpha = AppTheme.alpha.secondary),

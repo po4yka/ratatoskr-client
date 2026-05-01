@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -424,7 +424,7 @@ private fun LegalRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        Icon(
+        FrostIcon(
             imageVector = AppIcons.Document,
             contentDescription = null,
             tint = AppTheme.colors.iconSecondary,
@@ -913,7 +913,7 @@ private fun DigestNavigationRow(onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
-            Icon(
+            FrostIcon(
                 imageVector = AppIcons.Notification,
                 contentDescription = stringResource(Res.string.settings_digest_icon),
                 tint = AppTheme.colors.iconPrimary,

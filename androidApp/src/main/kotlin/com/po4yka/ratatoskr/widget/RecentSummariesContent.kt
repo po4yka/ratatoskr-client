@@ -6,7 +6,6 @@ import android.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
@@ -20,7 +19,6 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
-import androidx.glance.layout.width
 import androidx.glance.text.FontFamily
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -29,18 +27,21 @@ import com.po4yka.ratatoskr.MainActivity
 import com.po4yka.ratatoskr.domain.model.Summary
 
 // Frost color constants: ink flips light/dark, page inverts, spark never changes.
-private val INK = ColorProvider(
-    day = androidx.compose.ui.graphics.Color(0xFF1C242C),
-    night = androidx.compose.ui.graphics.Color(0xFFE8ECF0),
-)
-private val PAGE = ColorProvider(
-    day = androidx.compose.ui.graphics.Color(0xFFF0F2F5),
-    night = androidx.compose.ui.graphics.Color(0xFF12161C),
-)
-private val INK_MUTED = ColorProvider(
-    day = androidx.compose.ui.graphics.Color(0xFF4A5568),
-    night = androidx.compose.ui.graphics.Color(0xFFA0AEC0),
-)
+private val INK =
+    ColorProvider(
+        day = androidx.compose.ui.graphics.Color(0xFF1C242C),
+        night = androidx.compose.ui.graphics.Color(0xFFE8ECF0),
+    )
+private val PAGE =
+    ColorProvider(
+        day = androidx.compose.ui.graphics.Color(0xFFF0F2F5),
+        night = androidx.compose.ui.graphics.Color(0xFF12161C),
+    )
+private val INK_MUTED =
+    ColorProvider(
+        day = androidx.compose.ui.graphics.Color(0xFF4A5568),
+        night = androidx.compose.ui.graphics.Color(0xFFA0AEC0),
+    )
 
 @Composable
 fun RecentSummariesContent(summaries: List<Summary>) {

@@ -3,7 +3,7 @@ package com.po4yka.ratatoskr.core.ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,7 +58,7 @@ fun SortOptionsMenu(
                     trailingContent =
                         if (currentSortOrder == sortOrder) {
                             {
-                                Icon(
+                                FrostIcon(
                                     imageVector = AppIcons.Checkmark,
                                     contentDescription = stringResource(Res.string.sort_menu_selected),
                                     tint = AppTheme.frostColors.ink,

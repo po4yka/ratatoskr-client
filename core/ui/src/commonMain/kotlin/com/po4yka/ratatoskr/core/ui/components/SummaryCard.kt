@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -116,7 +116,7 @@ fun SummaryCard(
                     )
 
                     if (summary.isFavorited) {
-                        Icon(
+                        FrostIcon(
                             imageVector = AppIcons.FavoriteFilled,
                             contentDescription = stringResource(Res.string.summary_card_favorited),
                             tint = AppTheme.colors.supportError,
@@ -125,7 +125,7 @@ fun SummaryCard(
                     }
 
                     if (summary.isFullContentCached) {
-                        Icon(
+                        FrostIcon(
                             imageVector = AppIcons.Download,
                             contentDescription = stringResource(Res.string.summary_card_available_offline),
                             tint = AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary),
@@ -134,7 +134,7 @@ fun SummaryCard(
                     }
 
                     if (summary.isRead) {
-                        Icon(
+                        FrostIcon(
                             imageVector = AppIcons.CheckmarkFilled,
                             contentDescription = stringResource(Res.string.summary_detail_mark_read),
                             tint = AppTheme.colors.supportSuccess,

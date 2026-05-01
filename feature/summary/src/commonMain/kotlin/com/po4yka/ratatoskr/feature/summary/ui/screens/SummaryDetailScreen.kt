@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -157,7 +157,7 @@ fun SummaryDetailScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
-                Icon(
+                FrostIcon(
                     imageVector = AppIcons.WifiOff,
                     contentDescription = null,
                     tint = AppTheme.colors.supportWarning,
@@ -538,7 +538,7 @@ private fun SummaryDetailHeader(
                     } else {
                         stringResource(Res.string.summary_detail_mark_unread)
                     }
-                Icon(
+                FrostIcon(
                     imageVector = if (s.isRead) AppIcons.CheckmarkFilled else AppIcons.CircleOutline,
                     contentDescription = readDesc,
                     tint = if (s.isRead) AppTheme.colors.supportSuccess else AppTheme.colors.iconSecondary,
@@ -747,7 +747,7 @@ private fun SummaryDetailContent(
                             ) {
                                 MarkdownElement(node, components, state.content)
                                 if (isHighlighted && highlight?.note != null) {
-                                    Icon(
+                                    FrostIcon(
                                         imageVector = AppIcons.WarningAlt,
                                         contentDescription = stringResource(Res.string.summary_detail_has_annotation),
                                         tint = AppTheme.colors.textSecondary,

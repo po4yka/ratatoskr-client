@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Icon
+import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIcon
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -681,7 +681,7 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
                 else -> AppTheme.colors.iconSecondary
             }
 
-        Icon(
+        FrostIcon(
             imageVector = statusIcon,
             contentDescription =
                 when (item.status) {
