@@ -76,6 +76,17 @@ Central navigation hub for Ratatoskr client documentation.
 
 ---
 
+## Task Board
+
+| Document | Description |
+|----------|-------------|
+| [tasks/dashboard.md](tasks/dashboard.md) | Obsidian Tasks query hub (doing / review / blocked / backlog) |
+| [tasks/active.md](tasks/active.md) | In-progress and review tasks |
+| [tasks/backlog.md](tasks/backlog.md) | Backlog tasks by area |
+| [tasks/blocked.md](tasks/blocked.md) | Blocked tasks with reasons |
+
+---
+
 ## Project Files
 
 | File | Description |

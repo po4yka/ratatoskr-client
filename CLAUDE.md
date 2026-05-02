@@ -162,3 +162,25 @@ The SKIE plugin is configured in Gradle but currently disabled in `composeApp/bu
 - Prefer Frost atoms (`BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`) in `core/ui/.../components/frost/` or `core/ui/.../components/foundation/` before inventing new patterns.
 - Use Compose Resources instead of hardcoded UI text.
 - Keep accessibility semantics in mind; the repo already uses headings and live regions in screens such as `SummaryListScreen`.
+
+---
+
+## Task Board
+
+This repository uses Obsidian Tasks-compatible Markdown task lines as the canonical task system.
+Use the `repo-task-board` skill for all task-related operations.
+
+Canonical files:
+
+- `docs/tasks/backlog.md` — backlog items by area
+- `docs/tasks/active.md` — in-progress and review tasks
+- `docs/tasks/blocked.md` — blocked tasks with reasons
+- `docs/tasks/dashboard.md` — Obsidian Tasks query hub
+
+Canonical task syntax:
+
+```md
+- [ ] #task <imperative title> #repo/ratatoskr-client #area/<area> #status/<status> <priority>
+```
+
+Invoke the `repo-task-board` skill when the user mentions: roadmap, TODO, backlog, Kanban, task board, sprint, blocked work, or agent-ready work.
