@@ -101,3 +101,7 @@ node_modules/
 
 # Git Worktrees
 .worktrees/
+
+# Obsidian volatile state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
