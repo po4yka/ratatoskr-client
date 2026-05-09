@@ -14,6 +14,7 @@ import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.domain.model.SummaryFeedback
 import com.po4yka.ratatoskr.domain.repository.SummaryRepository
 import com.po4yka.ratatoskr.data.remote.dto.SubmitFeedbackRequestDto
+import com.po4yka.ratatoskr.feature.sync.domain.repository.SyncContentPrefetcher
 import com.po4yka.ratatoskr.util.MarkdownSanitizer
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.json.Json
@@ -30,12 +31,12 @@ import org.koin.core.annotation.Single
 
 private val logger = KotlinLogging.logger {}
 
-@Single(binds = [SummaryRepository::class])
+@Single(binds = [SummaryRepository::class, SyncContentPrefetcher::class])
 class SummaryRepositoryImpl(
     private val database: Database,
     private val api: SummariesApi,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : SummaryRepository {
+) : SummaryRepository, SyncContentPrefetcher {
     override fun getSummaries(
         page: Int,
         pageSize: Int,
@@ -240,6 +241,8 @@ class SummaryRepositoryImpl(
     override suspend fun unarchiveSummary(id: String) {
         database.databaseQueries.unarchiveSummary(id)
     }
+
+    override suspend fun prefetchRecentContent(maxItems: Int): Int = prefetchContent(maxItems)
 
     override suspend fun prefetchContent(maxItems: Int): Int {
         val uncachedIds =
