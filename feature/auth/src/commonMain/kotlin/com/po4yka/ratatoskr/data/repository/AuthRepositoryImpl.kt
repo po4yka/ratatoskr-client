@@ -17,6 +17,8 @@ import com.po4yka.ratatoskr.domain.model.UserPreferences
 import com.po4yka.ratatoskr.feature.auth.api.AuthSessionPort
 import com.po4yka.ratatoskr.domain.repository.AuthRepository
 import com.po4yka.ratatoskr.util.config.AppConfig
+import com.po4yka.ratatoskr.util.error.AppError
+import com.po4yka.ratatoskr.util.error.toAppError
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.Flow
@@ -71,7 +73,7 @@ class AuthRepositoryImpl(
             _currentUser.value = null
             _isAuthenticated.value = true
         } else {
-            throw response.error?.let { Exception(it.message) } ?: Exception("Login failed")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Login failed")
         }
     }
 
@@ -98,7 +100,7 @@ class AuthRepositoryImpl(
             _currentUser.value = null
             _isAuthenticated.value = true
         } else {
-            throw response.error?.let { Exception(it.message) } ?: Exception("Login failed")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Login failed")
         }
     }
 
@@ -195,7 +197,7 @@ class AuthRepositoryImpl(
             _currentUser.value = appleData.user.toDomain()
             _isAuthenticated.value = true
         } else {
-            throw response.error?.let { Exception(it.message) } ?: Exception("Apple login failed")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Apple login failed")
         }
     }
 
@@ -219,7 +221,7 @@ class AuthRepositoryImpl(
             _currentUser.value = googleData.user.toDomain()
             _isAuthenticated.value = true
         } else {
-            throw response.error?.let { Exception(it.message) } ?: Exception("Google login failed")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Google login failed")
         }
     }
 
@@ -241,7 +243,7 @@ class AuthRepositoryImpl(
         if (response.success && sessionsData != null) {
             return sessionsData.sessions.map { it.toDomain() }
         } else {
-            throw response.error?.let { Exception(it.message) } ?: Exception("Failed to list sessions")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to list sessions")
         }
     }
 
@@ -250,7 +252,7 @@ class AuthRepositoryImpl(
         if (response.success) {
             logout()
         } else {
-            throw response.error?.let { Exception(it.message) } ?: Exception("Failed to delete account")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to delete account")
         }
     }
 }

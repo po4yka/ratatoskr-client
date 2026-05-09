@@ -14,6 +14,8 @@ import com.po4yka.ratatoskr.domain.model.CollectionAcl
 import com.po4yka.ratatoskr.domain.model.CollectionInvite
 import com.po4yka.ratatoskr.domain.model.Summary
 import com.po4yka.ratatoskr.feature.collections.domain.repository.CollectionRepository
+import com.po4yka.ratatoskr.util.error.AppError
+import com.po4yka.ratatoskr.util.error.toAppError
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -33,7 +35,7 @@ class CollectionRepositoryImpl(
                 val collections = requireNotNull(response.data).collections.map { it.toDomain() }
                 emit(collections)
             } else {
-                throw Exception("Failed to fetch collections: ${response.error}")
+                throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to fetch collections")
             }
         }
 
@@ -43,7 +45,7 @@ class CollectionRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw Exception("Failed to get collection $id: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to get collection $id")
         }
     }
 
@@ -72,7 +74,7 @@ class CollectionRepositoryImpl(
                 }
             }
         } else {
-            throw Exception("Failed to get collection items for $collectionId: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to get collection items for $collectionId")
         }
     }
 
@@ -91,7 +93,7 @@ class CollectionRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw Exception("Failed to update collection: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to update collection")
         }
     }
 
@@ -99,7 +101,7 @@ class CollectionRepositoryImpl(
         val intId = id.toIntOrNull() ?: throw IllegalArgumentException("Invalid collection ID: $id")
         val response = api.deleteCollection(intId)
         if (!response.success) {
-            throw Exception("Failed to delete collection: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to delete collection")
         }
     }
 
@@ -109,7 +111,7 @@ class CollectionRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).acl.map { it.toDomain() }
         } else {
-            throw Exception("Failed to get ACL for collection $id: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to get ACL for collection $id")
         }
     }
 
@@ -126,7 +128,7 @@ class CollectionRepositoryImpl(
             )
         val response = api.addCollaborator(intId, request)
         if (!response.success) {
-            throw Exception("Failed to add collaborator: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to add collaborator")
         }
     }
 
@@ -137,7 +139,7 @@ class CollectionRepositoryImpl(
         val intId = id.toIntOrNull() ?: throw IllegalArgumentException("Invalid collection ID: $id")
         val response = api.removeCollaborator(intId, userId)
         if (!response.success) {
-            throw Exception("Failed to remove collaborator: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to remove collaborator")
         }
     }
 
@@ -156,7 +158,7 @@ class CollectionRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw Exception("Failed to create invite link: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to create invite link")
         }
     }
 
@@ -174,7 +176,7 @@ class CollectionRepositoryImpl(
                 request = CollectionItemCreateRequest(summaryId = intSummaryId),
             )
         if (!response.success) {
-            throw Exception("Failed to add item to collection: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to add item to collection")
         }
     }
 
@@ -187,7 +189,7 @@ class CollectionRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw Exception("Failed to create collection: ${response.error}")
+            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to create collection")
         }
     }
 }

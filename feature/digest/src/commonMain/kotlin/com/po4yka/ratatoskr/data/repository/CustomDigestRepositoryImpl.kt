@@ -9,6 +9,8 @@ import com.po4yka.ratatoskr.domain.model.CustomDigest
 import com.po4yka.ratatoskr.domain.model.CustomDigestStatus
 import com.po4yka.ratatoskr.domain.model.DigestFormat
 import com.po4yka.ratatoskr.domain.repository.CustomDigestRepository
+import com.po4yka.ratatoskr.util.error.AppError
+import com.po4yka.ratatoskr.util.error.toAppError
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -66,7 +68,7 @@ class CustomDigestRepositoryImpl(
 
                 if (!response.success || response.data == null) {
                     database.databaseQueries.deleteCustomDigest(localId)
-                    throw Exception("Failed to create digest: ${response.error?.message}")
+                    throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to create digest")
                 }
 
                 val dto = requireNotNull(response.data)
@@ -142,7 +144,7 @@ class CustomDigestRepositoryImpl(
             }
             // Timed out: mark as failed locally
             database.databaseQueries.updateCustomDigestContent(content = null, status = "failed", id = id)
-            throw Exception("Digest generation timed out")
+            throw AppError.UnknownError(fallbackMessage = "Digest generation timed out")
         }
 
     override suspend fun deleteDigest(id: String): Unit =
