@@ -8,7 +8,6 @@ import com.po4yka.ratatoskr.domain.model.Request
 import com.po4yka.ratatoskr.domain.model.RequestStatus
 import com.po4yka.ratatoskr.domain.usecase.CheckDuplicateUrlUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetRequestsUseCase
-import com.po4yka.ratatoskr.domain.usecase.RetryRequestUseCase
 import com.po4yka.ratatoskr.presentation.state.SubmitURLState
 import com.po4yka.ratatoskr.presentation.state.SubmitUrlError
 import com.po4yka.ratatoskr.util.error.AppError
@@ -35,7 +34,6 @@ private fun isValidUrl(url: String): Boolean = urlRegex.matches(url.trim())
 class SubmitURLViewModel(
     private val processingService: ProcessingService,
     private val getRequestsUseCase: GetRequestsUseCase,
-    private val retryRequestUseCase: RetryRequestUseCase,
     private val checkDuplicateUrlUseCase: CheckDuplicateUrlUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(SubmitURLState())

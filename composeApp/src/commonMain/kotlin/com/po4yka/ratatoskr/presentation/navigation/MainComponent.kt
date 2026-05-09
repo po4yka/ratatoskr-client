@@ -40,7 +40,7 @@ internal class DefaultMainComponent(
             }
 
             override fun open(route: AppRoute) {
-                logger.info { "Navigate to route: $route" }
+                logger.debug { "Navigate to route: $route" }
                 navigation.push(route)
             }
         }
