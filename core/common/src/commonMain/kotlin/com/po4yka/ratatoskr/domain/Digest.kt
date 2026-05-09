@@ -20,10 +20,30 @@ data class DigestPreferences(
     val minRelevanceScore: Double = 0.5,
 )
 
+enum class DigestHistoryStatus {
+    PENDING, DELIVERED, COMPLETED, FAILED, UNKNOWN;
+
+    companion object {
+        fun fromString(value: String): DigestHistoryStatus =
+            when (value.lowercase()) {
+                "pending" -> PENDING
+                "delivered" -> DELIVERED
+                "completed" -> COMPLETED
+                "failed" -> FAILED
+                else -> UNKNOWN
+            }
+    }
+}
+
 data class DigestHistoryItem(
     val id: String,
     val deliveredAt: String,
     val channelCount: Int = 0,
     val postCount: Int = 0,
-    val status: String = "unknown",
+    val status: DigestHistoryStatus = DigestHistoryStatus.UNKNOWN,
 )
+
+sealed class DigestTriggerResult {
+    data class Triggered(val status: String, val message: String? = null) : DigestTriggerResult()
+    data object NoServerResponse : DigestTriggerResult()
+}

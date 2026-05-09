@@ -5,6 +5,7 @@ import com.po4yka.ratatoskr.data.remote.dto.DigestDeliveryListResponseDto
 import com.po4yka.ratatoskr.data.remote.dto.DigestPreferenceResponseDto
 import com.po4yka.ratatoskr.domain.model.DigestChannel
 import com.po4yka.ratatoskr.domain.model.DigestHistoryItem
+import com.po4yka.ratatoskr.domain.model.DigestHistoryStatus
 import com.po4yka.ratatoskr.domain.model.DigestPreferences
 import com.po4yka.ratatoskr.domain.model.DigestSubscriptionInfo
 
@@ -40,7 +41,7 @@ fun DigestDeliveryListResponseDto.toDomain(): List<DigestHistoryItem> {
             deliveredAt = d.deliveredAt,
             channelCount = d.channelCount,
             postCount = d.postCount,
-            status = d.status,
+            status = DigestHistoryStatus.fromString(d.status),
         )
     }
 }

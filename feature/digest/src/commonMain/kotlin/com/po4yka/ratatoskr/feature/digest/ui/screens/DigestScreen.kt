@@ -34,6 +34,7 @@ import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
 import com.po4yka.ratatoskr.domain.model.DigestChannel
 import com.po4yka.ratatoskr.domain.model.DigestHistoryItem
+import com.po4yka.ratatoskr.domain.model.DigestHistoryStatus
 import com.po4yka.ratatoskr.presentation.navigation.DigestComponent
 import com.po4yka.ratatoskr.presentation.state.DigestChannelsState
 import com.po4yka.ratatoskr.presentation.state.DigestHistoryState
@@ -663,14 +664,14 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
     ) {
         val statusIcon =
             when (item.status) {
-                "delivered", "completed" -> AppIcons.CheckmarkFilled
-                "failed" -> AppIcons.Close
+                DigestHistoryStatus.DELIVERED, DigestHistoryStatus.COMPLETED -> AppIcons.CheckmarkFilled
+                DigestHistoryStatus.FAILED -> AppIcons.Close
                 else -> AppIcons.CircleOutline
             }
         val statusColor =
             when (item.status) {
-                "delivered", "completed" -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
-                "failed" -> AppTheme.frostColors.spark
+                DigestHistoryStatus.DELIVERED, DigestHistoryStatus.COMPLETED -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
+                DigestHistoryStatus.FAILED -> AppTheme.frostColors.spark
                 else -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
             }
 
@@ -678,9 +679,9 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
             imageVector = statusIcon,
             contentDescription =
                 when (item.status) {
-                    "delivered" -> stringResource(Res.string.digest_screen_status_delivered)
-                    "completed" -> stringResource(Res.string.digest_screen_status_completed)
-                    "failed" -> stringResource(Res.string.digest_screen_status_failed)
+                    DigestHistoryStatus.DELIVERED -> stringResource(Res.string.digest_screen_status_delivered)
+                    DigestHistoryStatus.COMPLETED -> stringResource(Res.string.digest_screen_status_completed)
+                    DigestHistoryStatus.FAILED -> stringResource(Res.string.digest_screen_status_failed)
                     else -> stringResource(Res.string.digest_screen_status_pending)
                 },
             tint = statusColor,

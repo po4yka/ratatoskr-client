@@ -5,6 +5,7 @@ import com.po4yka.ratatoskr.data.remote.DigestApi
 import com.po4yka.ratatoskr.domain.model.DigestHistoryItem
 import com.po4yka.ratatoskr.domain.model.DigestPreferences
 import com.po4yka.ratatoskr.domain.model.DigestSubscriptionInfo
+import com.po4yka.ratatoskr.domain.model.DigestTriggerResult
 import com.po4yka.ratatoskr.domain.model.ResolvedChannel
 import com.po4yka.ratatoskr.domain.repository.DigestRepository
 import org.koin.core.annotation.Single
@@ -15,17 +16,17 @@ class DigestRepositoryImpl(
 ) : DigestRepository {
     override suspend fun getChannels(): DigestSubscriptionInfo {
         val response = api.getChannels()
-        return response.data?.toDomain() ?: DigestSubscriptionInfo()
+        return requireNotNull(response.data) { "No channel data in server response" }.toDomain()
     }
 
     override suspend fun subscribe(channelUsername: String): DigestSubscriptionInfo {
         val response = api.subscribe(channelUsername)
-        return response.data?.toDomain() ?: DigestSubscriptionInfo()
+        return requireNotNull(response.data) { "No channel data in server response" }.toDomain()
     }
 
     override suspend fun unsubscribe(channelUsername: String): DigestSubscriptionInfo {
         val response = api.unsubscribe(channelUsername)
-        return response.data?.toDomain() ?: DigestSubscriptionInfo()
+        return requireNotNull(response.data) { "No channel data in server response" }.toDomain()
     }
 
     override suspend fun resolveChannel(channelUsername: String): ResolvedChannel {
@@ -35,7 +36,7 @@ class DigestRepositoryImpl(
 
     override suspend fun getPreferences(): DigestPreferences {
         val response = api.getPreferences()
-        return response.data?.toDomain() ?: DigestPreferences()
+        return requireNotNull(response.data) { "No preferences data in server response" }.toDomain()
     }
 
     override suspend fun updatePreferences(
@@ -53,7 +54,7 @@ class DigestRepositoryImpl(
                 maxPostsPerDigest = maxPostsPerDigest,
                 minRelevanceScore = minRelevanceScore,
             )
-        return response.data?.toDomain() ?: DigestPreferences()
+        return requireNotNull(response.data) { "No preferences data in server response" }.toDomain()
     }
 
     override suspend fun getHistory(
@@ -61,17 +62,19 @@ class DigestRepositoryImpl(
         pageSize: Int,
     ): List<DigestHistoryItem> {
         val response = api.getHistory(page, pageSize)
-        return response.data?.toDomain() ?: emptyList()
+        return requireNotNull(response.data) { "No history data in server response" }.toDomain()
     }
 
-    override suspend fun triggerDigest(): String {
+    override suspend fun triggerDigest(): DigestTriggerResult {
         val response = api.triggerDigest()
-        return response.data?.status ?: "unknown"
+        val data = response.data ?: return DigestTriggerResult.NoServerResponse
+        return DigestTriggerResult.Triggered(status = data.status, message = data.message)
     }
 
-    override suspend fun triggerChannel(channelUsername: String): String {
+    override suspend fun triggerChannel(channelUsername: String): DigestTriggerResult {
         val response = api.triggerChannel(channelUsername)
-        return response.data?.status ?: "unknown"
+        val data = response.data ?: return DigestTriggerResult.NoServerResponse
+        return DigestTriggerResult.Triggered(status = data.status, message = data.message)
     }
 
     override suspend fun createCategory(name: String): String {
