@@ -244,9 +244,7 @@ class SummaryRepositoryImpl(
         database.databaseQueries.unarchiveSummary(id)
     }
 
-    override suspend fun prefetchRecentContent(maxItems: Int): Int = prefetchContent(maxItems)
-
-    override suspend fun prefetchContent(maxItems: Int): Int {
+    override suspend fun prefetchRecentContent(maxItems: Int): Int {
         val uncachedIds =
             database.databaseQueries
                 .getUncachedUnreadSummaryIds(count = maxItems.toLong())
