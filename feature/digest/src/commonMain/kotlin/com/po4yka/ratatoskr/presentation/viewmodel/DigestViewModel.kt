@@ -4,7 +4,8 @@ import com.po4yka.ratatoskr.presentation.PresentationConstants
 import com.po4yka.ratatoskr.domain.usecase.GetDigestChannelsUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetDigestHistoryUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetDigestPreferencesUseCase
-import com.po4yka.ratatoskr.domain.usecase.ManageDigestSubscriptionUseCase
+import com.po4yka.ratatoskr.domain.usecase.SubscribeToDigestChannelUseCase
+import com.po4yka.ratatoskr.domain.usecase.UnsubscribeFromDigestChannelUseCase
 import com.po4yka.ratatoskr.domain.usecase.TriggerDigestUseCase
 import com.po4yka.ratatoskr.domain.usecase.UpdateDigestPreferencesUseCase
 import com.po4yka.ratatoskr.presentation.state.DigestState
@@ -19,7 +20,8 @@ private val logger = KotlinLogging.logger {}
 
 class DigestViewModel(
     private val getDigestChannelsUseCase: GetDigestChannelsUseCase,
-    private val manageDigestSubscriptionUseCase: ManageDigestSubscriptionUseCase,
+    private val subscribeToDigestChannelUseCase: SubscribeToDigestChannelUseCase,
+    private val unsubscribeFromDigestChannelUseCase: UnsubscribeFromDigestChannelUseCase,
     private val getDigestPreferencesUseCase: GetDigestPreferencesUseCase,
     private val updateDigestPreferencesUseCase: UpdateDigestPreferencesUseCase,
     private val getDigestHistoryUseCase: GetDigestHistoryUseCase,
@@ -88,7 +90,7 @@ class DigestViewModel(
                 it.copy(channels = it.channels.copy(isSubscribing = true, subscribeError = null))
             }
             try {
-                val info = manageDigestSubscriptionUseCase.subscribe(username)
+                val info = subscribeToDigestChannelUseCase(username)
                 _state.update {
                     it.copy(
                         channels =
@@ -119,7 +121,7 @@ class DigestViewModel(
         viewModelScope.launch {
             _state.update { it.copy(channels = it.channels.copy(isSubscribing = true)) }
             try {
-                val info = manageDigestSubscriptionUseCase.unsubscribe(channelUsername)
+                val info = unsubscribeFromDigestChannelUseCase(channelUsername)
                 _state.update {
                     it.copy(channels = it.channels.copy(subscriptionInfo = info, isSubscribing = false))
                 }
