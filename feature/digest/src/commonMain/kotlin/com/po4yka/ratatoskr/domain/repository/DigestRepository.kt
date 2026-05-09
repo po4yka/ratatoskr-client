@@ -3,6 +3,7 @@ package com.po4yka.ratatoskr.domain.repository
 import com.po4yka.ratatoskr.domain.model.DigestHistoryItem
 import com.po4yka.ratatoskr.domain.model.DigestPreferences
 import com.po4yka.ratatoskr.domain.model.DigestSubscriptionInfo
+import com.po4yka.ratatoskr.domain.model.DigestTriggerResult
 import com.po4yka.ratatoskr.domain.model.ResolvedChannel
 
 /**
@@ -33,10 +34,10 @@ interface DigestRepository {
         pageSize: Int = 20,
     ): List<DigestHistoryItem>
 
-    suspend fun triggerDigest(): String
+    suspend fun triggerDigest(): DigestTriggerResult
 
     /** Trigger digest for a specific channel. */
-    suspend fun triggerChannel(channelUsername: String): String
+    suspend fun triggerChannel(channelUsername: String): DigestTriggerResult
 
     /** Create a category for organizing channels. */
     suspend fun createCategory(name: String): String
