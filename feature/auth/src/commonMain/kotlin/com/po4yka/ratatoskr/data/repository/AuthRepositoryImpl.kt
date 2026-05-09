@@ -172,7 +172,7 @@ class AuthRepositoryImpl(
         authorizationCode: String?,
         givenName: String?,
         familyName: String?,
-    ): UserPreferences? {
+    ) {
         val request =
             AppleLoginRequestDto(
                 idToken = idToken,
@@ -191,7 +191,6 @@ class AuthRepositoryImpl(
             }
             _currentUser.value = loginData.user.toDomain()
             _isAuthenticated.value = true
-            return loginData.preferences?.toDomain()
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Apple login failed")
         }
@@ -200,7 +199,7 @@ class AuthRepositoryImpl(
     override suspend fun loginWithGoogle(
         idToken: String,
         clientId: String,
-    ): UserPreferences? {
+    ) {
         val request =
             GoogleLoginRequestDto(
                 idToken = idToken,
@@ -216,7 +215,6 @@ class AuthRepositoryImpl(
             }
             _currentUser.value = loginData.user.toDomain()
             _isAuthenticated.value = true
-            return loginData.preferences?.toDomain()
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Google login failed")
         }

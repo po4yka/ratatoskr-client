@@ -3,7 +3,6 @@ package com.po4yka.ratatoskr.domain.repository
 import com.po4yka.ratatoskr.domain.model.Session
 import com.po4yka.ratatoskr.domain.model.TelegramAuthData
 import com.po4yka.ratatoskr.domain.model.User
-import com.po4yka.ratatoskr.domain.model.UserPreferences
 import com.po4yka.ratatoskr.feature.auth.api.AuthSessionPort
 
 interface AuthRepository : AuthSessionPort {
@@ -24,13 +23,13 @@ interface AuthRepository : AuthSessionPort {
         authorizationCode: String? = null,
         givenName: String? = null,
         familyName: String? = null,
-    ): UserPreferences?
+    )
 
     /** Login with Google Sign In */
     suspend fun loginWithGoogle(
         idToken: String,
         clientId: String,
-    ): UserPreferences?
+    )
 
     /** Logout locally (clear tokens) */
     override suspend fun logout()
