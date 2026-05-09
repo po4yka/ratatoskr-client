@@ -6,7 +6,7 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GetCollectionUseCase(private val repository: CollectionRepository) {
-    suspend operator fun invoke(id: String): Collection? {
+    suspend operator fun invoke(id: String): Collection {
         return repository.getCollection(id)
     }
 }

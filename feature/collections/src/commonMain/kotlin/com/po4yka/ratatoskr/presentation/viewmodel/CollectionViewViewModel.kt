@@ -50,7 +50,7 @@ class CollectionViewViewModel(
                 )
             try {
                 val collection = getCollectionUseCase(id)
-                val isSystem = collection?.type == CollectionType.System
+                val isSystem = collection.type == CollectionType.System
                 val canEdit = !isSystem
                 val canShare = !isSystem
 

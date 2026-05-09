@@ -6,7 +6,7 @@ import org.koin.core.annotation.Factory
 @Factory
 class DetachSummaryTagUseCase(private val tagRepository: TagRepository) {
     suspend operator fun invoke(
-        summaryId: Long,
+        summaryId: String,
         tagId: Int,
     ) = tagRepository.detachTag(summaryId = summaryId, tagId = tagId)
 }

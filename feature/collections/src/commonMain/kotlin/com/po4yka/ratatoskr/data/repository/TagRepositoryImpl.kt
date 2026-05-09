@@ -53,7 +53,7 @@ class TagRepositoryImpl(
     }
 
     override suspend fun attachTags(
-        summaryId: Long,
+        summaryId: String,
         tagIds: List<Int>?,
         tagNames: List<String>?,
     ): List<Tag> {
@@ -66,7 +66,7 @@ class TagRepositoryImpl(
     }
 
     override suspend fun detachTag(
-        summaryId: Long,
+        summaryId: String,
         tagId: Int,
     ) {
         tagsApi.detachTag(summaryId = summaryId, tagId = tagId)

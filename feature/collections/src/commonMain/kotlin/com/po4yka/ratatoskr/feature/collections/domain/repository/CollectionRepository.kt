@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface CollectionRepository {
     fun getCollections(): Flow<List<Collection>>
 
-    suspend fun getCollection(id: String): Collection?
+    suspend fun getCollection(id: String): Collection
 
     suspend fun getCollectionItems(
         collectionId: String,

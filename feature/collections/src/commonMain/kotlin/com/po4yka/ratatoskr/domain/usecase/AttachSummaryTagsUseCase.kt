@@ -7,7 +7,7 @@ import org.koin.core.annotation.Factory
 @Factory
 class AttachSummaryTagsUseCase(private val tagRepository: TagRepository) {
     suspend operator fun invoke(
-        summaryId: Long,
+        summaryId: String,
         tagIds: List<Int>? = null,
         tagNames: List<String>? = null,
     ): List<Tag> = tagRepository.attachTags(summaryId = summaryId, tagIds = tagIds, tagNames = tagNames)

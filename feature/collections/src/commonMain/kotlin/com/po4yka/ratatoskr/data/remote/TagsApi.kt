@@ -28,12 +28,12 @@ interface TagsApi {
     suspend fun mergeTags(request: MergeTagsRequestDto): ApiResponseDto<TagMergeResponseDto>
 
     suspend fun attachTags(
-        summaryId: Long,
+        summaryId: String,
         request: AttachTagsRequestDto,
     ): ApiResponseDto<TagListResponseDto>
 
     suspend fun detachTag(
-        summaryId: Long,
+        summaryId: String,
         tagId: Int,
     ): ApiResponseDto<TagDetachResponseDto>
 }

@@ -102,7 +102,7 @@ object ShareHelper {
     }
 
     @Suppress("unused") // Called from Swift code
-    fun getPendingItems(): List<Any>? {
+    fun consumePendingItems(): List<Any>? {
         return pendingItems.getAndSet(null)
     }
 }
