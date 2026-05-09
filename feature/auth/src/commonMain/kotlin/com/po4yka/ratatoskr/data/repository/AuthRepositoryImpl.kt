@@ -8,7 +8,6 @@ import com.po4yka.ratatoskr.data.remote.AuthApi
 import com.po4yka.ratatoskr.data.remote.dto.AppleLoginRequestDto
 import com.po4yka.ratatoskr.data.remote.dto.GoogleLoginRequestDto
 import com.po4yka.ratatoskr.data.remote.dto.SecretLoginRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.TokenRefreshRequestDto
 import com.po4yka.ratatoskr.domain.model.AuthTokens
 import com.po4yka.ratatoskr.domain.model.Session
 import com.po4yka.ratatoskr.domain.model.TelegramAuthData
@@ -110,6 +109,11 @@ class AuthRepositoryImpl(
         _isAuthenticated.value = false
     }
 
+    private suspend fun invalidateSession() {
+        secureStorage.clearTokens()
+        _isAuthenticated.value = false
+    }
+
     override suspend fun getCurrentUser(): User? {
         if (_currentUser.value != null) return _currentUser.value
 
@@ -125,46 +129,11 @@ class AuthRepositoryImpl(
                     null
                 }
             } catch (e: kotlin.coroutines.cancellation.CancellationException) {
-                // Rethrow cancellation - this is not a token error, just a coroutine being cancelled
                 logger.debug { "getCurrentUser request was cancelled" }
                 throw e
             } catch (e: Exception) {
                 logger.error(e) { "Failed to get current user" }
-                // Token might be expired or invalid, clear and force re-login
-                secureStorage.clearTokens()
-                _isAuthenticated.value = false
-                null
-            }
-        }
-        return null
-    }
-
-    suspend fun refreshAuthTokens(): AuthTokens? {
-        val refreshToken = secureStorage.getRefreshToken()
-        if (refreshToken != null) {
-            return try {
-                val response = authApi.refreshToken(TokenRefreshRequestDto(refreshToken))
-                val refreshData = response.data
-                if (response.success && refreshData != null) {
-                    val authTokens =
-                        refreshData.toAuthTokens(
-                            currentTime = Clock.System.now(),
-                            refreshToken = refreshToken,
-                        )
-                    secureStorage.saveAccessToken(authTokens.accessToken)
-                    secureStorage.saveRefreshToken(authTokens.refreshToken)
-                    _isAuthenticated.value = true
-                    authTokens
-                } else {
-                    secureStorage.clearTokens()
-                    _isAuthenticated.value = false
-                    null
-                }
-            } catch (e: Exception) {
-                logger.error { "Failed to refresh auth tokens: ${e.message}" }
-                // Refresh failed, force re-login
-                secureStorage.clearTokens()
-                _isAuthenticated.value = false
+                invalidateSession()
                 null
             }
         }

@@ -45,7 +45,7 @@ interface SummariesApi {
         isRead: Boolean,
     ): ApiResponseDto<UpdateSummaryResponseDto>
 
-    suspend fun deleteSummary(id: Long)
+    suspend fun deleteSummary(id: Long): ApiResponseDto<SuccessResponse>
 
     /**
      * Get full article content for offline reading.

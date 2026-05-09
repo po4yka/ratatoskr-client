@@ -68,9 +68,8 @@ class KtorSummariesApi(private val client: HttpClient) : SummariesApi {
         }.body()
     }
 
-    override suspend fun deleteSummary(id: Long) {
-        client.delete("v1/summaries/$id")
-    }
+    override suspend fun deleteSummary(id: Long): ApiResponseDto<SuccessResponse> =
+        client.delete("v1/summaries/$id").body()
 
     override suspend fun getContent(
         id: Long,

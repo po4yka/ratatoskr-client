@@ -35,6 +35,10 @@ interface SummaryRepository : SummaryFeedPort, ContentCachePort {
      */
     suspend fun refreshFullContentIfStale(id: String): String?
 
+    /**
+     * Marks the summary as read locally and queues a server sync for remote-backed IDs.
+     * Completes successfully even if the server sync is deferred or never reaches the server.
+     */
     suspend fun markAsRead(id: String)
 
     suspend fun deleteSummary(id: String)
@@ -61,7 +65,7 @@ interface SummaryRepository : SummaryFeedPort, ContentCachePort {
 
     suspend fun unarchiveSummary(id: String)
 
-    suspend fun prefetchContent(maxItems: Int): Int
+    suspend fun prefetchRecentContent(maxItems: Int): Int
 
     override suspend fun getCacheSize(): Long
 
