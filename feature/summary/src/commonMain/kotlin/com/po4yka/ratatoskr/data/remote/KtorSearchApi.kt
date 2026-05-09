@@ -46,8 +46,8 @@ class KtorSearchApi(private val client: HttpClient) : SearchApi {
     }
 
     override suspend fun getTrendingTopics(
-        limit: Int,
         days: Int,
+        limit: Int,
     ): ApiResponseDto<TrendingTopicsDataDto> {
         return client.get("v1/topics/trending") {
             parameter("limit", limit)

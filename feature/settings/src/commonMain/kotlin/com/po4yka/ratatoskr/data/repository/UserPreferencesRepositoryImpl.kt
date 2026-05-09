@@ -29,7 +29,6 @@ class UserPreferencesRepositoryImpl(
     }
 
     override suspend fun updatePreferences(langPreference: String?): UserPreferences {
-        logger.debug { "Updating user preferences: langPreference=$langPreference" }
         val request =
             UpdatePreferencesRequestDto(
                 langPreference = langPreference,
@@ -82,7 +81,6 @@ class UserPreferencesRepositoryImpl(
         goalType: String,
         targetCount: Int,
     ): Goal {
-        logger.debug { "Creating goal: type=$goalType, target=$targetCount" }
         val request = CreateGoalRequestDto(goalType = goalType, targetCount = targetCount)
         val response = userPreferencesApi.createGoal(request)
         if (response.success && response.data != null) {

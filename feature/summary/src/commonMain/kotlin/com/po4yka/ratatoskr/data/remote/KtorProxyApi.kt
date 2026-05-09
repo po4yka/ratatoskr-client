@@ -7,8 +7,8 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.takeFrom
 import org.koin.core.annotation.Single
 
-@Single(binds = [ProxyApi::class, ProxyRepository::class])
-class KtorProxyApi : ProxyApi, ProxyRepository {
+@Single(binds = [ProxyRepository::class])
+class KtorProxyApi : ProxyRepository {
     override fun getProxiedImageUrl(url: String): String {
         return URLBuilder()
             .apply {

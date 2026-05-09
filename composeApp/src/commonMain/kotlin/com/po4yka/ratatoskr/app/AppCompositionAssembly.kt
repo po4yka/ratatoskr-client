@@ -1,6 +1,6 @@
 package com.po4yka.ratatoskr.app
 
-import com.po4yka.ratatoskr.domain.usecase.GetProxiedImageUrlUseCase
+import com.po4yka.ratatoskr.domain.repository.ProxyRepository
 import com.po4yka.ratatoskr.feature.auth.api.AuthSessionPort
 import com.po4yka.ratatoskr.feature.auth.api.authFeatureEntry
 import com.po4yka.ratatoskr.feature.collections.api.collectionsNavigationEntries
@@ -22,5 +22,5 @@ fun assembleAppCompositionRoot(koin: Koin): AppCompositionRoot =
                 addAll(settingsNavigationEntries(koin, digestMainRoute = DigestRoutes::main))
                 addAll(digestNavigationEntries(koin))
             },
-        imageUrlTransformer = koin.get<GetProxiedImageUrlUseCase>()::invoke,
+        imageUrlTransformer = koin.get<ProxyRepository>()::getProxiedImageUrl,
     )

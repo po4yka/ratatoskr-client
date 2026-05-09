@@ -5,7 +5,7 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GetAudioUseCase(private val repository: AudioRepository) {
-    suspend operator fun invoke(summaryId: Long): Result<ByteArray> {
+    suspend operator fun invoke(summaryId: String): ByteArray {
         return repository.getAudioBytes(summaryId)
     }
 }

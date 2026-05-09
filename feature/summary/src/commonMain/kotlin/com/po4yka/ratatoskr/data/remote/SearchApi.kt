@@ -37,8 +37,8 @@ interface SearchApi {
     ): ApiResponseDto<SearchResponseDataDto>
 
     suspend fun getTrendingTopics(
-        limit: Int = 20,
         days: Int = 30,
+        limit: Int = 20,
     ): ApiResponseDto<TrendingTopicsDataDto>
 
     suspend fun getRelatedSummaries(

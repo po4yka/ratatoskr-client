@@ -5,10 +5,10 @@ import com.po4yka.ratatoskr.domain.model.AudioPlaybackState
 interface AudioRepository {
     /** Trigger audio generation on the server. */
     suspend fun generateAudio(
-        summaryId: Long,
+        summaryId: String,
         sourceField: String,
     ): AudioPlaybackState
 
     /** Download generated audio bytes. */
-    suspend fun getAudioBytes(summaryId: Long): ByteArray
+    suspend fun getAudioBytes(summaryId: String): ByteArray
 }

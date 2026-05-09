@@ -7,9 +7,9 @@ import org.koin.core.annotation.Factory
 @Factory
 class GenerateAudioUseCase(private val repository: AudioRepository) {
     suspend operator fun invoke(
-        summaryId: Long,
+        summaryId: String,
         sourceField: String = "summary_1000",
-    ): Result<AudioPlaybackState> {
+    ): AudioPlaybackState {
         return repository.generateAudio(summaryId, sourceField)
     }
 }
