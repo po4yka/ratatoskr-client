@@ -9,7 +9,7 @@ class RegisterDeviceTokenUseCase(private val repository: NotificationRepository)
         token: String,
         platform: String,
         deviceId: String? = null,
-    ): Result<Unit> {
-        return repository.registerDeviceToken(token, platform, deviceId)
+    ): Result<Unit> = runCatching {
+        repository.registerDeviceToken(token, platform, deviceId)
     }
 }

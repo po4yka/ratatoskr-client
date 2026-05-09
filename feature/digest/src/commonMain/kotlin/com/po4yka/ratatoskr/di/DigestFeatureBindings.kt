@@ -23,7 +23,8 @@ val digestFeatureBindingsModule =
         factory {
             DigestViewModel(
                 getDigestChannelsUseCase = get(),
-                manageDigestSubscriptionUseCase = get(),
+                subscribeToDigestChannelUseCase = get(),
+                unsubscribeFromDigestChannelUseCase = get(),
                 getDigestPreferencesUseCase = get(),
                 updateDigestPreferencesUseCase = get(),
                 getDigestHistoryUseCase = get(),
