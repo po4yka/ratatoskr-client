@@ -1,4 +1,4 @@
-package com.po4yka.ratatoskr.feature.auth.domain.repository
+package com.po4yka.ratatoskr.domain.repository
 
 import com.po4yka.ratatoskr.domain.model.Session
 import com.po4yka.ratatoskr.domain.model.TelegramAuthData

@@ -7,7 +7,7 @@ import com.po4yka.ratatoskr.domain.usecase.GetCurrentUserUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetDeveloperCredentialsUseCase
 import com.po4yka.ratatoskr.domain.usecase.LoginWithSecretUseCase
 import com.po4yka.ratatoskr.domain.usecase.LoginWithTelegramUseCase
-import com.po4yka.ratatoskr.feature.auth.domain.usecase.LogoutUseCase
+import com.po4yka.ratatoskr.domain.usecase.LogoutUseCase
 import com.po4yka.ratatoskr.domain.usecase.SaveDeveloperCredentialsUseCase
 import com.po4yka.ratatoskr.presentation.state.AuthState
 import com.po4yka.ratatoskr.util.error.toAppError
