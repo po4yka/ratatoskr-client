@@ -49,13 +49,18 @@ extensions.configure<KotlinMultiplatformExtension> {
 }
 
 pluginManager.withPlugin("com.google.devtools.ksp") {
+    val koinKspVersion = extensions.getByType<VersionCatalogsExtension>()
+        .named("libs")
+        .findVersion("koin-annotations")
+        .get()
+        .requiredVersion
     dependencies {
-        add("kspCommonMainMetadata", "io.insert-koin:koin-ksp-compiler:2.3.1")
-        add("kspAndroid", "io.insert-koin:koin-ksp-compiler:2.3.1")
-        add("kspIosX64", "io.insert-koin:koin-ksp-compiler:2.3.1")
-        add("kspIosArm64", "io.insert-koin:koin-ksp-compiler:2.3.1")
-        add("kspIosSimulatorArm64", "io.insert-koin:koin-ksp-compiler:2.3.1")
-        add("kspDesktop", "io.insert-koin:koin-ksp-compiler:2.3.1")
+        add("kspCommonMainMetadata", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
+        add("kspAndroid", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
+        add("kspIosX64", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
+        add("kspIosArm64", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
+        add("kspIosSimulatorArm64", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
+        add("kspDesktop", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
     }
 
     extensions.findByName("ksp")?.let { extension ->
