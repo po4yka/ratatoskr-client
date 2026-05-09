@@ -46,8 +46,8 @@ interface SummaryRepository : SummaryFeedPort, ContentCachePort {
     suspend fun toggleFavorite(id: String)
 
     /**
-     * Toggle favorite status locally and sync with the server.
-     * Reverts local change on server failure.
+     * Toggle favorite status locally and queue for server sync.
+     * Local state is updated optimistically and not rolled back on failure — the sync worker retries.
      */
     suspend fun toggleFavoriteWithSync(id: String)
 

@@ -18,7 +18,6 @@ actual class FileSaver {
         sourcePath: String,
         fileName: String,
     ): String? {
-        logger.info { "saveToDownloads called. Source: $sourcePath, FileName: $fileName" }
         val fileManager = NSFileManager.defaultManager
 
         // On iOS, "Downloads" isn't a standard accessible folder in the same way.
@@ -93,7 +92,6 @@ actual class FileSaver {
             fileManager.removeItemAtURL(destUrl, null)
         }
 
-        // Copy the new database file
         // Copy the new database file
         val success = fileManager.copyItemAtURL(sourceUrl, destUrl, null)
         if (!success) {

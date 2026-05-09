@@ -46,12 +46,4 @@ fun KoinApplication.setupKoin(
 ) {
     platformExtras(configuration)
     modules(platformModules(configuration) + modules + extraModules)
-    properties(
-        mapOf(
-            "api.base.url" to AppConfig.Api.baseUrl,
-            "api.logging.enabled" to AppConfig.Api.loggingEnabled.toString(),
-            "telegram.bot.username" to AppConfig.Telegram.botUsername,
-            "telegram.bot.id" to AppConfig.Telegram.botId,
-        ),
-    )
 }

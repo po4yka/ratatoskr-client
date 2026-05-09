@@ -16,7 +16,6 @@ actual class FileSaver(private val context: Context) {
         sourcePath: String,
         fileName: String,
     ): String? {
-        logger.info { "saveToDownloads called. Source: $sourcePath, FileName: $fileName" }
         val sourceFile = File(sourcePath)
         if (!sourceFile.exists()) {
             logger.error { "Source file does not exist: $sourcePath" }
