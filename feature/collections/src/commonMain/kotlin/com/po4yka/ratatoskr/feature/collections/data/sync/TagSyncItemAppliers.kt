@@ -23,7 +23,9 @@ internal class TagSyncItemApplier(
                 false
             } else {
                 val dto = Json.decodeFromJsonElement(SyncTagDto.serializer(), tagData)
-                if (!dto.isDeleted) {
+                if (dto.isDeleted) {
+                    database.databaseQueries.deleteTag(dto.id.toLong())
+                } else {
                     database.databaseQueries.insertOrReplaceTag(
                         id = dto.id.toLong(),
                         name = dto.name,

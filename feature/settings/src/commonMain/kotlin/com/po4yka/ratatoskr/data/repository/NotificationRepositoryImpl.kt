@@ -12,8 +12,7 @@ class NotificationRepositoryImpl(
         token: String,
         platform: String,
         deviceId: String?,
-    ): Result<Unit> =
-        runCatching {
-            api.registerDevice(token, platform, deviceId)
-        }
+    ) {
+        api.registerDevice(token, platform, deviceId)
+    }
 }

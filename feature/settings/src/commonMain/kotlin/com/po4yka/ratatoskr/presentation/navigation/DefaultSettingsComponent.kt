@@ -5,6 +5,13 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.ratatoskr.presentation.viewmodel.ReadingGoalController
 import com.po4yka.ratatoskr.presentation.viewmodel.SettingsViewModel
 
+interface SettingsComponent {
+    val viewModel: SettingsViewModel
+    val readingGoalController: ReadingGoalController
+
+    fun onDigestClicked()
+}
+
 class DefaultSettingsComponent(
     componentContext: ComponentContext,
     private val viewModelFactory: () -> SettingsViewModel,

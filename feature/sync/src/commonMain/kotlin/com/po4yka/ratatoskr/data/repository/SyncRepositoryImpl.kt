@@ -632,12 +632,7 @@ class SyncRepositoryImpl(
         )
     }
 
-    /**
-     * Process a single sync item by dispatching on its entity type.
-     * Must be called within a database transaction.
-     *
-     * @return true if item was processed successfully, false if there was an error
-     */
+    // Must be called within a database transaction.
     private fun processSyncItem(item: SyncItemDto): Boolean {
         return syncItemApplierRegistry.apply(item)
     }
