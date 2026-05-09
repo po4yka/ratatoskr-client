@@ -1,6 +1,6 @@
-package com.po4yka.ratatoskr.feature.auth.domain.usecase
+package com.po4yka.ratatoskr.domain.usecase
 
-import com.po4yka.ratatoskr.feature.auth.domain.repository.AuthRepository
+import com.po4yka.ratatoskr.domain.repository.AuthRepository
 import org.koin.core.annotation.Factory
 
 @Factory

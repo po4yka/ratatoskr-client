@@ -15,7 +15,7 @@ import com.po4yka.ratatoskr.domain.model.TelegramAuthData
 import com.po4yka.ratatoskr.domain.model.User
 import com.po4yka.ratatoskr.domain.model.UserPreferences
 import com.po4yka.ratatoskr.feature.auth.api.AuthSessionPort
-import com.po4yka.ratatoskr.feature.auth.domain.repository.AuthRepository
+import com.po4yka.ratatoskr.domain.repository.AuthRepository
 import com.po4yka.ratatoskr.util.config.AppConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.time.Clock
