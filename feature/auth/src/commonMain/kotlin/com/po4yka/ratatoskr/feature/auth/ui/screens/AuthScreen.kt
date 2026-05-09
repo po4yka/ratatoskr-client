@@ -69,7 +69,6 @@ fun AuthScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            // App Logo
             AppLogo(
                 modifier = Modifier.size(100.dp),
                 size = 100.dp,
@@ -92,7 +91,6 @@ fun AuthScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Login Button
             var showTelegramLogin by remember { mutableStateOf(false) }
 
             if (state.isLoading) {
@@ -130,7 +128,6 @@ fun AuthScreen(
                 )
             }
 
-            // Developer Login (Secret Key)
             var showDevLogin by remember { mutableStateOf(false) }
             BracketButton(
                 label = stringResource(Res.string.auth_developer_login),
@@ -150,7 +147,6 @@ fun AuthScreen(
                 )
             }
 
-            // Error message
             state.error?.let { error ->
                 Box(
                     modifier =
@@ -169,7 +165,6 @@ fun AuthScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Features
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -189,7 +184,6 @@ fun AuthScreen(
         }
     }
 
-    // Handle successful login
     if (state.isAuthenticated) {
         onLoginSuccess()
     }
