@@ -6,5 +6,5 @@ interface NotificationRepository {
         token: String,
         platform: String,
         deviceId: String? = null,
-    ): Result<Unit>
+    )
 }

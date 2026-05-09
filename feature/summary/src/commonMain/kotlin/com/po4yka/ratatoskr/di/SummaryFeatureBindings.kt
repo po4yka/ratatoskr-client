@@ -53,7 +53,6 @@ val summaryFeatureBindingsModule =
             SubmitURLViewModel(
                 processingService = get(),
                 getRequestsUseCase = get(),
-                retryRequestUseCase = get(),
                 checkDuplicateUrlUseCase = get(),
             )
         }

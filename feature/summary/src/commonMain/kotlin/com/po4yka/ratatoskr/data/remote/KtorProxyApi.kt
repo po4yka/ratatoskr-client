@@ -1,13 +1,14 @@
 package com.po4yka.ratatoskr.data.remote
 
+import com.po4yka.ratatoskr.domain.repository.ProxyRepository
 import com.po4yka.ratatoskr.util.config.AppConfig
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.http.takeFrom
 import org.koin.core.annotation.Single
 
-@Single(binds = [ProxyApi::class])
-class KtorProxyApi : ProxyApi {
+@Single(binds = [ProxyApi::class, ProxyRepository::class])
+class KtorProxyApi : ProxyApi, ProxyRepository {
     override fun getProxiedImageUrl(url: String): String {
         return URLBuilder()
             .apply {

@@ -7,8 +7,8 @@ interface AudioRepository {
     suspend fun generateAudio(
         summaryId: Long,
         sourceField: String,
-    ): Result<AudioPlaybackState>
+    ): AudioPlaybackState
 
     /** Download generated audio bytes. */
-    suspend fun getAudioBytes(summaryId: Long): Result<ByteArray>
+    suspend fun getAudioBytes(summaryId: Long): ByteArray
 }
