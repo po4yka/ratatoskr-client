@@ -6,7 +6,6 @@ import com.po4yka.ratatoskr.data.mappers.toDto
 import com.po4yka.ratatoskr.data.remote.SyncApi
 import com.po4yka.ratatoskr.data.remote.dto.SyncApplyRequestDto
 import com.po4yka.ratatoskr.data.remote.dto.SyncItemDto
-import com.po4yka.ratatoskr.data.remote.dto.SyncSessionRequestDto
 import com.po4yka.ratatoskr.database.Database
 import com.po4yka.ratatoskr.domain.model.SyncConflict
 import com.po4yka.ratatoskr.domain.model.SyncPhase
@@ -52,17 +51,6 @@ private const val TRANSACTION_CHUNK_SIZE = 25
 /** Timeout for the entire sync operation (5 minutes) */
 private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 
-internal fun shouldCleanupStaleSummariesAfterFullSync(
-    resumeCursor: Long?,
-    observedCompleteDataset: Boolean,
-): Boolean = resumeCursor == null && observedCompleteDataset
-
-internal fun syncCheckpointToken(
-    nextCursor: Long?,
-    serverVersion: Long?,
-    fallbackToken: String?,
-): String? = (nextCursor ?: serverVersion)?.toString() ?: fallbackToken
-
 class SyncRepositoryImpl(
     private val database: Database,
     private val api: SyncApi,
@@ -71,6 +59,8 @@ class SyncRepositoryImpl(
     pendingOperationHandlers: List<PendingOperationHandler>,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncRepository {
+    private val sessionCoordinator = SyncSessionCoordinator(api)
+
     private val syncItemApplierRegistry =
         SyncItemApplierRegistry(appliers = syncItemAppliers)
 
@@ -184,36 +174,6 @@ class SyncRepositoryImpl(
     // Session-Based Sync (new approach for all login types)
     // ========================================================================
 
-    private data class SyncSessionInfo(
-        val sessionId: String,
-        val totalItems: Int?,
-        val expiresAt: Instant?,
-    )
-
-    private suspend fun createSyncSessionInternal(): SyncSessionInfo {
-        val request: SyncSessionRequestDto? = null
-        val response = api.createSession(request)
-        if (response.success && response.data != null) {
-            val data = requireNotNull(response.data)
-            logger.info { "Created sync session: ${data.sessionId}, defaultLimit=${data.defaultLimit}" }
-            val expiresAt =
-                data.expiresAt?.let {
-                    try {
-                        Instant.parse(it)
-                    } catch (_: Exception) {
-                        null
-                    }
-                }
-            return SyncSessionInfo(
-                sessionId = data.sessionId,
-                totalItems = data.defaultLimit,
-                expiresAt = expiresAt,
-            )
-        } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to create sync session")
-        }
-    }
-
     private suspend fun syncWithSessionBasedEndpoint(forceFull: Boolean) {
         logger.info { "Starting session-based sync, forceFull=$forceFull" }
         _syncProgress.update {
@@ -224,7 +184,7 @@ class SyncRepositoryImpl(
         }
 
         coroutineContext.ensureActive()
-        val session = createSyncSessionInternal()
+        val session = sessionCoordinator.create()
 
         // Flush pending operations before sync
         pendingOperationFlusher.flush(session.sessionId)
@@ -256,7 +216,6 @@ class SyncRepositoryImpl(
     ) {
         updateProgress(phase = SyncPhase.FETCHING_FULL)
 
-        // Mark full sync as in progress
         database.databaseQueries.setFullSyncInProgress(1)
 
         val receivedIds = mutableSetOf<String>()
@@ -274,9 +233,8 @@ class SyncRepositoryImpl(
         val totalBatches = totalItems?.let { (it + DEFAULT_BATCH_SIZE - 1) / DEFAULT_BATCH_SIZE }
 
         try {
-            // First batch
             coroutineContext.ensureActive()
-            val renewed = createOrRenewSession(sessionId, sessionExpiresAt)
+            val renewed = sessionCoordinator.renew(sessionId, sessionExpiresAt)
             sessionId = renewed.first
             sessionExpiresAt = renewed.second
             val firstResult = fullSync(sessionId, limit = DEFAULT_BATCH_SIZE, cursor = cursor)
@@ -304,7 +262,7 @@ class SyncRepositoryImpl(
 
             while (hasMore) {
                 coroutineContext.ensureActive()
-                val renewedInLoop = createOrRenewSession(sessionId, sessionExpiresAt)
+                val renewedInLoop = sessionCoordinator.renew(sessionId, sessionExpiresAt)
                 sessionId = renewedInLoop.first
                 sessionExpiresAt = renewedInLoop.second
 
@@ -348,10 +306,7 @@ class SyncRepositoryImpl(
                 }
             }
 
-            // Validate integrity
             validateSyncIntegrity(totalItems, totalCreated)
-
-            // Mark full sync as complete and clear stale ETag
             database.databaseQueries.setFullSyncInProgress(0)
             database.databaseQueries.updateDeltaSyncEtag(null)
 
@@ -381,7 +336,7 @@ class SyncRepositoryImpl(
 
         while (hasMore) {
             coroutineContext.ensureActive()
-            val renewed = createOrRenewSession(sessionId, sessionExpiresAt)
+            val renewed = sessionCoordinator.renew(sessionId, sessionExpiresAt)
             sessionId = renewed.first
             sessionExpiresAt = renewed.second
 
@@ -417,21 +372,6 @@ class SyncRepositoryImpl(
         logger.info {
             "Delta sync complete. Created: $totalCreated, Updated: $totalUpdated, Deleted: $totalDeleted"
         }
-    }
-
-    /**
-     * Returns the current session if still valid, or creates a new one if expired.
-     */
-    private suspend fun createOrRenewSession(
-        currentSessionId: String,
-        sessionExpiresAt: Instant?,
-    ): Pair<String, Instant?> {
-        if (sessionExpiresAt == null || Clock.System.now() < sessionExpiresAt) {
-            return currentSessionId to sessionExpiresAt
-        }
-        logger.info { "Session expired, creating new session" }
-        val newSession = createSyncSessionInternal()
-        return newSession.sessionId to newSession.expiresAt
     }
 
     private fun cleanupStaleSummaries(receivedIds: Set<String>) {
@@ -480,17 +420,7 @@ class SyncRepositoryImpl(
     // Session-Based Sync (new OpenAPI spec)
     // ========================================================================
 
-    override suspend fun createSyncSession(limit: Int?): String {
-        val request = limit?.let { SyncSessionRequestDto(limit = it) }
-        val response = api.createSession(request)
-        if (response.success && response.data != null) {
-            val data = requireNotNull(response.data)
-            logger.info { "Created sync session: ${data.sessionId}" }
-            return data.sessionId
-        } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to create sync session")
-        }
-    }
+    override suspend fun createSyncSession(limit: Int?): String = sessionCoordinator.createWithLimit(limit)
 
     override suspend fun fullSync(
         sessionId: String,
@@ -508,7 +438,6 @@ class SyncRepositoryImpl(
         val data = requireNotNull(response.data)
         logger.info { "Full sync received ${data.items.size} items, hasMore=${data.hasMore}" }
 
-        // Track processing results
         var successCount = 0
         var errorCount = 0
 
@@ -596,7 +525,6 @@ class SyncRepositoryImpl(
                 "updated=${data.updated.size}, deleted=${data.deleted.size}, hasMore=${data.hasMore}"
         }
 
-        // Track processing results
         var createdCount = 0
         var updatedCount = 0
         var errorCount = 0

@@ -156,7 +156,7 @@ class AuthRepositoryImpl(
                     null
                 }
             } catch (e: Exception) {
-                logger.error(e) { "Failed to refresh auth tokens" }
+                logger.error { "Failed to refresh auth tokens: ${e.message}" }
                 // Refresh failed, force re-login
                 secureStorage.clearTokens()
                 _isAuthenticated.value = false
