@@ -2,6 +2,7 @@ package com.po4yka.ratatoskr.util.share
 
 import com.po4yka.ratatoskr.domain.model.Summary
 import kotlin.concurrent.AtomicReference
+import kotlin.native.ObjCName
 import platform.Foundation.NSURL
 
 /**
@@ -21,29 +22,6 @@ class IosShareManager : ShareManager {
         // Call the Swift ShareHelper to present the share sheet
         shareItems(listOfNotNull(shareText, url))
     }
-
-    private fun buildShareText(
-        summary: Summary,
-        customMessage: String? = null,
-    ): String =
-        buildString {
-            if (!customMessage.isNullOrBlank()) {
-                appendLine(customMessage)
-                appendLine()
-            }
-            appendLine(summary.title)
-            appendLine()
-            if (summary.content.isNotBlank()) {
-                appendLine("Summary:")
-                appendLine(summary.content)
-                appendLine()
-            }
-            appendLine("Read more: ${summary.sourceUrl}")
-            if (summary.tags.isNotEmpty()) {
-                appendLine()
-                append("Tags: ${summary.tags.joinToString(", ") { "#$it" }}")
-            }
-        }
 
     override fun shareText(
         text: String,
@@ -92,6 +70,7 @@ class IosShareManager : ShareManager {
  *
  * Thread-safe implementation using AtomicReference for concurrent access.
  */
+@ObjCName("KotlinShareHelper", swiftName = "KotlinShareHelper")
 object ShareHelper {
     private val pendingItems = AtomicReference<List<Any>?>(null)
 
