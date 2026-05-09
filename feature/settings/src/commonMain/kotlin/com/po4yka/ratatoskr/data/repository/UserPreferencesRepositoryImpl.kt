@@ -20,7 +20,6 @@ class UserPreferencesRepositoryImpl(
     private val userPreferencesApi: UserPreferencesApi,
 ) : UserPreferencesRepository {
     override suspend fun getPreferences(): UserPreferences {
-        logger.debug { "Fetching user preferences" }
         val response = userPreferencesApi.getPreferences()
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
@@ -44,7 +43,6 @@ class UserPreferencesRepositoryImpl(
     }
 
     override suspend fun getStats(): UserStats {
-        logger.debug { "Fetching user stats" }
         val response = userPreferencesApi.getStats()
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
@@ -54,7 +52,6 @@ class UserPreferencesRepositoryImpl(
     }
 
     override suspend fun getStreak(): Streak {
-        logger.debug { "Fetching user streak" }
         val response = userPreferencesApi.getStreak()
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
@@ -64,7 +61,6 @@ class UserPreferencesRepositoryImpl(
     }
 
     override suspend fun getGoals(): List<Goal> {
-        logger.debug { "Fetching user goals" }
         val response = userPreferencesApi.getGoals()
         if (response.success && response.data != null) {
             return requireNotNull(response.data).map { it.toDomain() }
@@ -74,7 +70,6 @@ class UserPreferencesRepositoryImpl(
     }
 
     override suspend fun getGoalsProgress(): List<GoalProgress> {
-        logger.debug { "Fetching user goals progress" }
         val response = userPreferencesApi.getGoalsProgress()
         if (response.success && response.data != null) {
             return requireNotNull(response.data).map { it.toDomain() }

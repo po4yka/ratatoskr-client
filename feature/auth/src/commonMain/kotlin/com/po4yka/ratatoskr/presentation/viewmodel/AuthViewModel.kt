@@ -69,7 +69,7 @@ class AuthViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                logger.error(e) { "Failed to load saved developer credentials" }
+                logger.error { "Failed to load saved developer credentials: ${e.message}" }
             }
         }
     }
@@ -131,7 +131,7 @@ class AuthViewModel(
                             },
                     )
             } catch (e: Exception) {
-                logger.error(e) { "Login with Secret failed" }
+                logger.error { "Login with Secret failed: ${e.message}" }
                 _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
             }
         }

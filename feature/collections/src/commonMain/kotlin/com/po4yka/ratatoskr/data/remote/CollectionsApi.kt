@@ -52,7 +52,6 @@ interface CollectionsApi {
 
     suspend fun getTree(maxDepth: Int = 3): ApiResponseDto<CollectionTreeResponse>
 
-    // Note: CollectionAclResponseEnvelope not defined in DTOs yet, will need to check or assume generic
     suspend fun getAcl(id: Int): ApiResponseDto<CollectionAclResponse>
 
     suspend fun addCollaborator(

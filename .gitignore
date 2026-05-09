@@ -102,6 +102,9 @@ node_modules/
 # Git Worktrees
 .worktrees/
 
+# desloppify local state
+.desloppify/
+
 # Obsidian volatile state
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
