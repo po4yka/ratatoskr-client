@@ -34,7 +34,8 @@ val collectionsFeatureBindingsModule =
                 updateCollectionUseCase = get(),
                 deleteCollectionUseCase = get(),
                 getCollectionAclUseCase = get(),
-                manageCollaboratorUseCase = get(),
+                addCollaboratorUseCase = get(),
+                removeCollaboratorUseCase = get(),
                 createInviteLinkUseCase = get(),
             )
         }

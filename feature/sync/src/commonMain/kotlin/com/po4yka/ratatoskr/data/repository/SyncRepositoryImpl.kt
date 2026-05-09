@@ -445,7 +445,7 @@ class SyncRepositoryImpl(
         data.items.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
                 chunk.forEach { item ->
-                    if (processSyncItem(item)) {
+                    if (syncItemApplierRegistry.apply(item)) {
                         successCount++
                         fullSyncReceivedIds?.add(item.idAsString)
                     } else {
@@ -532,7 +532,7 @@ class SyncRepositoryImpl(
         data.created.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
                 chunk.forEach { item ->
-                    if (processSyncItem(item)) createdCount++ else errorCount++
+                    if (syncItemApplierRegistry.apply(item)) createdCount++ else errorCount++
                 }
             }
         }
@@ -540,7 +540,7 @@ class SyncRepositoryImpl(
         data.updated.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
                 chunk.forEach { item ->
-                    if (processSyncItem(item)) updatedCount++ else errorCount++
+                    if (syncItemApplierRegistry.apply(item)) updatedCount++ else errorCount++
                 }
             }
         }
@@ -632,8 +632,4 @@ class SyncRepositoryImpl(
         )
     }
 
-    // Must be called within a database transaction.
-    private fun processSyncItem(item: SyncItemDto): Boolean {
-        return syncItemApplierRegistry.apply(item)
-    }
 }

@@ -89,8 +89,8 @@ class SummaryRepositoryImpl(
 
     override suspend fun markAsRead(id: String) {
         database.databaseQueries.updateSummaryReadStatus(true, id)
-        // Queue for server sync
-        val remoteId = id.toLongOrNull() ?: return
+        // Queue for server sync — only valid for remote-backed (numeric) IDs
+        id.toLongOrNull() ?: return
         database.databaseQueries.deletePendingOperationsForEntity(
             entityId = id,
             action = "update_read",
@@ -132,8 +132,9 @@ class SummaryRepositoryImpl(
 
     override suspend fun getSummaryByUrl(url: String): Summary? {
         val response = api.getSummaryByUrl(url)
-        return if (response.success && response.data != null) {
-            response.data.toDomain()
+        val summaryData = response.data
+        return if (response.success && summaryData != null) {
+            summaryData.toDomain()
         } else {
             null
         }
@@ -201,10 +202,11 @@ class SummaryRepositoryImpl(
         }
         return try {
             val response = api.getContent(remoteId)
-            if (response.success && response.data != null) {
+            val contentData = response.data
+            if (response.success && contentData != null) {
                 val articleContent =
                     MarkdownSanitizer.sanitize(
-                        response.data.content.content,
+                        contentData.content.content,
                     )
                 database.databaseQueries.updateSummaryFullContent(
                     fullContent = articleContent,
