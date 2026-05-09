@@ -65,7 +65,7 @@ class SummaryListViewModel(
         )
 
     val actionHandler =
-        SummaryActionHandler(
+        SummaryListActionHandler(
             scope = viewModelScope,
             stateAccessor = stateAccessor,
             markSummaryAsReadUseCase = markSummaryAsReadUseCase,

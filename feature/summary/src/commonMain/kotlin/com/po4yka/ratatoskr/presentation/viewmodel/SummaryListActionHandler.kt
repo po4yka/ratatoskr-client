@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 private val logger = KotlinLogging.logger {}
 
 @Suppress("TooGenericExceptionCaught")
-class SummaryActionHandler(
+class SummaryListActionHandler(
     private val scope: CoroutineScope,
     private val stateAccessor: StateAccessor<SummaryListState>,
     private val markSummaryAsReadUseCase: MarkSummaryAsReadUseCase,
