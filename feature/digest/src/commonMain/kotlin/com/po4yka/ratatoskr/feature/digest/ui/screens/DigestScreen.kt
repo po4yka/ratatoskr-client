@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
+import com.po4yka.ratatoskr.core.ui.components.ScreenHeader
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketButton
 import com.po4yka.ratatoskr.core.ui.components.frost.BracketIconButton
 import com.po4yka.ratatoskr.core.ui.components.frost.FrostSpinner
@@ -71,7 +72,6 @@ import ratatoskr.core.ui.generated.resources.digest_screen_trigger_success
 import ratatoskr.core.ui.generated.resources.digest_screen_triggering
 import ratatoskr.core.ui.generated.resources.digest_screen_unsubscribe
 import ratatoskr.core.ui.generated.resources.settings_digest_channels
-import ratatoskr.core.ui.generated.resources.submit_url_back
 import org.jetbrains.compose.resources.stringResource
 
 @Suppress("FunctionNaming", "LongMethod")
@@ -115,8 +115,11 @@ fun DigestScreen(
                 .fillMaxSize()
                 .background(AppTheme.frostColors.page),
     ) {
-        // Header
-        DigestHeader(onBackClick = component::onBackClicked)
+        ScreenHeader(
+            title = stringResource(Res.string.settings_digest_channels),
+            isDetailScreen = true,
+            onBackClick = component::onBackClicked,
+        )
 
         // Tab bar
         DigestTabBar(
@@ -170,36 +173,6 @@ private interface DigestActions {
     fun savePreferences()
 
     fun loadHistory(loadMore: Boolean)
-}
-
-@Suppress("FunctionNaming")
-@Composable
-private fun DigestHeader(onBackClick: () -> Unit) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .background(AppTheme.frostColors.page)
-                .padding(horizontal = AppTheme.spacing.cell),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        BracketIconButton(
-            onClick = onBackClick,
-            contentDescription = stringResource(Res.string.submit_url_back),
-        ) {
-            FrostIcon(
-                imageVector = AppIcons.ArrowLeft,
-                contentDescription = null,
-                modifier = Modifier.size(IconSizes.md),
-            )
-        }
-        FrostText(
-            text = stringResource(Res.string.settings_digest_channels),
-            style = AppTheme.frostType.monoEmph,
-            color = AppTheme.frostColors.ink,
-        )
-    }
 }
 
 @Suppress("FunctionNaming")

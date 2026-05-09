@@ -26,13 +26,13 @@ interface TagRepository {
     )
 
     suspend fun attachTags(
-        summaryId: Long,
+        summaryId: String,
         tagIds: List<Int>? = null,
         tagNames: List<String>? = null,
     ): List<Tag>
 
     suspend fun detachTag(
-        summaryId: Long,
+        summaryId: String,
         tagId: Int,
     )
 }

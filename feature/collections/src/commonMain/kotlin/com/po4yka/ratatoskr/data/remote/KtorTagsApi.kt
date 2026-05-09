@@ -64,7 +64,7 @@ class KtorTagsApi(private val client: HttpClient) : TagsApi {
     }
 
     override suspend fun attachTags(
-        summaryId: Long,
+        summaryId: String,
         request: AttachTagsRequestDto,
     ): ApiResponseDto<TagListResponseDto> {
         return client.post("v1/summaries/$summaryId/tags") {
@@ -74,7 +74,7 @@ class KtorTagsApi(private val client: HttpClient) : TagsApi {
     }
 
     override suspend fun detachTag(
-        summaryId: Long,
+        summaryId: String,
         tagId: Int,
     ): ApiResponseDto<TagDetachResponseDto> {
         return client.delete("v1/summaries/$summaryId/tags/$tagId").body()

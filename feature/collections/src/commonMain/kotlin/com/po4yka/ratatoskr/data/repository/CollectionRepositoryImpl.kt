@@ -39,11 +39,12 @@ class CollectionRepositoryImpl(
             }
         }
 
-    override suspend fun getCollection(id: String): Collection? {
-        val intId = id.toIntOrNull() ?: return null
+    override suspend fun getCollection(id: String): Collection {
+        val intId = id.toIntOrNull()
+            ?: throw AppError.UnknownError(fallbackMessage = "Invalid collection ID: $id")
         val response = api.getCollection(intId)
         if (response.success && response.data != null) {
-            return requireNotNull(response.data).toDomain()
+            return response.data.toDomain()
         } else {
             throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to get collection $id")
         }
