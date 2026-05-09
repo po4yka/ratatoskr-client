@@ -29,6 +29,7 @@ class SummaryListActionHandler(
                 logger.debug { "Marked summary $id as read" }
             } catch (e: Exception) {
                 logger.error(e) { "Failed to mark summary as read: $id" }
+                stateAccessor.update { it.copy(error = e.toAppError().userMessage()) }
             }
         }
     }

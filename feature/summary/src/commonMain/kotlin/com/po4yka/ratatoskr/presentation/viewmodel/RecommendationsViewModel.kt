@@ -4,6 +4,7 @@ import com.po4yka.ratatoskr.domain.usecase.DismissRecommendationUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetRecommendationsUseCase
 import com.po4yka.ratatoskr.domain.usecase.RefreshRecommendationsUseCase
 import com.po4yka.ratatoskr.presentation.state.RecommendationsState
+import com.po4yka.ratatoskr.util.error.toUserMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +39,7 @@ class RecommendationsViewModel(
                 _state.update { it.copy(isLoading = false) }
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 logger.warn(e) { "Failed to refresh recommendations" }
-                _state.update { it.copy(error = e.message, isLoading = false) }
+                _state.update { it.copy(error = e.toUserMessage("Failed to refresh recommendations"), isLoading = false) }
             }
         }
     }

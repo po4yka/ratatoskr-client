@@ -35,3 +35,9 @@ object DefaultErrorMessageProvider : ErrorMessageProvider {
 fun AppError.userMessage(provider: ErrorMessageProvider = DefaultErrorMessageProvider): String {
     return provider.messageFor(messageKey, fallbackMessage)
 }
+
+fun Throwable.toUserMessage(fallback: String = "Something went wrong. Please try again."): String =
+    when (this) {
+        is AppError -> userMessage()
+        else -> message ?: fallback
+    }

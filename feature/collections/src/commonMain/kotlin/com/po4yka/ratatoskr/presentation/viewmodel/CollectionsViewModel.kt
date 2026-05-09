@@ -2,6 +2,7 @@ package com.po4yka.ratatoskr.presentation.viewmodel
 
 import com.po4yka.ratatoskr.feature.collections.domain.repository.CollectionRepository
 import com.po4yka.ratatoskr.domain.usecase.CreateCollectionUseCase
+import com.po4yka.ratatoskr.util.error.toUserMessage
 import com.po4yka.ratatoskr.presentation.state.CollectionsState
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +44,7 @@ class CollectionsViewModel(
                 _state.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Failed to load collections",
+                        error = e.toUserMessage("Failed to load collections"),
                     )
                 }
             }
@@ -78,7 +79,7 @@ class CollectionsViewModel(
                 _state.update {
                     it.copy(
                         isCreating = false,
-                        createError = e.message ?: "Failed to create collection",
+                        createError = e.toUserMessage("Failed to create collection"),
                     )
                 }
             }
