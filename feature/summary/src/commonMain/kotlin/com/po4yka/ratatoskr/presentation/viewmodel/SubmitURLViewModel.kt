@@ -196,32 +196,34 @@ class SubmitURLViewModel(
                     // Submit
                     updateEntryStatus(index, BatchUrlStatus.SUBMITTING)
                     try {
-                        var done = false
-                        processingService.submitUrl(url).collect { update ->
-                            if (done) return@collect
-                            updateEntry(index) { entry ->
-                                entry.copy(progress = update.progress, stage = update.stage)
-                            }
-                            when {
-                                update.stage == ProcessingStage.DONE -> {
-                                    done = true
-                                    updateEntryStatus(index, BatchUrlStatus.COMPLETED)
-                                    recomputeCompletedCount()
-                                }
-                                update.status == RequestStatus.FAILED -> {
-                                    done = true
-                                    updateEntry(index) { entry ->
-                                        entry.copy(status = BatchUrlStatus.FAILED, error = update.error ?: "Failed")
-                                    }
-                                }
-                            }
-                        }
+                        processUrlEntry(index, url)
                     } catch (e: Exception) {
                         updateEntry(index) { it.copy(status = BatchUrlStatus.FAILED, error = e.message ?: "Failed") }
                     }
                 }
                 _state.update { it.copy(isBatchSubmitting = false) }
             }
+    }
+
+    private suspend fun processUrlEntry(index: Int, url: String) {
+        var done = false
+        processingService.submitUrl(url).collect { update ->
+            if (done) return@collect
+            updateEntry(index) { e -> e.copy(progress = update.progress, stage = update.stage) }
+            when {
+                update.stage == ProcessingStage.DONE -> {
+                    done = true
+                    updateEntryStatus(index, BatchUrlStatus.COMPLETED)
+                    recomputeCompletedCount()
+                }
+                update.status == RequestStatus.FAILED -> {
+                    done = true
+                    updateEntry(index) { e ->
+                        e.copy(status = BatchUrlStatus.FAILED, error = update.error ?: "Failed")
+                    }
+                }
+            }
+        }
     }
 
     private suspend fun checkForDuplicate(url: String): String? =
@@ -266,24 +268,7 @@ class SubmitURLViewModel(
         viewModelScope.launch {
             updateEntryStatus(index, BatchUrlStatus.SUBMITTING)
             try {
-                var done = false
-                processingService.submitUrl(entry.url).collect { update ->
-                    if (done) return@collect
-                    updateEntry(index) { e -> e.copy(progress = update.progress, stage = update.stage) }
-                    when {
-                        update.stage == ProcessingStage.DONE -> {
-                            done = true
-                            updateEntryStatus(index, BatchUrlStatus.COMPLETED)
-                            recomputeCompletedCount()
-                        }
-                        update.status == RequestStatus.FAILED -> {
-                            done = true
-                            updateEntry(index) { e ->
-                                e.copy(status = BatchUrlStatus.FAILED, error = update.error ?: "Failed")
-                            }
-                        }
-                    }
-                }
+                processUrlEntry(index, entry.url)
             } catch (e: Exception) {
                 updateEntry(index) { it.copy(status = BatchUrlStatus.FAILED, error = e.message ?: "Failed") }
             }
@@ -322,24 +307,7 @@ class SubmitURLViewModel(
             updateEntry(index) { it.copy(isDuplicate = false, duplicateSummaryId = null) }
             updateEntryStatus(index, BatchUrlStatus.SUBMITTING)
             try {
-                var done = false
-                processingService.submitUrl(currentEntry.url).collect { update ->
-                    if (done) return@collect
-                    updateEntry(index) { e -> e.copy(progress = update.progress, stage = update.stage) }
-                    when {
-                        update.stage == ProcessingStage.DONE -> {
-                            done = true
-                            updateEntryStatus(index, BatchUrlStatus.COMPLETED)
-                            recomputeCompletedCount()
-                        }
-                        update.status == RequestStatus.FAILED -> {
-                            done = true
-                            updateEntry(index) { e ->
-                                e.copy(status = BatchUrlStatus.FAILED, error = update.error ?: "Failed")
-                            }
-                        }
-                    }
-                }
+                processUrlEntry(index, currentEntry.url)
             } catch (e: Exception) {
                 updateEntry(index) { it.copy(status = BatchUrlStatus.FAILED, error = e.message ?: "Failed") }
             }

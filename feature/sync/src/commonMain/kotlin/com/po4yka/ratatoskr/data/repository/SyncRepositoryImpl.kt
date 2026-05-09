@@ -435,7 +435,7 @@ class SyncRepositoryImpl(
             throw IllegalStateException(response.error?.message ?: "Full sync failed")
         }
 
-        val data = requireNotNull(response.data)
+        val data = response.data!!
         logger.info { "Full sync received ${data.items.size} items, hasMore=${data.hasMore}" }
 
         var successCount = 0
@@ -512,14 +512,14 @@ class SyncRepositoryImpl(
             )
         }
 
-        val response = requireNotNull(deltaSyncResult.response)
+        val response = deltaSyncResult.response!!
 
         if (!response.success || response.data == null) {
             logger.error { "Delta sync failed: ${response.error}" }
             throw IllegalStateException(response.error?.message ?: "Delta sync failed")
         }
 
-        val data = requireNotNull(response.data)
+        val data = response.data!!
         logger.info {
             "Delta sync received: created=${data.created.size}, " +
                 "updated=${data.updated.size}, deleted=${data.deleted.size}, hasMore=${data.hasMore}"
@@ -529,7 +529,6 @@ class SyncRepositoryImpl(
         var updatedCount = 0
         var errorCount = 0
 
-        // Process created items in sub-chunks
         data.created.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
                 chunk.forEach { item ->
@@ -538,7 +537,6 @@ class SyncRepositoryImpl(
             }
         }
 
-        // Process updated items in sub-chunks
         data.updated.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
                 chunk.forEach { item ->
@@ -618,7 +616,7 @@ class SyncRepositoryImpl(
             throw IllegalStateException(response.error?.message ?: "Apply changes failed")
         }
 
-        val data = requireNotNull(response.data)
+        val data = response.data!!
         logger.info { "Applied ${data.applied.size} changes, ${data.conflicts.size} conflicts" }
 
         return ApplyResult(
