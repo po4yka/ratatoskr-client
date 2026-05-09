@@ -10,6 +10,8 @@ import com.po4yka.ratatoskr.domain.model.Streak
 import com.po4yka.ratatoskr.domain.model.UserPreferences
 import com.po4yka.ratatoskr.domain.model.UserStats
 import com.po4yka.ratatoskr.domain.repository.UserPreferencesRepository
+import com.po4yka.ratatoskr.util.error.AppError
+import com.po4yka.ratatoskr.util.error.toAppError
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.koin.core.annotation.Single
 
@@ -24,7 +26,7 @@ class UserPreferencesRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to fetch preferences")
+            throw response.error?.toAppError() ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch preferences")
         }
     }
 
@@ -37,7 +39,7 @@ class UserPreferencesRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to update preferences")
+            throw response.error?.toAppError() ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to update preferences")
         }
     }
 
@@ -46,7 +48,7 @@ class UserPreferencesRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to fetch user stats")
+            throw response.error?.toAppError() ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch user stats")
         }
     }
 
@@ -55,7 +57,7 @@ class UserPreferencesRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to fetch streak")
+            throw response.error?.toAppError() ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch streak")
         }
     }
 
@@ -64,7 +66,7 @@ class UserPreferencesRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).map { it.toDomain() }
         } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to fetch goals")
+            throw response.error?.toAppError() ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch goals")
         }
     }
 
@@ -73,7 +75,7 @@ class UserPreferencesRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).map { it.toDomain() }
         } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to fetch goals progress")
+            throw response.error?.toAppError() ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch goals progress")
         }
     }
 
@@ -86,7 +88,7 @@ class UserPreferencesRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to create goal")
+            throw response.error?.toAppError() ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to create goal")
         }
     }
 }
