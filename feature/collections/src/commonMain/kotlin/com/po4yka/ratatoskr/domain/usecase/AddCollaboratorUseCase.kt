@@ -5,19 +5,12 @@ import com.po4yka.ratatoskr.feature.collections.domain.repository.CollectionRepo
 import org.koin.core.annotation.Factory
 
 @Factory
-class ManageCollaboratorUseCase(private val repository: CollectionRepository) {
-    suspend fun addCollaborator(
+class AddCollaboratorUseCase(private val repository: CollectionRepository) {
+    suspend operator fun invoke(
         collectionId: String,
         userId: Int,
         role: CollaboratorRole,
     ) {
         repository.addCollaborator(collectionId, userId, role)
-    }
-
-    suspend fun removeCollaborator(
-        collectionId: String,
-        userId: Int,
-    ) {
-        repository.removeCollaborator(collectionId, userId)
     }
 }

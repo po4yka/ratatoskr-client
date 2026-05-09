@@ -7,7 +7,8 @@ import com.po4yka.ratatoskr.domain.usecase.DeleteCollectionUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetCollectionAclUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetCollectionItemsUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetCollectionUseCase
-import com.po4yka.ratatoskr.domain.usecase.ManageCollaboratorUseCase
+import com.po4yka.ratatoskr.domain.usecase.AddCollaboratorUseCase
+import com.po4yka.ratatoskr.domain.usecase.RemoveCollaboratorUseCase
 import com.po4yka.ratatoskr.domain.usecase.UpdateCollectionUseCase
 import com.po4yka.ratatoskr.presentation.state.CollectionViewState
 import com.po4yka.ratatoskr.presentation.state.CollectionViewTab
@@ -27,7 +28,8 @@ class CollectionViewViewModel(
     private val updateCollectionUseCase: UpdateCollectionUseCase,
     private val deleteCollectionUseCase: DeleteCollectionUseCase,
     private val getCollectionAclUseCase: GetCollectionAclUseCase,
-    private val manageCollaboratorUseCase: ManageCollaboratorUseCase,
+    private val addCollaboratorUseCase: AddCollaboratorUseCase,
+    private val removeCollaboratorUseCase: RemoveCollaboratorUseCase,
     private val createInviteLinkUseCase: CreateInviteLinkUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(CollectionViewState())
@@ -286,7 +288,7 @@ class CollectionViewViewModel(
 
         viewModelScope.launch {
             try {
-                manageCollaboratorUseCase.addCollaborator(collectionId, userId, role)
+                addCollaboratorUseCase(collectionId, userId, role)
                 // Reload collaborators to get the updated list
                 loadCollaborators()
             } catch (e: Exception) {
@@ -308,7 +310,7 @@ class CollectionViewViewModel(
 
         viewModelScope.launch {
             try {
-                manageCollaboratorUseCase.removeCollaborator(collectionId, userId)
+                removeCollaboratorUseCase(collectionId, userId)
                 // Remove from local state immediately
                 _state.value =
                     _state.value.copy(

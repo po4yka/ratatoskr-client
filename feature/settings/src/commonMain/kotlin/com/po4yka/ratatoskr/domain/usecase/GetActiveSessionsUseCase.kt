@@ -5,7 +5,7 @@ import com.po4yka.ratatoskr.domain.repository.AuthRepository
 import org.koin.core.annotation.Factory
 
 @Factory
-class ListSessionsUseCase(private val repository: AuthRepository) {
+class GetActiveSessionsUseCase(private val repository: AuthRepository) {
     /**
      * Get a list of all active sessions for the current user.
      */

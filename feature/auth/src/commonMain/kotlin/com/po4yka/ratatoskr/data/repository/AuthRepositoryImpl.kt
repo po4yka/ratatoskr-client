@@ -60,8 +60,9 @@ class AuthRepositoryImpl(
                 clientId = AppConfig.App.clientId,
             )
         val response = authApi.loginWithTelegram(request)
-        if (response.success && response.data != null) {
-            val authTokens = requireNotNull(response.data).toDomain()
+        val loginData = response.data
+        if (response.success && loginData != null) {
+            val authTokens = loginData.toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
             if (authTokens.refreshToken.isNotEmpty()) {
                 secureStorage.saveRefreshToken(authTokens.refreshToken)
@@ -86,8 +87,9 @@ class AuthRepositoryImpl(
                 secret = secret,
             )
         val response = authApi.secretLogin(request)
-        if (response.success && response.data != null) {
-            val authTokens = requireNotNull(response.data).toDomain()
+        val secretData = response.data
+        if (response.success && secretData != null) {
+            val authTokens = secretData.toDomain()
             secureStorage.saveAccessToken(authTokens.accessToken)
             if (authTokens.refreshToken.isNotEmpty()) {
                 secureStorage.saveRefreshToken(authTokens.refreshToken)
@@ -113,8 +115,9 @@ class AuthRepositoryImpl(
         if (secureStorage.getAccessToken() != null) {
             return try {
                 val response = authApi.getCurrentUser()
-                if (response.success && response.data != null) {
-                    _currentUser.value = requireNotNull(response.data).toDomain()
+                val userData = response.data
+                if (response.success && userData != null) {
+                    _currentUser.value = userData.toDomain()
                     _currentUser.value
                 } else {
                     null
@@ -139,8 +142,8 @@ class AuthRepositoryImpl(
         if (refreshToken != null) {
             return try {
                 val response = authApi.refreshToken(TokenRefreshRequestDto(refreshToken))
-                if (response.success && response.data != null) {
-                    val refreshData = requireNotNull(response.data)
+                val refreshData = response.data
+                if (response.success && refreshData != null) {
                     val authTokens =
                         refreshData.toAuthTokens(
                             currentTime = Clock.System.now(),
@@ -182,14 +185,14 @@ class AuthRepositoryImpl(
                 familyName = familyName,
             )
         val response = authApi.loginWithApple(request)
-        if (response.success && response.data != null) {
-            val loginData = requireNotNull(response.data)
-            val authTokens = loginData.toAuthTokens()
+        val appleData = response.data
+        if (response.success && appleData != null) {
+            val authTokens = appleData.toAuthTokens()
             secureStorage.saveAccessToken(authTokens.accessToken)
             if (authTokens.refreshToken.isNotEmpty()) {
                 secureStorage.saveRefreshToken(authTokens.refreshToken)
             }
-            _currentUser.value = loginData.user.toDomain()
+            _currentUser.value = appleData.user.toDomain()
             _isAuthenticated.value = true
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Apple login failed")
@@ -206,14 +209,14 @@ class AuthRepositoryImpl(
                 clientId = clientId,
             )
         val response = authApi.loginWithGoogle(request)
-        if (response.success && response.data != null) {
-            val loginData = requireNotNull(response.data)
-            val authTokens = loginData.toAuthTokens()
+        val googleData = response.data
+        if (response.success && googleData != null) {
+            val authTokens = googleData.toAuthTokens()
             secureStorage.saveAccessToken(authTokens.accessToken)
             if (authTokens.refreshToken.isNotEmpty()) {
                 secureStorage.saveRefreshToken(authTokens.refreshToken)
             }
-            _currentUser.value = loginData.user.toDomain()
+            _currentUser.value = googleData.user.toDomain()
             _isAuthenticated.value = true
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Google login failed")
@@ -234,8 +237,9 @@ class AuthRepositoryImpl(
 
     override suspend fun listSessions(): List<Session> {
         val response = authApi.listSessions()
-        if (response.success && response.data != null) {
-            return requireNotNull(response.data).sessions.map { it.toDomain() }
+        val sessionsData = response.data
+        if (response.success && sessionsData != null) {
+            return sessionsData.sessions.map { it.toDomain() }
         } else {
             throw response.error?.let { Exception(it.message) } ?: Exception("Failed to list sessions")
         }

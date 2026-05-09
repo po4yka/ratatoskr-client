@@ -59,11 +59,10 @@ internal suspend fun routePendingOperations(
 
 internal class PendingOperationFlusher(
     private val database: Database,
-    handlers: List<PendingOperationHandler>,
+    private val handlers: List<PendingOperationHandler>,
     private val applyChanges: suspend (sessionId: String, changes: List<LocalChange>) -> ApplyResult,
     private val onConflictCount: (Int) -> Unit,
 ) {
-    private val handlers = handlers
 
     suspend fun flush(sessionId: String) {
         val pendingOps = database.databaseQueries.selectAllPendingOperations().executeAsList()

@@ -15,11 +15,22 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
+/**
+ * gRPC-backed implementation of [ProcessingService] using the Wire code generator.
+ *
+ * Wire + gRPC is used because [submitUrl] is a server-streaming RPC: the backend pushes
+ * incremental [DomainProcessingUpdate] events until processing completes. A plain REST/HTTP
+ * approach would require polling; gRPC streaming receives updates with a single long-lived
+ * connection. If streaming is ever removed, consider replacing the entire Wire + gRPC stack
+ * with a Ktor JSON endpoint to reduce dependency weight.
+ *
+ * DI note: Koin cannot construct [GrpcProcessingServiceClient] directly (Wire-generated,
+ * no Koin annotations). The class takes [GrpcClient] — which Koin can resolve from
+ * [com.po4yka.ratatoskr.di.NetworkModule] — and builds the Wire client internally.
+ */
 @Single
-class WireProcessingService(
-    private val client: GrpcProcessingServiceClient,
-) : ProcessingService {
-    constructor(grpcClient: GrpcClient) : this(GrpcProcessingServiceClient(grpcClient))
+class WireProcessingService(grpcClient: GrpcClient) : ProcessingService {
+    private val client = GrpcProcessingServiceClient(grpcClient)
 
     override fun submitUrl(
         url: String,

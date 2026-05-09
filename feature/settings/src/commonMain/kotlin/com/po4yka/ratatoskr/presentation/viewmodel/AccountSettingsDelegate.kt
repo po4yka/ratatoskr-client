@@ -3,7 +3,7 @@ package com.po4yka.ratatoskr.presentation.viewmodel
 import com.po4yka.ratatoskr.domain.usecase.DeleteAccountUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetUserPreferencesUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetUserStatsUseCase
-import com.po4yka.ratatoskr.domain.usecase.ListSessionsUseCase
+import com.po4yka.ratatoskr.domain.usecase.GetActiveSessionsUseCase
 import com.po4yka.ratatoskr.domain.usecase.UpdateUserPreferencesUseCase
 import com.po4yka.ratatoskr.presentation.state.AccountSettingsState
 import com.po4yka.ratatoskr.util.error.toAppError
@@ -21,7 +21,7 @@ class AccountSettingsDelegate(
     private val getUserPreferencesUseCase: GetUserPreferencesUseCase,
     private val updateUserPreferencesUseCase: UpdateUserPreferencesUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
-    private val listSessionsUseCase: ListSessionsUseCase,
+    private val getActiveSessionsUseCase: GetActiveSessionsUseCase,
 ) {
     fun loadUserStats(
         scope: CoroutineScope,
@@ -138,7 +138,7 @@ class AccountSettingsDelegate(
     ) {
         scope.launch {
             onState(currentState().copy(isLoadingSessions = true))
-            runCatching { listSessionsUseCase() }
+            runCatching { getActiveSessionsUseCase() }
                 .onSuccess { sessions ->
                     onState(
                         currentState().copy(

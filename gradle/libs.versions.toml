@@ -39,9 +39,6 @@ logback-classic = "1.5.32"
 # Android Specific
 coil = "3.4.0"
 
-# iOS Specific
-skie = "0.10.11"
-
 # gRPC / Wire
 wire = "6.2.0"
 
@@ -168,9 +165,6 @@ composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "com
 
 # SQLDelight
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
-
-# SKIE (Swift/Kotlin Interop)
-skie = { id = "co.touchlab.skie", version.ref = "skie" }
 
 # Wire
 wire = { id = "com.squareup.wire", version.ref = "wire" }
