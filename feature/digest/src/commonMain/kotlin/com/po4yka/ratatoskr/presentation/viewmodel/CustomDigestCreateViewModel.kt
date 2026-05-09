@@ -4,6 +4,7 @@ import com.po4yka.ratatoskr.domain.model.DigestFormat
 import com.po4yka.ratatoskr.feature.summary.api.SummaryFeedPort
 import com.po4yka.ratatoskr.domain.usecase.CreateCustomDigestUseCase
 import com.po4yka.ratatoskr.presentation.state.CustomDigestCreateState
+import com.po4yka.ratatoskr.util.error.toUserMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -74,7 +75,7 @@ class CustomDigestCreateViewModel(
                 val digest = createCustomDigestUseCase(title, state.selectedIds.toList(), state.format)
                 _state.update { it.copy(isCreating = false, createdDigestId = digest.id) }
             } catch (e: Exception) {
-                _state.update { it.copy(isCreating = false, error = e.message ?: "Failed to create digest") }
+                _state.update { it.copy(isCreating = false, error = e.toUserMessage("Failed to create digest")) }
             }
         }
     }

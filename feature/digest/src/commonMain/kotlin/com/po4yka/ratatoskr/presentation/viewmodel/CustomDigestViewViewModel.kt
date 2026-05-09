@@ -5,6 +5,7 @@ import com.po4yka.ratatoskr.domain.repository.CustomDigestRepository
 import com.po4yka.ratatoskr.domain.usecase.DeleteCustomDigestUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetCustomDigestByIdUseCase
 import com.po4yka.ratatoskr.presentation.state.CustomDigestViewState
+import com.po4yka.ratatoskr.util.error.toUserMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +47,7 @@ class CustomDigestViewViewModel(
                     _state.update { it.copy(digest = completed) }
                 } catch (e: Exception) {
                     if (e !is CancellationException) {
-                        _state.update { it.copy(error = e.message) }
+                        _state.update { it.copy(error = e.toUserMessage("Failed to load digest status")) }
                     }
                 }
             }
@@ -62,7 +63,7 @@ class CustomDigestViewViewModel(
                 deleteCustomDigestUseCase(digestId)
                 onDeleted()
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message) }
+                _state.update { it.copy(error = e.toUserMessage("Failed to delete digest")) }
             }
         }
     }

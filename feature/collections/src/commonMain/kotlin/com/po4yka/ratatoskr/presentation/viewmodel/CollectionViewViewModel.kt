@@ -12,6 +12,7 @@ import com.po4yka.ratatoskr.domain.usecase.RemoveCollaboratorUseCase
 import com.po4yka.ratatoskr.domain.usecase.UpdateCollectionUseCase
 import com.po4yka.ratatoskr.presentation.state.CollectionViewState
 import com.po4yka.ratatoskr.presentation.state.CollectionViewTab
+import com.po4yka.ratatoskr.util.error.toUserMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -74,7 +75,7 @@ class CollectionViewViewModel(
                         header =
                             _state.value.header.copy(
                                 isLoading = false,
-                                error = e.message ?: "Failed to load collection",
+                                error = e.toUserMessage("Failed to load collection"),
                             ),
                     )
             }
@@ -133,7 +134,7 @@ class CollectionViewViewModel(
                         items =
                             _state.value.items.copy(
                                 isLoading = false,
-                                error = e.message ?: "Failed to load items",
+                                error = e.toUserMessage("Failed to load items"),
                             ),
                     )
             }
@@ -170,7 +171,7 @@ class CollectionViewViewModel(
                         items =
                             _state.value.items.copy(
                                 isLoading = false,
-                                error = e.message ?: "Failed to load more items",
+                                error = e.toUserMessage("Failed to load more items"),
                             ),
                     )
             }
@@ -208,7 +209,7 @@ class CollectionViewViewModel(
                         settings =
                             _state.value.settings.copy(
                                 isUpdating = false,
-                                updateError = e.message ?: "Failed to update collection",
+                                updateError = e.toUserMessage("Failed to update collection"),
                             ),
                     )
             }
@@ -238,7 +239,7 @@ class CollectionViewViewModel(
                         settings =
                             _state.value.settings.copy(
                                 isDeleting = false,
-                                deleteError = e.message ?: "Failed to delete collection",
+                                deleteError = e.toUserMessage("Failed to delete collection"),
                             ),
                     )
             }
@@ -272,7 +273,7 @@ class CollectionViewViewModel(
                         sharing =
                             _state.value.sharing.copy(
                                 isLoading = false,
-                                error = e.message ?: "Failed to load collaborators",
+                                error = e.toUserMessage("Failed to load collaborators"),
                             ),
                     )
             }
@@ -297,7 +298,7 @@ class CollectionViewViewModel(
                     _state.value.copy(
                         sharing =
                             _state.value.sharing.copy(
-                                error = e.message ?: "Failed to add collaborator",
+                                error = e.toUserMessage("Failed to add collaborator"),
                             ),
                     )
             }
@@ -325,7 +326,7 @@ class CollectionViewViewModel(
                     _state.value.copy(
                         sharing =
                             _state.value.sharing.copy(
-                                error = e.message ?: "Failed to remove collaborator",
+                                error = e.toUserMessage("Failed to remove collaborator"),
                             ),
                     )
             }
@@ -358,7 +359,7 @@ class CollectionViewViewModel(
                         sharing =
                             _state.value.sharing.copy(
                                 isCreatingInvite = false,
-                                inviteError = e.message ?: "Failed to create invite link",
+                                inviteError = e.toUserMessage("Failed to create invite link"),
                             ),
                     )
             }

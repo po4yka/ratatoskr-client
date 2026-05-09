@@ -223,6 +223,7 @@ class SummaryListViewModel(
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to load available tags" }
+                _state.update { it.copy(error = e.toAppError().userMessage()) }
             }
         }
     }

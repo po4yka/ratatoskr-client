@@ -1,6 +1,7 @@
 package com.po4yka.ratatoskr.presentation.viewmodel
 
 import com.po4yka.ratatoskr.presentation.PresentationConstants
+import com.po4yka.ratatoskr.util.error.toUserMessage
 import com.po4yka.ratatoskr.domain.usecase.GetDigestChannelsUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetDigestHistoryUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetDigestPreferencesUseCase
@@ -61,7 +62,7 @@ class DigestViewModel(
                         channels =
                             it.channels.copy(
                                 isLoading = false,
-                                error = e.message ?: "Failed to load channels",
+                                error = e.toUserMessage("Failed to load channels"),
                             ),
                     )
                 }
@@ -108,7 +109,7 @@ class DigestViewModel(
                         channels =
                             it.channels.copy(
                                 isSubscribing = false,
-                                subscribeError = e.message ?: "Failed to subscribe",
+                                subscribeError = e.toUserMessage("Failed to subscribe"),
                             ),
                     )
                 }
@@ -132,7 +133,7 @@ class DigestViewModel(
                         channels =
                             it.channels.copy(
                                 isSubscribing = false,
-                                error = e.message ?: "Failed to unsubscribe",
+                                error = e.toUserMessage("Failed to unsubscribe"),
                             ),
                     )
                 }
@@ -171,7 +172,7 @@ class DigestViewModel(
                         preferences =
                             it.preferences.copy(
                                 isLoading = false,
-                                error = e.message ?: "Failed to load preferences",
+                                error = e.toUserMessage("Failed to load preferences"),
                             ),
                     )
                 }
@@ -236,7 +237,7 @@ class DigestViewModel(
                         preferences =
                             it.preferences.copy(
                                 isSaving = false,
-                                saveError = e.message ?: "Failed to save preferences",
+                                saveError = e.toUserMessage("Failed to save preferences"),
                             ),
                     )
                 }
@@ -274,7 +275,7 @@ class DigestViewModel(
                         history =
                             it.history.copy(
                                 isLoading = false,
-                                error = e.message ?: "Failed to load history",
+                                error = e.toUserMessage("Failed to load history"),
                             ),
                     )
                 }
@@ -302,7 +303,7 @@ class DigestViewModel(
                         trigger =
                             it.trigger.copy(
                                 isTriggering = false,
-                                error = e.message ?: "Failed to trigger digest",
+                                error = e.toUserMessage("Failed to trigger digest"),
                             ),
                     )
                 }
