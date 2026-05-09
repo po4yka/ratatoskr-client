@@ -545,7 +545,6 @@ class SyncRepositoryImpl(
             }
         }
 
-        // Process deletes in sub-chunks (deleted items are full envelope objects)
         data.deleted.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
                 chunk.forEach { item ->
@@ -562,7 +561,6 @@ class SyncRepositoryImpl(
             }
         }
 
-        // Update sync metadata (checkpoint)
         database.transaction {
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
@@ -571,7 +569,6 @@ class SyncRepositoryImpl(
             )
         }
 
-        // Save new ETag for future conditional requests
         deltaSyncResult.etag?.let { newEtag ->
             database.databaseQueries.updateDeltaSyncEtag(newEtag)
         }

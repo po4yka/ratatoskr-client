@@ -19,7 +19,7 @@ class AudioDelegate(
 ) {
     @Suppress("TooGenericExceptionCaught")
     fun generateAndPlayAudio(
-        summaryId: Long,
+        summaryId: String,
         sourceField: String,
         scope: CoroutineScope,
         currentState: () -> AudioPlaybackState?,
@@ -28,10 +28,9 @@ class AudioDelegate(
         onState(AudioPlaybackState(summaryId = summaryId, status = AudioStatus.GENERATING))
         scope.launch {
             try {
-                val genResult = generateAudioUseCase(summaryId, sourceField)
-                genResult.getOrThrow()
+                generateAudioUseCase(summaryId, sourceField)
                 onState(currentState()?.copy(status = AudioStatus.LOADING))
-                val audioBytes = getAudioUseCase(summaryId).getOrThrow()
+                val audioBytes = getAudioUseCase(summaryId)
                 audioPlayer.playFromBytes(audioBytes)
                 onState(
                     currentState()?.copy(

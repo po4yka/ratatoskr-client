@@ -11,27 +11,27 @@ class AudioRepositoryImpl(
     private val api: AudioApi,
 ) : AudioRepository {
     override suspend fun generateAudio(
-        summaryId: Long,
+        summaryId: String,
         sourceField: String,
-    ): Result<AudioPlaybackState> =
-        runCatching {
-            val response = api.generateAudio(summaryId, sourceField)
-            val data = response.data ?: error("No audio generation data in response")
-            AudioPlaybackState(
-                summaryId = summaryId,
-                status =
-                    when (data.status) {
-                        "completed" -> AudioStatus.IDLE
-                        "queued", "processing" -> AudioStatus.GENERATING
-                        "failed" -> AudioStatus.ERROR
-                        else -> AudioStatus.IDLE
-                    },
-                error = data.error,
-            )
-        }
+    ): AudioPlaybackState {
+        val remoteId = summaryId.toLong()
+        val response = api.generateAudio(remoteId, sourceField)
+        val data = response.data ?: error("No audio generation data in response")
+        return AudioPlaybackState(
+            summaryId = summaryId,
+            status =
+                when (data.status) {
+                    "completed" -> AudioStatus.IDLE
+                    "queued", "processing" -> AudioStatus.GENERATING
+                    "failed" -> AudioStatus.ERROR
+                    else -> AudioStatus.IDLE
+                },
+            error = data.error,
+        )
+    }
 
-    override suspend fun getAudioBytes(summaryId: Long): Result<ByteArray> =
-        runCatching {
-            api.getAudioBytes(summaryId)
-        }
+    override suspend fun getAudioBytes(summaryId: String): ByteArray {
+        val remoteId = summaryId.toLong()
+        return api.getAudioBytes(remoteId)
+    }
 }

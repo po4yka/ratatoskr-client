@@ -212,7 +212,7 @@ class SummaryDetailViewModel(
     // Audio
 
     fun generateAndPlayAudio(sourceField: String = "summary_1000") {
-        val summaryId = _state.value.summary?.id?.toLongOrNull() ?: return
+        val summaryId = _state.value.summary?.id ?: return
         audioDelegate.generateAndPlayAudio(
             summaryId = summaryId,
             sourceField = sourceField,
