@@ -49,29 +49,6 @@ class AndroidShareManager(private val context: Context) : ShareManager {
         context.startActivity(shareIntent)
     }
 
-    private fun buildShareText(
-        summary: Summary,
-        customMessage: String? = null,
-    ): String =
-        buildString {
-            if (!customMessage.isNullOrBlank()) {
-                appendLine(customMessage)
-                appendLine()
-            }
-            appendLine(summary.title)
-            appendLine()
-            if (summary.content.isNotBlank()) {
-                appendLine("Summary:")
-                appendLine(summary.content)
-                appendLine()
-            }
-            appendLine("Read more: ${summary.sourceUrl}")
-            if (summary.tags.isNotEmpty()) {
-                appendLine()
-                append("Tags: ${summary.tags.joinToString(", ") { "#$it" }}")
-            }
-        }
-
     /**
      * Create an Android share intent
      */
