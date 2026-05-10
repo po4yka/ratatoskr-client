@@ -435,7 +435,7 @@ class SyncRepositoryImpl(
             throw IllegalStateException(response.error?.message ?: "Full sync failed")
         }
 
-        val data = response.data
+        val data = response.data!!
         logger.info { "Full sync received ${data.items.size} items, hasMore=${data.hasMore}" }
 
         var successCount = 0
@@ -519,7 +519,7 @@ class SyncRepositoryImpl(
             throw IllegalStateException(response.error?.message ?: "Delta sync failed")
         }
 
-        val data = response.data
+        val data = response.data!!
         logger.info {
             "Delta sync received: created=${data.created.size}, " +
                 "updated=${data.updated.size}, deleted=${data.deleted.size}, hasMore=${data.hasMore}"
