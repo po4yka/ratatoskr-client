@@ -3,9 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'  # Trigger on version tags like v1.0.0
-    branches-ignore:
-      - '**'  # Never trigger on branch pushes, only on tags
+      - 'v*.*.*'
   workflow_dispatch:
     inputs:
       version:
