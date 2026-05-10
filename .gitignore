@@ -108,3 +108,6 @@ node_modules/
 # Obsidian volatile state
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
+
+# Generated scorecard
+scorecard.png
