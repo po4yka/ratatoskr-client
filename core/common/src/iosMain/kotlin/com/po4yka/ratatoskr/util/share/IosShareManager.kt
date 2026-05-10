@@ -2,6 +2,7 @@ package com.po4yka.ratatoskr.util.share
 
 import com.po4yka.ratatoskr.domain.model.Summary
 import kotlin.concurrent.AtomicReference
+import kotlin.experimental.ExperimentalObjCName
 import kotlin.native.ObjCName
 import platform.Foundation.NSURL
 
@@ -70,6 +71,7 @@ class IosShareManager : ShareManager {
  *
  * Thread-safe implementation using AtomicReference for concurrent access.
  */
+@OptIn(ExperimentalObjCName::class)
 @ObjCName("KotlinShareHelper", swiftName = "KotlinShareHelper")
 object ShareHelper {
     private val pendingItems = AtomicReference<List<Any>?>(null)
