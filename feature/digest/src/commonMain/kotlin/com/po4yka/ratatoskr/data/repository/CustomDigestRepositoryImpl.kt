@@ -68,7 +68,8 @@ class CustomDigestRepositoryImpl(
 
                 if (!response.success || response.data == null) {
                     database.databaseQueries.deleteCustomDigest(localId)
-                    throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to create digest")
+                    throw response.error?.toAppError()
+                        ?: AppError.UnknownError(fallbackMessage = "Failed to create digest")
                 }
 
                 val dto = requireNotNull(response.data)

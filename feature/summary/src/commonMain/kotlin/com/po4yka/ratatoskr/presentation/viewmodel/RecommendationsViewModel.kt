@@ -39,7 +39,12 @@ class RecommendationsViewModel(
                 _state.update { it.copy(isLoading = false) }
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 logger.warn(e) { "Failed to refresh recommendations" }
-                _state.update { it.copy(error = e.toUserMessage("Failed to refresh recommendations"), isLoading = false) }
+                _state.update {
+                    it.copy(
+                        error = e.toUserMessage("Failed to refresh recommendations"),
+                        isLoading = false,
+                    )
+                }
             }
         }
     }
