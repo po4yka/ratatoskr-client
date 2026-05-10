@@ -21,7 +21,12 @@ data class DigestPreferences(
 )
 
 enum class DigestHistoryStatus {
-    PENDING, DELIVERED, COMPLETED, FAILED, UNKNOWN;
+    PENDING,
+    DELIVERED,
+    COMPLETED,
+    FAILED,
+    UNKNOWN,
+    ;
 
     companion object {
         fun fromString(value: String): DigestHistoryStatus =
@@ -45,5 +50,6 @@ data class DigestHistoryItem(
 
 sealed class DigestTriggerResult {
     data class Triggered(val status: String, val message: String? = null) : DigestTriggerResult()
+
     data object NoServerResponse : DigestTriggerResult()
 }
