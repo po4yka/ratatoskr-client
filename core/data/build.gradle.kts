@@ -53,6 +53,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.sqldelight.sqlite.driver)
             implementation(libs.logback.classic)
+            implementation(libs.multiplatform.settings.test) // MapSettings used in dev-only DesktopSecureStorage
         }
 
         commonTest.dependencies {

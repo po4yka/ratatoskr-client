@@ -613,7 +613,7 @@ class SyncRepositoryImpl(
             throw IllegalStateException(response.error?.message ?: "Apply changes failed")
         }
 
-        val data = response.data
+        val data = response.data!!
         logger.info { "Applied ${data.applied.size} changes, ${data.conflicts.size} conflicts" }
 
         return ApplyResult(
