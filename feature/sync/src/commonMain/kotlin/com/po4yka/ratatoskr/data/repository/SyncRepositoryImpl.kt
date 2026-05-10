@@ -5,7 +5,6 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.po4yka.ratatoskr.data.mappers.toDto
 import com.po4yka.ratatoskr.data.remote.SyncApi
 import com.po4yka.ratatoskr.data.remote.dto.SyncApplyRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.SyncItemDto
 import com.po4yka.ratatoskr.database.Database
 import com.po4yka.ratatoskr.domain.model.SyncConflict
 import com.po4yka.ratatoskr.domain.model.SyncPhase
@@ -631,5 +630,4 @@ class SyncRepositoryImpl(
             serverVersion = data.serverVersion,
         )
     }
-
 }

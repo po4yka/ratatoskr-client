@@ -63,7 +63,6 @@ internal class PendingOperationFlusher(
     private val applyChanges: suspend (sessionId: String, changes: List<LocalChange>) -> ApplyResult,
     private val onConflictCount: (Int) -> Unit,
 ) {
-
     suspend fun flush(sessionId: String) {
         val pendingOps = database.databaseQueries.selectAllPendingOperations().executeAsList()
         if (pendingOps.isEmpty()) return

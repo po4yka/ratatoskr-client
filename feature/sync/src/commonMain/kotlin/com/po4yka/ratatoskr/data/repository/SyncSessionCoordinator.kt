@@ -15,7 +15,6 @@ internal data class SyncSessionInfo(
 )
 
 internal class SyncSessionCoordinator(private val api: SyncApi) {
-
     suspend fun create(): SyncSessionInfo {
         val response = api.createSession(null)
         if (response.success && response.data != null) {
