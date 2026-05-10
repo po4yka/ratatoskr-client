@@ -205,7 +205,10 @@ class SubmitURLViewModel(
             }
     }
 
-    private suspend fun processUrlEntry(index: Int, url: String) {
+    private suspend fun processUrlEntry(
+        index: Int,
+        url: String,
+    ) {
         var done = false
         processingService.submitUrl(url).collect { update ->
             if (done) return@collect

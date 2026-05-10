@@ -27,11 +27,12 @@ class RequestRepositoryImpl(
     override suspend fun submitUrl(url: String): Request {
         val request = SubmitURLRequestDto(inputUrl = url)
         val response = api.submitUrl(request)
-        val requestDto = response.data
-            ?: throw (
-                response.error?.toAppError()
-                    ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to submit request")
-            )
+        val requestDto =
+            response.data
+                ?: throw (
+                    response.error?.toAppError()
+                        ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to submit request")
+                )
         val requestEntity = requestDto.toEntity(url)
         database.databaseQueries.insertRequest(requestEntity)
         return requestDto.toDomain(url)
@@ -43,11 +44,12 @@ class RequestRepositoryImpl(
     ): Request {
         val request = SubmitForwardRequestDto(contentText = contentText, langPreference = langPreference)
         val response = api.submitForward(request)
-        val requestDto = response.data
-            ?: throw (
-                response.error?.toAppError()
-                    ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to submit forward request")
-            )
+        val requestDto =
+            response.data
+                ?: throw (
+                    response.error?.toAppError()
+                        ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to submit forward request")
+                )
         val requestEntity = requestDto.toEntity("forward:text")
         database.databaseQueries.insertRequest(requestEntity)
         return requestDto.toDomain("forward:text")
@@ -58,11 +60,12 @@ class RequestRepositoryImpl(
             id.toLongOrNull()
                 ?: throw IllegalArgumentException("Request id must be numeric to query status")
         val response = api.getRequestStatus(requestId)
-        val statusDto = response.data
-            ?: throw (
-                response.error?.toAppError()
-                    ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch request status")
-            )
+        val statusDto =
+            response.data
+                ?: throw (
+                    response.error?.toAppError()
+                        ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch request status")
+                )
         val existing =
             database.databaseQueries.selectAllRequests()
                 .executeAsList()
