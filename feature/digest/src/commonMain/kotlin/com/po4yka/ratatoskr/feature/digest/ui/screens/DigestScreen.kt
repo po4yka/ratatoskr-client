@@ -670,7 +670,8 @@ private fun DigestHistoryRow(item: DigestHistoryItem) {
             }
         val statusColor =
             when (item.status) {
-                DigestHistoryStatus.DELIVERED, DigestHistoryStatus.COMPLETED -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
+                DigestHistoryStatus.DELIVERED, DigestHistoryStatus.COMPLETED ->
+                    AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.active)
                 DigestHistoryStatus.FAILED -> AppTheme.frostColors.spark
                 else -> AppTheme.frostColors.ink.copy(alpha = AppTheme.alpha.secondary)
             }

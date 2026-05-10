@@ -39,7 +39,12 @@ class TelegramLinkingDelegate(
                 }
                 .onFailure { throwable ->
                     if (throwable is CancellationException) throw throwable
-                    onState(currentState().copy(isLoading = false, error = throwable.toUserMessage("Failed to load Telegram link status")))
+                    onState(
+                        currentState().copy(
+                            isLoading = false,
+                            error = throwable.toUserMessage("Failed to load Telegram link status"),
+                        ),
+                    )
                 }
         }
     }
@@ -57,7 +62,12 @@ class TelegramLinkingDelegate(
                 }
                 .onFailure { throwable ->
                     if (throwable is CancellationException) throw throwable
-                    onState(currentState().copy(isLoading = false, error = throwable.toUserMessage("Failed to unlink Telegram")))
+                    onState(
+                        currentState().copy(
+                            isLoading = false,
+                            error = throwable.toUserMessage("Failed to unlink Telegram"),
+                        ),
+                    )
                 }
         }
     }
@@ -75,7 +85,12 @@ class TelegramLinkingDelegate(
                 }
                 .onFailure { throwable ->
                     if (throwable is CancellationException) throw throwable
-                    onState(currentState().copy(isLoading = false, error = throwable.toUserMessage("Failed to begin Telegram link")))
+                    onState(
+                        currentState().copy(
+                            isLoading = false,
+                            error = throwable.toUserMessage("Failed to begin Telegram link"),
+                        ),
+                    )
                 }
         }
     }
@@ -109,7 +124,12 @@ class TelegramLinkingDelegate(
                 }
                 .onFailure { throwable ->
                     if (throwable is CancellationException) throw throwable
-                    onState(currentState().copy(isLoading = false, error = throwable.toUserMessage("Failed to complete Telegram link")))
+                    onState(
+                        currentState().copy(
+                            isLoading = false,
+                            error = throwable.toUserMessage("Failed to complete Telegram link"),
+                        ),
+                    )
                 }
         }
     }
