@@ -44,7 +44,7 @@ class CollectionRepositoryImpl(
             ?: throw AppError.UnknownError(fallbackMessage = "Invalid collection ID: $id")
         val response = api.getCollection(intId)
         if (response.success && response.data != null) {
-            return response.data.toDomain()
+            return response.data!!.toDomain()
         } else {
             throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to get collection $id")
         }
