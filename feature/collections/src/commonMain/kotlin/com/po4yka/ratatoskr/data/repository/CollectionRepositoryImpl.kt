@@ -35,18 +35,21 @@ class CollectionRepositoryImpl(
                 val collections = requireNotNull(response.data).collections.map { it.toDomain() }
                 emit(collections)
             } else {
-                throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to fetch collections")
+                throw response.error?.toAppError()
+                    ?: AppError.UnknownError(fallbackMessage = "Failed to fetch collections")
             }
         }
 
     override suspend fun getCollection(id: String): Collection {
-        val intId = id.toIntOrNull()
-            ?: throw AppError.UnknownError(fallbackMessage = "Invalid collection ID: $id")
+        val intId =
+            id.toIntOrNull()
+                ?: throw AppError.UnknownError(fallbackMessage = "Invalid collection ID: $id")
         val response = api.getCollection(intId)
         if (response.success && response.data != null) {
             return response.data!!.toDomain()
         } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to get collection $id")
+            throw response.error?.toAppError()
+                ?: AppError.UnknownError(fallbackMessage = "Failed to get collection $id")
         }
     }
 
@@ -75,7 +78,8 @@ class CollectionRepositoryImpl(
                 }
             }
         } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to get collection items for $collectionId")
+            throw response.error?.toAppError()
+                ?: AppError.UnknownError(fallbackMessage = "Failed to get collection items for $collectionId")
         }
     }
 
@@ -112,7 +116,8 @@ class CollectionRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).acl.map { it.toDomain() }
         } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to get ACL for collection $id")
+            throw response.error?.toAppError()
+                ?: AppError.UnknownError(fallbackMessage = "Failed to get ACL for collection $id")
         }
     }
 
@@ -140,7 +145,8 @@ class CollectionRepositoryImpl(
         val intId = id.toIntOrNull() ?: throw IllegalArgumentException("Invalid collection ID: $id")
         val response = api.removeCollaborator(intId, userId)
         if (!response.success) {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to remove collaborator")
+            throw response.error?.toAppError()
+                ?: AppError.UnknownError(fallbackMessage = "Failed to remove collaborator")
         }
     }
 
@@ -159,7 +165,8 @@ class CollectionRepositoryImpl(
         if (response.success && response.data != null) {
             return requireNotNull(response.data).toDomain()
         } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to create invite link")
+            throw response.error?.toAppError()
+                ?: AppError.UnknownError(fallbackMessage = "Failed to create invite link")
         }
     }
 
@@ -177,7 +184,8 @@ class CollectionRepositoryImpl(
                 request = CollectionItemCreateRequest(summaryId = intSummaryId),
             )
         if (!response.success) {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to add item to collection")
+            throw response.error?.toAppError()
+                ?: AppError.UnknownError(fallbackMessage = "Failed to add item to collection")
         }
     }
 
