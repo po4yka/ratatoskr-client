@@ -2,8 +2,6 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*.*.*'
   workflow_dispatch:
@@ -17,30 +15,10 @@ env:
   JAVA_VERSION: '17'
 
 jobs:
-  # Always-runs guard: ensures the workflow has at least one job so branch-push
-  # runs conclude as success rather than 0-job failure.
-  check:
-    name: Check trigger
-    runs-on: ubuntu-latest
-    outputs:
-      is_release: ${{ steps.detect.outputs.is_release }}
-    steps:
-      - name: Detect release trigger
-        id: detect
-        run: |
-          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]] || \
-             [[ "$GITHUB_REF" == refs/tags/v* ]]; then
-            echo "is_release=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "is_release=false" >> "$GITHUB_OUTPUT"
-          fi
-
   # Validate release version
   validate:
     name: Validate Release
     runs-on: ubuntu-latest
-    needs: check
-    if: needs.check.outputs.is_release == 'true'
     outputs:
       version: ${{ steps.get_version.outputs.version }}
 
