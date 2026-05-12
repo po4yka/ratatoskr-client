@@ -183,6 +183,37 @@ Files under `core/api-generated/src/commonMain/generated/` and the YAML at
 `src/commonMain/openapi/mobile_api.yaml` are derived artifacts. The drift
 check will reject any local edit.
 
+### Bootstrapping the generated client
+
+The generated `Api` is a singleton (`object Api : ApiHolder()`) that owns
+its own `HttpClient`. Call `bootstrapGeneratedApi(...)` from
+`core/api-generated/.../bootstrap/GeneratedApiBootstrap.kt` once during app
+startup, before any generated API method is invoked:
+
+```kotlin
+bootstrapGeneratedApi(
+    baseUrl = AppConfig.Api.baseUrl,
+    engine = platformHttpEngine,            // OkHttp on Android, Darwin on iOS
+    bearerTokenProvider = { secureStorage.getAccessToken() },
+    withLogging = AppConfig.Api.loggingEnabled,
+)
+```
+
+The companion library's `AuthPlugin` does not auto-refresh on 401 — that
+behavior currently lives in `core/data/.../ApiClient.kt` for hand-written
+call sites. While consumer migration is in progress, the two clients
+coexist:
+
+- Hand-written `feature/<name>/data/remote/<Name>Api.kt` keeps using
+  `core/data`'s `ApiClient`.
+- New code calling generated `<Name>Api` objects uses the bootstrapped
+  `Api.client` and handles 401 explicitly via the
+  `Either<CallException, HttpCallResponse<T>>` return type.
+
+When the last hand-written API call site is removed, the existing
+`ApiClient` and `ApiResponseDto<T>` envelope can be deleted in a single
+follow-up commit.
+
 ## Auth And Sync
 
 - HTTP auth is handled by Ktor `Auth` bearer refresh in `core/data/.../data/remote/ApiClient.kt`.
