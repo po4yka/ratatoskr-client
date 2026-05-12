@@ -32,6 +32,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":androidApp")
 include(":composeApp")
+include(":core:api-generated")
 include(":core:common")
 include(":core:data")
 include(":core:navigation")
