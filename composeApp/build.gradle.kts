@@ -20,6 +20,7 @@ kotlin {
         framework {
             baseName = "ComposeApp"
             isStatic = true
+            export(projects.core.apiGenerated)
             export(projects.core.common)
             export(projects.core.data)
             export(projects.core.navigation)
@@ -36,6 +37,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            api(projects.core.apiGenerated)
             api(projects.core.common)
             api(projects.core.data)
             api(projects.core.navigation)

@@ -32,7 +32,7 @@ fun initKoin(
     startKoin {
         setupKoin(configuration = configuration, modules = modules, extraModules = extraModules)
         appDeclaration()
-    }
+    }.also { it.koin.bootstrapGeneratedApiFromKoin() }
 
 /**
  * Setup Koin configuration without starting it.
