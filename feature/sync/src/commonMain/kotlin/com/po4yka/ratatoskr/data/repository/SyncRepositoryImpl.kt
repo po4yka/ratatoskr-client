@@ -2,9 +2,14 @@ package com.po4yka.ratatoskr.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.po4yka.ratatoskr.data.mappers.toDto
-import com.po4yka.ratatoskr.data.remote.SyncApi
-import com.po4yka.ratatoskr.data.remote.dto.SyncApplyRequestDto
+import com.po4yka.ratatoskr.api.generated.api.SyncApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
+import com.po4yka.ratatoskr.api.generated.models.SyncApplyResult
+import com.po4yka.ratatoskr.api.generated.models.SyncEntityEnvelope
+import com.po4yka.ratatoskr.data.mappers.buildSyncApplyRequest
+import com.po4yka.ratatoskr.data.mappers.idAsLong
+import com.po4yka.ratatoskr.data.mappers.idAsString
+import com.po4yka.ratatoskr.data.mappers.toSyncItemDto
 import com.po4yka.ratatoskr.database.Database
 import com.po4yka.ratatoskr.domain.model.SyncConflict
 import com.po4yka.ratatoskr.domain.model.SyncPhase
@@ -16,6 +21,7 @@ import com.po4yka.ratatoskr.feature.sync.api.SyncItemApplier
 import com.po4yka.ratatoskr.feature.sync.domain.repository.ApplyResult
 import com.po4yka.ratatoskr.feature.sync.domain.repository.LocalChange
 import com.po4yka.ratatoskr.feature.sync.domain.repository.SyncRepository
+import com.po4yka.ratatoskr.util.network.NetworkMonitor
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -33,11 +39,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withTimeout
+import kotlin.concurrent.Volatile
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
-import com.po4yka.ratatoskr.util.network.NetworkMonitor
-import kotlin.concurrent.Volatile
 
 private val logger = KotlinLogging.logger {}
 
@@ -52,13 +57,12 @@ private const val SYNC_TIMEOUT_MS = 5 * 60 * 1000L
 
 class SyncRepositoryImpl(
     private val database: Database,
-    private val api: SyncApi,
     private val networkMonitor: NetworkMonitor,
     syncItemAppliers: List<SyncItemApplier>,
     pendingOperationHandlers: List<PendingOperationHandler>,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncRepository {
-    private val sessionCoordinator = SyncSessionCoordinator(api)
+    private val sessionCoordinator = SyncSessionCoordinator()
 
     private val syncItemApplierRegistry =
         SyncItemApplierRegistry(appliers = syncItemAppliers)
@@ -224,9 +228,9 @@ class SyncRepositoryImpl(
         var sessionExpiresAt = initialSessionExpiresAt
         var hasMore = true
         var totalCreated = 0
-        var totalErrors = 0
+        val totalErrors = 0
         var cursor: Long? = resumeCursor
-        var previousCursor: Long? = null
+        var previousCursor: Long?
         var batchNumber = 0
         var observedCompleteDataset = false
         val totalBatches = totalItems?.let { (it + DEFAULT_BATCH_SIZE - 1) / DEFAULT_BATCH_SIZE }
@@ -322,7 +326,11 @@ class SyncRepositoryImpl(
     ) {
         updateProgress(phase = SyncPhase.FETCHING_DELTA)
 
-        val storedEtag = database.databaseQueries.getDeltaSyncEtag().executeAsOneOrNull()?.deltaSyncEtag
+        // ETag-based 304 short-circuiting is no longer wired in this path: the
+        // generated [SyncApi.deltaSyncV1SyncDeltaGet] does not surface the
+        // `If-None-Match` header today, and the global [HttpRequestRetry]
+        // already handles transient failures. The stored ETag column is
+        // preserved for backward compatibility with other call sites.
 
         var sessionId = initialSessionId
         var sessionExpiresAt = initialSessionExpiresAt
@@ -340,8 +348,7 @@ class SyncRepositoryImpl(
             sessionExpiresAt = renewed.second
 
             val previousCursor = cursor
-            val currentEtag = if (cursor == lastSyncCursor) storedEtag else null
-            val result = deltaSync(sessionId, since = cursor, limit = DEFAULT_BATCH_SIZE, etag = currentEtag)
+            val result = deltaSync(sessionId, since = cursor, limit = DEFAULT_BATCH_SIZE, etag = null)
             totalCreated += result.createdCount
             totalUpdated += result.updatedCount
             totalDeleted += result.deletedCount
@@ -427,26 +434,35 @@ class SyncRepositoryImpl(
         cursor: Long?,
     ): SyncResult {
         logger.info { "Starting full sync with sessionId=$sessionId, limit=$limit, cursor=$cursor" }
-        val response = api.fullSync(sessionId, limit, cursor)
+        // Note: the generated [SyncApi.fullSyncV1SyncFullGet] does not expose
+        // a `cursor` parameter (the OpenAPI spec only has `session_id` and
+        // `limit`). The session itself tracks the cursor server-side via
+        // `lastIssuedSince`. The `cursor` argument is preserved on the
+        // domain interface for source-compatibility but unused here.
+        val envelope =
+            SyncApi
+                .fullSyncV1SyncFullGet(
+                    sessionId = sessionId,
+                    limit = limit?.toLong(),
+                ).unwrap()
 
-        if (!response.success || response.data == null) {
-            logger.error { "Full sync failed: ${response.error}" }
-            throw IllegalStateException(response.error?.message ?: "Full sync failed")
-        }
-
-        val data = response.data!!
-        logger.info { "Full sync received ${data.items.size} items, hasMore=${data.hasMore}" }
+        val data =
+            envelope.data
+                ?: throw IllegalStateException("Full sync response missing data")
+        val items = data.items
+        logger.info { "Full sync received ${items.size} items, hasMore=${data.hasMore}" }
 
         var successCount = 0
         var errorCount = 0
 
         // Process items in sub-chunks for partial-failure resilience
-        data.items.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
+        items.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
-                chunk.forEach { item ->
-                    if (syncItemApplierRegistry.apply(item)) {
+                chunk.forEach { item: SyncEntityEnvelope ->
+                    val bridged = item.toSyncItemDto()
+                    if (syncItemApplierRegistry.apply(bridged)) {
                         successCount++
-                        fullSyncReceivedIds?.add(item.idAsString)
+                        fullSyncReceivedIds?.add(bridged.idAsString)
                     } else {
                         errorCount++
                     }
@@ -460,7 +476,7 @@ class SyncRepositoryImpl(
         database.transaction {
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
-                syncToken = syncCheckpointToken(data.nextCursor, data.serverVersion, currentMetadata?.syncToken),
+                syncToken = syncCheckpointToken(data.nextSince, serverVersion = null, currentMetadata?.syncToken),
                 fullSyncInProgress = currentFullSyncInProgress,
             )
         }
@@ -481,8 +497,8 @@ class SyncRepositoryImpl(
             updatedCount = 0,
             deletedCount = 0,
             hasMore = data.hasMore,
-            nextCursor = data.nextCursor,
-            serverVersion = data.serverVersion,
+            nextCursor = data.nextSince,
+            serverVersion = null,
         )
     }
 
@@ -493,32 +509,22 @@ class SyncRepositoryImpl(
         etag: String?,
     ): SyncResult {
         logger.info { "Starting delta sync with sessionId=$sessionId, since=$since, limit=$limit" }
-        val deltaSyncResult = api.deltaSync(sessionId, since, limit, etag)
+        // Note: the generated [SyncApi.deltaSyncV1SyncDeltaGet] does not yet
+        // surface the `If-None-Match` header. The `etag` parameter is kept
+        // on the domain interface for source-compatibility; until the spec
+        // exposes it, 304 short-circuiting is bypassed and we always parse
+        // the response body.
+        val envelope =
+            SyncApi
+                .deltaSyncV1SyncDeltaGet(
+                    sessionId = sessionId,
+                    since = since,
+                    limit = limit?.toLong(),
+                ).unwrap()
 
-        // Handle 304 Not Modified
-        if (deltaSyncResult.response == null) {
-            logger.info { "Delta sync returned 304 Not Modified, no changes" }
-            deltaSyncResult.etag?.let { newEtag ->
-                database.databaseQueries.updateDeltaSyncEtag(newEtag)
-            }
-            return SyncResult(
-                createdCount = 0,
-                updatedCount = 0,
-                deletedCount = 0,
-                hasMore = false,
-                nextCursor = since,
-                serverVersion = null,
-            )
-        }
-
-        val response = deltaSyncResult.response
-
-        if (!response.success || response.data == null) {
-            logger.error { "Delta sync failed: ${response.error}" }
-            throw IllegalStateException(response.error?.message ?: "Delta sync failed")
-        }
-
-        val data = response.data!!
+        val data =
+            envelope.data
+                ?: throw IllegalStateException("Delta sync response missing data")
         logger.info {
             "Delta sync received: created=${data.created.size}, " +
                 "updated=${data.updated.size}, deleted=${data.deleted.size}, hasMore=${data.hasMore}"
@@ -531,7 +537,7 @@ class SyncRepositoryImpl(
         data.created.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
                 chunk.forEach { item ->
-                    if (syncItemApplierRegistry.apply(item)) createdCount++ else errorCount++
+                    if (syncItemApplierRegistry.apply(item.toSyncItemDto())) createdCount++ else errorCount++
                 }
             }
         }
@@ -539,7 +545,7 @@ class SyncRepositoryImpl(
         data.updated.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
                 chunk.forEach { item ->
-                    if (syncItemApplierRegistry.apply(item)) updatedCount++ else errorCount++
+                    if (syncItemApplierRegistry.apply(item.toSyncItemDto())) updatedCount++ else errorCount++
                 }
             }
         }
@@ -547,14 +553,15 @@ class SyncRepositoryImpl(
         data.deleted.chunked(TRANSACTION_CHUNK_SIZE).forEach { chunk ->
             database.transaction {
                 chunk.forEach { item ->
-                    when (item.entityType) {
-                        "summary" -> database.databaseQueries.deleteSummary(item.idAsString)
-                        "highlight" -> database.databaseQueries.deleteHighlightById(item.idAsString)
-                        "tag" -> item.idAsLong?.let { database.databaseQueries.deleteTag(it) }
+                    val bridged = item.toSyncItemDto()
+                    when (bridged.entityType) {
+                        "summary" -> database.databaseQueries.deleteSummary(bridged.idAsString)
+                        "highlight" -> database.databaseQueries.deleteHighlightById(bridged.idAsString)
+                        "tag" -> bridged.idAsLong?.let { database.databaseQueries.deleteTag(it) }
                         "summary_tag" -> {
                             // Summary-tag associations are cleaned up via tag delete cascade
                         }
-                        else -> logger.debug { "Ignoring delete for entity type: ${item.entityType}" }
+                        else -> logger.debug { "Ignoring delete for entity type: ${bridged.entityType}" }
                     }
                 }
             }
@@ -563,13 +570,9 @@ class SyncRepositoryImpl(
         database.transaction {
             database.databaseQueries.updateSyncMetadata(
                 lastSyncTime = Clock.System.now(),
-                syncToken = syncCheckpointToken(data.newCursor, data.serverVersion, since.toString()),
+                syncToken = syncCheckpointToken(data.nextSince, serverVersion = null, since.toString()),
                 fullSyncInProgress = 0,
             )
-        }
-
-        deltaSyncResult.etag?.let { newEtag ->
-            database.databaseQueries.updateDeltaSyncEtag(newEtag)
         }
 
         // Progress update happens outside the transaction (see fullSync comment for rationale)
@@ -585,8 +588,8 @@ class SyncRepositoryImpl(
             updatedCount = updatedCount,
             deletedCount = data.deleted.size,
             hasMore = data.hasMore,
-            nextCursor = data.newCursor,
-            serverVersion = data.serverVersion,
+            nextCursor = data.nextSince,
+            serverVersion = null,
         )
     }
 
@@ -600,34 +603,34 @@ class SyncRepositoryImpl(
 
         logger.info { "Applying ${changes.size} local changes to server" }
 
-        val request =
-            SyncApplyRequestDto(
-                sessionId = sessionId,
-                changes = changes.map { it.toDto() },
-            )
+        val request = buildSyncApplyRequest(sessionId = sessionId, changes = changes)
 
-        val response = api.applyChanges(request)
-        if (!response.success || response.data == null) {
-            logger.error { "Apply changes failed: ${response.error}" }
-            throw IllegalStateException(response.error?.message ?: "Apply changes failed")
-        }
+        val envelope =
+            SyncApi
+                .applyChangesV1SyncApplyPost(body = request)
+                .unwrap()
+        val data =
+            envelope.data
+                ?: throw IllegalStateException("Apply changes response missing data")
 
-        val data = response.data!!
-        logger.info { "Applied ${data.applied.size} changes, ${data.conflicts.size} conflicts" }
+        val results = data.results
+        val appliedResults = results.filter { it.status == SyncApplyResult.Status.APPLIED }
+        val conflictResults = data.conflicts ?: results.filter { it.status == SyncApplyResult.Status.CONFLICT }
+        logger.info { "Applied ${appliedResults.size} changes, ${conflictResults.size} conflicts" }
 
         return ApplyResult(
-            appliedCount = data.applied.size,
+            appliedCount = appliedResults.size,
             conflicts =
-                data.conflicts.map { conflict ->
+                conflictResults.map { conflict ->
                     SyncConflict(
-                        id = conflict.id,
+                        id = conflict.idAsLong() ?: 0L,
                         entityType = conflict.entityType,
-                        clientVersion = conflict.clientVersion,
-                        serverVersion = conflict.serverVersion,
-                        reason = conflict.reason,
+                        clientVersion = 0L,
+                        serverVersion = conflict.serverVersion ?: 0L,
+                        reason = conflict.errorCode ?: conflict.message ?: "conflict",
                     )
                 },
-            serverVersion = data.serverVersion,
+            serverVersion = appliedResults.firstOrNull()?.serverVersion,
         )
     }
 }

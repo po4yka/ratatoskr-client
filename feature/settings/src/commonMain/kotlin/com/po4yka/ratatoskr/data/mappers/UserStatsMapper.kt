@@ -5,12 +5,14 @@ import com.po4yka.ratatoskr.data.remote.dto.GoalDto
 import com.po4yka.ratatoskr.data.remote.dto.GoalProgressDto
 import com.po4yka.ratatoskr.data.remote.dto.StreakDto
 import com.po4yka.ratatoskr.data.remote.dto.TopicStatDto
+import com.po4yka.ratatoskr.data.remote.dto.UserPreferencesDto
 import com.po4yka.ratatoskr.data.remote.dto.UserStatsDto
 import com.po4yka.ratatoskr.domain.model.DomainStat
 import com.po4yka.ratatoskr.domain.model.Goal
 import com.po4yka.ratatoskr.domain.model.GoalProgress
 import com.po4yka.ratatoskr.domain.model.Streak
 import com.po4yka.ratatoskr.domain.model.TopicStat
+import com.po4yka.ratatoskr.domain.model.UserPreferences
 import com.po4yka.ratatoskr.domain.model.UserStats
 
 fun TopicStatDto.toDomain(): TopicStat =
@@ -63,4 +65,14 @@ fun GoalProgressDto.toDomain(): GoalProgress =
         targetCount = targetCount,
         currentCount = currentCount,
         achieved = achieved,
+    )
+
+// Moved here from feature/auth/AuthMapper.kt during the OpenAPI client
+// migration. UserPreferencesDto lives in core/data; the consumer is
+// feature/settings, so the mapper belongs here.
+fun UserPreferencesDto.toDomain(): UserPreferences =
+    UserPreferences(
+        langPreference = langPreference ?: "auto",
+        notificationSettings = null,
+        appSettings = null,
     )

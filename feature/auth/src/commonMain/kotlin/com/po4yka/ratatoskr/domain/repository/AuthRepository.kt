@@ -16,21 +16,6 @@ interface AuthRepository : AuthSessionPort {
         secret: String,
     )
 
-    /** Login with Apple Sign In */
-    suspend fun loginWithApple(
-        idToken: String,
-        clientId: String,
-        authorizationCode: String? = null,
-        givenName: String? = null,
-        familyName: String? = null,
-    )
-
-    /** Login with Google Sign In */
-    suspend fun loginWithGoogle(
-        idToken: String,
-        clientId: String,
-    )
-
     /** Logout locally (clear tokens) */
     override suspend fun logout()
 

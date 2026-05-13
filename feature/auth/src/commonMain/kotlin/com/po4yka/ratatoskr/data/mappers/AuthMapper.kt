@@ -1,95 +1,57 @@
 package com.po4yka.ratatoskr.data.mappers
 
-import com.po4yka.ratatoskr.data.remote.dto.AuthResponseDto
-import com.po4yka.ratatoskr.data.remote.dto.LoginDataDto
-import com.po4yka.ratatoskr.data.remote.dto.SessionInfoDto
-import com.po4yka.ratatoskr.data.remote.dto.TelegramLoginRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.TokenRefreshRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.TokenRefreshResponseDto
-import com.po4yka.ratatoskr.data.remote.dto.TokensDto
-import com.po4yka.ratatoskr.data.remote.dto.UserDto
-import com.po4yka.ratatoskr.data.remote.dto.UserPreferencesDto
+import com.po4yka.ratatoskr.api.generated.models.AuthTokens as GeneratedAuthTokens
+import com.po4yka.ratatoskr.api.generated.models.LoginData
+import com.po4yka.ratatoskr.api.generated.models.SessionInfo
+import com.po4yka.ratatoskr.api.generated.models.TelegramLoginRequest
+import com.po4yka.ratatoskr.api.generated.models.User as GeneratedUser
 import com.po4yka.ratatoskr.domain.model.AuthTokens
 import com.po4yka.ratatoskr.domain.model.Session
 import com.po4yka.ratatoskr.domain.model.User
-import com.po4yka.ratatoskr.domain.model.UserPreferences
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
-/** Maps Auth DTOs to domain models and vice versa */
+/** Maps generated auth DTOs to domain models. */
 
-fun UserDto.toDomain(): User {
+fun GeneratedUser.toDomain(): User {
     return User(
-        id = id.toString(),
+        id = userId.toString(),
         username = username,
-        displayName = displayName,
-        photoUrl = photoUrl,
+        displayName = null,
+        photoUrl = null,
         clientId = clientId,
         isOwner = isOwner,
-        createdAt = createdAt,
+        createdAt = createdAt.toString(),
     )
 }
 
-fun TokensDto.toAuthTokens(currentTime: Instant = Clock.System.now()): AuthTokens {
+fun GeneratedAuthTokens.toDomain(currentTime: Instant = Clock.System.now()): AuthTokens {
     return AuthTokens(
         accessToken = accessToken,
-        refreshToken = refreshToken ?: "",
-        tokenType = tokenType,
+        refreshToken = refreshToken,
+        tokenType = tokenType.name.replaceFirstChar { it.uppercase() },
         expiresIn = expiresIn,
         expiresAt = currentTime + expiresIn.seconds,
     )
 }
 
-fun LoginDataDto.toAuthTokens(currentTime: Instant = Clock.System.now()): AuthTokens {
-    return tokens.toAuthTokens(currentTime)
-}
+fun LoginData.toAuthTokens(currentTime: Instant = Clock.System.now()): AuthTokens =
+    tokens.toDomain(currentTime)
 
-fun SessionInfoDto.toDomain(): Session {
+fun SessionInfo.toDomain(): Session {
     return Session(
         id = id,
         clientId = clientId,
         deviceInfo = deviceInfo,
         ipAddress = ipAddress,
-        lastUsedAt = lastUsedAt,
-        createdAt = createdAt,
-        isCurrent = isCurrent,
+        lastUsedAt = lastUsedAt?.toString(),
+        createdAt = createdAt.toString(),
+        isCurrent = isCurrent ?: false,
     )
 }
 
-fun UserPreferencesDto.toDomain(): UserPreferences {
-    return UserPreferences(
-        langPreference = langPreference ?: "auto",
-        notificationSettings = null,
-        appSettings = null,
-    )
-}
-
-fun AuthResponseDto.toDomain(): AuthTokens {
-    val now = Clock.System.now()
-    return AuthTokens(
-        accessToken = tokens.accessToken,
-        refreshToken = tokens.refreshToken ?: "",
-        tokenType = tokens.tokenType,
-        expiresIn = tokens.expiresIn,
-        expiresAt = now + tokens.expiresIn.seconds,
-    )
-}
-
-fun TokenRefreshResponseDto.toAuthTokens(
-    currentTime: Instant = Clock.System.now(),
-    refreshToken: String,
-): AuthTokens {
-    return AuthTokens(
-        accessToken = tokens.accessToken,
-        refreshToken = tokens.refreshToken ?: refreshToken,
-        tokenType = tokens.tokenType,
-        expiresIn = tokens.expiresIn,
-        expiresAt = currentTime + tokens.expiresIn.seconds,
-    )
-}
-
-// Domain to DTO conversions
+/** Build a generated [TelegramLoginRequest] from the loose Telegram fields the repository sees. */
 fun createTelegramLoginRequest(
     telegramUserId: Long,
     authHash: String,
@@ -99,10 +61,10 @@ fun createTelegramLoginRequest(
     lastName: String?,
     photoUrl: String?,
     clientId: String,
-): TelegramLoginRequestDto {
-    return TelegramLoginRequestDto(
-        telegramUserId = telegramUserId,
-        authHash = authHash,
+): TelegramLoginRequest {
+    return TelegramLoginRequest(
+        id = telegramUserId,
+        hash = authHash,
         authDate = authDate,
         username = username,
         firstName = firstName,
@@ -110,8 +72,4 @@ fun createTelegramLoginRequest(
         photoUrl = photoUrl,
         clientId = clientId,
     )
-}
-
-fun String.toTokenRefreshRequest(): TokenRefreshRequestDto {
-    return TokenRefreshRequestDto(refreshToken = this)
 }

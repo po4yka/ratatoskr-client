@@ -11,7 +11,9 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.common)
             implementation(projects.core.data)
+            implementation(projects.core.apiGenerated)
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
             implementation(libs.sqldelight.coroutines)
             implementation(libs.koin.core)
             implementation(libs.koin.annotations)

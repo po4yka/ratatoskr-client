@@ -1,21 +1,20 @@
 package com.po4yka.ratatoskr.data.repository
 
+import com.po4yka.ratatoskr.api.generated.api.AuthenticationApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
+import com.po4yka.ratatoskr.api.generated.models.RefreshTokenRequest
+import com.po4yka.ratatoskr.api.generated.models.SecretLoginRequest
 import com.po4yka.ratatoskr.data.local.SecureStorage
 import com.po4yka.ratatoskr.data.mappers.createTelegramLoginRequest
 import com.po4yka.ratatoskr.data.mappers.toAuthTokens
 import com.po4yka.ratatoskr.data.mappers.toDomain
-import com.po4yka.ratatoskr.data.remote.AuthApi
-import com.po4yka.ratatoskr.data.remote.dto.AppleLoginRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.GoogleLoginRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.SecretLoginRequestDto
 import com.po4yka.ratatoskr.domain.model.Session
 import com.po4yka.ratatoskr.domain.model.TelegramAuthData
 import com.po4yka.ratatoskr.domain.model.User
-import com.po4yka.ratatoskr.feature.auth.api.AuthSessionPort
 import com.po4yka.ratatoskr.domain.repository.AuthRepository
+import com.po4yka.ratatoskr.feature.auth.api.AuthSessionPort
 import com.po4yka.ratatoskr.util.config.AppConfig
 import com.po4yka.ratatoskr.util.error.AppError
-import com.po4yka.ratatoskr.util.error.toAppError
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +25,6 @@ private val logger = KotlinLogging.logger {}
 
 @Single(binds = [AuthRepository::class, AuthSessionPort::class])
 class AuthRepositoryImpl(
-    private val authApi: AuthApi,
     private val secureStorage: SecureStorage,
 ) : AuthRepository {
     private val _isAuthenticated = MutableStateFlow(false)
@@ -57,20 +55,16 @@ class AuthRepositoryImpl(
                 photoUrl = authData.photoUrl,
                 clientId = AppConfig.App.clientId,
             )
-        val response = authApi.loginWithTelegram(request)
-        val loginData = response.data
-        if (response.success && loginData != null) {
-            val authTokens = loginData.toDomain()
-            secureStorage.saveAccessToken(authTokens.accessToken)
-            if (authTokens.refreshToken.isNotEmpty()) {
-                secureStorage.saveRefreshToken(authTokens.refreshToken)
-            }
-            // Fetch current user on-demand
-            _currentUser.value = null
-            _isAuthenticated.value = true
-        } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Login failed")
+        val loginData = AuthenticationApi.telegramLoginV1AuthTelegramLoginPost(request).unwrap().data
+            ?: throw AppError.UnknownError(fallbackMessage = "Login failed")
+        val authTokens = loginData.toAuthTokens()
+        secureStorage.saveAccessToken(authTokens.accessToken)
+        if (authTokens.refreshToken.isNotEmpty()) {
+            secureStorage.saveRefreshToken(authTokens.refreshToken)
         }
+        // Fetch current user on-demand
+        _currentUser.value = null
+        _isAuthenticated.value = true
     }
 
     override suspend fun loginWithSecret(
@@ -79,25 +73,21 @@ class AuthRepositoryImpl(
         secret: String,
     ) {
         val request =
-            SecretLoginRequestDto(
-                userId = userId,
+            SecretLoginRequest(
+                userId = userId.toLong(),
                 clientId = clientId,
                 secret = secret,
             )
-        val response = authApi.secretLogin(request)
-        val secretData = response.data
-        if (response.success && secretData != null) {
-            val authTokens = secretData.toDomain()
-            secureStorage.saveAccessToken(authTokens.accessToken)
-            if (authTokens.refreshToken.isNotEmpty()) {
-                secureStorage.saveRefreshToken(authTokens.refreshToken)
-            }
-            // Fetch current user on-demand
-            _currentUser.value = null
-            _isAuthenticated.value = true
-        } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Login failed")
+        val tokens = AuthenticationApi.secretLoginV1AuthSecretLoginPost(request).unwrap().data
+            ?: throw AppError.UnknownError(fallbackMessage = "Login failed")
+        val authTokens = tokens.toDomain()
+        secureStorage.saveAccessToken(authTokens.accessToken)
+        if (authTokens.refreshToken.isNotEmpty()) {
+            secureStorage.saveRefreshToken(authTokens.refreshToken)
         }
+        // Fetch current user on-demand
+        _currentUser.value = null
+        _isAuthenticated.value = true
     }
 
     override suspend fun logout() {
@@ -117,10 +107,9 @@ class AuthRepositoryImpl(
         // If not in memory, try to fetch from API if authenticated
         if (secureStorage.getAccessToken() != null) {
             return try {
-                val response = authApi.getCurrentUser()
-                val userData = response.data
-                if (response.success && userData != null) {
-                    _currentUser.value = userData.toDomain()
+                val user = AuthenticationApi.getCurrentUserInfoV1AuthMeGet().unwrap().data
+                if (user != null) {
+                    _currentUser.value = user.toDomain()
                     _currentUser.value
                 } else {
                     null
@@ -137,65 +126,12 @@ class AuthRepositoryImpl(
         return null
     }
 
-    override suspend fun loginWithApple(
-        idToken: String,
-        clientId: String,
-        authorizationCode: String?,
-        givenName: String?,
-        familyName: String?,
-    ) {
-        val request =
-            AppleLoginRequestDto(
-                idToken = idToken,
-                clientId = clientId,
-                authorizationCode = authorizationCode,
-                givenName = givenName,
-                familyName = familyName,
-            )
-        val response = authApi.loginWithApple(request)
-        val appleData = response.data
-        if (response.success && appleData != null) {
-            val authTokens = appleData.toAuthTokens()
-            secureStorage.saveAccessToken(authTokens.accessToken)
-            if (authTokens.refreshToken.isNotEmpty()) {
-                secureStorage.saveRefreshToken(authTokens.refreshToken)
-            }
-            _currentUser.value = appleData.user.toDomain()
-            _isAuthenticated.value = true
-        } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Apple login failed")
-        }
-    }
-
-    override suspend fun loginWithGoogle(
-        idToken: String,
-        clientId: String,
-    ) {
-        val request =
-            GoogleLoginRequestDto(
-                idToken = idToken,
-                clientId = clientId,
-            )
-        val response = authApi.loginWithGoogle(request)
-        val googleData = response.data
-        if (response.success && googleData != null) {
-            val authTokens = googleData.toAuthTokens()
-            secureStorage.saveAccessToken(authTokens.accessToken)
-            if (authTokens.refreshToken.isNotEmpty()) {
-                secureStorage.saveRefreshToken(authTokens.refreshToken)
-            }
-            _currentUser.value = googleData.user.toDomain()
-            _isAuthenticated.value = true
-        } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Google login failed")
-        }
-    }
-
     override suspend fun logoutWithRevoke() {
         val refreshToken = secureStorage.getRefreshToken()
         if (refreshToken != null) {
             try {
-                authApi.logout(refreshToken)
+                AuthenticationApi.logoutV1AuthLogoutPost(RefreshTokenRequest(refreshToken = refreshToken))
+                    .unwrap()
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to revoke refresh token on server, proceeding with local logout" }
             }
@@ -204,21 +140,13 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun listSessions(): List<Session> {
-        val response = authApi.listSessions()
-        val sessionsData = response.data
-        if (response.success && sessionsData != null) {
-            return sessionsData.sessions.map { it.toDomain() }
-        } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to list sessions")
-        }
+        val data = AuthenticationApi.listSessionsV1AuthSessionsGet().unwrap().data
+            ?: throw AppError.UnknownError(fallbackMessage = "Failed to list sessions")
+        return data.sessions.map { it.toDomain() }
     }
 
     override suspend fun deleteAccount() {
-        val response = authApi.deleteAccount()
-        if (response.success) {
-            logout()
-        } else {
-            throw response.error?.toAppError() ?: AppError.UnknownError(fallbackMessage = "Failed to delete account")
-        }
+        AuthenticationApi.deleteAccountV1AuthMeDelete().unwrap()
+        logout()
     }
 }

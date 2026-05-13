@@ -1,7 +1,7 @@
 package com.po4yka.ratatoskr.data.mappers
 
-import com.po4yka.ratatoskr.data.remote.dto.SyncApplyAction
-import com.po4yka.ratatoskr.data.remote.dto.SyncApplyItemDto
+import com.po4yka.ratatoskr.api.generated.models.SyncApplyItem
+import com.po4yka.ratatoskr.api.generated.models.SyncApplyRequest
 import com.po4yka.ratatoskr.database.SummaryEntity
 import com.po4yka.ratatoskr.feature.sync.domain.repository.LocalChange
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -131,29 +131,55 @@ fun JsonObject.toSummaryEntity(id: Long): SummaryEntity? {
 }
 
 /**
- * Converts a [LocalChange] to a [SyncApplyItemDto] for the sync API.
+ * Maps a [LocalChange] to a generated [SyncApplyItem]. The generated DTO uses
+ * `String` ids (the backend accepts `int | string`), so the numeric local id is
+ * stringified here.
  */
-fun LocalChange.toDto(): SyncApplyItemDto {
-    val jsonPayload =
-        payload?.let { map ->
-            JsonObject(
-                map.mapValues { (_, value) ->
-                    when (value) {
-                        is String -> JsonPrimitive(value)
-                        is Number -> JsonPrimitive(value)
-                        is Boolean -> JsonPrimitive(value)
-                        else -> JsonPrimitive(value?.toString())
-                    }
-                },
-            )
-        }
-
-    return SyncApplyItemDto(
-        entityType = entityType,
-        id = id,
-        action = SyncApplyAction.fromString(action),
+fun LocalChange.toGeneratedApplyItem(): SyncApplyItem =
+    SyncApplyItem(
+        entityType = entityType.toGeneratedEntityType(),
+        id = id.toString(),
+        action = action.toGeneratedAction(),
         lastSeenVersion = lastSeenVersion,
-        payload = jsonPayload,
+        payload = payload?.let { map -> JsonObject(map.mapValues { (_, value) -> value.toJsonPrimitive() }) },
         clientTimestamp = clientTimestamp,
     )
-}
+
+/**
+ * Builds a generated [SyncApplyRequest] body from a session id and a list of
+ * local changes.
+ */
+fun buildSyncApplyRequest(
+    sessionId: String,
+    changes: List<LocalChange>,
+): SyncApplyRequest =
+    SyncApplyRequest(
+        sessionId = sessionId,
+        changes = changes.map { it.toGeneratedApplyItem() },
+    )
+
+private fun Any?.toJsonPrimitive(): JsonPrimitive =
+    when (this) {
+        is String -> JsonPrimitive(this)
+        is Number -> JsonPrimitive(this)
+        is Boolean -> JsonPrimitive(this)
+        else -> JsonPrimitive(this?.toString())
+    }
+
+private fun String.toGeneratedEntityType(): SyncApplyItem.EntityType =
+    when (this) {
+        "summary" -> SyncApplyItem.EntityType.SUMMARY
+        "request" -> SyncApplyItem.EntityType.REQUEST
+        "preference" -> SyncApplyItem.EntityType.PREFERENCE
+        "stat" -> SyncApplyItem.EntityType.STAT
+        "crawl_result" -> SyncApplyItem.EntityType.CRAWL_RESULT
+        "llm_call" -> SyncApplyItem.EntityType.LLM_CALL
+        else -> throw IllegalArgumentException("Unsupported sync apply entity type: $this")
+    }
+
+private fun String.toGeneratedAction(): SyncApplyItem.Action =
+    when (this.lowercase()) {
+        "update" -> SyncApplyItem.Action.UPDATE
+        "delete" -> SyncApplyItem.Action.DELETE
+        else -> throw IllegalArgumentException("Unsupported sync apply action: $this")
+    }

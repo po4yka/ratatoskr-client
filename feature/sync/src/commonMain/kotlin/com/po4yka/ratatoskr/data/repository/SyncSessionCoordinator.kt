@@ -1,7 +1,9 @@
 package com.po4yka.ratatoskr.data.repository
 
-import com.po4yka.ratatoskr.data.remote.SyncApi
-import com.po4yka.ratatoskr.data.remote.dto.SyncSessionRequestDto
+import com.po4yka.ratatoskr.api.generated.api.SyncApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
+import com.po4yka.ratatoskr.api.generated.models.SyncSessionRequest
+import com.po4yka.ratatoskr.api.generated.models.SyncSessionResponseEnvelope
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -14,40 +16,26 @@ internal data class SyncSessionInfo(
     val expiresAt: Instant?,
 )
 
-internal class SyncSessionCoordinator(private val api: SyncApi) {
-    suspend fun create(): SyncSessionInfo {
-        val response = api.createSession(null)
-        if (response.success && response.data != null) {
-            val data = requireNotNull(response.data)
-            logger.info { "Created sync session: ${data.sessionId}, defaultLimit=${data.defaultLimit}" }
-            val expiresAt =
-                data.expiresAt?.let {
-                    try {
-                        Instant.parse(it)
-                    } catch (_: Exception) {
-                        null
-                    }
-                }
-            return SyncSessionInfo(
-                sessionId = data.sessionId,
-                totalItems = data.defaultLimit,
-                expiresAt = expiresAt,
-            )
-        } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to create sync session")
-        }
-    }
+internal class SyncSessionCoordinator {
+    suspend fun create(): SyncSessionInfo = create(limit = null)
 
-    suspend fun createWithLimit(limit: Int?): String {
-        val request = limit?.let { SyncSessionRequestDto(limit = it) }
-        val response = api.createSession(request)
-        if (response.success && response.data != null) {
-            val data = requireNotNull(response.data)
-            logger.info { "Created sync session: ${data.sessionId}" }
-            return data.sessionId
-        } else {
-            throw IllegalStateException(response.error?.message ?: "Failed to create sync session")
-        }
+    suspend fun createWithLimit(limit: Int?): String = create(limit = limit).sessionId
+
+    private suspend fun create(limit: Int?): SyncSessionInfo {
+        val body = limit?.let { SyncSessionRequest(limit = it.toLong()) }
+        val envelope: SyncSessionResponseEnvelope =
+            SyncApi.createSyncSessionV1SyncSessionsPost(body = body).unwrap()
+        val data =
+            envelope.data
+                ?: throw IllegalStateException(
+                    "Failed to create sync session: server returned no data",
+                )
+        logger.info { "Created sync session: ${data.sessionId}, defaultLimit=${data.defaultLimit}" }
+        return SyncSessionInfo(
+            sessionId = data.sessionId,
+            totalItems = data.defaultLimit.toInt(),
+            expiresAt = data.expiresAt,
+        )
     }
 
     suspend fun renew(

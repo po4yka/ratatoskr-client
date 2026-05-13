@@ -13,7 +13,6 @@ val syncFeatureBindingsModule =
             val koin = getKoin()
             SyncRepositoryImpl(
                 database = get(),
-                api = get(),
                 networkMonitor = get(),
                 syncItemAppliers = koin.getAll<SyncItemApplier>(),
                 pendingOperationHandlers = koin.getAll<PendingOperationHandler>(),
