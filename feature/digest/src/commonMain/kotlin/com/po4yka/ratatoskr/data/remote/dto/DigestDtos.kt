@@ -3,43 +3,12 @@ package com.po4yka.ratatoskr.data.remote.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-// -- Request DTOs --
-
-@Serializable
-data class DigestChannelRequestDto(
-    @SerialName("channel_username") val channelUsername: String,
-)
-
-@Serializable
-data class UpdateDigestPreferencesRequestDto(
-    @SerialName("delivery_time") val deliveryTime: String? = null,
-    @SerialName("timezone") val timezone: String? = null,
-    @SerialName("hours_lookback") val hoursLookback: Int? = null,
-    @SerialName("max_posts_per_digest") val maxPostsPerDigest: Int? = null,
-    @SerialName("min_relevance_score") val minRelevanceScore: Double? = null,
-)
-
-@Serializable
-data class ResolveChannelRequestDto(
-    @SerialName("channel_username") val channelUsername: String,
-)
-
-@Serializable
-data class CreateCategoryRequestDto(
-    @SerialName("name") val name: String,
-)
-
-@Serializable
-data class BulkUnsubscribeRequestDto(
-    @SerialName("channel_usernames") val channelUsernames: List<String>,
-)
-
-@Serializable
-data class TriggerChannelRequestDto(
-    @SerialName("channel_username") val channelUsername: String,
-)
-
-// -- Response DTOs --
+// Response DTOs.
+//
+// The OpenAPI spec declares the digest endpoint responses as bare `type: object`
+// with no properties, so the generated client emits `JsonElement`. These
+// hand-written DTOs describe the actual wire shape returned by the backend and
+// are decoded from the generated `JsonElement` envelopes in the repository.
 
 @Serializable
 data class ChannelListResponseDto(

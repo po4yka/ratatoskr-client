@@ -1,16 +1,19 @@
 package com.po4yka.ratatoskr.data.repository
 
+import com.po4yka.ratatoskr.api.generated.api.QuickSaveApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
+import com.po4yka.ratatoskr.api.generated.models.V1QuickSaveRequest
 import com.po4yka.ratatoskr.data.mappers.toDomain
-import com.po4yka.ratatoskr.data.remote.QuickSaveApi
-import com.po4yka.ratatoskr.data.remote.dto.QuickSaveRequestDto
+import com.po4yka.ratatoskr.data.remote.dto.QuickSaveResponseDto
 import com.po4yka.ratatoskr.domain.model.QuickSaveResult
 import com.po4yka.ratatoskr.domain.repository.QuickSaveRepository
+import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
 
+private val lenientJson = Json { ignoreUnknownKeys = true }
+
 @Single(binds = [QuickSaveRepository::class])
-class QuickSaveRepositoryImpl(
-    private val quickSaveApi: QuickSaveApi,
-) : QuickSaveRepository {
+class QuickSaveRepositoryImpl : QuickSaveRepository {
     override suspend fun quickSave(
         url: String,
         title: String?,
@@ -18,16 +21,16 @@ class QuickSaveRepositoryImpl(
         tagNames: List<String>,
         summarize: Boolean,
     ): QuickSaveResult {
-        val response =
-            quickSaveApi.quickSave(
-                QuickSaveRequestDto(
-                    url = url,
-                    title = title,
-                    selectedText = selectedText,
-                    tagNames = tagNames,
-                    summarize = summarize,
-                ),
-            )
-        return requireNotNull(response.data) { "Server returned no data for quick save" }.toDomain()
+        val jsonElement = QuickSaveApi.quickSaveV1QuickSavePost(
+            body = V1QuickSaveRequest(
+                url = url,
+                title = title,
+                selectedText = selectedText,
+                tagNames = tagNames,
+                summarize = summarize,
+            ),
+        ).unwrap()
+        val responseDto = lenientJson.decodeFromJsonElement(QuickSaveResponseDto.serializer(), jsonElement)
+        return responseDto.toDomain()
     }
 }

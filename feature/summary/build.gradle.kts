@@ -13,6 +13,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.common)
             implementation(projects.core.data)
+            implementation(projects.core.apiGenerated)
             implementation(projects.core.navigation)
             implementation(projects.core.ui)
             implementation(compose.runtime)

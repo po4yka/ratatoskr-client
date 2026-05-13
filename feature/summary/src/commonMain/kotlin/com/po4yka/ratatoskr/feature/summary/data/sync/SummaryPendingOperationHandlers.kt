@@ -1,10 +1,12 @@
 package com.po4yka.ratatoskr.feature.summary.data.sync
 
-import com.po4yka.ratatoskr.data.remote.HighlightsApi
-import com.po4yka.ratatoskr.data.remote.SummariesApi
-import com.po4yka.ratatoskr.data.remote.dto.CreateHighlightRequestDto
+import com.po4yka.ratatoskr.api.generated.api.HighlightsApi
+import com.po4yka.ratatoskr.api.generated.api.SummariesApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
+import com.po4yka.ratatoskr.api.generated.models.V1SummariesSummaryIdFeedbackRequest
+import com.po4yka.ratatoskr.api.generated.models.V1SummariesSummaryIdHighlightsHighlightIdRequest
+import com.po4yka.ratatoskr.api.generated.models.V1SummariesSummaryIdHighlightsRequest
 import com.po4yka.ratatoskr.data.remote.dto.SubmitFeedbackRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.UpdateHighlightRequestDto
 import com.po4yka.ratatoskr.database.Database
 import com.po4yka.ratatoskr.database.PendingOperationEntity
 import com.po4yka.ratatoskr.feature.sync.api.PendingOperationHandler
@@ -73,7 +75,6 @@ internal class SummaryPendingOperationHandler : PendingOperationHandler {
 
 internal class SummaryFeedbackPendingOperationHandler(
     private val database: Database,
-    private val summariesApi: SummariesApi,
 ) : PendingOperationHandler {
     override fun canHandle(operation: PendingOperationEntity): Boolean =
         operation.entityType == "summary" && operation.action == "submit_feedback"
@@ -94,17 +95,20 @@ internal class SummaryFeedbackPendingOperationHandler(
                 return PendingOperationHandlingResult.Completed()
             }
 
-            val response = summariesApi.submitFeedback(remoteId, payload)
-            if (!response.success) {
-                logger.warn { "Server rejected feedback for ${operation.entityId}: ${response.error}" }
-                PendingOperationHandlingResult.RetryLater
-            } else {
-                database.databaseQueries.updateFeedbackSyncStatus(
-                    syncStatus = "synced",
-                    summaryId = operation.entityId,
-                )
-                PendingOperationHandlingResult.Completed()
-            }
+            // Spec gap: rating in SubmitFeedbackRequestDto is "UP"/"DOWN" string; generated model
+            // expects Long?. We omit rating rather than send a broken value.
+            SummariesApi.submitFeedbackV1SummariesSummaryIdFeedbackPost(
+                summaryId = remoteId,
+                body = V1SummariesSummaryIdFeedbackRequest(
+                    issues = payload.issues,
+                    comment = payload.comment,
+                ),
+            ).unwrap()
+            database.databaseQueries.updateFeedbackSyncStatus(
+                syncStatus = "synced",
+                summaryId = operation.entityId,
+            )
+            PendingOperationHandlingResult.Completed()
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.warn(e) { "Failed to sync feedback for ${operation.entityId}" }
             PendingOperationHandlingResult.RetryLater
@@ -113,7 +117,6 @@ internal class SummaryFeedbackPendingOperationHandler(
 
 internal class HighlightPendingOperationHandler(
     private val database: Database,
-    private val highlightsApi: HighlightsApi,
 ) : PendingOperationHandler {
     override fun canHandle(operation: PendingOperationEntity): Boolean = operation.entityType == "highlight"
 
@@ -142,24 +145,17 @@ internal class HighlightPendingOperationHandler(
                     return PendingOperationHandlingResult.Completed()
                 }
         return try {
-            val response =
-                highlightsApi.createHighlight(
-                    summaryId = summaryId,
-                    request =
-                        CreateHighlightRequestDto(
-                            text = entity.text,
-                            startOffset = entity.nodeOffset,
-                            color = entity.color,
-                            note = entity.note,
-                        ),
-                )
-            if (response.success) {
-                database.databaseQueries.updateHighlightSyncStatus("synced", operation.entityId)
-                PendingOperationHandlingResult.Completed()
-            } else {
-                logger.warn { "Server rejected highlight create for ${operation.entityId}: ${response.error}" }
-                PendingOperationHandlingResult.RetryLater
-            }
+            HighlightsApi.createHighlightV1SummariesSummaryIdHighlightsPost(
+                summaryId = summaryId,
+                body = V1SummariesSummaryIdHighlightsRequest(
+                    text = entity.text,
+                    startOffset = entity.nodeOffset.toLong(),
+                    color = entity.color,
+                    note = entity.note,
+                ),
+            ).unwrap()
+            database.databaseQueries.updateHighlightSyncStatus("synced", operation.entityId)
+            PendingOperationHandlingResult.Completed()
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.warn(e) { "Failed to sync highlight create for ${operation.entityId}" }
             PendingOperationHandlingResult.RetryLater
@@ -180,23 +176,16 @@ internal class HighlightPendingOperationHandler(
                     return PendingOperationHandlingResult.Completed()
                 }
         return try {
-            val response =
-                highlightsApi.updateHighlight(
-                    summaryId = summaryId,
-                    highlightId = operation.entityId,
-                    request =
-                        UpdateHighlightRequestDto(
-                            color = entity.color,
-                            note = entity.note,
-                        ),
-                )
-            if (response.success) {
-                database.databaseQueries.updateHighlightSyncStatus("synced", operation.entityId)
-                PendingOperationHandlingResult.Completed()
-            } else {
-                logger.warn { "Server rejected highlight update for ${operation.entityId}: ${response.error}" }
-                PendingOperationHandlingResult.RetryLater
-            }
+            HighlightsApi.updateHighlightV1SummariesSummaryIdHighlightsHighlightIdPatch(
+                summaryId = summaryId,
+                highlightId = operation.entityId,
+                body = V1SummariesSummaryIdHighlightsHighlightIdRequest(
+                    color = entity.color,
+                    note = entity.note,
+                ),
+            ).unwrap()
+            database.databaseQueries.updateHighlightSyncStatus("synced", operation.entityId)
+            PendingOperationHandlingResult.Completed()
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.warn(e) { "Failed to sync highlight update for ${operation.entityId}" }
             PendingOperationHandlingResult.RetryLater
@@ -219,13 +208,11 @@ internal class HighlightPendingOperationHandler(
                     return PendingOperationHandlingResult.Completed()
                 }
         return try {
-            val response = highlightsApi.deleteHighlight(summaryId, operation.entityId)
-            if (response.success) {
-                PendingOperationHandlingResult.Completed()
-            } else {
-                logger.warn { "Server rejected highlight delete for ${operation.entityId}: ${response.error}" }
-                PendingOperationHandlingResult.RetryLater
-            }
+            HighlightsApi.deleteHighlightV1SummariesSummaryIdHighlightsHighlightIdDelete(
+                summaryId = summaryId,
+                highlightId = operation.entityId,
+            ).unwrap()
+            PendingOperationHandlingResult.Completed()
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.warn(e) { "Failed to sync highlight delete for ${operation.entityId}" }
             PendingOperationHandlingResult.RetryLater

@@ -1,101 +1,75 @@
 package com.po4yka.ratatoskr.data.repository
 
+import com.po4yka.ratatoskr.api.generated.api.UserApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
+import com.po4yka.ratatoskr.api.generated.models.UpdatePreferencesRequest
+import com.po4yka.ratatoskr.api.generated.models.V1UserGoalsRequest
 import com.po4yka.ratatoskr.data.mappers.toDomain
-import com.po4yka.ratatoskr.data.remote.UserPreferencesApi
-import com.po4yka.ratatoskr.data.remote.dto.CreateGoalRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.UpdatePreferencesRequestDto
+import com.po4yka.ratatoskr.data.remote.dto.GoalDto
+import com.po4yka.ratatoskr.data.remote.dto.GoalProgressDto
+import com.po4yka.ratatoskr.data.remote.dto.StreakDto
 import com.po4yka.ratatoskr.domain.model.Goal
 import com.po4yka.ratatoskr.domain.model.GoalProgress
 import com.po4yka.ratatoskr.domain.model.Streak
 import com.po4yka.ratatoskr.domain.model.UserPreferences
 import com.po4yka.ratatoskr.domain.model.UserStats
 import com.po4yka.ratatoskr.domain.repository.UserPreferencesRepository
-import com.po4yka.ratatoskr.util.error.AppError
-import com.po4yka.ratatoskr.util.error.toAppError
-import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.koin.core.annotation.Single
 
-private val logger = KotlinLogging.logger {}
+private val parserJson = Json { ignoreUnknownKeys = true }
 
 @Single(binds = [UserPreferencesRepository::class])
-class UserPreferencesRepositoryImpl(
-    private val userPreferencesApi: UserPreferencesApi,
-) : UserPreferencesRepository {
+class UserPreferencesRepositoryImpl : UserPreferencesRepository {
+
     override suspend fun getPreferences(): UserPreferences {
-        val response = userPreferencesApi.getPreferences()
-        if (response.success && response.data != null) {
-            return requireNotNull(response.data).toDomain()
-        } else {
-            throw response.error?.toAppError()
-                ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch preferences")
-        }
+        val envelope = UserApi.getUserPreferencesV1UserPreferencesGet().unwrap()
+        return requireNotNull(envelope.`data`) { "Server returned no preferences data" }.toDomain()
     }
 
     override suspend fun updatePreferences(langPreference: String?): UserPreferences {
-        val request =
-            UpdatePreferencesRequestDto(
-                langPreference = langPreference,
-            )
-        val response = userPreferencesApi.updatePreferences(request)
-        if (response.success && response.data != null) {
-            return requireNotNull(response.data).toDomain()
-        } else {
-            throw response.error?.toAppError()
-                ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to update preferences")
+        val langEnum = langPreference?.let { raw ->
+            UpdatePreferencesRequest.LangPreference.entries.firstOrNull {
+                it.name.equals(raw, ignoreCase = true)
+            }
         }
+        val envelope = UserApi.updateUserPreferencesV1UserPreferencesPatch(
+            body = UpdatePreferencesRequest(langPreference = langEnum),
+        ).unwrap()
+        return requireNotNull(envelope.`data`) { "Server returned no preferences data" }.toDomain()
     }
 
     override suspend fun getStats(): UserStats {
-        val response = userPreferencesApi.getStats()
-        if (response.success && response.data != null) {
-            return requireNotNull(response.data).toDomain()
-        } else {
-            throw response.error?.toAppError()
-                ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch user stats")
-        }
+        val envelope = UserApi.getUserStatsV1UserStatsGet().unwrap()
+        return requireNotNull(envelope.`data`) { "Server returned no stats data" }.toDomain()
     }
 
     override suspend fun getStreak(): Streak {
-        val response = userPreferencesApi.getStreak()
-        if (response.success && response.data != null) {
-            return requireNotNull(response.data).toDomain()
-        } else {
-            throw response.error?.toAppError()
-                ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch streak")
-        }
+        val element = UserApi.getStreakV1UserStreakGet().unwrap()
+        return parserJson.decodeFromJsonElement<StreakDto>(element).toDomain()
     }
 
     override suspend fun getGoals(): List<Goal> {
-        val response = userPreferencesApi.getGoals()
-        if (response.success && response.data != null) {
-            return requireNotNull(response.data).map { it.toDomain() }
-        } else {
-            throw response.error?.toAppError()
-                ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch goals")
-        }
+        val element = UserApi.listGoalsV1UserGoalsGet().unwrap()
+        return parserJson.decodeFromJsonElement<List<GoalDto>>(element).map { it.toDomain() }
     }
 
     override suspend fun getGoalsProgress(): List<GoalProgress> {
-        val response = userPreferencesApi.getGoalsProgress()
-        if (response.success && response.data != null) {
-            return requireNotNull(response.data).map { it.toDomain() }
-        } else {
-            throw response.error?.toAppError()
-                ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to fetch goals progress")
-        }
+        val element = UserApi.getGoalProgressV1UserGoalsProgressGet().unwrap()
+        return parserJson.decodeFromJsonElement<List<GoalProgressDto>>(element).map { it.toDomain() }
     }
 
-    override suspend fun createGoal(
-        goalType: String,
-        targetCount: Int,
-    ): Goal {
-        val request = CreateGoalRequestDto(goalType = goalType, targetCount = targetCount)
-        val response = userPreferencesApi.createGoal(request)
-        if (response.success && response.data != null) {
-            return requireNotNull(response.data).toDomain()
-        } else {
-            throw response.error?.toAppError()
-                ?: AppError.ServerError(code = 500, fallbackMessage = "Failed to create goal")
-        }
+    override suspend fun createGoal(goalType: String, targetCount: Int): Goal {
+        val goalTypeEnum = V1UserGoalsRequest.GoalType.entries.firstOrNull {
+            it.name.equals(goalType, ignoreCase = true)
+        } ?: V1UserGoalsRequest.GoalType.DAILY
+        val element = UserApi.upsertGoalV1UserGoalsPost(
+            body = V1UserGoalsRequest(
+                goalType = goalTypeEnum,
+                targetCount = targetCount.toLong(),
+            ),
+        ).unwrap()
+        return parserJson.decodeFromJsonElement<GoalDto>(element).toDomain()
     }
 }

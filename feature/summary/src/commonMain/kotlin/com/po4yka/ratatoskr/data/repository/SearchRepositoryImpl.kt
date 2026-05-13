@@ -1,7 +1,8 @@
 package com.po4yka.ratatoskr.data.repository
 
+import com.po4yka.ratatoskr.api.generated.api.SearchApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
 import com.po4yka.ratatoskr.data.mappers.toDomain
-import com.po4yka.ratatoskr.data.remote.SearchApi
 import com.po4yka.ratatoskr.database.Database
 import com.po4yka.ratatoskr.domain.model.DuplicateCheckResult
 import com.po4yka.ratatoskr.domain.model.Summary
@@ -16,25 +17,26 @@ private val logger = KotlinLogging.logger {}
 @Single(binds = [SearchRepository::class])
 class SearchRepositoryImpl(
     private val database: Database,
-    private val api: SearchApi,
 ) : SearchRepository {
     override suspend fun search(
         query: String,
         page: Int,
         pageSize: Int,
     ): List<Summary> {
-        // Try local FTS first or API?
-        // Usually hybrid: API for fresh results, DB for offline.
-        // Here we simply call API and return results.
+        val offset = (page.coerceAtLeast(1) - 1) * pageSize
         return try {
-            val response = api.search(query, page, pageSize)
-            response.data?.toDomain() ?: emptyList()
+            val envelope = SearchApi.searchSummariesV1SearchGet(
+                q = query,
+                limit = pageSize.toLong(),
+                offset = offset.toLong(),
+            ).unwrap()
+            envelope.data?.toDomain() ?: emptyList()
         } catch (e: Exception) {
             // Fallback to local search
             database.databaseQueries.searchSummaries(
                 query = query,
                 limit = pageSize.toLong(),
-                offset = ((page - 1) * pageSize).toLong(),
+                offset = offset.toLong(),
             )
                 .executeAsList()
                 .map { it.toDomain() }
@@ -48,26 +50,21 @@ class SearchRepositoryImpl(
         language: String?,
         tags: List<String>?,
     ): List<Summary> {
-        val response =
-            api.semanticSearch(
-                query = query,
-                page = page,
-                pageSize = pageSize,
-                language = language,
-                tags = tags,
-            )
-        return response.data?.toDomain() ?: emptyList()
+        val offset = (page.coerceAtLeast(1) - 1) * pageSize
+        val envelope = SearchApi.semanticSearchSummariesV1SearchSemanticGet(
+            q = query,
+            limit = pageSize.toLong(),
+            offset = offset.toLong(),
+            language = language,
+            tags = tags,
+        ).unwrap()
+        return envelope.data?.toDomain() ?: emptyList()
     }
 
     override suspend fun getTrendingTopics(): List<String> {
         return try {
-            val response = api.getTrendingTopics()
-            if (response.success && response.data != null) {
-                requireNotNull(response.data).tags.map { it.tag }
-            } else {
-                logger.error { "Failed to fetch trending topics: ${response.error}" }
-                emptyList()
-            }
+            val envelope = SearchApi.getTrendingTopicsV1TopicsTrendingGet().unwrap()
+            envelope.data?.tags?.map { it.tag } ?: emptyList()
         } catch (e: CancellationException) {
             throw e
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
@@ -80,17 +77,23 @@ class SearchRepositoryImpl(
         days: Int,
         limit: Int,
     ): List<Summary> {
-        val response = api.getSearchInsights(days, limit)
-        return response.data?.toDomain() ?: emptyList()
+        val envelope = SearchApi.getSearchInsightsV1SearchInsightsGet(
+            days = days.toLong(),
+            limit = limit.toLong(),
+        ).unwrap()
+        return envelope.data?.toDomain() ?: emptyList()
     }
 
     override suspend fun checkDuplicateUrl(url: String): DuplicateCheckResult {
-        val response = api.checkDuplicateUrl(url, includeSummary = false)
-        val data = response.data
-        return if (response.success && data != null) {
+        val envelope = SearchApi.checkDuplicateV1UrlsCheckDuplicateGet(
+            reqUrl = url,
+            includeSummary = false,
+        ).unwrap()
+        val data = envelope.data
+        return if (data != null) {
             DuplicateCheckResult(
-                isDuplicate = data.data.isDuplicate,
-                existingSummaryId = data.data.summaryId?.toString(),
+                isDuplicate = data.isDuplicate,
+                existingSummaryId = data.summaryId?.toString(),
             )
         } else {
             DuplicateCheckResult(isDuplicate = false, existingSummaryId = null)

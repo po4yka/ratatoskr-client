@@ -2,15 +2,16 @@ package com.po4yka.ratatoskr.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.po4yka.ratatoskr.data.remote.CustomDigestApi
-import com.po4yka.ratatoskr.data.remote.dto.CreateCustomDigestRequestDto
+import com.po4yka.ratatoskr.api.generated.api.DigestsApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
+import com.po4yka.ratatoskr.api.generated.models.V1DigestsCustomRequest
+import com.po4yka.ratatoskr.data.remote.dto.CustomDigestResponseDto
 import com.po4yka.ratatoskr.database.Database
 import com.po4yka.ratatoskr.domain.model.CustomDigest
 import com.po4yka.ratatoskr.domain.model.CustomDigestStatus
 import com.po4yka.ratatoskr.domain.model.DigestFormat
 import com.po4yka.ratatoskr.domain.repository.CustomDigestRepository
 import com.po4yka.ratatoskr.util.error.AppError
-import com.po4yka.ratatoskr.util.error.toAppError
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -23,17 +24,22 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
 import org.koin.core.annotation.Single
 
 private const val DIGEST_LIST_LIMIT = 50L
 private const val POLL_INTERVAL_SECONDS = 5L
 private const val MAX_POLL_ITERATIONS = 60
 
+private val customDigestJson = Json { ignoreUnknownKeys = true }
+
 @OptIn(ExperimentalUuidApi::class)
 @Single(binds = [CustomDigestRepository::class])
 class CustomDigestRepositoryImpl(
     private val database: Database,
-    private val api: CustomDigestApi,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : CustomDigestRepository {
     override suspend fun createDigest(
@@ -57,22 +63,21 @@ class CustomDigestRepositoryImpl(
                     createdAt = now,
                 )
 
-                val response =
-                    api.createCustomDigest(
-                        CreateCustomDigestRequestDto(
+                val envelope =
+                    DigestsApi.createCustomDigestV1DigestsCustomPost(
+                        V1DigestsCustomRequest(
                             summaryIds = summaryIds,
                             format = formatStr,
                             title = title,
                         ),
-                    )
+                    ).unwrap()
 
-                if (!response.success || response.data == null) {
-                    database.databaseQueries.deleteCustomDigest(localId)
-                    throw response.error?.toAppError()
-                        ?: AppError.UnknownError(fallbackMessage = "Failed to create digest")
-                }
+                val dto = decodeCustomDigestData(envelope)
+                    ?: run {
+                        database.databaseQueries.deleteCustomDigest(localId)
+                        throw AppError.UnknownError(fallbackMessage = "Failed to create digest")
+                    }
 
-                val dto = requireNotNull(response.data)
                 val serverCreatedAt = parseInstant(dto.createdAt, now)
                 val serverStatus = dto.status
                 database.databaseQueries.insertCustomDigest(
@@ -120,8 +125,8 @@ class CustomDigestRepositoryImpl(
             while (iterations < MAX_POLL_ITERATIONS) {
                 iterations++
                 delay(POLL_INTERVAL_SECONDS.seconds)
-                val response = api.getCustomDigest(id)
-                val dto = response.data ?: continue
+                val envelope = DigestsApi.getCustomDigestV1DigestsCustomDigestIdGet(id).unwrap()
+                val dto = decodeCustomDigestData(envelope) ?: continue
                 val status = parseStatus(dto.status)
                 database.databaseQueries.updateCustomDigestContent(
                     content = dto.content,
@@ -188,4 +193,11 @@ class CustomDigestRepositoryImpl(
         } catch (_: Exception) {
             fallback
         }
+}
+
+private fun decodeCustomDigestData(envelope: JsonElement): CustomDigestResponseDto? {
+    val dataField = (envelope as? JsonObject)?.get("data")
+        ?.takeIf { it !is JsonNull }
+        ?: return null
+    return customDigestJson.decodeFromJsonElement(CustomDigestResponseDto.serializer(), dataField)
 }

@@ -1,35 +1,44 @@
 package com.po4yka.ratatoskr.data.repository
 
+import com.po4yka.ratatoskr.api.generated.Api
+import com.po4yka.ratatoskr.api.generated.api.TagsApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
+import com.po4yka.ratatoskr.api.generated.models.V1SummariesSummaryIdTagsRequest
+import com.po4yka.ratatoskr.api.generated.models.V1TagsMergeRequest
+import com.po4yka.ratatoskr.api.generated.models.V1TagsRequest
+import com.po4yka.ratatoskr.api.generated.models.V1TagsTagIdRequest
 import com.po4yka.ratatoskr.data.mappers.toDomain
-import com.po4yka.ratatoskr.data.remote.TagsApi
-import com.po4yka.ratatoskr.data.remote.dto.AttachTagsRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.CreateTagRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.MergeTagsRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.UpdateTagRequestDto
+import com.po4yka.ratatoskr.data.remote.dto.TagDto
+import com.po4yka.ratatoskr.data.remote.dto.TagListResponseDto
 import com.po4yka.ratatoskr.domain.model.Tag
 import com.po4yka.ratatoskr.domain.repository.TagRepository
+import kotlinx.serialization.json.JsonElement
 import org.koin.core.annotation.Single
 
 @Single(binds = [TagRepository::class])
-class TagRepositoryImpl(
-    private val tagsApi: TagsApi,
-) : TagRepository {
+class TagRepositoryImpl : TagRepository {
     override suspend fun listTags(): List<Tag> {
-        val response = tagsApi.listTags()
-        return response.data?.tags?.map { it.toDomain() } ?: emptyList()
+        val envelope = TagsApi.listTagsV1TagsGet().unwrap().decodeEnvelope<TagListResponseDto>()
+        return envelope?.tags?.map { it.toDomain() } ?: emptyList()
     }
 
     override suspend fun createTag(
         name: String,
         color: String?,
     ): Tag {
-        val response = tagsApi.createTag(CreateTagRequestDto(name = name, color = color))
-        return requireNotNull(response.data) { "Server returned no data for tag creation" }.toDomain()
+        val tag =
+            TagsApi.createTagV1TagsPost(
+                body = V1TagsRequest(name = name, color = color),
+            ).unwrap().decodeEnvelope<TagDto>()
+        return requireNotNull(tag) { "Server returned no data for tag creation" }.toDomain()
     }
 
     override suspend fun getTag(tagId: Int): Tag {
-        val response = tagsApi.getTag(tagId)
-        return requireNotNull(response.data) { "Tag $tagId not found" }.toDomain()
+        val tag =
+            TagsApi.getTagV1TagsTagIdGet(tagId = tagId.toLong())
+                .unwrap()
+                .decodeEnvelope<TagDto>()
+        return requireNotNull(tag) { "Tag $tagId not found" }.toDomain()
     }
 
     override suspend fun updateTag(
@@ -37,19 +46,29 @@ class TagRepositoryImpl(
         name: String?,
         color: String?,
     ): Tag {
-        val response = tagsApi.updateTag(tagId, UpdateTagRequestDto(name = name, color = color))
-        return requireNotNull(response.data) { "Server returned no data for tag update" }.toDomain()
+        val tag =
+            TagsApi.updateTagV1TagsTagIdPatch(
+                tagId = tagId.toLong(),
+                body = V1TagsTagIdRequest(name = name, color = color),
+            ).unwrap().decodeEnvelope<TagDto>()
+        return requireNotNull(tag) { "Server returned no data for tag update" }.toDomain()
     }
 
     override suspend fun deleteTag(tagId: Int) {
-        tagsApi.deleteTag(tagId)
+        TagsApi.deleteTagV1TagsTagIdDelete(tagId = tagId.toLong()).unwrap()
     }
 
     override suspend fun mergeTags(
         sourceTagIds: List<Int>,
         targetTagId: Int,
     ) {
-        tagsApi.mergeTags(MergeTagsRequestDto(sourceTagIds = sourceTagIds, targetTagId = targetTagId))
+        TagsApi.mergeTagsV1TagsMergePost(
+            body =
+                V1TagsMergeRequest(
+                    sourceTagIds = sourceTagIds.map { it.toLong() },
+                    targetTagId = targetTagId.toLong(),
+                ),
+        ).unwrap()
     }
 
     override suspend fun attachTags(
@@ -57,18 +76,46 @@ class TagRepositoryImpl(
         tagIds: List<Int>?,
         tagNames: List<String>?,
     ): List<Tag> {
-        val response =
-            tagsApi.attachTags(
-                summaryId = summaryId,
-                request = AttachTagsRequestDto(tagIds = tagIds, tagNames = tagNames),
-            )
-        return response.data?.tags?.map { it.toDomain() } ?: emptyList()
+        val longSummaryId =
+            summaryId.toLongOrNull()
+                ?: throw IllegalArgumentException("Invalid summary ID: $summaryId")
+        val envelope =
+            TagsApi.attachTagsV1SummariesSummaryIdTagsPost(
+                summaryId = longSummaryId,
+                body =
+                    V1SummariesSummaryIdTagsRequest(
+                        tagIds = tagIds?.map { it.toLong() },
+                        tagNames = tagNames,
+                    ),
+            ).unwrap().decodeEnvelope<TagListResponseDto>()
+        return envelope?.tags?.map { it.toDomain() } ?: emptyList()
     }
 
     override suspend fun detachTag(
         summaryId: String,
         tagId: Int,
     ) {
-        tagsApi.detachTag(summaryId = summaryId, tagId = tagId)
+        val longSummaryId =
+            summaryId.toLongOrNull()
+                ?: throw IllegalArgumentException("Invalid summary ID: $summaryId")
+        TagsApi.detachTagV1SummariesSummaryIdTagsTagIdDelete(
+            summaryId = longSummaryId,
+            tagId = tagId.toLong(),
+        ).unwrap()
     }
+}
+
+/**
+ * Decodes the `data` field of a `{success, meta, data}` envelope returned
+ * by the JsonElement-typed generated endpoint. Returns null when no `data`
+ * field is present.
+ */
+private inline fun <reified T> JsonElement.decodeEnvelope(): T? {
+    val obj = (this as? kotlinx.serialization.json.JsonObject) ?: return null
+    val data = obj["data"] ?: return null
+    if (data is kotlinx.serialization.json.JsonNull) return null
+    return Api.json.decodeFromJsonElement(
+        kotlinx.serialization.serializer<T>(),
+        data,
+    )
 }

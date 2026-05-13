@@ -1,5 +1,6 @@
 package com.po4yka.ratatoskr.data.mappers
 
+import com.po4yka.ratatoskr.api.generated.models.SummaryDetailData
 import com.po4yka.ratatoskr.data.remote.dto.SummaryCompactDto
 import com.po4yka.ratatoskr.data.remote.dto.SummaryDetailDataDto
 import com.po4yka.ratatoskr.data.remote.dto.SummaryPayloadDto
@@ -71,6 +72,25 @@ fun SummaryDetailDataDto.toDomain(): Summary {
         confidence = payload?.confidence,
         quality = payload?.quality?.toDomain(),
         insights = payload?.insights?.toDomain(),
+    )
+}
+
+fun SummaryDetailData.toDomain(): Summary {
+    val s = summary
+    val src = source
+    return Summary(
+        id = request.id,
+        title = src.title ?: "Untitled",
+        content = s.summary250,
+        sourceUrl = src.url.orEmpty(),
+        imageUrl = null,
+        createdAt = request.createdAt,
+        isRead = false,
+        tags = s.topicTags,
+        readingTimeMin = s.estimatedReadingTimeMin.toInt(),
+        isFavorited = false,
+        hallucinationRisk = processing.hallucinationRisk,
+        confidence = processing.confidence,
     )
 }
 

@@ -1,20 +1,19 @@
 package com.po4yka.ratatoskr.data.mappers
 
-import com.po4yka.ratatoskr.data.remote.dto.SearchResponseDataDto
+import com.po4yka.ratatoskr.api.generated.models.SearchResponseData
 import com.po4yka.ratatoskr.domain.model.Summary
-import kotlin.time.Instant
 
-fun SearchResponseDataDto.toDomain(): List<Summary> {
+fun SearchResponseData.toDomain(): List<Summary> {
     return results.map { result ->
         Summary(
             id = result.summaryId.toString(),
-            title = result.title ?: "Untitled",
+            title = result.title,
             content = result.snippet ?: result.tldr.orEmpty(),
-            sourceUrl = result.url ?: "",
+            sourceUrl = result.url,
             imageUrl = null,
-            createdAt = result.createdAt?.let { Instant.parse(it) } ?: Instant.DISTANT_PAST,
-            isRead = result.isRead,
-            tags = result.topicTags,
+            createdAt = result.createdAt,
+            isRead = result.isRead ?: false,
+            tags = result.topicTags.orEmpty(),
         )
     }
 }

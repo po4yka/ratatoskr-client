@@ -86,13 +86,11 @@ val summaryFeatureBindingsModule =
         single {
             SummaryFeedbackPendingOperationHandler(
                 database = get(),
-                summariesApi = get(),
             )
         } bind PendingOperationHandler::class
         single {
             HighlightPendingOperationHandler(
                 database = get(),
-                highlightsApi = get(),
             )
         } bind PendingOperationHandler::class
         factory {

@@ -4,6 +4,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
+/**
+ * Response shape for `/v1/rules` endpoints — kept hand-written because the
+ * generated `RulesApi` returns `JsonElement` (the OpenAPI spec lacks a
+ * concrete response schema for rule endpoints).
+ */
 @Serializable
 data class RuleDto(
     @SerialName("id") val id: Int,
@@ -24,34 +29,6 @@ data class RuleDto(
 @Serializable
 data class RuleListResponseDto(
     @SerialName("rules") val rules: List<RuleDto>,
-)
-
-@Serializable
-data class CreateRuleRequestDto(
-    @SerialName("name") val name: String,
-    @SerialName("event_type") val eventType: String,
-    @SerialName("conditions") val conditions: List<JsonObject> = emptyList(),
-    @SerialName("actions") val actions: List<JsonObject>,
-    @SerialName("match_mode") val matchMode: String = "all",
-    @SerialName("priority") val priority: Int = 0,
-    @SerialName("description") val description: String? = null,
-)
-
-@Serializable
-data class UpdateRuleRequestDto(
-    @SerialName("name") val name: String? = null,
-    @SerialName("event_type") val eventType: String? = null,
-    @SerialName("conditions") val conditions: List<JsonObject>? = null,
-    @SerialName("actions") val actions: List<JsonObject>? = null,
-    @SerialName("match_mode") val matchMode: String? = null,
-    @SerialName("priority") val priority: Int? = null,
-    @SerialName("description") val description: String? = null,
-    @SerialName("enabled") val enabled: Boolean? = null,
-)
-
-@Serializable
-data class TestRuleRequestDto(
-    @SerialName("summary_id") val summaryId: Int,
 )
 
 @Serializable

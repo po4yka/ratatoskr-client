@@ -3,6 +3,11 @@ package com.po4yka.ratatoskr.data.remote.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * Response shape for `/v1/tags` endpoints — kept hand-written because the
+ * generated `TagsApi` returns `JsonElement` (the OpenAPI spec lacks a
+ * concrete response schema for tag endpoints).
+ */
 @Serializable
 data class TagDto(
     @SerialName("id") val id: Int,
@@ -16,30 +21,6 @@ data class TagDto(
 @Serializable
 data class TagListResponseDto(
     @SerialName("tags") val tags: List<TagDto>,
-)
-
-@Serializable
-data class CreateTagRequestDto(
-    @SerialName("name") val name: String,
-    @SerialName("color") val color: String? = null,
-)
-
-@Serializable
-data class UpdateTagRequestDto(
-    @SerialName("name") val name: String? = null,
-    @SerialName("color") val color: String? = null,
-)
-
-@Serializable
-data class MergeTagsRequestDto(
-    @SerialName("source_tag_ids") val sourceTagIds: List<Int>,
-    @SerialName("target_tag_id") val targetTagId: Int,
-)
-
-@Serializable
-data class AttachTagsRequestDto(
-    @SerialName("tag_ids") val tagIds: List<Int>? = null,
-    @SerialName("tag_names") val tagNames: List<String>? = null,
 )
 
 @Serializable

@@ -3,6 +3,11 @@ package com.po4yka.ratatoskr.data.remote.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * Response shape for `/v1/rss` endpoints — kept hand-written because the
+ * generated `RSSApi` returns `JsonElement` (the OpenAPI spec lacks a
+ * concrete response schema for RSS endpoints).
+ */
 @Serializable
 data class RssFeedSubscriptionDto(
     @SerialName("subscription_id") val subscriptionId: Int,
@@ -18,12 +23,6 @@ data class RssFeedSubscriptionDto(
 @Serializable
 data class RssFeedListResponseDto(
     @SerialName("feeds") val feeds: List<RssFeedSubscriptionDto>,
-)
-
-@Serializable
-data class RssSubscribeRequestDto(
-    @SerialName("url") val url: String,
-    @SerialName("category_id") val categoryId: Int? = null,
 )
 
 @Serializable

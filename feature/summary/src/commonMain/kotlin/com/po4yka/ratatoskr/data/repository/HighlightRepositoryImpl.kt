@@ -2,9 +2,10 @@ package com.po4yka.ratatoskr.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.po4yka.ratatoskr.data.remote.HighlightsApi
-import com.po4yka.ratatoskr.data.remote.dto.CreateHighlightRequestDto
-import com.po4yka.ratatoskr.data.remote.dto.UpdateHighlightRequestDto
+import com.po4yka.ratatoskr.api.generated.api.HighlightsApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
+import com.po4yka.ratatoskr.api.generated.models.V1SummariesSummaryIdHighlightsHighlightIdRequest
+import com.po4yka.ratatoskr.api.generated.models.V1SummariesSummaryIdHighlightsRequest
 import com.po4yka.ratatoskr.database.Database
 import com.po4yka.ratatoskr.domain.model.Highlight
 import com.po4yka.ratatoskr.domain.model.HighlightColor
@@ -27,7 +28,6 @@ private val logger = KotlinLogging.logger {}
 @Single(binds = [HighlightRepository::class])
 class HighlightRepositoryImpl(
     private val database: Database,
-    private val highlightsApi: HighlightsApi,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : HighlightRepository {
     override fun getHighlightsForSummary(summaryId: String): Flow<List<Highlight>> =
@@ -165,17 +165,15 @@ class HighlightRepositoryImpl(
     ): String {
         val remoteId = summaryId.toLongOrNull() ?: return "pending"
         return try {
-            val response =
-                highlightsApi.createHighlight(
-                    summaryId = remoteId,
-                    request =
-                        CreateHighlightRequestDto(
-                            text = text,
-                            startOffset = nodeOffset,
-                            color = color.colorName,
-                        ),
-                )
-            if (response.success) "synced" else "pending"
+            HighlightsApi.createHighlightV1SummariesSummaryIdHighlightsPost(
+                summaryId = remoteId,
+                body = V1SummariesSummaryIdHighlightsRequest(
+                    text = text,
+                    startOffset = nodeOffset.toLong(),
+                    color = color.colorName,
+                ),
+            ).unwrap()
+            "synced"
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.debug { "Highlight create will be synced later: ${e.message}" }
             "pending"
@@ -192,22 +190,16 @@ class HighlightRepositoryImpl(
                 ?: return false
         val remoteId = entity.summaryId.toLongOrNull() ?: return false
         return try {
-            val response =
-                highlightsApi.updateHighlight(
-                    summaryId = remoteId,
-                    highlightId = highlightId,
-                    request =
-                        UpdateHighlightRequestDto(
-                            color = entity.color,
-                            note = entity.note,
-                        ),
-                )
-            if (response.success) {
-                database.databaseQueries.updateHighlightSyncStatus("synced", highlightId)
-                true
-            } else {
-                false
-            }
+            HighlightsApi.updateHighlightV1SummariesSummaryIdHighlightsHighlightIdPatch(
+                summaryId = remoteId,
+                highlightId = highlightId,
+                body = V1SummariesSummaryIdHighlightsHighlightIdRequest(
+                    color = entity.color,
+                    note = entity.note,
+                ),
+            ).unwrap()
+            database.databaseQueries.updateHighlightSyncStatus("synced", highlightId)
+            true
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.debug { "Highlight update will be synced later: ${e.message}" }
             false
@@ -224,8 +216,11 @@ class HighlightRepositoryImpl(
     ): Boolean {
         val remoteId = summaryId.toLongOrNull() ?: return false
         return try {
-            val response = highlightsApi.deleteHighlight(remoteId, highlightId)
-            response.success
+            HighlightsApi.deleteHighlightV1SummariesSummaryIdHighlightsHighlightIdDelete(
+                summaryId = remoteId,
+                highlightId = highlightId,
+            ).unwrap()
+            true
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             logger.debug { "Highlight delete will be synced later: ${e.message}" }
             false

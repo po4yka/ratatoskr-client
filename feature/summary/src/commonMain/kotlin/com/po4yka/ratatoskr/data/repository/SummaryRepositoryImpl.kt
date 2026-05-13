@@ -3,8 +3,9 @@ package com.po4yka.ratatoskr.data.repository
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.po4yka.ratatoskr.api.generated.api.SummariesApi
+import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
 import com.po4yka.ratatoskr.data.mappers.toDomain
-import com.po4yka.ratatoskr.data.remote.SummariesApi
 import com.po4yka.ratatoskr.database.Database
 import com.po4yka.ratatoskr.domain.model.FeedbackIssue
 import com.po4yka.ratatoskr.domain.model.FeedbackRating
@@ -34,7 +35,6 @@ private val logger = KotlinLogging.logger {}
 @Single(binds = [SummaryRepository::class, SyncContentPrefetcher::class])
 class SummaryRepositoryImpl(
     private val database: Database,
-    private val api: SummariesApi,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SummaryRepository, SyncContentPrefetcher {
     override fun getSummaries(
@@ -115,6 +115,7 @@ class SummaryRepositoryImpl(
 
         // Queue for server sync instead of immediate API call
         val remoteId = id.toLongOrNull() ?: return
+        @Suppress("UNUSED_VARIABLE")
         val summary = database.databaseQueries.getSummaryById(id).executeAsOneOrNull() ?: return
         // Remove any existing pending favorite toggle for this entity
         database.databaseQueries.deletePendingOperationsForEntity(
@@ -131,11 +132,12 @@ class SummaryRepositoryImpl(
     }
 
     override suspend fun getSummaryByUrl(url: String): Summary? {
-        val response = api.getSummaryByUrl(url)
-        val summaryData = response.data
-        return if (response.success && summaryData != null) {
-            summaryData.toDomain()
-        } else {
+        return try {
+            val envelope = SummariesApi.getSummaryByUrlV1SummariesByUrlGet(reqUrl = url).unwrap()
+            val data = envelope.data ?: return null
+            data.toDomain()
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            logger.warn(e) { "Failed to fetch summary by URL: $url" }
             null
         }
     }
@@ -160,7 +162,7 @@ class SummaryRepositoryImpl(
         // 2. Attempt remote delete immediately, clear from queue on success
         if (remoteId != null) {
             try {
-                api.deleteSummary(remoteId)
+                SummariesApi.deleteSummaryV1SummariesSummaryIdDelete(remoteId).unwrap()
                 database.databaseQueries.deletePendingOperationsForEntity(
                     entityId = id,
                     action = "delete",
@@ -201,13 +203,10 @@ class SummaryRepositoryImpl(
             return fallback
         }
         return try {
-            val response = api.getContent(remoteId)
-            val contentData = response.data
-            if (response.success && contentData != null) {
-                val articleContent =
-                    MarkdownSanitizer.sanitize(
-                        contentData.content.content,
-                    )
+            val envelope = SummariesApi.getSummaryContentV1SummariesSummaryIdContentGet(remoteId).unwrap()
+            val contentData = envelope.data
+            if (contentData != null) {
+                val articleContent = MarkdownSanitizer.sanitize(contentData.content.content)
                 database.databaseQueries.updateSummaryFullContent(
                     fullContent = articleContent,
                     cachedAt = Clock.System.now(),

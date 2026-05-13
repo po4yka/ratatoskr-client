@@ -1,12 +1,10 @@
 package com.po4yka.ratatoskr.data.mappers
 
-import com.po4yka.ratatoskr.data.remote.dto.DomainStatDto
+import com.po4yka.ratatoskr.api.generated.models.UserPreferences as GeneratedUserPreferences
+import com.po4yka.ratatoskr.api.generated.models.UserStats as GeneratedUserStats
 import com.po4yka.ratatoskr.data.remote.dto.GoalDto
 import com.po4yka.ratatoskr.data.remote.dto.GoalProgressDto
 import com.po4yka.ratatoskr.data.remote.dto.StreakDto
-import com.po4yka.ratatoskr.data.remote.dto.TopicStatDto
-import com.po4yka.ratatoskr.data.remote.dto.UserPreferencesDto
-import com.po4yka.ratatoskr.data.remote.dto.UserStatsDto
 import com.po4yka.ratatoskr.domain.model.DomainStat
 import com.po4yka.ratatoskr.domain.model.Goal
 import com.po4yka.ratatoskr.domain.model.GoalProgress
@@ -15,30 +13,23 @@ import com.po4yka.ratatoskr.domain.model.TopicStat
 import com.po4yka.ratatoskr.domain.model.UserPreferences
 import com.po4yka.ratatoskr.domain.model.UserStats
 
-fun TopicStatDto.toDomain(): TopicStat =
-    TopicStat(
-        topic = topic,
-        count = count,
-    )
-
-fun DomainStatDto.toDomain(): DomainStat =
-    DomainStat(
-        domain = domain,
-        count = count,
-    )
-
-fun UserStatsDto.toDomain(): UserStats =
+fun GeneratedUserStats.toDomain(): UserStats =
     UserStats(
-        totalSummaries = totalSummaries,
-        unreadCount = unreadCount,
-        readCount = readCount,
-        totalReadingTimeMin = totalReadingTimeMin,
-        averageReadingTimeMin = averageReadingTimeMin,
-        favoriteTopics = favoriteTopics?.map { it.toDomain() },
-        favoriteDomains = favoriteDomains?.map { it.toDomain() },
-        languageDistribution = languageDistribution,
-        joinedAt = joinedAt,
-        lastSummaryAt = lastSummaryAt,
+        totalSummaries = totalSummaries.toInt(),
+        unreadCount = unreadCount.toInt(),
+        readCount = readCount.toInt(),
+        totalReadingTimeMin = totalReadingTimeMin.toInt(),
+        averageReadingTimeMin = averageReadingTimeMin.toFloat(),
+        favoriteTopics = favoriteTopics.map { TopicStat(topic = it.topic, count = it.count.toInt()) },
+        favoriteDomains = favoriteDomains.map { DomainStat(domain = it.domain, count = it.count.toInt()) },
+        languageDistribution = languageDistribution.mapValues { it.value.toInt() },
+        joinedAt = joinedAt?.toString(),
+        lastSummaryAt = lastSummaryAt?.toString(),
+    )
+
+fun GeneratedUserPreferences.toDomain(): UserPreferences =
+    UserPreferences(
+        langPreference = langPreference?.name?.lowercase() ?: "auto",
     )
 
 fun StreakDto.toDomain(): Streak =
@@ -65,14 +56,4 @@ fun GoalProgressDto.toDomain(): GoalProgress =
         targetCount = targetCount,
         currentCount = currentCount,
         achieved = achieved,
-    )
-
-// Moved here from feature/auth/AuthMapper.kt during the OpenAPI client
-// migration. UserPreferencesDto lives in core/data; the consumer is
-// feature/settings, so the mapper belongs here.
-fun UserPreferencesDto.toDomain(): UserPreferences =
-    UserPreferences(
-        langPreference = langPreference ?: "auto",
-        notificationSettings = null,
-        appSettings = null,
     )
