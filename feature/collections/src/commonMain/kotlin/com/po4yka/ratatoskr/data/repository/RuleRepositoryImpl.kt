@@ -1,30 +1,23 @@
 package com.po4yka.ratatoskr.data.repository
 
-import com.po4yka.ratatoskr.api.generated.Api
 import com.po4yka.ratatoskr.api.generated.api.RulesApi
 import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
 import com.po4yka.ratatoskr.api.generated.models.V1RulesRequest
 import com.po4yka.ratatoskr.api.generated.models.V1RulesRuleIdRequest
 import com.po4yka.ratatoskr.api.generated.models.V1RulesRuleIdTestRequest
 import com.po4yka.ratatoskr.data.mappers.toDomain
-import com.po4yka.ratatoskr.data.remote.dto.RuleDto
-import com.po4yka.ratatoskr.data.remote.dto.RuleListResponseDto
-import com.po4yka.ratatoskr.data.remote.dto.RuleLogListResponseDto
-import com.po4yka.ratatoskr.data.remote.dto.TestRuleResponseDto
 import com.po4yka.ratatoskr.domain.model.AutomationRule
 import com.po4yka.ratatoskr.domain.model.RuleLog
 import com.po4yka.ratatoskr.domain.model.TestRuleResult
 import com.po4yka.ratatoskr.domain.repository.RuleRepository
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import org.koin.core.annotation.Single
 
 @Single(binds = [RuleRepository::class])
 class RuleRepositoryImpl : RuleRepository {
     override suspend fun listRules(): List<AutomationRule> {
-        val envelope =
-            RulesApi.listRulesV1RulesGet().unwrap().decodeEnvelope<RuleListResponseDto>()
-        return envelope?.rules?.map { it.toDomain() } ?: emptyList()
+        val data = RulesApi.listRulesV1RulesGet().unwrap().data
+        return data?.rules?.map { it.toDomain() } ?: emptyList()
     }
 
     override suspend fun createRule(
@@ -48,15 +41,12 @@ class RuleRepositoryImpl : RuleRepository {
                         priority = priority.toLong(),
                         description = description,
                     ),
-            ).unwrap().decodeEnvelope<RuleDto>()
+            ).unwrap().data
         return requireNotNull(rule) { "Server returned no data for rule creation" }.toDomain()
     }
 
     override suspend fun getRule(ruleId: Int): AutomationRule {
-        val rule =
-            RulesApi.getRuleV1RulesRuleIdGet(ruleId = ruleId.toLong())
-                .unwrap()
-                .decodeEnvelope<RuleDto>()
+        val rule = RulesApi.getRuleV1RulesRuleIdGet(ruleId = ruleId.toLong()).unwrap().data
         return requireNotNull(rule) { "Rule $ruleId not found" }.toDomain()
     }
 
@@ -85,7 +75,7 @@ class RuleRepositoryImpl : RuleRepository {
                         description = description,
                         enabled = enabled,
                     ),
-            ).unwrap().decodeEnvelope<RuleDto>()
+            ).unwrap().data
         return requireNotNull(rule) { "Server returned no data for rule update" }.toDomain()
     }
 
@@ -101,7 +91,7 @@ class RuleRepositoryImpl : RuleRepository {
             RulesApi.dryRunRuleV1RulesRuleIdTestPost(
                 ruleId = ruleId.toLong(),
                 body = V1RulesRuleIdTestRequest(summaryId = summaryId.toLong()),
-            ).unwrap().decodeEnvelope<TestRuleResponseDto>()
+            ).unwrap().data
         return requireNotNull(result) { "Server returned no data for rule test" }.toDomain()
     }
 
@@ -110,22 +100,12 @@ class RuleRepositoryImpl : RuleRepository {
         limit: Int,
         offset: Int,
     ): List<RuleLog> {
-        val envelope =
+        val data =
             RulesApi.listExecutionLogsV1RulesRuleIdLogsGet(
                 ruleId = ruleId.toLong(),
                 limit = limit.toLong(),
                 offset = offset.toLong(),
-            ).unwrap().decodeEnvelope<RuleLogListResponseDto>()
-        return envelope?.logs?.map { it.toDomain() } ?: emptyList()
+            ).unwrap().data
+        return data?.logs?.map { it.toDomain() } ?: emptyList()
     }
-}
-
-private inline fun <reified T> JsonElement.decodeEnvelope(): T? {
-    val obj = (this as? JsonObject) ?: return null
-    val data = obj["data"] ?: return null
-    if (data is kotlinx.serialization.json.JsonNull) return null
-    return Api.json.decodeFromJsonElement(
-        kotlinx.serialization.serializer<T>(),
-        data,
-    )
 }

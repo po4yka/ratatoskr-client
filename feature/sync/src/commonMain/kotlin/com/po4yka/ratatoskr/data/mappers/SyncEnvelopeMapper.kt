@@ -67,5 +67,8 @@ private fun SyncEntityEnvelope.EntityType.serialName(): String =
         SyncEntityEnvelope.EntityType.STAT -> "stat"
         SyncEntityEnvelope.EntityType.CRAWL_RESULT -> "crawl_result"
         SyncEntityEnvelope.EntityType.LLM_CALL -> "llm_call"
+        SyncEntityEnvelope.EntityType.HIGHLIGHT -> "highlight"
+        SyncEntityEnvelope.EntityType.TAG -> "tag"
+        SyncEntityEnvelope.EntityType.SUMMARY_TAG -> "summary_tag"
     }
 

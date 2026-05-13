@@ -5,7 +5,7 @@
  * RESTful API for Android/iOS mobile clients
  * Version 1.0.0
  * 
- * Generated Tue, 12 May 2026 20:56:58 +0400
+ * Generated Wed, 13 May 2026 10:50:14 +0400
  * OpenAPI KMP Gen (version 1.3.0) by kroegerama
  */
 @file:Suppress("ArrayInDataClass", "RedundantVisibilityModifier", "unused", "ConstPropertyName")
@@ -2595,8 +2595,12 @@ public data class SyncSessionResponseEnvelope(
 public data class SyncEntityEnvelope(
   @SerialName("entity_type")
   public val entityType: EntityType,
+  /**
+   * Entity identifier. Always serialized as a string for KMP / mobile
+   * client compatibility (numeric IDs are JSON-encoded as strings).
+   */
   @SerialName("id")
-  public val id: Id,
+  public val id: String,
   @SerialName("server_version")
   public val serverVersion: Long,
   @SerialName("updated_at")
@@ -2627,12 +2631,13 @@ public data class SyncEntityEnvelope(
     CRAWL_RESULT,
     @SerialName("llm_call")
     LLM_CALL,
+    @SerialName("highlight")
+    HIGHLIGHT,
+    @SerialName("tag")
+    TAG,
+    @SerialName("summary_tag")
+    SUMMARY_TAG,
   }
-
-  @Serializable
-  @Immutable
-  @JsonClassDiscriminator("type")
-  public sealed interface Id
 }
 
 @Serializable
@@ -2694,8 +2699,12 @@ public data class DeltaSyncResponseEnvelope(
 @Serializable
 @Immutable
 public data class SyncApplyResult(
+  /**
+   * Entity identifier. Always serialized as a string for KMP / mobile
+   * client compatibility (numeric IDs are JSON-encoded as strings).
+   */
   @SerialName("id")
-  public val id: Id,
+  public val id: String,
   @SerialName("entity_type")
   public val entityType: String,
   @SerialName("status")
@@ -2709,11 +2718,6 @@ public data class SyncApplyResult(
   @SerialName("message")
   public val message: String? = null,
 ) {
-  @Serializable
-  @Immutable
-  @JsonClassDiscriminator("type")
-  public sealed interface Id
-
   @Serializable
   @Immutable
   public enum class Status {
@@ -2749,6 +2753,1220 @@ public data class SyncApplyResponseEnvelope(
     public val hasMore: Boolean? = null,
   )
 }
+
+@Serializable
+@Immutable
+public data class ChannelSubscription(
+  @SerialName("id")
+  public val id: Long,
+  @SerialName("username")
+  public val username: String,
+  @SerialName("title")
+  public val title: String? = null,
+  @SerialName("is_active")
+  public val isActive: Boolean,
+  @SerialName("fetch_error_count")
+  public val fetchErrorCount: Long,
+  @SerialName("last_error")
+  public val lastError: String? = null,
+  @SerialName("category_id")
+  public val categoryId: Long? = null,
+  @SerialName("category_name")
+  public val categoryName: String? = null,
+  @SerialName("created_at")
+  public val createdAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class ChannelSubscriptionListData(
+  @SerialName("channels")
+  public val channels: List<ChannelSubscription> = emptyList(),
+  @SerialName("active_count")
+  public val activeCount: Long,
+  @SerialName("max_channels")
+  public val maxChannels: Long? = null,
+  @SerialName("unlimited_channels")
+  public val unlimitedChannels: Boolean,
+)
+
+@Serializable
+@Immutable
+public data class ChannelSubscriptionListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: ChannelSubscriptionListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class SubscribeActionData(
+  @SerialName("status")
+  public val status: String,
+  @SerialName("username")
+  public val username: String,
+)
+
+@Serializable
+@Immutable
+public data class SubscribeActionResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: SubscribeActionData? = null,
+)
+
+@Serializable
+@Immutable
+public data class ResolveChannelData(
+  @SerialName("username")
+  public val username: String,
+  @SerialName("title")
+  public val title: String? = null,
+  @SerialName("description")
+  public val description: String? = null,
+  @SerialName("member_count")
+  public val memberCount: Long? = null,
+  @SerialName("is_subscribed")
+  public val isSubscribed: Boolean,
+)
+
+@Serializable
+@Immutable
+public data class ResolveChannelResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: ResolveChannelData? = null,
+)
+
+@Serializable
+@Immutable
+public data class DigestPreferencesData(
+  @SerialName("delivery_time")
+  public val deliveryTime: String,
+  /**
+   * "user" if overridden, "global" if inherited from defaults
+   */
+  @SerialName("delivery_time_source")
+  public val deliveryTimeSource: String,
+  @SerialName("timezone")
+  public val timezone: String,
+  @SerialName("timezone_source")
+  public val timezoneSource: String,
+  @SerialName("hours_lookback")
+  public val hoursLookback: Long,
+  @SerialName("hours_lookback_source")
+  public val hoursLookbackSource: String,
+  @SerialName("max_posts_per_digest")
+  public val maxPostsPerDigest: Long,
+  @SerialName("max_posts_per_digest_source")
+  public val maxPostsPerDigestSource: String,
+  @SerialName("min_relevance_score")
+  public val minRelevanceScore: Double,
+  @SerialName("min_relevance_score_source")
+  public val minRelevanceScoreSource: String,
+)
+
+@Serializable
+@Immutable
+public data class DigestPreferencesResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: DigestPreferencesData? = null,
+)
+
+@Serializable
+@Immutable
+public data class DigestDelivery(
+  @SerialName("id")
+  public val id: Long,
+  @SerialName("delivered_at")
+  public val deliveredAt: Instant,
+  @SerialName("post_count")
+  public val postCount: Long,
+  @SerialName("channel_count")
+  public val channelCount: Long,
+  @SerialName("digest_type")
+  public val digestType: String,
+)
+
+@Serializable
+@Immutable
+public data class DigestHistoryData(
+  @SerialName("deliveries")
+  public val deliveries: List<DigestDelivery> = emptyList(),
+  @SerialName("total")
+  public val total: Long,
+  @SerialName("limit")
+  public val limit: Long,
+  @SerialName("offset")
+  public val offset: Long,
+)
+
+@Serializable
+@Immutable
+public data class DigestHistoryResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: DigestHistoryData? = null,
+)
+
+@Serializable
+@Immutable
+public data class TriggerDigestData(
+  @SerialName("status")
+  public val status: String,
+  @SerialName("correlation_id")
+  public val correlationId: String,
+)
+
+@Serializable
+@Immutable
+public data class TriggerDigestResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: TriggerDigestData? = null,
+)
+
+@Serializable
+@Immutable
+public data class TriggerChannelDigestData(
+  @SerialName("status")
+  public val status: String,
+  @SerialName("channel")
+  public val channel: String,
+  @SerialName("correlation_id")
+  public val correlationId: String,
+)
+
+@Serializable
+@Immutable
+public data class TriggerChannelDigestResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: TriggerChannelDigestData? = null,
+)
+
+@Serializable
+@Immutable
+public data class ChannelCategory(
+  @SerialName("id")
+  public val id: Long,
+  @SerialName("name")
+  public val name: String,
+  @SerialName("position")
+  public val position: Long,
+  @SerialName("subscription_count")
+  public val subscriptionCount: Long,
+)
+
+@Serializable
+@Immutable
+public data class ChannelCategoryListData(
+  @SerialName("categories")
+  public val categories: List<ChannelCategory> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class ChannelCategoryListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: ChannelCategoryListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class ChannelCategoryResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: ChannelCategory? = null,
+)
+
+@Serializable
+@Immutable
+public data class StatusOnlyData(
+  @SerialName("status")
+  public val status: String,
+)
+
+@Serializable
+@Immutable
+public data class StatusOnlyResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: StatusOnlyData? = null,
+)
+
+@Serializable
+@Immutable
+public data class BulkOperationItem(
+  @SerialName("username")
+  public val username: String? = null,
+  @SerialName("id")
+  public val id: String? = null,
+  @SerialName("status")
+  public val status: String,
+  @SerialName("detail")
+  public val detail: String? = null,
+)
+
+@Serializable
+@Immutable
+public data class BulkOperationData(
+  @SerialName("results")
+  public val results: List<BulkOperationItem> = emptyList(),
+  @SerialName("success_count")
+  public val successCount: Long,
+  @SerialName("error_count")
+  public val errorCount: Long,
+)
+
+@Serializable
+@Immutable
+public data class BulkOperationResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: BulkOperationData? = null,
+)
+
+@Serializable
+@Immutable
+public data class ChannelPostAnalysis(
+  @SerialName("real_topic")
+  public val realTopic: String? = null,
+  @SerialName("tldr")
+  public val tldr: String? = null,
+  @SerialName("relevance_score")
+  public val relevanceScore: Double? = null,
+  @SerialName("content_type")
+  public val contentType: String? = null,
+)
+
+@Serializable
+@Immutable
+public data class ChannelPost(
+  @SerialName("message_id")
+  public val messageId: Long,
+  @SerialName("text")
+  public val text: String,
+  @SerialName("date")
+  public val date: Instant,
+  @SerialName("views")
+  public val views: Long? = null,
+  @SerialName("forwards")
+  public val forwards: Long? = null,
+  @SerialName("media_type")
+  public val mediaType: String? = null,
+  @SerialName("url")
+  public val url: String? = null,
+  @SerialName("analysis")
+  public val analysis: ChannelPostAnalysis? = null,
+)
+
+@Serializable
+@Immutable
+public data class ChannelPostListData(
+  @SerialName("posts")
+  public val posts: List<ChannelPost> = emptyList(),
+  @SerialName("total")
+  public val total: Long,
+  @SerialName("channel_username")
+  public val channelUsername: String,
+)
+
+@Serializable
+@Immutable
+public data class ChannelPostListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: ChannelPostListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class CustomDigest(
+  @SerialName("id")
+  public val id: String,
+  @SerialName("title")
+  public val title: String? = null,
+  @SerialName("content")
+  public val content: String? = null,
+  @SerialName("status")
+  public val status: String,
+  @SerialName("createdAt")
+  public val createdAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class CustomDigestResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: CustomDigest? = null,
+)
+
+@Serializable
+@Immutable
+public data class CustomDigestListData(
+  @SerialName("digests")
+  public val digests: List<CustomDigest> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class CustomDigestListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: CustomDigestListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class Backup(
+  @SerialName("id")
+  public val id: Long,
+  @SerialName("type")
+  public val type: String,
+  @SerialName("status")
+  public val status: String,
+  @SerialName("filePath")
+  public val filePath: String? = null,
+  @SerialName("fileSizeBytes")
+  public val fileSizeBytes: Long? = null,
+  @SerialName("itemsCount")
+  public val itemsCount: Long? = null,
+  @SerialName("error")
+  public val error: String? = null,
+  @SerialName("createdAt")
+  public val createdAt: Instant,
+  @SerialName("updatedAt")
+  public val updatedAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class BackupResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: Backup? = null,
+)
+
+@Serializable
+@Immutable
+public data class BackupListData(
+  @SerialName("backups")
+  public val backups: List<Backup> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class BackupListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: BackupListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class BackupSchedule(
+  @SerialName("backup_enabled")
+  public val backupEnabled: Boolean? = null,
+  @SerialName("backup_frequency")
+  public val backupFrequency: String? = null,
+  @SerialName("backup_retention_count")
+  public val backupRetentionCount: Long? = null,
+)
+
+@Serializable
+@Immutable
+public data class BackupScheduleData(
+  @SerialName("schedule")
+  public val schedule: BackupSchedule,
+)
+
+@Serializable
+@Immutable
+public data class BackupScheduleResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: BackupScheduleData? = null,
+)
+
+@Serializable
+@Immutable
+public data class BackupDeleteData(
+  @SerialName("deleted")
+  public val deleted: Boolean,
+  @SerialName("id")
+  public val id: Long,
+)
+
+@Serializable
+@Immutable
+public data class BackupDeleteResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: BackupDeleteData? = null,
+)
+
+@Serializable
+@Immutable
+public data class BackupRestoreResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: BackupRestoreData? = null,
+)
+
+@Serializable
+@Immutable
+public data class ImportJobResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: ImportJob? = null,
+)
+
+@Serializable
+@Immutable
+public data class ImportJobListData(
+  @SerialName("jobs")
+  public val jobs: List<ImportJob> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class ImportJobListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: ImportJobListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class DeletedByIdData(
+  @SerialName("deleted")
+  public val deleted: Boolean,
+  @SerialName("id")
+  public val id: Long,
+)
+
+@Serializable
+@Immutable
+public data class DeletedByIdResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: DeletedByIdData? = null,
+)
+
+@Serializable
+@Immutable
+public data class UserGoal(
+  @SerialName("id")
+  public val id: String,
+  @SerialName("goalType")
+  public val goalType: String,
+  @SerialName("targetCount")
+  public val targetCount: Long,
+  @SerialName("scopeType")
+  public val scopeType: String,
+  @SerialName("scopeId")
+  public val scopeId: Long? = null,
+  @SerialName("scopeName")
+  public val scopeName: String? = null,
+  @SerialName("createdAt")
+  public val createdAt: Instant,
+  @SerialName("updatedAt")
+  public val updatedAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class UserGoalResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: UserGoal? = null,
+)
+
+@Serializable
+@Immutable
+public data class UserGoalListData(
+  @SerialName("goals")
+  public val goals: List<UserGoal> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class UserGoalListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: UserGoalListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class UserGoalProgress(
+  @SerialName("goalType")
+  public val goalType: String,
+  @SerialName("targetCount")
+  public val targetCount: Long,
+  @SerialName("currentCount")
+  public val currentCount: Long,
+  @SerialName("achieved")
+  public val achieved: Boolean,
+  @SerialName("scopeType")
+  public val scopeType: String,
+  @SerialName("scopeId")
+  public val scopeId: Long? = null,
+  @SerialName("scopeName")
+  public val scopeName: String? = null,
+)
+
+@Serializable
+@Immutable
+public data class UserGoalProgressListData(
+  @SerialName("progress")
+  public val progress: List<UserGoalProgress> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class UserGoalProgressListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: UserGoalProgressListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class Streak(
+  @SerialName("currentStreak")
+  public val currentStreak: Long,
+  @SerialName("longestStreak")
+  public val longestStreak: Long,
+  @SerialName("lastActivityDate")
+  public val lastActivityDate: String? = null,
+  @SerialName("todayCount")
+  public val todayCount: Long,
+  @SerialName("weekCount")
+  public val weekCount: Long,
+  @SerialName("monthCount")
+  public val monthCount: Long,
+)
+
+@Serializable
+@Immutable
+public data class StreakResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: Streak? = null,
+)
+
+@Serializable
+@Immutable
+public data class DeletedFlagData(
+  @SerialName("deleted")
+  public val deleted: Boolean,
+)
+
+@Serializable
+@Immutable
+public data class DeletedFlagResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: DeletedFlagData? = null,
+)
+
+@Serializable
+@Immutable
+public data class Tag(
+  @SerialName("id")
+  public val id: Long,
+  @SerialName("name")
+  public val name: String,
+  @SerialName("color")
+  public val color: String? = null,
+  @SerialName("summaryCount")
+  public val summaryCount: Long,
+  @SerialName("createdAt")
+  public val createdAt: Instant,
+  @SerialName("updatedAt")
+  public val updatedAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class TagResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: Tag? = null,
+)
+
+@Serializable
+@Immutable
+public data class TagListData(
+  @SerialName("tags")
+  public val tags: List<Tag> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class TagListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: TagListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class TagDeleteData(
+  @SerialName("deleted")
+  public val deleted: Boolean,
+  @SerialName("id")
+  public val id: Long,
+)
+
+@Serializable
+@Immutable
+public data class TagDeleteResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: TagDeleteData? = null,
+)
+
+@Serializable
+@Immutable
+public data class TagDetachData(
+  @SerialName("detached")
+  public val detached: Boolean,
+  @SerialName("summary_id")
+  public val summaryId: Long,
+  @SerialName("tag_id")
+  public val tagId: Long,
+)
+
+@Serializable
+@Immutable
+public data class TagDetachResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: TagDetachData? = null,
+)
+
+@Serializable
+@Immutable
+public data class MergeTagsData(
+  @SerialName("merged")
+  public val merged: Boolean,
+  @SerialName("target_tag_id")
+  public val targetTagId: Long,
+)
+
+@Serializable
+@Immutable
+public data class MergeTagsResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: MergeTagsData? = null,
+)
+
+@Serializable
+@Immutable
+public data class Rule(
+  @SerialName("id")
+  public val id: Long,
+  @SerialName("name")
+  public val name: String,
+  @SerialName("description")
+  public val description: String? = null,
+  @SerialName("enabled")
+  public val enabled: Boolean,
+  @SerialName("eventType")
+  public val eventType: String,
+  @SerialName("matchMode")
+  public val matchMode: String,
+  @SerialName("conditions")
+  public val conditions: List<JsonElement> = emptyList(),
+  @SerialName("actions")
+  public val actions: List<JsonElement> = emptyList(),
+  @SerialName("priority")
+  public val priority: Long,
+  @SerialName("runCount")
+  public val runCount: Long,
+  @SerialName("lastTriggeredAt")
+  public val lastTriggeredAt: Instant? = null,
+  @SerialName("createdAt")
+  public val createdAt: Instant,
+  @SerialName("updatedAt")
+  public val updatedAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class RuleResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: Rule? = null,
+)
+
+@Serializable
+@Immutable
+public data class RuleListData(
+  @SerialName("rules")
+  public val rules: List<Rule> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class RuleListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: RuleListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class RuleExecutionLog(
+  @SerialName("id")
+  public val id: Long,
+  @SerialName("ruleId")
+  public val ruleId: Long,
+  @SerialName("summaryId")
+  public val summaryId: Long? = null,
+  @SerialName("eventType")
+  public val eventType: String,
+  @SerialName("matched")
+  public val matched: Boolean,
+  @SerialName("conditionsResult")
+  public val conditionsResult: List<JsonElement>? = null,
+  @SerialName("actionsTaken")
+  public val actionsTaken: List<JsonElement>? = null,
+  @SerialName("error")
+  public val error: String? = null,
+  @SerialName("durationMs")
+  public val durationMs: Long? = null,
+  @SerialName("createdAt")
+  public val createdAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class RuleLogListData(
+  @SerialName("logs")
+  public val logs: List<RuleExecutionLog> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class RuleLogListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: RuleLogListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class RuleTestData(
+  @SerialName("matched")
+  public val matched: Boolean,
+  @SerialName("conditions_result")
+  public val conditionsResult: List<JsonElement> = emptyList(),
+  @SerialName("would_execute_actions")
+  public val wouldExecuteActions: List<JsonElement> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class RuleTestResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: RuleTestData? = null,
+)
+
+@Serializable
+@Immutable
+public data class RssFeedSubscription(
+  @SerialName("subscription_id")
+  public val subscriptionId: Long,
+  @SerialName("feed_id")
+  public val feedId: Long,
+  @SerialName("feed_title")
+  public val feedTitle: String? = null,
+  @SerialName("feed_url")
+  public val feedUrl: String? = null,
+  @SerialName("site_url")
+  public val siteUrl: String? = null,
+  @SerialName("category_name")
+  public val categoryName: String? = null,
+  @SerialName("is_active")
+  public val isActive: Boolean,
+  @SerialName("created_at")
+  public val createdAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class RssFeedSubscriptionListData(
+  @SerialName("feeds")
+  public val feeds: List<RssFeedSubscription> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class RssFeedSubscriptionListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: RssFeedSubscriptionListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class RssSubscribeData(
+  @SerialName("subscription_id")
+  public val subscriptionId: Long,
+  @SerialName("feed_id")
+  public val feedId: Long,
+  @SerialName("feed_title")
+  public val feedTitle: String? = null,
+  @SerialName("feed_url")
+  public val feedUrl: String? = null,
+)
+
+@Serializable
+@Immutable
+public data class RssSubscribeResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: RssSubscribeData? = null,
+)
+
+@Serializable
+@Immutable
+public data class RssFeedItem(
+  @SerialName("id")
+  public val id: Long,
+  @SerialName("guid")
+  public val guid: String? = null,
+  @SerialName("title")
+  public val title: String? = null,
+  @SerialName("url")
+  public val url: String? = null,
+  @SerialName("author")
+  public val author: String? = null,
+  @SerialName("published_at")
+  public val publishedAt: Instant? = null,
+  @SerialName("created_at")
+  public val createdAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class RssFeedItemListData(
+  @SerialName("feed_id")
+  public val feedId: Long,
+  @SerialName("items")
+  public val items: List<RssFeedItem> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class RssFeedItemListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: RssFeedItemListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class RssFeedRefreshData(
+  @SerialName("feed_id")
+  public val feedId: Long,
+  @SerialName("new_items")
+  public val newItems: Long,
+  @SerialName("not_modified")
+  public val notModified: Boolean? = null,
+)
+
+@Serializable
+@Immutable
+public data class RssFeedRefreshResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: RssFeedRefreshData? = null,
+)
+
+@Serializable
+@Immutable
+public data class OPMLImportData(
+  @SerialName("imported")
+  public val imported: Long,
+  @SerialName("errors")
+  public val errors: Long,
+  @SerialName("total")
+  public val total: Long,
+)
+
+@Serializable
+@Immutable
+public data class OPMLImportResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: OPMLImportData? = null,
+)
+
+@Serializable
+@Immutable
+public data class Highlight(
+  @SerialName("id")
+  public val id: String,
+  @SerialName("summaryId")
+  public val summaryId: String,
+  @SerialName("text")
+  public val text: String,
+  @SerialName("startOffset")
+  public val startOffset: Long? = null,
+  @SerialName("endOffset")
+  public val endOffset: Long? = null,
+  @SerialName("color")
+  public val color: String? = null,
+  @SerialName("note")
+  public val note: String? = null,
+  @SerialName("createdAt")
+  public val createdAt: Instant,
+  @SerialName("updatedAt")
+  public val updatedAt: Instant,
+)
+
+@Serializable
+@Immutable
+public data class HighlightResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: Highlight? = null,
+)
+
+@Serializable
+@Immutable
+public data class HighlightListData(
+  @SerialName("highlights")
+  public val highlights: List<Highlight> = emptyList(),
+)
+
+@Serializable
+@Immutable
+public data class HighlightListResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: HighlightListData? = null,
+)
+
+@Serializable
+@Immutable
+public data class HighlightDeleteData(
+  @SerialName("deleted")
+  public val deleted: Boolean,
+  @SerialName("id")
+  public val id: String,
+)
+
+@Serializable
+@Immutable
+public data class HighlightDeleteResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: HighlightDeleteData? = null,
+)
+
+@Serializable
+@Immutable
+public data class SummaryAudio(
+  @SerialName("summaryId")
+  public val summaryId: Long,
+  @SerialName("status")
+  public val status: String,
+  @SerialName("charCount")
+  public val charCount: Long? = null,
+  @SerialName("fileSizeBytes")
+  public val fileSizeBytes: Long? = null,
+  @SerialName("latencyMs")
+  public val latencyMs: Long? = null,
+  @SerialName("error")
+  public val error: String? = null,
+)
+
+@Serializable
+@Immutable
+public data class SummaryAudioResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: SummaryAudio? = null,
+)
+
+@Serializable
+@Immutable
+public data class QuickSaveData(
+  @SerialName("request_id")
+  public val requestId: Long? = null,
+  /**
+   * "pending" for new submissions, "duplicate" for already-saved URLs.
+   */
+  @SerialName("status")
+  public val status: String,
+  @SerialName("title")
+  public val title: String? = null,
+  @SerialName("url")
+  public val url: String,
+  @SerialName("duplicate")
+  public val duplicate: Boolean,
+  @SerialName("summary_id")
+  public val summaryId: Long? = null,
+  @SerialName("tags_attached")
+  public val tagsAttached: List<String>? = null,
+)
+
+@Serializable
+@Immutable
+public data class QuickSaveResponseEnvelope(
+  @SerialName("success")
+  public val success: Boolean? = null,
+  @SerialName("meta")
+  public val meta: Meta? = null,
+  @SerialName("data")
+  public val `data`: QuickSaveData? = null,
+)
 
 @Serializable
 @Immutable
@@ -3866,13 +5084,6 @@ public data class V1DigestChannelsSubscriptionIdCategoryRequest(
 
 @Serializable
 @Immutable
-public data class V1DigestCategories200Response(
-  @SerialName("categories")
-  public val categories: List<JsonElement>? = null,
-)
-
-@Serializable
-@Immutable
 public data class V1DigestCategoriesRequest(
   @SerialName("name")
   public val name: String,
@@ -4227,12 +5438,16 @@ public typealias SignalItem = JsonElement
 
 public typealias SignalSourceHealth = JsonElement
 
-public typealias SyncEntityEnvelopeIdOneOf0 = Long
-
-public typealias SyncEntityEnvelopeIdOneOf1 = String
-
 public typealias FullSyncItem = SyncEntityEnvelope
 
-public typealias SyncApplyResultIdOneOf0 = Long
+/**
+ * Summary of items restored from an uploaded backup archive. Extra fields
+ * may be present depending on which entity types the archive contained.
+ */
+public typealias BackupRestoreData = JsonElement
 
-public typealias SyncApplyResultIdOneOf1 = String
+/**
+ * Asynchronous import job tracking record. Snake_case keys match the
+ * backend Pydantic ImportJobResponse model serialization.
+ */
+public typealias ImportJob = JsonElement

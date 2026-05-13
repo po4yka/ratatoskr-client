@@ -5,7 +5,7 @@
  * RESTful API for Android/iOS mobile clients
  * Version 1.0.0
  * 
- * Generated Tue, 12 May 2026 20:56:58 +0400
+ * Generated Wed, 13 May 2026 10:50:14 +0400
  * OpenAPI KMP Gen (version 1.3.0) by kroegerama
  */
 @file:Suppress("ArrayInDataClass", "RedundantVisibilityModifier", "unused", "ConstPropertyName")

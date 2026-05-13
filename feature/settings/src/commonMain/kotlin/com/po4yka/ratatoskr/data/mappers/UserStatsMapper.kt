@@ -1,10 +1,10 @@
 package com.po4yka.ratatoskr.data.mappers
 
+import com.po4yka.ratatoskr.api.generated.models.Streak as GeneratedStreak
+import com.po4yka.ratatoskr.api.generated.models.UserGoal as GeneratedUserGoal
+import com.po4yka.ratatoskr.api.generated.models.UserGoalProgress as GeneratedUserGoalProgress
 import com.po4yka.ratatoskr.api.generated.models.UserPreferences as GeneratedUserPreferences
 import com.po4yka.ratatoskr.api.generated.models.UserStats as GeneratedUserStats
-import com.po4yka.ratatoskr.data.remote.dto.GoalDto
-import com.po4yka.ratatoskr.data.remote.dto.GoalProgressDto
-import com.po4yka.ratatoskr.data.remote.dto.StreakDto
 import com.po4yka.ratatoskr.domain.model.DomainStat
 import com.po4yka.ratatoskr.domain.model.Goal
 import com.po4yka.ratatoskr.domain.model.GoalProgress
@@ -32,28 +32,28 @@ fun GeneratedUserPreferences.toDomain(): UserPreferences =
         langPreference = langPreference?.name?.lowercase() ?: "auto",
     )
 
-fun StreakDto.toDomain(): Streak =
+fun GeneratedStreak.toDomain(): Streak =
     Streak(
-        currentStreak = currentStreak,
-        longestStreak = longestStreak,
+        currentStreak = currentStreak.toInt(),
+        longestStreak = longestStreak.toInt(),
         lastActivityDate = lastActivityDate,
-        todayCount = todayCount,
-        weekCount = weekCount,
-        monthCount = monthCount,
+        todayCount = todayCount.toInt(),
+        weekCount = weekCount.toInt(),
+        monthCount = monthCount.toInt(),
     )
 
-fun GoalDto.toDomain(): Goal =
+fun GeneratedUserGoal.toDomain(): Goal =
     Goal(
         id = id,
         goalType = goalType,
-        targetCount = targetCount,
-        createdAt = createdAt,
+        targetCount = targetCount.toInt(),
+        createdAt = createdAt.toString(),
     )
 
-fun GoalProgressDto.toDomain(): GoalProgress =
+fun GeneratedUserGoalProgress.toDomain(): GoalProgress =
     GoalProgress(
         goalType = goalType,
-        targetCount = targetCount,
-        currentCount = currentCount,
+        targetCount = targetCount.toInt(),
+        currentCount = currentCount.toInt(),
         achieved = achieved,
     )

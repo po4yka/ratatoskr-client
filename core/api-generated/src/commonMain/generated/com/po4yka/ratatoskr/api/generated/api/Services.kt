@@ -5,7 +5,7 @@
  * RESTful API for Android/iOS mobile clients
  * Version 1.0.0
  * 
- * Generated Tue, 12 May 2026 20:56:58 +0400
+ * Generated Wed, 13 May 2026 10:50:14 +0400
  * OpenAPI KMP Gen (version 1.3.0) by kroegerama
  */
 @file:Suppress("ArrayInDataClass", "RedundantVisibilityModifier", "unused", "ConstPropertyName")
@@ -23,8 +23,18 @@ import com.kroegerama.openapi.kmp.gen.`companion`.eitherRequest
 import com.po4yka.ratatoskr.api.generated.Api
 import com.po4yka.ratatoskr.api.generated.Auth
 import com.po4yka.ratatoskr.api.generated.models.AuthTokensResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.BackupDeleteResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.BackupListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.BackupResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.BackupRestoreResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.BackupScheduleResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.BaseResponse
+import com.po4yka.ratatoskr.api.generated.models.BulkOperationResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.ChangePasswordRequest
+import com.po4yka.ratatoskr.api.generated.models.ChannelCategoryListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.ChannelCategoryResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.ChannelPostListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.ChannelSubscriptionListResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.CollectionAclResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.CollectionCreateRequest
 import com.po4yka.ratatoskr.api.generated.models.CollectionInviteRequest
@@ -44,12 +54,18 @@ import com.po4yka.ratatoskr.api.generated.models.CollectionShareRequest
 import com.po4yka.ratatoskr.api.generated.models.CollectionTreeResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.CollectionUpdateRequest
 import com.po4yka.ratatoskr.api.generated.models.CredentialsLoginRequest
+import com.po4yka.ratatoskr.api.generated.models.CustomDigestListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.CustomDigestResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.DeletedByIdResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.DeletedFlagResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.DeltaSyncResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.DetailedHealthResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.DeviceFlowPollRequest
 import com.po4yka.ratatoskr.api.generated.models.DeviceFlowPollResponse
 import com.po4yka.ratatoskr.api.generated.models.DeviceFlowStartResponse
 import com.po4yka.ratatoskr.api.generated.models.DeviceRegistrationPayload
+import com.po4yka.ratatoskr.api.generated.models.DigestHistoryResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.DigestPreferencesResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.DuplicateUrlCheckResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.ExportBookmarksV1ExportGetFormat
 import com.po4yka.ratatoskr.api.generated.models.ExportSummaryV1ArticlesSummaryIdExportGetFormat
@@ -60,6 +76,11 @@ import com.po4yka.ratatoskr.api.generated.models.GetArticleContentV1ArticlesSumm
 import com.po4yka.ratatoskr.api.generated.models.GetSummaryContentV1SummariesSummaryIdContentGetFormat
 import com.po4yka.ratatoskr.api.generated.models.GitHubStatusResponse
 import com.po4yka.ratatoskr.api.generated.models.HealthResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.HighlightDeleteResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.HighlightListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.HighlightResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.ImportJobListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.ImportJobResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.IngestRepositoryRequest
 import com.po4yka.ratatoskr.api.generated.models.IngestRepositoryResponse
 import com.po4yka.ratatoskr.api.generated.models.ListAggregationBundlesV1AggregationsGetStatus
@@ -67,9 +88,12 @@ import com.po4yka.ratatoskr.api.generated.models.ListRepositoriesV1RepositoriesG
 import com.po4yka.ratatoskr.api.generated.models.ListSecretKeysV1AuthSecretKeysGetStatus
 import com.po4yka.ratatoskr.api.generated.models.LivenessResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.LoginResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.MergeTagsResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.OPMLImportResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.PATSubmitRequest
 import com.po4yka.ratatoskr.api.generated.models.PATSubmitResponse
 import com.po4yka.ratatoskr.api.generated.models.PaginatedSummariesResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.QuickSaveResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.ReadinessResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.RefreshTokenRequest
 import com.po4yka.ratatoskr.api.generated.models.RelatedTopicsResponseEnvelope
@@ -80,7 +104,16 @@ import com.po4yka.ratatoskr.api.generated.models.RepositorySearchResponse
 import com.po4yka.ratatoskr.api.generated.models.RequestDetailResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.RequestRetryResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.RequestStatusResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.ResolveChannelResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.RootResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.RssFeedItemListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.RssFeedRefreshResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.RssFeedSubscriptionListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.RssSubscribeResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.RuleListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.RuleLogListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.RuleResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.RuleTestResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SearchRepositoriesV1SearchRepositoriesGetSource
 import com.po4yka.ratatoskr.api.generated.models.SearchResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SecretKeyActionResponseEnvelope
@@ -99,9 +132,13 @@ import com.po4yka.ratatoskr.api.generated.models.SignalSourceActiveResponseEnvel
 import com.po4yka.ratatoskr.api.generated.models.SignalSourceHealthResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SignalTopicResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SourceActiveRequest
+import com.po4yka.ratatoskr.api.generated.models.StatusOnlyResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.StreakResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SubmitRequestResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.SubscribeActionResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SuccessMessageEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SuccessResponse
+import com.po4yka.ratatoskr.api.generated.models.SummaryAudioResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SummaryContentResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SummaryDeleteResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SummaryDetailResponseEnvelope
@@ -110,6 +147,10 @@ import com.po4yka.ratatoskr.api.generated.models.SyncApplyRequest
 import com.po4yka.ratatoskr.api.generated.models.SyncApplyResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.SyncSessionRequest
 import com.po4yka.ratatoskr.api.generated.models.SyncSessionResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.TagDeleteResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.TagDetachResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.TagListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.TagResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.TelegramLinkBeginResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.TelegramLinkCompleteRequest
 import com.po4yka.ratatoskr.api.generated.models.TelegramLinkStatusEnvelope
@@ -117,8 +158,13 @@ import com.po4yka.ratatoskr.api.generated.models.TelegramLoginRequest
 import com.po4yka.ratatoskr.api.generated.models.ToggleFavoriteResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.TopicPreferenceRequest
 import com.po4yka.ratatoskr.api.generated.models.TrendingTopicsResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.TriggerChannelDigestResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.TriggerDigestResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.UpdatePreferencesRequest
 import com.po4yka.ratatoskr.api.generated.models.UpdateSummaryRequest
+import com.po4yka.ratatoskr.api.generated.models.UserGoalListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.UserGoalProgressListResponseEnvelope
+import com.po4yka.ratatoskr.api.generated.models.UserGoalResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.UserPreferencesResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.UserResponseEnvelope
 import com.po4yka.ratatoskr.api.generated.models.UserStatsResponseEnvelope
@@ -128,7 +174,6 @@ import com.po4yka.ratatoskr.api.generated.models.V1AggregationsSessionId200Respo
 import com.po4yka.ratatoskr.api.generated.models.V1ArticlesSummaryIdFeedbackRequest
 import com.po4yka.ratatoskr.api.generated.models.V1ArticlesSummaryIdReadingPositionRequest
 import com.po4yka.ratatoskr.api.generated.models.V1BackupsScheduleRequest
-import com.po4yka.ratatoskr.api.generated.models.V1DigestCategories200Response
 import com.po4yka.ratatoskr.api.generated.models.V1DigestCategoriesCategoryIdRequest
 import com.po4yka.ratatoskr.api.generated.models.V1DigestCategoriesRequest
 import com.po4yka.ratatoskr.api.generated.models.V1DigestChannelsBulkCategoryRequest
@@ -683,7 +728,7 @@ public object SummariesApi {
     summaryId: Long,
     sourceField: GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField? = null,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<SummaryAudioResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2160,7 +2205,7 @@ public object UserApi {
    *
    * @return List of reading goals
    */
-  public suspend fun listGoalsV1UserGoalsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun listGoalsV1UserGoalsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<UserGoalListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2182,7 +2227,7 @@ public object UserApi {
    *
    * @return Goal created or updated
    */
-  public suspend fun upsertGoalV1UserGoalsPost(body: V1UserGoalsRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun upsertGoalV1UserGoalsPost(body: V1UserGoalsRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<UserGoalResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2206,7 +2251,7 @@ public object UserApi {
    *
    * @return Goal deleted
    */
-  public suspend fun deleteGoalV1UserGoalsGoalTypeDelete(goalType: String, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun deleteGoalV1UserGoalsGoalTypeDelete(goalType: String, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<DeletedFlagResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2229,7 +2274,7 @@ public object UserApi {
    *
    * @return Goal deleted
    */
-  public suspend fun deleteGoalByIdV1UserGoalsByIdGoalIdDelete(goalId: String, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun deleteGoalByIdV1UserGoalsByIdGoalIdDelete(goalId: String, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<DeletedFlagResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2253,7 +2298,7 @@ public object UserApi {
    *
    * @return Goal progress list
    */
-  public suspend fun getGoalProgressV1UserGoalsProgressGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun getGoalProgressV1UserGoalsProgressGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<UserGoalProgressListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2276,7 +2321,7 @@ public object UserApi {
    *
    * @return Streak data
    */
-  public suspend fun getStreakV1UserStreakGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun getStreakV1UserStreakGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<StreakResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2409,7 +2454,7 @@ public object DigestApi {
    *
    * @return Digest channel subscriptions
    */
-  public suspend fun listChannelsV1DigestChannelsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun listChannelsV1DigestChannelsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<ChannelSubscriptionListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2431,7 +2476,7 @@ public object DigestApi {
    *
    * @return Subscription result
    */
-  public suspend fun subscribeChannelV1DigestChannelsSubscribePost(body: V1DigestChannelsSubscribeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun subscribeChannelV1DigestChannelsSubscribePost(body: V1DigestChannelsSubscribeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<SubscribeActionResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2456,7 +2501,7 @@ public object DigestApi {
    *
    * @return Unsubscribe result
    */
-  public suspend fun unsubscribeChannelV1DigestChannelsUnsubscribePost(body: V1DigestChannelsUnsubscribeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun unsubscribeChannelV1DigestChannelsUnsubscribePost(body: V1DigestChannelsUnsubscribeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<SubscribeActionResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2481,7 +2526,7 @@ public object DigestApi {
    *
    * @return Digest preferences
    */
-  public suspend fun getPreferencesV1DigestPreferencesGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun getPreferencesV1DigestPreferencesGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<DigestPreferencesResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2503,7 +2548,7 @@ public object DigestApi {
    *
    * @return Preferences update result
    */
-  public suspend fun updatePreferencesV1DigestPreferencesPatch(body: V1DigestPreferencesRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun updatePreferencesV1DigestPreferencesPatch(body: V1DigestPreferencesRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<DigestPreferencesResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("PATCH")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2531,7 +2576,7 @@ public object DigestApi {
     limit: Long? = null,
     offset: Long? = null,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<DigestHistoryResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2555,7 +2600,7 @@ public object DigestApi {
    *
    * @return Trigger accepted
    */
-  public suspend fun triggerDigestV1DigestTriggerPost(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun triggerDigestV1DigestTriggerPost(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<TriggerDigestResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2577,7 +2622,7 @@ public object DigestApi {
    *
    * @return Trigger accepted
    */
-  public suspend fun triggerChannelDigestV1DigestTriggerChannelPost(body: V1DigestTriggerChannelRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun triggerChannelDigestV1DigestTriggerChannelPost(body: V1DigestTriggerChannelRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<TriggerChannelDigestResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2606,7 +2651,7 @@ public object DigestApi {
     limit: Long? = null,
     offset: Long? = null,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<ChannelPostListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2632,7 +2677,7 @@ public object DigestApi {
    *
    * @return Channel metadata
    */
-  public suspend fun resolveChannelV1DigestChannelsResolvePost(body: V1DigestChannelsResolveRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun resolveChannelV1DigestChannelsResolvePost(body: V1DigestChannelsResolveRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<ResolveChannelResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2657,7 +2702,7 @@ public object DigestApi {
    *
    * @return Bulk unsubscribe result
    */
-  public suspend fun bulkUnsubscribeV1DigestChannelsBulkUnsubscribePost(body: V1DigestChannelsBulkUnsubscribeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun bulkUnsubscribeV1DigestChannelsBulkUnsubscribePost(body: V1DigestChannelsBulkUnsubscribeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<BulkOperationResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2682,7 +2727,7 @@ public object DigestApi {
    *
    * @return Bulk assign result
    */
-  public suspend fun bulkAssignCategoryV1DigestChannelsBulkCategoryPatch(body: V1DigestChannelsBulkCategoryRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun bulkAssignCategoryV1DigestChannelsBulkCategoryPatch(body: V1DigestChannelsBulkCategoryRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<BulkOperationResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("PATCH")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2711,7 +2756,7 @@ public object DigestApi {
     subscriptionId: Long,
     body: V1DigestChannelsSubscriptionIdCategoryRequest,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<StatusOnlyResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("PATCH")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2737,7 +2782,7 @@ public object DigestApi {
    *
    * @return List of categories
    */
-  public suspend fun listCategoriesV1DigestCategoriesGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<V1DigestCategories200Response>> = Api.client.eitherRequest {
+  public suspend fun listCategoriesV1DigestCategoriesGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<ChannelCategoryListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2759,7 +2804,7 @@ public object DigestApi {
    *
    * @return Created category
    */
-  public suspend fun createCategoryV1DigestCategoriesPost(body: V1DigestCategoriesRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun createCategoryV1DigestCategoriesPost(body: V1DigestCategoriesRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<ChannelCategoryResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -2783,7 +2828,7 @@ public object DigestApi {
    *
    * @return Delete result
    */
-  public suspend fun deleteCategoryV1DigestCategoriesCategoryIdDelete(categoryId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun deleteCategoryV1DigestCategoriesCategoryIdDelete(categoryId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<StatusOnlyResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -2810,7 +2855,7 @@ public object DigestApi {
     categoryId: Long,
     body: V1DigestCategoriesCategoryIdRequest,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<ChannelCategoryResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("PATCH")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -3227,7 +3272,7 @@ public object RSSApi {
    *
    * @return List of RSS subscriptions
    */
-  public suspend fun listFeedsV1RssFeedsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun listFeedsV1RssFeedsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<RssFeedSubscriptionListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3249,7 +3294,7 @@ public object RSSApi {
    *
    * @return Subscription created
    */
-  public suspend fun subscribeV1RssFeedsSubscribePost(body: V1RssFeedsSubscribeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun subscribeV1RssFeedsSubscribePost(body: V1RssFeedsSubscribeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<RssSubscribeResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -3274,7 +3319,7 @@ public object RSSApi {
    *
    * @return Subscription deleted
    */
-  public suspend fun unsubscribeV1RssFeedsSubscriptionIdDelete(subscriptionId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun unsubscribeV1RssFeedsSubscriptionIdDelete(subscriptionId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<DeletedByIdResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3302,7 +3347,7 @@ public object RSSApi {
     limit: Long? = null,
     offset: Long? = null,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<RssFeedItemListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3328,7 +3373,7 @@ public object RSSApi {
    *
    * @return Feed refresh result
    */
-  public suspend fun refreshFeedV1RssFeedsFeedIdRefreshPost(feedId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun refreshFeedV1RssFeedsFeedIdRefreshPost(feedId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<RssFeedRefreshResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3375,7 +3420,7 @@ public object RSSApi {
    *
    * @return Import result
    */
-  public suspend fun importOpmlV1RssImportOpmlPost(body: MultiPartFormDataContent, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun importOpmlV1RssImportOpmlPost(body: MultiPartFormDataContent, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<OPMLImportResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3401,7 +3446,7 @@ public object TagsApi {
    *
    * @return List of tags
    */
-  public suspend fun listTagsV1TagsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun listTagsV1TagsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<TagListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3423,7 +3468,7 @@ public object TagsApi {
    *
    * @return Tag created
    */
-  public suspend fun createTagV1TagsPost(body: V1TagsRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun createTagV1TagsPost(body: V1TagsRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<TagResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -3447,7 +3492,7 @@ public object TagsApi {
    *
    * @return Tag details
    */
-  public suspend fun getTagV1TagsTagIdGet(tagId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun getTagV1TagsTagIdGet(tagId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<TagResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3469,7 +3514,7 @@ public object TagsApi {
    *
    * @return Tag deleted
    */
-  public suspend fun deleteTagV1TagsTagIdDelete(tagId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun deleteTagV1TagsTagIdDelete(tagId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<TagDeleteResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3495,7 +3540,7 @@ public object TagsApi {
     tagId: Long,
     body: V1TagsTagIdRequest,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<TagResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("PATCH")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -3519,7 +3564,7 @@ public object TagsApi {
    *
    * @return Tags merged
    */
-  public suspend fun mergeTagsV1TagsMergePost(body: V1TagsMergeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun mergeTagsV1TagsMergePost(body: V1TagsMergeRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<MergeTagsResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -3547,7 +3592,7 @@ public object TagsApi {
     summaryId: Long,
     body: V1SummariesSummaryIdTagsRequest,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<TagListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -3576,7 +3621,7 @@ public object TagsApi {
     summaryId: Long,
     tagId: Long,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<TagDetachResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3798,7 +3843,7 @@ public object RulesApi {
    *
    * @return List of automation rules
    */
-  public suspend fun listRulesV1RulesGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun listRulesV1RulesGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<RuleListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3820,7 +3865,7 @@ public object RulesApi {
    *
    * @return Rule created
    */
-  public suspend fun createRuleV1RulesPost(body: V1RulesRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun createRuleV1RulesPost(body: V1RulesRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<RuleResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -3844,7 +3889,7 @@ public object RulesApi {
    *
    * @return Rule details
    */
-  public suspend fun getRuleV1RulesRuleIdGet(ruleId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun getRuleV1RulesRuleIdGet(ruleId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<RuleResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3866,7 +3911,7 @@ public object RulesApi {
    *
    * @return Rule deleted
    */
-  public suspend fun deleteRuleV1RulesRuleIdDelete(ruleId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun deleteRuleV1RulesRuleIdDelete(ruleId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<DeletedByIdResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3892,7 +3937,7 @@ public object RulesApi {
     ruleId: Long,
     body: V1RulesRuleIdRequest,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<RuleResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("PATCH")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -3921,7 +3966,7 @@ public object RulesApi {
     limit: Long? = null,
     offset: Long? = null,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<RuleLogListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3950,7 +3995,7 @@ public object RulesApi {
     ruleId: Long,
     body: V1RulesRuleIdTestRequest,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<RuleTestResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -3977,7 +4022,7 @@ public object BackupsApi {
    *
    * @return List of backups
    */
-  public suspend fun listBackupsV1BackupsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun listBackupsV1BackupsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<BackupListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -3999,7 +4044,7 @@ public object BackupsApi {
    *
    * @return Backup creation initiated
    */
-  public suspend fun createBackupV1BackupsPost(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun createBackupV1BackupsPost(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<BackupResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4021,7 +4066,7 @@ public object BackupsApi {
    *
    * @return Backup schedule preferences
    */
-  public suspend fun getBackupScheduleV1BackupsScheduleGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun getBackupScheduleV1BackupsScheduleGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<BackupScheduleResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4043,7 +4088,7 @@ public object BackupsApi {
    *
    * @return Schedule updated
    */
-  public suspend fun updateBackupScheduleV1BackupsSchedulePatch(body: V1BackupsScheduleRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun updateBackupScheduleV1BackupsSchedulePatch(body: V1BackupsScheduleRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<BackupScheduleResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("PATCH")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -4067,7 +4112,7 @@ public object BackupsApi {
    *
    * @return Backup details
    */
-  public suspend fun getBackupV1BackupsBackupIdGet(backupId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun getBackupV1BackupsBackupIdGet(backupId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<BackupResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4089,7 +4134,7 @@ public object BackupsApi {
    *
    * @return Backup deleted
    */
-  public suspend fun deleteBackupV1BackupsBackupIdDelete(backupId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun deleteBackupV1BackupsBackupIdDelete(backupId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<BackupDeleteResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4134,7 +4179,7 @@ public object BackupsApi {
    *
    * @return Restore result
    */
-  public suspend fun restoreBackupV1BackupsRestorePost(body: MultiPartFormDataContent, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun restoreBackupV1BackupsRestorePost(body: MultiPartFormDataContent, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<BackupRestoreResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4188,7 +4233,7 @@ public object ImportExportApi {
    *
    * @return List of import jobs
    */
-  public suspend fun listImportJobsV1ImportGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun listImportJobsV1ImportGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<ImportJobListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4209,7 +4254,7 @@ public object ImportExportApi {
    *
    * @return Import job created
    */
-  public suspend fun importBookmarksV1ImportPost(body: MultiPartFormDataContent, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun importBookmarksV1ImportPost(body: MultiPartFormDataContent, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<ImportJobResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4231,7 +4276,7 @@ public object ImportExportApi {
    *
    * @return Import job details
    */
-  public suspend fun getImportJobV1ImportJobIdGet(jobId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun getImportJobV1ImportJobIdGet(jobId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<ImportJobResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4253,7 +4298,7 @@ public object ImportExportApi {
    *
    * @return Import job deleted
    */
-  public suspend fun deleteImportJobV1ImportJobIdDelete(jobId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun deleteImportJobV1ImportJobIdDelete(jobId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<DeletedByIdResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4277,7 +4322,7 @@ public object HighlightsApi {
    *
    * @return List of highlights
    */
-  public suspend fun listHighlightsV1SummariesSummaryIdHighlightsGet(summaryId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun listHighlightsV1SummariesSummaryIdHighlightsGet(summaryId: Long, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<HighlightListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4304,7 +4349,7 @@ public object HighlightsApi {
     summaryId: Long,
     body: V1SummariesSummaryIdHighlightsRequest,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<HighlightResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -4333,7 +4378,7 @@ public object HighlightsApi {
     summaryId: Long,
     highlightId: String,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<HighlightDeleteResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("DELETE")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4362,7 +4407,7 @@ public object HighlightsApi {
     highlightId: String,
     body: V1SummariesSummaryIdHighlightsHighlightIdRequest,
     decorator: HttpRequestBuilder.() -> Unit = {},
-  ): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  ): Either<CallException, HttpCallResponse<HighlightResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("PATCH")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -4390,7 +4435,7 @@ public object DigestsApi {
    *
    * @return List of custom digests
    */
-  public suspend fun listCustomDigestsV1DigestsCustomGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun listCustomDigestsV1DigestsCustomGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<CustomDigestListResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4412,7 +4457,7 @@ public object DigestsApi {
    *
    * @return Custom digest created
    */
-  public suspend fun createCustomDigestV1DigestsCustomPost(body: V1DigestsCustomRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun createCustomDigestV1DigestsCustomPost(body: V1DigestsCustomRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<CustomDigestResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(
@@ -4436,7 +4481,7 @@ public object DigestsApi {
    *
    * @return Custom digest details
    */
-  public suspend fun getCustomDigestV1DigestsCustomDigestIdGet(digestId: String, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun getCustomDigestV1DigestsCustomDigestIdGet(digestId: String, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<CustomDigestResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
     authKeys(
       Auth.HTTPBearer.ID,
@@ -4589,7 +4634,7 @@ public object QuickSaveApi {
    *
    * @return Quick save result
    */
-  public suspend fun quickSaveV1QuickSavePost(body: V1QuickSaveRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<JsonElement>> = Api.client.eitherRequest {
+  public suspend fun quickSaveV1QuickSavePost(body: V1QuickSaveRequest, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<QuickSaveResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("POST")
     contentType(ContentType.Application.Json)
     authKeys(

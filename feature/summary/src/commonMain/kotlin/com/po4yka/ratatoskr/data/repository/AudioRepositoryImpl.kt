@@ -3,15 +3,11 @@ package com.po4yka.ratatoskr.data.repository
 import com.po4yka.ratatoskr.api.generated.api.SummariesApi
 import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
 import com.po4yka.ratatoskr.api.generated.models.GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField
-import com.po4yka.ratatoskr.data.remote.dto.GenerateAudioResponseDto
 import com.po4yka.ratatoskr.domain.model.AudioPlaybackState
 import com.po4yka.ratatoskr.domain.model.AudioStatus
 import com.po4yka.ratatoskr.domain.repository.AudioRepository
 import io.ktor.client.call.body
-import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
-
-private val lenientJson = Json { ignoreUnknownKeys = true }
 
 @Single(binds = [AudioRepository::class])
 class AudioRepositoryImpl : AudioRepository {
@@ -25,11 +21,11 @@ class AudioRepositoryImpl : AudioRepository {
             "tldr" -> GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField.TLDR
             else -> GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField.SUMMARY_1000
         }
-        val jsonElement = SummariesApi.generateSummaryAudioV1SummariesSummaryIdAudioPost(
+        val envelope = SummariesApi.generateSummaryAudioV1SummariesSummaryIdAudioPost(
             summaryId = remoteId,
             sourceField = sourceFieldEnum,
         ).unwrap()
-        val data = lenientJson.decodeFromJsonElement(GenerateAudioResponseDto.serializer(), jsonElement)
+        val data = requireNotNull(envelope.`data`) { "Server returned no data for audio generation" }
         return AudioPlaybackState(
             summaryId = summaryId,
             status =

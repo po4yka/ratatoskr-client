@@ -1,9 +1,9 @@
 package com.po4yka.ratatoskr.data.mappers
 
-import com.po4yka.ratatoskr.data.remote.dto.QuickSaveResponseDto
+import com.po4yka.ratatoskr.api.generated.models.QuickSaveData
 import com.po4yka.ratatoskr.domain.model.QuickSaveResult
 
-fun QuickSaveResponseDto.toDomain(): QuickSaveResult =
+fun QuickSaveData.toDomain(): QuickSaveResult =
     QuickSaveResult(
         requestId = requestId,
         status = status,

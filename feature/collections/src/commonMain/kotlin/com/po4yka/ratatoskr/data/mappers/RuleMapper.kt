@@ -1,44 +1,45 @@
 package com.po4yka.ratatoskr.data.mappers
 
-import com.po4yka.ratatoskr.data.remote.dto.RuleDto
-import com.po4yka.ratatoskr.data.remote.dto.RuleLogDto
-import com.po4yka.ratatoskr.data.remote.dto.TestRuleResponseDto
+import com.po4yka.ratatoskr.api.generated.models.Rule as GeneratedRule
+import com.po4yka.ratatoskr.api.generated.models.RuleExecutionLog as GeneratedRuleExecutionLog
+import com.po4yka.ratatoskr.api.generated.models.RuleTestData as GeneratedRuleTestData
 import com.po4yka.ratatoskr.domain.model.AutomationRule
 import com.po4yka.ratatoskr.domain.model.RuleLog
 import com.po4yka.ratatoskr.domain.model.TestRuleResult
+import kotlinx.serialization.json.JsonObject
 
-fun RuleDto.toDomain(): AutomationRule =
+fun GeneratedRule.toDomain(): AutomationRule =
     AutomationRule(
-        id = id,
+        id = id.toInt(),
         name = name,
         description = description,
         enabled = enabled,
         eventType = eventType,
         matchMode = matchMode,
-        conditions = conditions,
-        actions = actions,
-        priority = priority,
-        runCount = runCount,
-        lastTriggeredAt = lastTriggeredAt,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
+        conditions = conditions.filterIsInstance<JsonObject>(),
+        actions = actions.filterIsInstance<JsonObject>(),
+        priority = priority.toInt(),
+        runCount = runCount.toInt(),
+        lastTriggeredAt = lastTriggeredAt?.toString(),
+        createdAt = createdAt.toString(),
+        updatedAt = updatedAt.toString(),
     )
 
-fun RuleLogDto.toDomain(): RuleLog =
+fun GeneratedRuleExecutionLog.toDomain(): RuleLog =
     RuleLog(
-        id = id,
-        ruleId = ruleId,
-        summaryId = summaryId,
+        id = id.toInt(),
+        ruleId = ruleId.toInt(),
+        summaryId = summaryId?.toInt(),
         eventType = eventType,
         matched = matched,
         error = error,
-        durationMs = durationMs,
-        createdAt = createdAt,
+        durationMs = durationMs?.toInt(),
+        createdAt = createdAt.toString(),
     )
 
-fun TestRuleResponseDto.toDomain(): TestRuleResult =
+fun GeneratedRuleTestData.toDomain(): TestRuleResult =
     TestRuleResult(
         matched = matched,
-        conditionsResult = conditionsResult,
-        wouldExecuteActions = wouldExecuteActions,
+        conditionsResult = conditionsResult.filterIsInstance<JsonObject>(),
+        wouldExecuteActions = wouldExecuteActions.filterIsInstance<JsonObject>(),
     )

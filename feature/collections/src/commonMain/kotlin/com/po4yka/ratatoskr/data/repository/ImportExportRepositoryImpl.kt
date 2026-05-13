@@ -6,7 +6,6 @@ import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
 import com.po4yka.ratatoskr.api.generated.models.ExportBookmarksV1ExportGetFormat
 import com.po4yka.ratatoskr.data.mappers.toDomain
 import com.po4yka.ratatoskr.data.remote.dto.ImportJobDto
-import com.po4yka.ratatoskr.data.remote.dto.ImportJobListResponseDto
 import com.po4yka.ratatoskr.domain.model.ImportJob
 import com.po4yka.ratatoskr.domain.repository.ImportExportRepository
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -14,7 +13,6 @@ import io.ktor.client.request.forms.formData
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import org.koin.core.annotation.Single
 
 @Single(binds = [ImportExportRepository::class])
@@ -51,27 +49,22 @@ class ImportExportRepositoryImpl : ImportExportRepository {
                     append("options", optionsJson)
                 },
             )
-        val response =
-            ImportExportApi.importBookmarksV1ImportPost(body = multipart)
-                .unwrap()
-                .decodeEnvelope<ImportJobDto>()
-        return requireNotNull(response) { "Server returned no data for import" }.toDomain()
+        val data: JsonElement? =
+            ImportExportApi.importBookmarksV1ImportPost(body = multipart).unwrap().data
+        val dto = decodeImportJobOrNull(data)
+        return requireNotNull(dto) { "Server returned no data for import" }.toDomain()
     }
 
     override suspend fun getImportJob(jobId: Int): ImportJob {
-        val response =
-            ImportExportApi.getImportJobV1ImportJobIdGet(jobId = jobId.toLong())
-                .unwrap()
-                .decodeEnvelope<ImportJobDto>()
-        return requireNotNull(response) { "Import job $jobId not found" }.toDomain()
+        val data: JsonElement? =
+            ImportExportApi.getImportJobV1ImportJobIdGet(jobId = jobId.toLong()).unwrap().data
+        val dto = decodeImportJobOrNull(data)
+        return requireNotNull(dto) { "Import job $jobId not found" }.toDomain()
     }
 
     override suspend fun listImportJobs(): List<ImportJob> {
-        val envelope =
-            ImportExportApi.listImportJobsV1ImportGet()
-                .unwrap()
-                .decodeEnvelope<ImportJobListResponseDto>()
-        return envelope?.jobs?.map { it.toDomain() } ?: emptyList()
+        val data = ImportExportApi.listImportJobsV1ImportGet().unwrap().data
+        return data?.jobs.orEmpty().mapNotNull { decodeImportJobOrNull(it)?.toDomain() }
     }
 
     override suspend fun deleteImportJob(jobId: Int) {
@@ -101,12 +94,12 @@ private fun String.toExportFormat(): ExportBookmarksV1ExportGetFormat? =
         else -> null
     }
 
-private inline fun <reified T> JsonElement.decodeEnvelope(): T? {
-    val obj = (this as? JsonObject) ?: return null
-    val data = obj["data"] ?: return null
-    if (data is kotlinx.serialization.json.JsonNull) return null
-    return Api.json.decodeFromJsonElement(
-        kotlinx.serialization.serializer<T>(),
-        data,
-    )
+/**
+ * The generated `ImportJob` model is a `typealias` for `JsonElement` because
+ * the upstream spec lacks a concrete schema. Decode the JSON payload into the
+ * hand-written [ImportJobDto] that mirrors the actual wire format.
+ */
+private fun decodeImportJobOrNull(element: JsonElement?): ImportJobDto? {
+    if (element == null || element is kotlinx.serialization.json.JsonNull) return null
+    return Api.json.decodeFromJsonElement(ImportJobDto.serializer(), element)
 }

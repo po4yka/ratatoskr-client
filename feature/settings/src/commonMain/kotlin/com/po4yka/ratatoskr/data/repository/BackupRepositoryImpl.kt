@@ -4,12 +4,7 @@ import com.po4yka.ratatoskr.api.generated.api.BackupsApi
 import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
 import com.po4yka.ratatoskr.api.generated.models.V1BackupsScheduleRequest
 import com.po4yka.ratatoskr.data.mappers.toDomain
-import com.po4yka.ratatoskr.data.remote.dto.ApiResponseDto
-import com.po4yka.ratatoskr.data.remote.dto.BackupDeleteResponseDto
-import com.po4yka.ratatoskr.data.remote.dto.BackupDto
-import com.po4yka.ratatoskr.data.remote.dto.BackupListResponseDto
 import com.po4yka.ratatoskr.data.remote.dto.BackupRestoreResponseDto
-import com.po4yka.ratatoskr.data.remote.dto.BackupScheduleResponseDto
 import com.po4yka.ratatoskr.domain.model.Backup
 import com.po4yka.ratatoskr.domain.model.BackupRestoreResult
 import com.po4yka.ratatoskr.domain.model.BackupSchedule
@@ -29,21 +24,18 @@ private val parserJson = Json { ignoreUnknownKeys = true }
 class BackupRepositoryImpl : BackupRepository {
 
     override suspend fun createBackup(): Backup {
-        val element = BackupsApi.createBackupV1BackupsPost().unwrap()
-        val envelope = parserJson.decodeFromJsonElement<ApiResponseDto<BackupDto>>(element)
-        return requireNotNull(envelope.data) { "Server returned no data for backup creation" }.toDomain()
+        val envelope = BackupsApi.createBackupV1BackupsPost().unwrap()
+        return requireNotNull(envelope.`data`) { "Server returned no data for backup creation" }.toDomain()
     }
 
     override suspend fun listBackups(): List<Backup> {
-        val element = BackupsApi.listBackupsV1BackupsGet().unwrap()
-        val envelope = parserJson.decodeFromJsonElement<ApiResponseDto<BackupListResponseDto>>(element)
-        return envelope.data?.backups?.map { it.toDomain() } ?: emptyList()
+        val envelope = BackupsApi.listBackupsV1BackupsGet().unwrap()
+        return envelope.`data`?.backups?.map { it.toDomain() } ?: emptyList()
     }
 
     override suspend fun getBackup(backupId: Int): Backup {
-        val element = BackupsApi.getBackupV1BackupsBackupIdGet(backupId = backupId.toLong()).unwrap()
-        val envelope = parserJson.decodeFromJsonElement<ApiResponseDto<BackupDto>>(element)
-        return requireNotNull(envelope.data) { "Backup $backupId not found" }.toDomain()
+        val envelope = BackupsApi.getBackupV1BackupsBackupIdGet(backupId = backupId.toLong()).unwrap()
+        return requireNotNull(envelope.`data`) { "Backup $backupId not found" }.toDomain()
     }
 
     override suspend fun downloadBackup(backupId: Int): ByteArray {
@@ -54,8 +46,7 @@ class BackupRepositoryImpl : BackupRepository {
     }
 
     override suspend fun deleteBackup(backupId: Int) {
-        val element = BackupsApi.deleteBackupV1BackupsBackupIdDelete(backupId = backupId.toLong()).unwrap()
-        parserJson.decodeFromJsonElement<ApiResponseDto<BackupDeleteResponseDto>>(element)
+        BackupsApi.deleteBackupV1BackupsBackupIdDelete(backupId = backupId.toLong()).unwrap()
     }
 
     override suspend fun restoreBackup(fileBytes: ByteArray): BackupRestoreResult {
@@ -70,15 +61,14 @@ class BackupRepositoryImpl : BackupRepository {
                 )
             },
         )
-        val element = BackupsApi.restoreBackupV1BackupsRestorePost(body = multipart).unwrap()
-        val envelope = parserJson.decodeFromJsonElement<ApiResponseDto<BackupRestoreResponseDto>>(element)
-        return requireNotNull(envelope.data) { "Server returned no data for backup restore" }.toDomain()
+        val envelope = BackupsApi.restoreBackupV1BackupsRestorePost(body = multipart).unwrap()
+        val dataElement = requireNotNull(envelope.`data`) { "Server returned no data for backup restore" }
+        return parserJson.decodeFromJsonElement<BackupRestoreResponseDto>(dataElement).toDomain()
     }
 
     override suspend fun getSchedule(): BackupSchedule {
-        val element = BackupsApi.getBackupScheduleV1BackupsScheduleGet().unwrap()
-        val envelope = parserJson.decodeFromJsonElement<ApiResponseDto<BackupScheduleResponseDto>>(element)
-        return requireNotNull(envelope.data) { "Server returned no data for backup schedule" }.schedule.toDomain()
+        val envelope = BackupsApi.getBackupScheduleV1BackupsScheduleGet().unwrap()
+        return requireNotNull(envelope.`data`) { "Server returned no data for backup schedule" }.schedule.toDomain()
     }
 
     override suspend fun updateSchedule(
@@ -86,14 +76,13 @@ class BackupRepositoryImpl : BackupRepository {
         backupFrequency: String?,
         backupRetentionCount: Int?,
     ): BackupSchedule {
-        val element = BackupsApi.updateBackupScheduleV1BackupsSchedulePatch(
+        val envelope = BackupsApi.updateBackupScheduleV1BackupsSchedulePatch(
             body = V1BackupsScheduleRequest(
                 backupEnabled = backupEnabled,
                 backupFrequency = backupFrequency,
                 backupRetentionCount = backupRetentionCount?.toLong(),
             ),
         ).unwrap()
-        val envelope = parserJson.decodeFromJsonElement<ApiResponseDto<BackupScheduleResponseDto>>(element)
-        return requireNotNull(envelope.data) { "Server returned no data for schedule update" }.schedule.toDomain()
+        return requireNotNull(envelope.`data`) { "Server returned no data for schedule update" }.schedule.toDomain()
     }
 }

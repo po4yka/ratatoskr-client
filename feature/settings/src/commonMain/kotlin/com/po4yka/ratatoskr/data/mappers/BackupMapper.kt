@@ -1,29 +1,29 @@
 package com.po4yka.ratatoskr.data.mappers
 
-import com.po4yka.ratatoskr.data.remote.dto.BackupDto
+import com.po4yka.ratatoskr.api.generated.models.Backup as GeneratedBackup
+import com.po4yka.ratatoskr.api.generated.models.BackupSchedule as GeneratedBackupSchedule
 import com.po4yka.ratatoskr.data.remote.dto.BackupRestoreResponseDto
-import com.po4yka.ratatoskr.data.remote.dto.BackupScheduleDto
 import com.po4yka.ratatoskr.domain.model.Backup
 import com.po4yka.ratatoskr.domain.model.BackupRestoreResult
 import com.po4yka.ratatoskr.domain.model.BackupSchedule
 
-fun BackupDto.toDomain(): Backup =
+fun GeneratedBackup.toDomain(): Backup =
     Backup(
-        id = id,
+        id = id.toInt(),
         type = type,
         status = status,
         fileSizeBytes = fileSizeBytes,
-        itemsCount = itemsCount,
+        itemsCount = itemsCount?.toInt(),
         error = error,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
+        createdAt = createdAt.toString(),
+        updatedAt = updatedAt.toString(),
     )
 
-fun BackupScheduleDto.toDomain(): BackupSchedule =
+fun GeneratedBackupSchedule.toDomain(): BackupSchedule =
     BackupSchedule(
-        backupEnabled = backupEnabled,
-        backupFrequency = backupFrequency,
-        backupRetentionCount = backupRetentionCount,
+        backupEnabled = backupEnabled ?: false,
+        backupFrequency = backupFrequency.orEmpty(),
+        backupRetentionCount = backupRetentionCount?.toInt() ?: 0,
     )
 
 fun BackupRestoreResponseDto.toDomain(): BackupRestoreResult =

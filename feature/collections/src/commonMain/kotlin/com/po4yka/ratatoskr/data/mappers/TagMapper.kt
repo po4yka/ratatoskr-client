@@ -1,14 +1,14 @@
 package com.po4yka.ratatoskr.data.mappers
 
-import com.po4yka.ratatoskr.data.remote.dto.TagDto
+import com.po4yka.ratatoskr.api.generated.models.Tag as GeneratedTag
 import com.po4yka.ratatoskr.domain.model.Tag
 
-fun TagDto.toDomain(): Tag =
+fun GeneratedTag.toDomain(): Tag =
     Tag(
-        id = id,
+        id = id.toInt(),
         name = name,
         color = color,
-        summaryCount = summaryCount,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
+        summaryCount = summaryCount.toInt(),
+        createdAt = createdAt.toString(),
+        updatedAt = updatedAt.toString(),
     )
