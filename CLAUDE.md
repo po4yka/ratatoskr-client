@@ -88,7 +88,7 @@ Frost primitives live in:
 - One feature may depend on another feature's public contracts only. Do not import another feature's `data` or `presentation` packages.
 - Current public feature edges include `summary -> auth/collections/sync`, `collections -> sync`, `digest -> summary`, and `settings -> auth/summary/sync`.
 
-See `composeApp/CLAUDE.md` for UI rules. See `docs/ARCHITECTURE.md` for the current dependency rules.
+See `composeApp/AGENTS.md` for UI rules. See `docs/ARCHITECTURE.md` for the current dependency rules.
 
 ## Dependency Injection
 
@@ -242,7 +242,7 @@ follow-up commit.
 
 ### Add Shared UI Behavior
 
-- Prefer Frost atoms (`BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`) in `core/ui/.../components/frost/` or `core/ui/.../components/foundation/` before inventing new patterns.
+- Prefer Frost atoms (`BrutalistCard`, `BracketButton`, `BracketIconButton`, `BracketField`, `BracketSwitch`, `BracketSelector`, `BracketSlider`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `IngestLine`, `PullQuote`, `AtomMark`, `InlineLink`, `Toast`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`) in `core/ui/.../components/frost/` or `core/ui/.../components/foundation/` before inventing new patterns.
 - Use Compose Resources instead of hardcoded UI text.
 - Keep accessibility semantics in mind; the repo already uses headings and live regions in screens such as `SummaryListScreen`.
 
@@ -250,20 +250,19 @@ follow-up commit.
 
 ## Task Board
 
-This repository uses Obsidian Tasks-compatible Markdown task lines as the canonical task system.
+This repository uses Obsidian Tasks-compatible Markdown checkboxes as the canonical task system.
 Use the `repo-task-board` skill for all task-related operations.
 
-Canonical files:
-
-- `docs/tasks/backlog.md` — backlog items by area
-- `docs/tasks/active.md` — in-progress and review tasks
-- `docs/tasks/blocked.md` — blocked tasks with reasons
-- `docs/tasks/dashboard.md` — Obsidian Tasks query hub
+Canonical files: `docs/tasks/backlog.md` · `docs/tasks/active.md` · `docs/tasks/blocked.md` · `docs/tasks/dashboard.md`
 
 Canonical task syntax:
 
 ```md
 - [ ] #task <imperative title> #repo/ratatoskr-client #area/<area> #status/<status> <priority>
 ```
+
+Allowed statuses: `#status/backlog` · `#status/todo` · `#status/doing` · `#status/review` · `#status/blocked` · `#status/done` · `#status/dropped`
+
+Rules: preserve Obsidian Tasks syntax · edit existing tasks instead of duplicating · exactly one `#status/*` per task · add `✅ YYYY-MM-DD` when completing · add `#blocked` and indented reason when blocking.
 
 Invoke the `repo-task-board` skill when the user mentions: roadmap, TODO, backlog, Kanban, task board, sprint, blocked work, or agent-ready work.

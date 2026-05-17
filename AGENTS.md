@@ -88,7 +88,7 @@ Frost primitives live in:
 - One feature may depend on another feature's public contracts only. Do not import another feature's `data` or `presentation` packages.
 - Current public feature edges include `summary -> auth/collections/sync`, `collections -> sync`, `digest -> summary`, and `settings -> auth/summary/sync`.
 
-See `composeApp/AGENTS.md` for UI rules. See `docs/ARCHITECTURE.md` for the current dependency rules.
+See `composeApp/AGENTS.md` for UI rules. See `docs/ARCHITECTURE.md` for the current dependency rules. See `CLAUDE.md` for Claude-Code-specific guidance (the two root files share most content).
 
 ## Dependency Injection
 
@@ -131,6 +131,89 @@ Do not "fix" those exceptions by force-converting them to annotations without un
 
 The SKIE plugin is configured in Gradle but currently disabled in `composeApp/build.gradle.kts` because the active Kotlin version is ahead of supported SKIE versions. Do not assume new SKIE-generated APIs are available until that flag is re-enabled.
 
+## OpenAPI Generation
+
+The backend's `docs/openapi/mobile_api.yaml` is the source of truth for the
+mobile API contract. `core/api-generated` holds the Kotlin client generated
+from it via [openapi-kmp-gen](https://github.com/kroegerama/openapi-kmp-gen).
+
+- The upstream pin lives at `tools/openapi.lock` (repo + commit SHA + path).
+- The fetched YAML is checked in at
+  `core/api-generated/src/commonMain/openapi/mobile_api.yaml` so the build
+  works offline.
+- Generated Kotlin sources are checked in at
+  `core/api-generated/src/commonMain/generated/` (4 files, ~9k lines).
+
+### Bump the pinned spec
+
+```bash
+# 1. Edit tools/openapi.lock with the new backend SHA.
+# 2. Regenerate the YAML, Kotlin sources, and apply post-gen patches:
+./gradlew :core:api-generated:regenerateOpenApi
+# 3. git diff to review the contract changes, then commit.
+```
+
+### Drift detection
+
+CI runs `./gradlew :core:api-generated:checkOpenApiDrift` (also wired into
+`./gradlew check`). It fetches the pinned upstream YAML, runs it through the
+normalizer, and byte-compares against the checked-in copy — the build fails
+if the two disagree.
+
+### Why the normalizer + patches exist
+
+openapi-kmp-gen 1.3.0 has three classes of bugs against our spec:
+
+1. OAS 3.1 `anyOf` unions with `{type: "null"}` produce empty data classes.
+   `tools/openapi/normalize_openapi.py` rewrites them to OAS 3.0
+   `nullable: true` form before generation.
+2. Polymorphic `anyOf` without null (e.g. `int | string`) also produce empty
+   classes. The normalizer flattens the two known sites to `string`.
+3. Generated function parameters named `url` shadow the Ktor request
+   builder's `url` property, and a non-deterministic timestamp appears in
+   `Api.kt` every regen. `tools/openapi/patch_generated.py` renames the
+   parameter to `reqUrl` and strips the timestamp.
+
+If new spec patterns trip the generator, prefer extending the normalizer or
+post-gen patch over hand-editing `src/commonMain/generated/`.
+
+### Do not hand-edit generated files
+
+Files under `core/api-generated/src/commonMain/generated/` and the YAML at
+`src/commonMain/openapi/mobile_api.yaml` are derived artifacts. The drift
+check will reject any local edit.
+
+### Bootstrapping the generated client
+
+The generated `Api` is a singleton (`object Api : ApiHolder()`) that owns
+its own `HttpClient`. Call `bootstrapGeneratedApi(...)` from
+`core/api-generated/.../bootstrap/GeneratedApiBootstrap.kt` once during app
+startup, before any generated API method is invoked:
+
+```kotlin
+bootstrapGeneratedApi(
+    baseUrl = AppConfig.Api.baseUrl,
+    engine = platformHttpEngine,            // OkHttp on Android, Darwin on iOS
+    bearerTokenProvider = { secureStorage.getAccessToken() },
+    withLogging = AppConfig.Api.loggingEnabled,
+)
+```
+
+The companion library's `AuthPlugin` does not auto-refresh on 401 — that
+behavior currently lives in `core/data/.../ApiClient.kt` for hand-written
+call sites. While consumer migration is in progress, the two clients
+coexist:
+
+- Hand-written `feature/<name>/data/remote/<Name>Api.kt` keeps using
+  `core/data`'s `ApiClient`.
+- New code calling generated `<Name>Api` objects uses the bootstrapped
+  `Api.client` and handles 401 explicitly via the
+  `Either<CallException, HttpCallResponse<T>>` return type.
+
+When the last hand-written API call site is removed, the existing
+`ApiClient` and `ApiResponseDto<T>` envelope can be deleted in a single
+follow-up commit.
+
 ## Auth And Sync
 
 - HTTP auth is handled by Ktor `Auth` bearer refresh in `core/data/.../data/remote/ApiClient.kt`.
@@ -159,7 +242,7 @@ The SKIE plugin is configured in Gradle but currently disabled in `composeApp/bu
 
 ### Add Shared UI Behavior
 
-- Prefer Frost atoms (`BrutalistCard`, `BracketButton`, `BracketField`, `BracketSwitch`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `Toast`, `IngestLine`, `PullQuote`, `AtomMark`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`) in `core/ui/.../components/frost/` or `core/ui/.../components/foundation/` before inventing new patterns.
+- Prefer Frost atoms (`BrutalistCard`, `BracketButton`, `BracketIconButton`, `BracketField`, `BracketSwitch`, `BracketSelector`, `BracketSlider`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `IngestLine`, `PullQuote`, `AtomMark`, `InlineLink`, `Toast`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`) in `core/ui/.../components/frost/` or `core/ui/.../components/foundation/` before inventing new patterns.
 - Use Compose Resources instead of hardcoded UI text.
 - Keep accessibility semantics in mind; the repo already uses headings and live regions in screens such as `SummaryListScreen`.
 

@@ -4,127 +4,106 @@ Use this reference when touching `composeApp` UI or any feature screen.
 
 ## Theme Rules
 
-- Wrap app UI with `RatatoskrTheme`.
-- Use `AppTheme.colors.*` for colors and surfaces.
-- Use `AppTheme.type.*` for typography.
-- Use Material 3 `Text` and `Icon` for primitives.
-- Reuse `Spacing`, `Dimensions`, and `IconSizes` from `ui/theme/`.
+- Wrap app UI with `RatatoskrTheme` (`core/ui/.../theme/Theme.kt`).
+- Frost is the live design system. Material 3 was removed from
+  `commonMain`. The canonical spec lives in `DESIGN.md` at the repo
+  root (DESIGN.md format).
+- Two-color rule only: ink (`#1C242C` / `#E8ECF0` dark) and page
+  (`#F0F2F5` / `#12161C` dark). The single critical accent is `spark`
+  (`#DC3545`) and never flips.
+- 0 corner radius, no shadows, no Material elevation.
+- Reuse `Spacing`, `Dimensions`, `IconSizes`, and `FrostSpacing` from
+  `core/ui/.../theme/`.
 
-## Project Wrapper Components
+## Frost Atoms
 
-Prefer these over raw Material 3 equivalents; all live in `core/ui/.../components/`:
+Prefer these atoms over hand-rolling new components. All live in
+`core/ui/src/commonMain/kotlin/com/po4yka/ratatoskr/core/ui/components/frost/`:
 
-- `AppCheckbox` — themed checkbox
-- `AppDialog` — themed dialog
-- `AppIconButton` — themed icon button
-- `LayerCard` — themed card surface
-- `AppMenu` / `AppMenuItem` / `AppOverflowMenuButton` — themed menus
-- `SelectableChip` — filter / selectable chip
-- `AppSlider` — themed slider
-- `TextArea` — multi-line text input
-- `AppTextButton` — text-style button
-- `AppSpinner` / `AppSmallSpinner` — loading indicators (shim around `CircularProgressIndicator`)
+- Surface / card: `BrutalistCard`
+- Buttons: `BracketButton`, `BracketIconButton`
+- Inputs: `BracketField`, `BracketSwitch`, `BracketSelector`,
+  `BracketSlider`, `FrostCheckbox`, `FrostRadio`, `MultiSelectChip`
+- Display: `StatusBadge`, `RowDigest`, `SectionHeading`, `IngestLine`,
+  `PullQuote`, `AtomMark`, `InlineLink`, `Toast`
+- Feedback: `FrostSpinner`
 
-## Button
+Foundation primitives live in
+`core/ui/.../components/foundation/`:
+
+- `FrostText`, `FrostIcon`, `FrostDialog`, `FrostScaffold`,
+  `FrostSurface`, `FrostDivider`
+
+## Typical Usage
 
 ```kotlin
 // Primary action
-Button(onClick = onSave) { Text("Save") }
-
-// Secondary / outlined action
-OutlinedButton(onClick = onCancel) { Text("Cancel") }
-
-// Ghost / text action
-AppTextButton(onClick = onDismiss) { Text("Dismiss") }
-```
-
-## Text Input
-
-```kotlin
-OutlinedTextField(
-    value = name,
-    onValueChange = onNameChange,
-    label = { Text("Collection name") },
-    placeholder = { Text("Work reads") },
-    isError = hasError,
-    enabled = isEnabled,
-    supportingText = { if (hasError) Text("Required") },
+BracketButton(
+    label = "Save",
+    onClick = onSave,
 )
-```
 
-## Loading And Progress
-
-```kotlin
-AppSpinner()       // full-size loading indicator
-AppSmallSpinner()  // compact loading indicator
-
-// Determinate progress
-LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
-
-// Indeterminate progress
-LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-```
-
-## Tag / Chip
-
-Tags are hand-rolled in `TagChip.kt` (no wrapper component):
-
-```kotlin
-Box(
-    modifier = Modifier
-        .background(AppTheme.colors.layer02, RoundedCornerShape(4.dp))
-        .padding(horizontal = 8.dp, vertical = 4.dp),
-) {
-    Text(text = tag, style = AppTheme.type.label01, color = AppTheme.colors.textSecondary)
-}
-```
-
-## Text And Icon Usage
-
-```kotlin
-Text(
+// Text
+FrostText(
     text = title,
-    style = AppTheme.type.heading03,
-    color = AppTheme.colors.textPrimary,
+    style = FrostTextStyle.HeadingL,
 )
 
-Icon(
+// Icon
+FrostIcon(
     imageVector = AppIcons.Bookmark,
     contentDescription = null,
-    tint = AppTheme.colors.iconPrimary,
 )
+
+// Text field
+BracketField(
+    value = name,
+    onValueChange = onNameChange,
+    label = "Collection name",
+    placeholder = "Work reads",
+    isError = hasError,
+    supportingText = if (hasError) "Required" else null,
+)
+
+// Loading
+FrostSpinner()
 ```
 
-## Project Components To Reuse First
+Glance widgets are the documented exception: they read hardcoded Frost
+INK/PAGE constants directly because Glance does not see `RatatoskrTheme`.
 
-- `ScreenHeader`
-- `SummarySearchBar`
-- `FilterChipsRow`
-- `SortOptionsMenu`
-- `PullToRefreshContainer`
-- `SummaryCard`
-- `SummaryGridCard`
-- `SwipeableSummaryCard`
-- `SummaryCardSkeleton`
-- `ContextualEmptyState`
-- `ErrorView`
-- `ReadingGoalCard`
-- `RecommendationsSection`
-- `RecentSearchesSection`
-- `TrendingTopicsSection`
+## Higher-Level Project Components
+
+Reuse these before inventing new abstractions. They wrap Frost atoms
+and live under `core/ui/.../components/`:
+
+- list / detail cards: `SummaryCard`, `SummaryGridCard`, `SwipeableSummaryCard`
+- state views: `ErrorView`, `ContextualEmptyState`, `SummaryCardSkeleton`,
+  `EmptyStateView`
+- search / filter: `SummarySearchBar`, `FilterChipsRow`, `SortOptionsMenu`
+- chrome: `ScreenHeader`, `PullToRefreshContainer`,
+  `ReadingSettingsPanel`
+- engagement: `ReadingGoalCard`, `RecommendationsSection`,
+  `RecentSearchesSection`, `TrendingTopicsSection`
+- dialogs: `FeedbackDialog`, `DeleteAccountDialog`, `AddToCollectionDialog`
 
 ## Localization
 
-- Add strings to `composeResources/values/strings.xml` and `values-ru/strings.xml`.
-- Use `stringResource(Res.string...)` in shared UI code.
+- Add strings to `core/ui/src/commonMain/composeResources/values/strings.xml`
+  and `values-ru/strings.xml`.
+- Use `stringResource(Res.string...)` from
+  `ratatoskr.core.ui.generated.resources.*` in shared UI code.
 
 ## Accessibility
 
 - Preserve heading semantics for section titles.
 - Add content descriptions for meaningful actions.
-- Use live-region semantics for dynamic sync/loading/error text when appropriate.
+- Use live-region semantics for dynamic sync / loading / error text
+  when appropriate.
 
 ## Icons
 
-`AppIcons.kt` is the project-local icon set (renamed from `CarbonIcons.kt`).
-Keep vector definitions at 32x32 and use `AppTheme.colors.*` at call sites.
+- Project icons live in `core/ui/.../icons/AppIcons.kt`
+  (renamed from `CarbonIcons.kt`).
+- Keep new vectors at 32×32 and tint them with Frost ink / page /
+  spark tokens at call sites.

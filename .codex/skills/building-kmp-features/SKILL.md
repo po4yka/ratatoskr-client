@@ -3,7 +3,7 @@ name: building-kmp-features
 description:
   Guides feature work in this Ratatoskr Kotlin Multiplatform project.
   Use when adding or refactoring screens, ViewModels, Decompose components,
-  repositories, use cases, DTOs, mappers, or Material 3 / AppTheme Compose UI.
+  repositories, use cases, DTOs, mappers, or Frost design-system Compose UI.
   Covers the current core/* + feature/* DI rules, component retention pattern,
   Compose Resources, and the repo's valid Koin DSL exceptions.
 user-invocable: false
@@ -100,6 +100,12 @@ into ViewModels or Compose UI. Domain code in any feature must not
 import another feature's `data/` or `presentation/` packages — only
 its public domain contracts.
 
+For backend calls covered by `core/api-generated`, prefer the generated
+`Api` object over hand-rolling a `<Name>Api`. Bootstrap once via
+`bootstrapGeneratedApi(...)` in `core/api-generated/.../bootstrap/`
+during startup and handle `Either<CallException, HttpCallResponse<T>>`
+return types at the repository layer.
+
 ## DI Rules
 
 Default rule set:
@@ -131,12 +137,16 @@ point. Platform actuals expose `appModules()` plus `platformModules()`.
 For component usage and project-local UI anchors, read
 [references/app-components.md](references/app-components.md).
 
-Core rules:
+Frost is the live design system across all platforms. Core rules:
 
-- Use `RatatoskrTheme` (in `core/ui/.../theme/Theme.kt`).
-- Use `AppTheme.colors.*` for surfaces, icons, and semantic colors.
-- Use `AppTheme.type.*` for typography.
-- Use Material 3 `Text` and `Icon` for primitives.
+- Wrap UI with `RatatoskrTheme` (in `core/ui/.../theme/Theme.kt`).
+- Use Frost atoms in
+  `core/ui/.../components/frost/` and foundation primitives in
+  `core/ui/.../components/foundation/` — never raw Material 3.
+  Material 3 was removed from `commonMain`; see `DESIGN.md` for the spec.
+- Use `FrostText` for text and `FrostIcon` for icons.
+- Honor Frost's two-color rule (ink/page), single `spark` accent, 0
+  corner radius, no shadows, no Material elevation.
 - Reuse existing components from `core/ui/.../components/` before
   introducing new ones.
 - Use Compose Resources for text. The generated `Res` accessor lives in
@@ -145,6 +155,9 @@ Core rules:
 - Routed Composables must not call `koinInject()` directly — read
   routed-screen dependencies from the Decompose component or an
   app-level provider.
+
+Glance widgets are the documented exception: they use hardcoded Frost
+INK/PAGE colour constants directly (Glance does not see `RatatoskrTheme`).
 
 ## File Map
 
@@ -161,13 +174,20 @@ core/data/src/commonMain/kotlin/com/po4yka/ratatoskr/
 core/data/src/commonMain/sqldelight/com/po4yka/ratatoskr/database/
   Database.sq         ← SQLDelight schema (do not edit lightly)
 
+core/api-generated/src/commonMain/
+  openapi/mobile_api.yaml   ← pinned upstream spec (do not hand-edit)
+  generated/                ← openapi-kmp-gen output (do not hand-edit)
+  kotlin/.../bootstrap/     ← bootstrapGeneratedApi entry point
+
 core/navigation/src/commonMain/kotlin/com/po4yka/ratatoskr/
   navigation/         ← route contracts (RootNavigation, MainNavigation)
 
 core/ui/src/commonMain/kotlin/com/po4yka/ratatoskr/core/ui/
   components/         ← shared Compose components (SummaryCard, etc.)
+  components/frost/   ← Frost atoms (BrutalistCard, BracketButton, …)
+  components/foundation/ ← Frost foundation primitives (FrostText, FrostIcon, …)
   icons/              ← AppIcons.kt
-  theme/              ← RatatoskrTheme + design tokens
+  theme/              ← RatatoskrTheme + Frost design tokens
 core/ui/src/commonMain/composeResources/
   values/strings.xml
   values-ru/strings.xml
