@@ -35,11 +35,17 @@ interface SyncRepository {
     /** Create a new sync session */
     suspend fun createSyncSession(limit: Int? = null): String
 
-    /** Perform a full sync using the session ID */
+    /**
+     * Perform a full sync using the session ID.
+     *
+     * The backend full-sync endpoint (`GET /v1/sync/full`) accepts only
+     * `session_id` and `limit`; the server tracks resume position via
+     * `lastIssuedSince` on the session itself. Callers iterate by reading
+     * [SyncResult.nextCursor] from each response — they do not pass it back.
+     */
     suspend fun fullSync(
         sessionId: String,
         limit: Int? = null,
-        cursor: Long? = null,
     ): SyncResult
 
     /** Perform a delta sync using the session ID and since timestamp */

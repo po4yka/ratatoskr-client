@@ -240,7 +240,7 @@ class SyncRepositoryImpl(
             val renewed = sessionCoordinator.renew(sessionId, sessionExpiresAt)
             sessionId = renewed.first
             sessionExpiresAt = renewed.second
-            val firstResult = fullSync(sessionId, limit = DEFAULT_BATCH_SIZE, cursor = cursor)
+            val firstResult = fullSync(sessionId, limit = DEFAULT_BATCH_SIZE)
 
             totalCreated += firstResult.createdCount
             hasMore = firstResult.hasMore
@@ -269,7 +269,7 @@ class SyncRepositoryImpl(
                 sessionId = renewedInLoop.first
                 sessionExpiresAt = renewedInLoop.second
 
-                val result = fullSync(sessionId, limit = DEFAULT_BATCH_SIZE, cursor = cursor)
+                val result = fullSync(sessionId, limit = DEFAULT_BATCH_SIZE)
                 totalCreated += result.createdCount
                 hasMore = result.hasMore
                 previousCursor = cursor
@@ -431,14 +431,12 @@ class SyncRepositoryImpl(
     override suspend fun fullSync(
         sessionId: String,
         limit: Int?,
-        cursor: Long?,
     ): SyncResult {
-        logger.info { "Starting full sync with sessionId=$sessionId, limit=$limit, cursor=$cursor" }
-        // Note: the generated [SyncApi.fullSyncV1SyncFullGet] does not expose
-        // a `cursor` parameter (the OpenAPI spec only has `session_id` and
-        // `limit`). The session itself tracks the cursor server-side via
-        // `lastIssuedSince`. The `cursor` argument is preserved on the
-        // domain interface for source-compatibility but unused here.
+        logger.info { "Starting full sync with sessionId=$sessionId, limit=$limit" }
+        // The backend tracks resume position server-side via `lastIssuedSince`
+        // on the session, so the client only passes `session_id` and `limit`.
+        // Loop progress on the call site reads [SyncResult.nextCursor] from
+        // each response; it is never echoed back as a query parameter.
         val envelope =
             SyncApi
                 .fullSyncV1SyncFullGet(
