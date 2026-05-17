@@ -7,7 +7,7 @@
 ### Prerequisites
 
 - **macOS**: For iOS development
-- **JDK 17+**: For Kotlin/Android
+- **JDK 21+**: For Kotlin/Android (matches the Gradle daemon toolchain in `gradle/gradle-daemon-jvm.properties`)
 - **Android Studio**: Latest stable
 - **Xcode 15+**: For iOS
 - **Git**: Version control

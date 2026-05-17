@@ -26,7 +26,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Setup Gradle
@@ -64,7 +64,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Set up Python 3
@@ -96,10 +96,10 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: android
-            java-version: '17'
+            java-version: '21'
           - os: macos-14
             platform: ios
-            java-version: '17'
+            java-version: '21'
 
     runs-on: ${{ matrix.os }}
 
@@ -204,7 +204,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
@@ -250,7 +250,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
