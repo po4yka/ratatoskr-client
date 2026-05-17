@@ -96,8 +96,50 @@ val verifyArchitectureBoundaries =
         )
     }
 
+val verifyNoMaterial3 =
+    tasks.register("verifyNoMaterial3") {
+        group = "verification"
+        description =
+            "Fails the build if any shared Kotlin source imports androidx.compose.material3.*. " +
+                "Frost forbids Material 3 in commonMain, core/ui, and feature modules."
+
+        val sources =
+            files(
+                allSourceTree("core/ui/src"),
+                allSourceTree("feature/auth/src"),
+                allSourceTree("feature/collections/src"),
+                allSourceTree("feature/digest/src"),
+                allSourceTree("feature/settings/src"),
+                allSourceTree("feature/summary/src"),
+                allSourceTree("feature/sync/src"),
+                allSourceTree("composeApp/src"),
+            )
+        inputs.files(sources).withPropertyName("frostScannedSources")
+        val designMdPath = layout.projectDirectory.file("DESIGN.md").asFile.absolutePath
+
+        doLast {
+            val violations =
+                sources.asFileTree.files
+                    .filter { it.extension == "kt" }
+                    .filter { kt ->
+                        kt.useLines { lines ->
+                            lines.any { it.contains("androidx.compose.material3.") }
+                        }
+                    }
+            if (violations.isNotEmpty()) {
+                val message =
+                    buildString {
+                        appendLine("Frost violation: Material 3 imports are banned. See $designMdPath.")
+                        violations.forEach { f -> appendLine("  - ${f.absolutePath}") }
+                    }
+                throw GradleException(message)
+            }
+        }
+    }
+
 subprojects {
     tasks.matching { it.name == "check" }.configureEach {
         dependsOn(rootProject.tasks.named(verifyArchitectureBoundaries.name))
+        dependsOn(rootProject.tasks.named(verifyNoMaterial3.name))
     }
 }
