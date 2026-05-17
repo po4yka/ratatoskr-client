@@ -1,5 +1,12 @@
 # Backlog — ratatoskr-client
 
-> Source of truth for `#status/backlog` tasks. Syntax: `- [ ] #task <title> #repo/ratatoskr-client #area/<area> #status/backlog <priority> [paperclip:POY-N]`
+> Source of truth for `#status/backlog` tasks. Edit per-task detail in `issues/<slug>.md`.
 
-_No backlog tasks currently — all open issues are in active or blocked._
+```tasks
+not done
+tag includes #task
+tag includes #repo/ratatoskr-client
+tag includes #status/backlog
+sort by priority
+group by tags
+```

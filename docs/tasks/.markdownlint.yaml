@@ -1,0 +1,4 @@
+# markdownlint config for docs/tasks/
+# Prose rules relaxed — task files use heading-heavy structure and long lines.
+MD013: false   # line length — long task titles and URLs
+MD033: false   # inline HTML — not used, but kept off for safety
