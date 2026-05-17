@@ -1,10 +1,18 @@
 package com.po4yka.ratatoskr.util.config
 
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class AppConfigTest {
+    @AfterTest
+    fun resetApiConfig() {
+        AppConfig.Api.isReleaseBuild = false
+        AppConfig.Api.loggingEnabled = false
+    }
+
     @Test
     fun initializeFromPropertiesOverridesAndroidBuildConfigValues() {
         val originalBaseUrl = AppConfig.Api.baseUrl
@@ -28,5 +36,25 @@ class AppConfigTest {
             AppConfig.Api.loggingEnabled = originalLoggingEnabled
             AppConfig.App.clientId = originalClientId
         }
+    }
+
+    @Test
+    fun releaseBuildClampsLoggingEnabledToFalseEvenWhenPropertyForcesTrue() {
+        AppConfig.Api.isReleaseBuild = true
+        AppConfig.initializeFromProperties(mapOf("api.logging.enabled" to true))
+        assertFalse(
+            AppConfig.Api.loggingEnabled,
+            "Release builds must never observe loggingEnabled=true regardless of properties",
+        )
+    }
+
+    @Test
+    fun debugBuildHonoursLoggingEnabledPropertyAsBefore() {
+        AppConfig.Api.isReleaseBuild = false
+        AppConfig.initializeFromProperties(mapOf("api.logging.enabled" to true))
+        assertTrue(
+            AppConfig.Api.loggingEnabled,
+            "Debug builds must keep current behaviour and honour the property",
+        )
     }
 }

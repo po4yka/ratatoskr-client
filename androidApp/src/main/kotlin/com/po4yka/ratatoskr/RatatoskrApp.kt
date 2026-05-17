@@ -34,6 +34,10 @@ class RatatoskrApp : Application(), KoinStartup {
     }
 
     private fun initializeAppConfig() {
+        // Clamp release builds first so any subsequent api.logging.enabled=true read
+        // from BuildConfig (or accidentally injected via properties) is forced to
+        // false by the AppConfig.Api.loggingEnabled getter.
+        AppConfig.Api.isReleaseBuild = !BuildConfig.DEBUG
         AppConfig.initializeFromProperties(
             mapOf(
                 "api.base.url" to BuildConfig.API_BASE_URL,

@@ -58,6 +58,14 @@ api.timeout.seconds=30
 
 Shared runtime config is centralized in `core/common/src/commonMain/kotlin/com/po4yka/ratatoskr/util/config/AppConfig.kt`.
 
+**Release hardening for API logging:** `AppConfig.Api.loggingEnabled` is a clamped
+property. Each platform's bootstrap must set `AppConfig.Api.isReleaseBuild`
+(Android: `!BuildConfig.DEBUG`; iOS: `!kotlin.native.Platform.isDebugBinary`;
+desktop: `-Dratatoskr.release=true` system property). When `isReleaseBuild`
+is `true`, the getter always returns `false` — even if a misconfigured
+`local.properties`, `Config.xcconfig`, or future Swift→Kotlin bridge forced
+`api.logging.enabled=true`. Never bypass this clamp.
+
 ## Design System
 
 Frost is the project-owned design system and is now live across all screens,

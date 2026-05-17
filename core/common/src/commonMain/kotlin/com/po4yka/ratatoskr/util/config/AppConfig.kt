@@ -22,11 +22,31 @@ object AppConfig {
         var baseUrl: String = "https://api.ratatoskr.po4yka.com"
 
         /**
+         * Set to `true` from each platform's release bootstrap (Android Application
+         * class, iOS `iOSApp.swift`, desktop main). When `true`, `loggingEnabled` is
+         * clamped to `false` no matter what `local.properties` or `Config.xcconfig`
+         * provided, so a misconfigured TestFlight/App Store/desktop release cannot
+         * ship with `LogLevel.ALL` Ktor logging enabled.
+         */
+        var isReleaseBuild: Boolean = false
+
+        /**
+         * Backing field for [loggingEnabled]. Kept private so a release build can
+         * never observe a `true` reading even if a properties file forced it.
+         */
+        private var _loggingEnabled: Boolean = false
+
+        /**
          * Enable API request/response logging.
          * SECURITY: Disabled by default. Only enable for debugging in development.
          * When enabled, request/response bodies may be logged which could expose sensitive data.
+         * Release builds (where [isReleaseBuild] is `true`) always read `false`.
          */
-        var loggingEnabled: Boolean = false
+        var loggingEnabled: Boolean
+            get() = _loggingEnabled && !isReleaseBuild
+            set(value) {
+                _loggingEnabled = value
+            }
 
         /** API request timeout in milliseconds */
         const val REQUEST_TIMEOUT_MS: Long = 30_000

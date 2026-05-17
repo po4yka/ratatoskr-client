@@ -2,6 +2,7 @@
 
 package com.po4yka.ratatoskr.di
 
+import com.po4yka.ratatoskr.util.config.AppConfig
 import org.koin.core.KoinApplication
 import org.koin.core.module.Module
 import org.koin.ksp.generated.com_po4yka_ratatoskr_di_AuthFeatureModule
@@ -19,7 +20,12 @@ actual class PlatformConfiguration actual constructor()
 actual fun platformModules(configuration: PlatformConfiguration): List<Module> = listOf(desktopPlatformModule)
 
 actual fun KoinApplication.platformExtras(configuration: PlatformConfiguration) {
-    // No-op for desktop
+    // Desktop is documented as a development target (CLAUDE.md), so the default
+    // is debug. A packaged release can opt in by setting the system property
+    // `-Dratatoskr.release=true`, which clamps AppConfig.Api.loggingEnabled to
+    // false irrespective of any forced override.
+    AppConfig.Api.isReleaseBuild =
+        System.getProperty("ratatoskr.release")?.toBoolean() ?: false
 }
 
 internal actual object GeneratedAppModules {
