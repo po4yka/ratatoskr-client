@@ -104,6 +104,22 @@ internal fun redactSensitiveBodyForLog(body: String): String {
     return bearerTokenRegex.replace(redactedFields, "Bearer $REDACTED_LOG_VALUE")
 }
 
+/**
+ * Wraps a Ktor [Logger] so every line emitted by the `Logging` plugin —
+ * request line, headers, and body — passes through [redactSensitiveBodyForLog]
+ * before reaching the platform logger. The path-based `filter` block only
+ * suppresses bodies for known sensitive endpoints, leaving any future
+ * endpoint that returns PII or token-shaped payloads unprotected; this
+ * wrapper is the second defense.
+ */
+internal class SanitizingLogger(
+    private val delegate: Logger,
+) : Logger {
+    override fun log(message: String) {
+        delegate.log(redactSensitiveBodyForLog(message))
+    }
+}
+
 class ApiClient(
     engine: io.ktor.client.engine.HttpClientEngine,
     private val baseUrl: String,
@@ -139,7 +155,7 @@ class ApiClient(
 
             if (AppConfig.Api.loggingEnabled) {
                 install(Logging) {
-                    logger = Logger.DEFAULT
+                    logger = SanitizingLogger(Logger.DEFAULT)
                     level = LogLevel.ALL
                     sanitizeHeader { header -> header == HttpHeaders.Authorization }
                     filter { request ->
