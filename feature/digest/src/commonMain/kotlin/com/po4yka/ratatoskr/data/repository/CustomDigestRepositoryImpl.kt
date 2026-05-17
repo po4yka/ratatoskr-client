@@ -113,8 +113,9 @@ class CustomDigestRepositoryImpl(
             while (iterations < MAX_POLL_ITERATIONS) {
                 iterations++
                 delay(POLL_INTERVAL_SECONDS.seconds)
-                val dto = DigestsApi.getCustomDigestV1DigestsCustomDigestIdGet(id).unwrap().data
-                    ?: continue
+                val dto =
+                    DigestsApi.getCustomDigestV1DigestsCustomDigestIdGet(id).unwrap().data
+                        ?: continue
                 val status = parseStatus(dto.status)
                 database.databaseQueries.updateCustomDigestContent(
                     content = dto.content,

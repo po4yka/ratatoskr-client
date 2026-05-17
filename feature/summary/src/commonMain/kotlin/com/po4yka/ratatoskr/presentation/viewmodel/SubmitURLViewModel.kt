@@ -52,7 +52,6 @@ class SubmitURLViewModel(
                     it.copy(
                         recentRequests = requests,
                         isLoadingHistory = false,
-                    
                     )
                 }
             }
@@ -83,7 +82,6 @@ class SubmitURLViewModel(
                 submitError = null,
                 isDuplicate = false,
                 duplicateSummaryId = null,
-            
             )
         }
     }
@@ -105,7 +103,6 @@ class SubmitURLViewModel(
                             isCheckingDuplicate = false,
                             isDuplicate = true,
                             duplicateSummaryId = result.existingSummaryId,
-                        
                         )
                     }
                 } else {
@@ -125,7 +122,6 @@ class SubmitURLViewModel(
             it.copy(
                 isDuplicate = false,
                 duplicateSummaryId = null,
-            
             )
         }
         submitUrl()
@@ -136,7 +132,6 @@ class SubmitURLViewModel(
             it.copy(
                 isDuplicate = false,
                 duplicateSummaryId = null,
-            
             )
         }
     }
@@ -347,7 +342,6 @@ class SubmitURLViewModel(
                             stage = ProcessingStage.QUEUED,
                             progress = 0f,
                             message = "Starting...",
-                        
                         )
                     }
                 }
@@ -360,7 +354,6 @@ class SubmitURLViewModel(
                             status = RequestStatus.FAILED,
                             error = appError.userMessage(),
                             submitError = submitError,
-                        
                         )
                     }
                 }
@@ -374,7 +367,6 @@ class SubmitURLViewModel(
                             stage = update.stage,
                             progress = update.progress,
                             message = update.message,
-                        
                         )
                     }
 

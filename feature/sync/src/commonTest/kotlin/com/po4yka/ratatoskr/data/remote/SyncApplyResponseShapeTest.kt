@@ -23,7 +23,8 @@ class SyncApplyResponseShapeTest {
 
     @Test
     fun deserializesSessionLevelSuccessShape() {
-        val payload = """
+        val payload =
+            """
             {
               "success": true,
               "data": {
@@ -39,7 +40,7 @@ class SyncApplyResponseShapeTest {
                 "has_more": false
               }
             }
-        """.trimIndent()
+            """.trimIndent()
 
         val envelope = json.decodeFromString<SyncApplyResponseEnvelope>(payload)
         val data = assertNotNull(envelope.data)
@@ -51,7 +52,8 @@ class SyncApplyResponseShapeTest {
 
     @Test
     fun deserializesConflictsArraySeparateFromResults() {
-        val payload = """
+        val payload =
+            """
             {
               "success": true,
               "data": {
@@ -69,7 +71,7 @@ class SyncApplyResponseShapeTest {
                 "has_more": false
               }
             }
-        """.trimIndent()
+            """.trimIndent()
 
         val envelope = json.decodeFromString<SyncApplyResponseEnvelope>(payload)
         val data = assertNotNull(envelope.data)
@@ -81,7 +83,8 @@ class SyncApplyResponseShapeTest {
 
     @Test
     fun deserializesHasMoreTrueForPaginatedApply() {
-        val payload = """
+        val payload =
+            """
             {
               "success": true,
               "data": {
@@ -90,7 +93,7 @@ class SyncApplyResponseShapeTest {
                 "has_more": true
               }
             }
-        """.trimIndent()
+            """.trimIndent()
 
         val envelope = json.decodeFromString<SyncApplyResponseEnvelope>(payload)
         val data = assertNotNull(envelope.data)

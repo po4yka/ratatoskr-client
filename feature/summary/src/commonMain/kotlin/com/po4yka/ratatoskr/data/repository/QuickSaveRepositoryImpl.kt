@@ -17,15 +17,17 @@ class QuickSaveRepositoryImpl : QuickSaveRepository {
         tagNames: List<String>,
         summarize: Boolean,
     ): QuickSaveResult {
-        val envelope = QuickSaveApi.quickSaveV1QuickSavePost(
-            body = V1QuickSaveRequest(
-                url = url,
-                title = title,
-                selectedText = selectedText,
-                tagNames = tagNames,
-                summarize = summarize,
-            ),
-        ).unwrap()
+        val envelope =
+            QuickSaveApi.quickSaveV1QuickSavePost(
+                body =
+                    V1QuickSaveRequest(
+                        url = url,
+                        title = title,
+                        selectedText = selectedText,
+                        tagNames = tagNames,
+                        summarize = summarize,
+                    ),
+            ).unwrap()
         return requireNotNull(envelope.`data`) { "Server returned no data for quick save" }.toDomain()
     }
 }

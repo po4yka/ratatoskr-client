@@ -167,11 +167,12 @@ class HighlightRepositoryImpl(
         return try {
             HighlightsApi.createHighlightV1SummariesSummaryIdHighlightsPost(
                 summaryId = remoteId,
-                body = V1SummariesSummaryIdHighlightsRequest(
-                    text = text,
-                    startOffset = nodeOffset.toLong(),
-                    color = color.colorName,
-                ),
+                body =
+                    V1SummariesSummaryIdHighlightsRequest(
+                        text = text,
+                        startOffset = nodeOffset.toLong(),
+                        color = color.colorName,
+                    ),
             ).unwrap()
             "synced"
         } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
@@ -193,10 +194,11 @@ class HighlightRepositoryImpl(
             HighlightsApi.updateHighlightV1SummariesSummaryIdHighlightsHighlightIdPatch(
                 summaryId = remoteId,
                 highlightId = highlightId,
-                body = V1SummariesSummaryIdHighlightsHighlightIdRequest(
-                    color = entity.color,
-                    note = entity.note,
-                ),
+                body =
+                    V1SummariesSummaryIdHighlightsHighlightIdRequest(
+                        color = entity.color,
+                        note = entity.note,
+                    ),
             ).unwrap()
             database.databaseQueries.updateHighlightSyncStatus("synced", highlightId)
             true

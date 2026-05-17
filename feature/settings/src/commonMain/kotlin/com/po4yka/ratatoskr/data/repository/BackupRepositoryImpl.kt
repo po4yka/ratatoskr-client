@@ -22,7 +22,6 @@ private val parserJson = Json { ignoreUnknownKeys = true }
 
 @Single(binds = [BackupRepository::class])
 class BackupRepositoryImpl : BackupRepository {
-
     override suspend fun createBackup(): Backup {
         val envelope = BackupsApi.createBackupV1BackupsPost().unwrap()
         return requireNotNull(envelope.`data`) { "Server returned no data for backup creation" }.toDomain()
@@ -39,9 +38,10 @@ class BackupRepositoryImpl : BackupRepository {
     }
 
     override suspend fun downloadBackup(backupId: Int): ByteArray {
-        val response = BackupsApi.downloadBackupV1BackupsBackupIdDownloadGet(
-            backupId = backupId.toLong(),
-        ).unwrap()
+        val response =
+            BackupsApi.downloadBackupV1BackupsBackupIdDownloadGet(
+                backupId = backupId.toLong(),
+            ).unwrap()
         return response.bodyAsBytes()
     }
 
@@ -50,17 +50,18 @@ class BackupRepositoryImpl : BackupRepository {
     }
 
     override suspend fun restoreBackup(fileBytes: ByteArray): BackupRestoreResult {
-        val multipart = MultiPartFormDataContent(
-            formData {
-                append(
-                    "file",
-                    fileBytes,
-                    Headers.build {
-                        append(HttpHeaders.ContentDisposition, "filename=\"backup.zip\"")
-                    },
-                )
-            },
-        )
+        val multipart =
+            MultiPartFormDataContent(
+                formData {
+                    append(
+                        "file",
+                        fileBytes,
+                        Headers.build {
+                            append(HttpHeaders.ContentDisposition, "filename=\"backup.zip\"")
+                        },
+                    )
+                },
+            )
         val envelope = BackupsApi.restoreBackupV1BackupsRestorePost(body = multipart).unwrap()
         val dataElement = requireNotNull(envelope.`data`) { "Server returned no data for backup restore" }
         return parserJson.decodeFromJsonElement<BackupRestoreResponseDto>(dataElement).toDomain()
@@ -76,13 +77,15 @@ class BackupRepositoryImpl : BackupRepository {
         backupFrequency: String?,
         backupRetentionCount: Int?,
     ): BackupSchedule {
-        val envelope = BackupsApi.updateBackupScheduleV1BackupsSchedulePatch(
-            body = V1BackupsScheduleRequest(
-                backupEnabled = backupEnabled,
-                backupFrequency = backupFrequency,
-                backupRetentionCount = backupRetentionCount?.toLong(),
-            ),
-        ).unwrap()
+        val envelope =
+            BackupsApi.updateBackupScheduleV1BackupsSchedulePatch(
+                body =
+                    V1BackupsScheduleRequest(
+                        backupEnabled = backupEnabled,
+                        backupFrequency = backupFrequency,
+                        backupRetentionCount = backupRetentionCount?.toLong(),
+                    ),
+            ).unwrap()
         return requireNotNull(envelope.`data`) { "Server returned no data for schedule update" }.schedule.toDomain()
     }
 }

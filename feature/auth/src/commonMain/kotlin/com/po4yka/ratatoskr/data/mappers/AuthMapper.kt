@@ -36,8 +36,7 @@ fun GeneratedAuthTokens.toDomain(currentTime: Instant = Clock.System.now()): Aut
     )
 }
 
-fun LoginData.toAuthTokens(currentTime: Instant = Clock.System.now()): AuthTokens =
-    tokens.toDomain(currentTime)
+fun LoginData.toAuthTokens(currentTime: Instant = Clock.System.now()): AuthTokens = tokens.toDomain(currentTime)
 
 fun SessionInfo.toDomain(): Session {
     return Session(

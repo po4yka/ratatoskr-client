@@ -14,8 +14,9 @@ import org.koin.core.annotation.Single
 class UserRepositoryImpl : UserRepository {
     override suspend fun getTelegramLinkStatus(): TelegramLinkStatus {
         try {
-            val status = AuthenticationApi.getTelegramLinkStatusV1AuthMeTelegramGet().unwrap().data
-                ?: throw IllegalStateException("Failed to get link status")
+            val status =
+                AuthenticationApi.getTelegramLinkStatusV1AuthMeTelegramGet().unwrap().data
+                    ?: throw IllegalStateException("Failed to get link status")
             return status.toDomain()
         } catch (e: ClientRequestException) {
             if (e.response.status.value == 404) {
@@ -27,14 +28,16 @@ class UserRepositoryImpl : UserRepository {
     }
 
     override suspend fun unlinkTelegram(): TelegramLinkStatus {
-        val status = AuthenticationApi.unlinkTelegramV1AuthMeTelegramDelete().unwrap().data
-            ?: throw IllegalStateException("Failed to unlink Telegram")
+        val status =
+            AuthenticationApi.unlinkTelegramV1AuthMeTelegramDelete().unwrap().data
+                ?: throw IllegalStateException("Failed to unlink Telegram")
         return status.toDomain()
     }
 
     override suspend fun beginTelegramLink(): String {
-        val response = AuthenticationApi.beginTelegramLinkV1AuthMeTelegramLinkPost().unwrap().data
-            ?: throw IllegalStateException("Failed to begin linking")
+        val response =
+            AuthenticationApi.beginTelegramLinkV1AuthMeTelegramLinkPost().unwrap().data
+                ?: throw IllegalStateException("Failed to begin linking")
         return response.nonce
     }
 
@@ -54,8 +57,9 @@ class UserRepositoryImpl : UserRepository {
                 clientId = telegramAuth.clientId,
                 nonce = nonce,
             )
-        val status = AuthenticationApi.completeTelegramLinkV1AuthMeTelegramCompletePost(request).unwrap().data
-            ?: throw IllegalStateException("Failed to complete linking")
+        val status =
+            AuthenticationApi.completeTelegramLinkV1AuthMeTelegramCompletePost(request).unwrap().data
+                ?: throw IllegalStateException("Failed to complete linking")
         return status.toDomain()
     }
 }

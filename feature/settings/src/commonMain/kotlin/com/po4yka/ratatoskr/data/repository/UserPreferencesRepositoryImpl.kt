@@ -15,21 +15,22 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [UserPreferencesRepository::class])
 class UserPreferencesRepositoryImpl : UserPreferencesRepository {
-
     override suspend fun getPreferences(): UserPreferences {
         val envelope = UserApi.getUserPreferencesV1UserPreferencesGet().unwrap()
         return requireNotNull(envelope.`data`) { "Server returned no preferences data" }.toDomain()
     }
 
     override suspend fun updatePreferences(langPreference: String?): UserPreferences {
-        val langEnum = langPreference?.let { raw ->
-            UpdatePreferencesRequest.LangPreference.entries.firstOrNull {
-                it.name.equals(raw, ignoreCase = true)
+        val langEnum =
+            langPreference?.let { raw ->
+                UpdatePreferencesRequest.LangPreference.entries.firstOrNull {
+                    it.name.equals(raw, ignoreCase = true)
+                }
             }
-        }
-        val envelope = UserApi.updateUserPreferencesV1UserPreferencesPatch(
-            body = UpdatePreferencesRequest(langPreference = langEnum),
-        ).unwrap()
+        val envelope =
+            UserApi.updateUserPreferencesV1UserPreferencesPatch(
+                body = UpdatePreferencesRequest(langPreference = langEnum),
+            ).unwrap()
         return requireNotNull(envelope.`data`) { "Server returned no preferences data" }.toDomain()
     }
 
@@ -53,16 +54,22 @@ class UserPreferencesRepositoryImpl : UserPreferencesRepository {
         return envelope.`data`?.progress?.map { it.toDomain() }.orEmpty()
     }
 
-    override suspend fun createGoal(goalType: String, targetCount: Int): Goal {
-        val goalTypeEnum = V1UserGoalsRequest.GoalType.entries.firstOrNull {
-            it.name.equals(goalType, ignoreCase = true)
-        } ?: V1UserGoalsRequest.GoalType.DAILY
-        val envelope = UserApi.upsertGoalV1UserGoalsPost(
-            body = V1UserGoalsRequest(
-                goalType = goalTypeEnum,
-                targetCount = targetCount.toLong(),
-            ),
-        ).unwrap()
+    override suspend fun createGoal(
+        goalType: String,
+        targetCount: Int,
+    ): Goal {
+        val goalTypeEnum =
+            V1UserGoalsRequest.GoalType.entries.firstOrNull {
+                it.name.equals(goalType, ignoreCase = true)
+            } ?: V1UserGoalsRequest.GoalType.DAILY
+        val envelope =
+            UserApi.upsertGoalV1UserGoalsPost(
+                body =
+                    V1UserGoalsRequest(
+                        goalType = goalTypeEnum,
+                        targetCount = targetCount.toLong(),
+                    ),
+            ).unwrap()
         return requireNotNull(envelope.`data`) { "Server returned no goal data" }.toDomain()
     }
 }

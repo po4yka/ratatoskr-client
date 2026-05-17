@@ -77,11 +77,12 @@ class RecentSummariesSnapshotPublisher(
             logger.warn { "App group container unavailable for widget snapshot publishing" }
             return 0
         }
-        val snapshotUrl: NSURL = containerUrl.URLByAppendingPathComponent(AppGroupContract.SNAPSHOT_FILE_NAME)
-            ?: run {
-                logger.warn { "Unable to compose snapshot URL inside app group container" }
-                return 0
-            }
+        val snapshotUrl: NSURL =
+            containerUrl.URLByAppendingPathComponent(AppGroupContract.SNAPSHOT_FILE_NAME)
+                ?: run {
+                    logger.warn { "Unable to compose snapshot URL inside app group container" }
+                    return 0
+                }
 
         val jsonData: NSData? =
             NSString.create(string = snapshotJson).dataUsingEncoding(NSUTF8StringEncoding)
@@ -93,11 +94,12 @@ class RecentSummariesSnapshotPublisher(
         val wrote: Boolean =
             memScoped {
                 val errorVar = alloc<ObjCObjectVar<NSError?>>()
-                val ok = jsonData.writeToURL(
-                    snapshotUrl,
-                    options = NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication,
-                    error = errorVar.ptr,
-                )
+                val ok =
+                    jsonData.writeToURL(
+                        snapshotUrl,
+                        options = NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication,
+                        error = errorVar.ptr,
+                    )
                 if (!ok) {
                     logger.warn { "Snapshot write failed: ${errorVar.value?.localizedDescription}" }
                 }

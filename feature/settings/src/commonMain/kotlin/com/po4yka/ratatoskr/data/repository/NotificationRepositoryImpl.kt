@@ -13,15 +13,17 @@ class NotificationRepositoryImpl : NotificationRepository {
         platform: String,
         deviceId: String?,
     ) {
-        val platformEnum = DeviceRegistrationPayload.Platform.entries.firstOrNull {
-            it.name.equals(platform, ignoreCase = true)
-        } ?: DeviceRegistrationPayload.Platform.ANDROID
+        val platformEnum =
+            DeviceRegistrationPayload.Platform.entries.firstOrNull {
+                it.name.equals(platform, ignoreCase = true)
+            } ?: DeviceRegistrationPayload.Platform.ANDROID
         NotificationsApi.registerDevice(
-            body = DeviceRegistrationPayload(
-                token = token,
-                platform = platformEnum,
-                deviceId = deviceId,
-            ),
+            body =
+                DeviceRegistrationPayload(
+                    token = token,
+                    platform = platformEnum,
+                    deviceId = deviceId,
+                ),
         ).unwrap()
     }
 }

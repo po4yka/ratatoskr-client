@@ -111,8 +111,7 @@ class ReadingGoalRepositoryImpl(
     // helpers also implicitly used UTC (epoch milliseconds divided by 24h); this
     // implementation preserves that and documents it. Daily totals are stored
     // under the same UTC date strings, so callers do not see a behaviour change.
-    private fun getCurrentDateString(): String =
-        Clock.System.now().toLocalDateTime(TimeZone.UTC).date.toString()
+    private fun getCurrentDateString(): String = Clock.System.now().toLocalDateTime(TimeZone.UTC).date.toString()
 
     // Subtract n days from a "YYYY-MM-DD" string.
     private fun minusDays(

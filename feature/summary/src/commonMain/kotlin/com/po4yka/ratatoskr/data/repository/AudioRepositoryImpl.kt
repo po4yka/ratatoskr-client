@@ -16,15 +16,17 @@ class AudioRepositoryImpl : AudioRepository {
         sourceField: String,
     ): AudioPlaybackState {
         val remoteId = summaryId.toLong()
-        val sourceFieldEnum = when (sourceField) {
-            "summary_250" -> GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField.SUMMARY_250
-            "tldr" -> GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField.TLDR
-            else -> GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField.SUMMARY_1000
-        }
-        val envelope = SummariesApi.generateSummaryAudioV1SummariesSummaryIdAudioPost(
-            summaryId = remoteId,
-            sourceField = sourceFieldEnum,
-        ).unwrap()
+        val sourceFieldEnum =
+            when (sourceField) {
+                "summary_250" -> GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField.SUMMARY_250
+                "tldr" -> GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField.TLDR
+                else -> GenerateSummaryAudioV1SummariesSummaryIdAudioPostSourceField.SUMMARY_1000
+            }
+        val envelope =
+            SummariesApi.generateSummaryAudioV1SummariesSummaryIdAudioPost(
+                summaryId = remoteId,
+                sourceField = sourceFieldEnum,
+            ).unwrap()
         val data = requireNotNull(envelope.`data`) { "Server returned no data for audio generation" }
         return AudioPlaybackState(
             summaryId = summaryId,

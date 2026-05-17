@@ -115,6 +115,7 @@ class SummaryRepositoryImpl(
 
         // Queue for server sync instead of immediate API call
         val remoteId = id.toLongOrNull() ?: return
+
         @Suppress("UNUSED_VARIABLE")
         val summary = database.databaseQueries.getSummaryById(id).executeAsOneOrNull() ?: return
         // Remove any existing pending favorite toggle for this entity

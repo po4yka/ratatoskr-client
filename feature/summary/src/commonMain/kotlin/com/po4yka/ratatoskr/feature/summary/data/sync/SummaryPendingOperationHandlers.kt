@@ -99,10 +99,11 @@ internal class SummaryFeedbackPendingOperationHandler(
             // expects Long?. We omit rating rather than send a broken value.
             SummariesApi.submitFeedbackV1SummariesSummaryIdFeedbackPost(
                 summaryId = remoteId,
-                body = V1SummariesSummaryIdFeedbackRequest(
-                    issues = payload.issues,
-                    comment = payload.comment,
-                ),
+                body =
+                    V1SummariesSummaryIdFeedbackRequest(
+                        issues = payload.issues,
+                        comment = payload.comment,
+                    ),
             ).unwrap()
             database.databaseQueries.updateFeedbackSyncStatus(
                 syncStatus = "synced",
@@ -147,12 +148,13 @@ internal class HighlightPendingOperationHandler(
         return try {
             HighlightsApi.createHighlightV1SummariesSummaryIdHighlightsPost(
                 summaryId = summaryId,
-                body = V1SummariesSummaryIdHighlightsRequest(
-                    text = entity.text,
-                    startOffset = entity.nodeOffset.toLong(),
-                    color = entity.color,
-                    note = entity.note,
-                ),
+                body =
+                    V1SummariesSummaryIdHighlightsRequest(
+                        text = entity.text,
+                        startOffset = entity.nodeOffset.toLong(),
+                        color = entity.color,
+                        note = entity.note,
+                    ),
             ).unwrap()
             database.databaseQueries.updateHighlightSyncStatus("synced", operation.entityId)
             PendingOperationHandlingResult.Completed()
@@ -179,10 +181,11 @@ internal class HighlightPendingOperationHandler(
             HighlightsApi.updateHighlightV1SummariesSummaryIdHighlightsHighlightIdPatch(
                 summaryId = summaryId,
                 highlightId = operation.entityId,
-                body = V1SummariesSummaryIdHighlightsHighlightIdRequest(
-                    color = entity.color,
-                    note = entity.note,
-                ),
+                body =
+                    V1SummariesSummaryIdHighlightsHighlightIdRequest(
+                        color = entity.color,
+                        note = entity.note,
+                    ),
             ).unwrap()
             database.databaseQueries.updateHighlightSyncStatus("synced", operation.entityId)
             PendingOperationHandlingResult.Completed()

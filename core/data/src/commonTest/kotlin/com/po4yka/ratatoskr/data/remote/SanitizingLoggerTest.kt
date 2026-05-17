@@ -17,6 +17,7 @@ import kotlin.test.assertTrue
 class SanitizingLoggerTest {
     private class CapturingLogger : Logger {
         val lines = mutableListOf<String>()
+
         override fun log(message: String) {
             lines += message
         }

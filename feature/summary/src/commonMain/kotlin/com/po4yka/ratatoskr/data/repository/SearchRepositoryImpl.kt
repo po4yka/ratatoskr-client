@@ -25,11 +25,12 @@ class SearchRepositoryImpl(
     ): List<Summary> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
         return try {
-            val envelope = SearchApi.searchSummariesV1SearchGet(
-                q = query,
-                limit = pageSize.toLong(),
-                offset = offset.toLong(),
-            ).unwrap()
+            val envelope =
+                SearchApi.searchSummariesV1SearchGet(
+                    q = query,
+                    limit = pageSize.toLong(),
+                    offset = offset.toLong(),
+                ).unwrap()
             envelope.data?.toDomain() ?: emptyList()
         } catch (e: Exception) {
             // Fallback to local search
@@ -51,13 +52,14 @@ class SearchRepositoryImpl(
         tags: List<String>?,
     ): List<Summary> {
         val offset = (page.coerceAtLeast(1) - 1) * pageSize
-        val envelope = SearchApi.semanticSearchSummariesV1SearchSemanticGet(
-            q = query,
-            limit = pageSize.toLong(),
-            offset = offset.toLong(),
-            language = language,
-            tags = tags,
-        ).unwrap()
+        val envelope =
+            SearchApi.semanticSearchSummariesV1SearchSemanticGet(
+                q = query,
+                limit = pageSize.toLong(),
+                offset = offset.toLong(),
+                language = language,
+                tags = tags,
+            ).unwrap()
         return envelope.data?.toDomain() ?: emptyList()
     }
 
@@ -77,18 +79,20 @@ class SearchRepositoryImpl(
         days: Int,
         limit: Int,
     ): List<Summary> {
-        val envelope = SearchApi.getSearchInsightsV1SearchInsightsGet(
-            days = days.toLong(),
-            limit = limit.toLong(),
-        ).unwrap()
+        val envelope =
+            SearchApi.getSearchInsightsV1SearchInsightsGet(
+                days = days.toLong(),
+                limit = limit.toLong(),
+            ).unwrap()
         return envelope.data?.toDomain() ?: emptyList()
     }
 
     override suspend fun checkDuplicateUrl(url: String): DuplicateCheckResult {
-        val envelope = SearchApi.checkDuplicateV1UrlsCheckDuplicateGet(
-            reqUrl = url,
-            includeSummary = false,
-        ).unwrap()
+        val envelope =
+            SearchApi.checkDuplicateV1UrlsCheckDuplicateGet(
+                reqUrl = url,
+                includeSummary = false,
+            ).unwrap()
         val data = envelope.data
         return if (data != null) {
             DuplicateCheckResult(

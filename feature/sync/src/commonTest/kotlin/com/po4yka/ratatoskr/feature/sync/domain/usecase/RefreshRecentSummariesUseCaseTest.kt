@@ -1,6 +1,5 @@
 package com.po4yka.ratatoskr.feature.sync.domain.usecase
 
-import com.po4yka.ratatoskr.domain.model.SyncConflict
 import com.po4yka.ratatoskr.domain.model.SyncProgress
 import com.po4yka.ratatoskr.domain.model.SyncResult
 import com.po4yka.ratatoskr.domain.model.SyncState
@@ -46,8 +45,10 @@ class RefreshRecentSummariesUseCaseTest {
 
         override suspend fun createSyncSession(limit: Int?): String = fail("not part of the refresh-recent path")
 
-        override suspend fun fullSync(sessionId: String, limit: Int?): SyncResult =
-            fail("forceFull = false should not call fullSync")
+        override suspend fun fullSync(
+            sessionId: String,
+            limit: Int?,
+        ): SyncResult = fail("forceFull = false should not call fullSync")
 
         override suspend fun deltaSync(
             sessionId: String,
@@ -56,59 +57,67 @@ class RefreshRecentSummariesUseCaseTest {
             etag: String?,
         ): SyncResult = fail("the use case relies on sync(forceFull = false), not deltaSync directly")
 
-        override suspend fun applyChanges(sessionId: String, changes: List<LocalChange>): ApplyResult =
-            fail("not part of the refresh-recent path")
+        override suspend fun applyChanges(
+            sessionId: String,
+            changes: List<LocalChange>,
+        ): ApplyResult = fail("not part of the refresh-recent path")
     }
 
     @Test
-    fun `skips when battery is low and never touches the sync repository`() = runTest {
-        val repo = RecordingSyncRepository()
-        val useCase = RefreshRecentSummariesUseCase(repo, FakeBatteryStatus(low = true))
+    fun `skips when battery is low and never touches the sync repository`() =
+        runTest {
+            val repo = RecordingSyncRepository()
+            val useCase = RefreshRecentSummariesUseCase(repo, FakeBatteryStatus(low = true))
 
-        val outcome = useCase()
+            val outcome = useCase()
 
-        assertEquals(
-            RefreshRecentSummariesUseCase.RefreshOutcome.Skipped(RefreshRecentSummariesUseCase.SkipReason.BATTERY_LOW),
-            outcome,
-        )
-        assertEquals(0, repo.syncCalls)
-    }
-
-    @Test
-    fun `runs a delta sync when battery is healthy`() = runTest {
-        val repo = RecordingSyncRepository()
-        val useCase = RefreshRecentSummariesUseCase(repo, FakeBatteryStatus(low = false))
-
-        val outcome = useCase()
-
-        assertEquals(RefreshRecentSummariesUseCase.RefreshOutcome.Refreshed, outcome)
-        assertEquals(1, repo.syncCalls, "sync should run exactly once")
-        assertEquals(false, repo.lastForceFull, "short-cadence top-up must not force a full sync")
-    }
+            assertEquals(
+                RefreshRecentSummariesUseCase.RefreshOutcome.Skipped(
+                    RefreshRecentSummariesUseCase.SkipReason.BATTERY_LOW,
+                ),
+                outcome,
+            )
+            assertEquals(0, repo.syncCalls)
+        }
 
     @Test
-    fun `wraps a sync failure as Failed preserving the original exception`() = runTest {
-        val boom = IllegalStateException("simulated 5xx")
-        val repo = RecordingSyncRepository(throwOnSync = boom)
-        val useCase = RefreshRecentSummariesUseCase(repo, FakeBatteryStatus(low = false))
+    fun `runs a delta sync when battery is healthy`() =
+        runTest {
+            val repo = RecordingSyncRepository()
+            val useCase = RefreshRecentSummariesUseCase(repo, FakeBatteryStatus(low = false))
 
-        val outcome = useCase()
+            val outcome = useCase()
 
-        val failed = assertIs<RefreshRecentSummariesUseCase.RefreshOutcome.Failed>(outcome)
-        assertEquals(boom, failed.cause)
-        assertEquals(1, repo.syncCalls)
-    }
+            assertEquals(RefreshRecentSummariesUseCase.RefreshOutcome.Refreshed, outcome)
+            assertEquals(1, repo.syncCalls, "sync should run exactly once")
+            assertEquals(false, repo.lastForceFull, "short-cadence top-up must not force a full sync")
+        }
 
     @Test
-    fun `battery check happens before sync is invoked`() = runTest {
-        // Same guard as the first test, but with an exception-throwing repo to prove the
-        // battery check short-circuits *before* the repo would have a chance to fail.
-        val repo = RecordingSyncRepository(throwOnSync = IllegalStateException("must never call"))
-        val useCase = RefreshRecentSummariesUseCase(repo, FakeBatteryStatus(low = true))
+    fun `wraps a sync failure as Failed preserving the original exception`() =
+        runTest {
+            val boom = IllegalStateException("simulated 5xx")
+            val repo = RecordingSyncRepository(throwOnSync = boom)
+            val useCase = RefreshRecentSummariesUseCase(repo, FakeBatteryStatus(low = false))
 
-        val outcome = useCase()
+            val outcome = useCase()
 
-        assertTrue(outcome is RefreshRecentSummariesUseCase.RefreshOutcome.Skipped)
-        assertEquals(0, repo.syncCalls)
-    }
+            val failed = assertIs<RefreshRecentSummariesUseCase.RefreshOutcome.Failed>(outcome)
+            assertEquals(boom, failed.cause)
+            assertEquals(1, repo.syncCalls)
+        }
+
+    @Test
+    fun `battery check happens before sync is invoked`() =
+        runTest {
+            // Same guard as the first test, but with an exception-throwing repo to prove the
+            // battery check short-circuits *before* the repo would have a chance to fail.
+            val repo = RecordingSyncRepository(throwOnSync = IllegalStateException("must never call"))
+            val useCase = RefreshRecentSummariesUseCase(repo, FakeBatteryStatus(low = true))
+
+            val outcome = useCase()
+
+            assertTrue(outcome is RefreshRecentSummariesUseCase.RefreshOutcome.Skipped)
+            assertEquals(0, repo.syncCalls)
+        }
 }

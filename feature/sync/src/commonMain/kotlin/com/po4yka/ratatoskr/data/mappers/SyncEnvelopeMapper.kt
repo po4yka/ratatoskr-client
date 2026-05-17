@@ -71,4 +71,3 @@ private fun SyncEntityEnvelope.EntityType.serialName(): String =
         SyncEntityEnvelope.EntityType.TAG -> "tag"
         SyncEntityEnvelope.EntityType.SUMMARY_TAG -> "summary_tag"
     }
-

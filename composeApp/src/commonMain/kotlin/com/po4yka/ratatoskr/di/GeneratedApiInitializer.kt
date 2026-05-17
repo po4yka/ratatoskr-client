@@ -48,7 +48,8 @@ fun Koin.bootstrapGeneratedApiFromKoin() {
     moduleLogger.info { "Generated Api singleton bootstrapped" }
 }
 
-@Suppress("unused") private fun Koin.getKoin(): org.koin.core.Koin = this
+@Suppress("unused")
+private fun Koin.getKoin(): org.koin.core.Koin = this
 
 private suspend fun resolveBearerToken(secureStorage: SecureStorage): String? {
     val cached = secureStorage.getAccessToken() ?: return null

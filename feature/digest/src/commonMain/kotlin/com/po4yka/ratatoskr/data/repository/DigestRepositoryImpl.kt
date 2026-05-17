@@ -21,8 +21,9 @@ import org.koin.core.annotation.Single
 @Single(binds = [DigestRepository::class])
 class DigestRepositoryImpl : DigestRepository {
     override suspend fun getChannels(): DigestSubscriptionInfo {
-        val data = DigestApi.listChannelsV1DigestChannelsGet().unwrap().data
-            ?: error("No channel data in server response")
+        val data =
+            DigestApi.listChannelsV1DigestChannelsGet().unwrap().data
+                ?: error("No channel data in server response")
         return data.toDomain()
     }
 
@@ -52,8 +53,9 @@ class DigestRepositoryImpl : DigestRepository {
     }
 
     override suspend fun getPreferences(): DigestPreferences {
-        val data = DigestApi.getPreferencesV1DigestPreferencesGet().unwrap().data
-            ?: error("No preferences data in server response")
+        val data =
+            DigestApi.getPreferencesV1DigestPreferencesGet().unwrap().data
+                ?: error("No preferences data in server response")
         return data.toDomain()
     }
 
@@ -93,8 +95,9 @@ class DigestRepositoryImpl : DigestRepository {
     }
 
     override suspend fun triggerDigest(): DigestTriggerResult {
-        val data = DigestApi.triggerDigestV1DigestTriggerPost().unwrap().data
-            ?: return DigestTriggerResult.NoServerResponse
+        val data =
+            DigestApi.triggerDigestV1DigestTriggerPost().unwrap().data
+                ?: return DigestTriggerResult.NoServerResponse
         return DigestTriggerResult.Triggered(status = data.status, message = null)
     }
 

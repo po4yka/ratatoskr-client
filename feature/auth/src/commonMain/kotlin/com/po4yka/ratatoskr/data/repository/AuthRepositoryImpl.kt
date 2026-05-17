@@ -55,8 +55,9 @@ class AuthRepositoryImpl(
                 photoUrl = authData.photoUrl,
                 clientId = AppConfig.App.clientId,
             )
-        val loginData = AuthenticationApi.telegramLoginV1AuthTelegramLoginPost(request).unwrap().data
-            ?: throw AppError.UnknownError(fallbackMessage = "Login failed")
+        val loginData =
+            AuthenticationApi.telegramLoginV1AuthTelegramLoginPost(request).unwrap().data
+                ?: throw AppError.UnknownError(fallbackMessage = "Login failed")
         val authTokens = loginData.toAuthTokens()
         secureStorage.saveAccessToken(authTokens.accessToken)
         if (authTokens.refreshToken.isNotEmpty()) {
@@ -78,8 +79,9 @@ class AuthRepositoryImpl(
                 clientId = clientId,
                 secret = secret,
             )
-        val tokens = AuthenticationApi.secretLoginV1AuthSecretLoginPost(request).unwrap().data
-            ?: throw AppError.UnknownError(fallbackMessage = "Login failed")
+        val tokens =
+            AuthenticationApi.secretLoginV1AuthSecretLoginPost(request).unwrap().data
+                ?: throw AppError.UnknownError(fallbackMessage = "Login failed")
         val authTokens = tokens.toDomain()
         secureStorage.saveAccessToken(authTokens.accessToken)
         if (authTokens.refreshToken.isNotEmpty()) {
@@ -140,8 +142,9 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun listSessions(): List<Session> {
-        val data = AuthenticationApi.listSessionsV1AuthSessionsGet().unwrap().data
-            ?: throw AppError.UnknownError(fallbackMessage = "Failed to list sessions")
+        val data =
+            AuthenticationApi.listSessionsV1AuthSessionsGet().unwrap().data
+                ?: throw AppError.UnknownError(fallbackMessage = "Failed to list sessions")
         return data.sessions.map { it.toDomain() }
     }
 
