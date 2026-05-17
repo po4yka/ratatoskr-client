@@ -1,6 +1,6 @@
 ---
 title: Add SyncRepositoryImpl integration tests and offline pending-op drain coverage
-status: doing
+status: backlog
 area: sync
 priority: high
 owner: Senior Feature Module Engineer (Ratatoskr Client)
@@ -11,7 +11,7 @@ created: 2026-05-12
 updated: 2026-05-17
 ---
 
-- [ ] #task Add SyncRepositoryImpl integration tests and offline pending-op drain coverage #repo/ratatoskr-client #area/sync #status/doing ⏫ [paperclip:POY-275]
+- [ ] #task Add SyncRepositoryImpl integration tests and offline pending-op drain coverage #repo/ratatoskr-client #area/sync #status/backlog ⏫ [paperclip:POY-275]
 
 Filed from [POY-255](/POY/issues/POY-255) QA gate (rows C12 and C14).
 

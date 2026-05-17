@@ -1,6 +1,6 @@
 ---
 title: Add Ktor bearer refresh and token rotation tests
-status: doing
+status: backlog
 area: auth
 priority: high
 owner: Senior KMP Compose Multiplatform Engineer (Ratatoskr Client)
@@ -11,7 +11,7 @@ created: 2026-05-12
 updated: 2026-05-17
 ---
 
-- [ ] #task Add Ktor bearer refresh and token rotation tests #repo/ratatoskr-client #area/auth #status/doing ⏫ [paperclip:POY-273]
+- [ ] #task Add Ktor bearer refresh and token rotation tests #repo/ratatoskr-client #area/auth #status/backlog ⏫ [paperclip:POY-273]
 
 Filed from [POY-255](/POY/issues/POY-255) QA gate (row C10).
 

@@ -1,6 +1,6 @@
 ---
 title: Fix KMP sync-apply response DTOs to match backend contract
-status: doing
+status: backlog
 area: sync
 priority: high
 owner: Senior KMP Compose Multiplatform Engineer (Ratatoskr Client)
@@ -11,7 +11,7 @@ created: 2026-05-12
 updated: 2026-05-17
 ---
 
-- [ ] #task Fix KMP sync-apply response DTOs to match backend contract #repo/ratatoskr-client #area/sync #status/doing ⏫ [paperclip:POY-258]
+- [ ] #task Fix KMP sync-apply response DTOs to match backend contract #repo/ratatoskr-client #area/sync #status/backlog ⏫ [paperclip:POY-258]
 
 ## Objective
 

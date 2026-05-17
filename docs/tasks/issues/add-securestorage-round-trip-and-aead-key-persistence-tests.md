@@ -1,6 +1,6 @@
 ---
 title: Add SecureStorage round-trip and AEAD key persistence tests
-status: doing
+status: backlog
 area: auth
 priority: high
 owner: Senior KMP Compose Multiplatform Engineer (Ratatoskr Client)
@@ -11,7 +11,7 @@ created: 2026-05-12
 updated: 2026-05-17
 ---
 
-- [ ] #task Add SecureStorage round-trip and AEAD key persistence tests #repo/ratatoskr-client #area/auth #status/doing ⏫ [paperclip:POY-272]
+- [ ] #task Add SecureStorage round-trip and AEAD key persistence tests #repo/ratatoskr-client #area/auth #status/backlog ⏫ [paperclip:POY-272]
 
 Filed from [POY-255](/POY/issues/POY-255) QA gate (row C11). Coordinate with Security Engineer ([POY-257](/POY/issues/POY-257)).
 

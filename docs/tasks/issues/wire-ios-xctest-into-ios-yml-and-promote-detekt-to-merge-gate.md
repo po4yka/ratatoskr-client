@@ -1,6 +1,6 @@
 ---
 title: Wire iOS XCTest into ios.yml and promote detekt to merge gate
-status: doing
+status: backlog
 area: ci
 priority: high
 owner: Senior Build Gradle CI Engineer
@@ -11,7 +11,7 @@ created: 2026-05-12
 updated: 2026-05-17
 ---
 
-- [ ] #task Wire iOS XCTest into ios.yml and promote detekt to merge gate #repo/ratatoskr-client #area/ci #status/doing ⏫ [paperclip:POY-276]
+- [ ] #task Wire iOS XCTest into ios.yml and promote detekt to merge gate #repo/ratatoskr-client #area/ci #status/backlog ⏫ [paperclip:POY-276]
 
 Filed from [POY-255](/POY/issues/POY-255) QA gate (rows C2 and C15).
 

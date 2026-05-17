@@ -1,6 +1,6 @@
 ---
 title: Audit KMP search readiness and signals/aggregations release scope
-status: doing
+status: backlog
 area: search
 priority: medium
 owner: Senior KMP Compose Multiplatform Engineer (Ratatoskr Client)
@@ -11,7 +11,7 @@ created: 2026-05-12
 updated: 2026-05-17
 ---
 
-- [ ] #task Audit KMP search readiness and signals/aggregations release scope #repo/ratatoskr-client #area/search #status/doing 🔼 [paperclip:POY-262]
+- [ ] #task Audit KMP search readiness and signals/aggregations release scope #repo/ratatoskr-client #area/search #status/backlog 🔼 [paperclip:POY-262]
 
 ## Objective
 

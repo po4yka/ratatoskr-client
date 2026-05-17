@@ -1,6 +1,6 @@
 ---
 title: Align KMP full-sync request with backend query contract
-status: doing
+status: backlog
 area: sync
 priority: high
 owner: Senior KMP Compose Multiplatform Engineer (Ratatoskr Client)
@@ -11,7 +11,7 @@ created: 2026-05-12
 updated: 2026-05-17
 ---
 
-- [ ] #task Align KMP full-sync request with backend query contract #repo/ratatoskr-client #area/sync #status/doing ⏫ [paperclip:POY-259]
+- [ ] #task Align KMP full-sync request with backend query contract #repo/ratatoskr-client #area/sync #status/backlog ⏫ [paperclip:POY-259]
 
 ## Objective
 

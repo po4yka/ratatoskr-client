@@ -1,6 +1,6 @@
 ---
 title: Add Decompose component and route tests for Auth/SummaryList/Collections/Digest/Settings
-status: doing
+status: backlog
 area: kmp
 priority: high
 owner: Senior Mobile Shells Engineer (Ratatoskr Client)
@@ -11,7 +11,7 @@ created: 2026-05-12
 updated: 2026-05-17
 ---
 
-- [ ] #task Add Decompose component and route tests for Auth/SummaryList/Collections/Digest/Settings #repo/ratatoskr-client #area/kmp #status/doing ⏫ [paperclip:POY-274]
+- [ ] #task Add Decompose component and route tests for Auth/SummaryList/Collections/Digest/Settings #repo/ratatoskr-client #area/kmp #status/backlog ⏫ [paperclip:POY-274]
 
 Filed from [POY-255](/POY/issues/POY-255) QA gate (row C13).
 
