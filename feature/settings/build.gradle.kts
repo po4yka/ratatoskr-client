@@ -40,11 +40,15 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlin.logging)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.coroutines)
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.multiplatform.settings.test)
         }
     }
 }
