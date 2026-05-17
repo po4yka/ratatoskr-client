@@ -12,6 +12,11 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import org.koin.core.annotation.Single
 
@@ -102,79 +107,18 @@ class ReadingGoalRepositoryImpl(
         }
     }
 
-    private fun getCurrentDateString(): String {
-        val now = Clock.System.now()
-        val epochMs = now.toEpochMilliseconds()
-        val dayMs = 24L * 60 * 60 * 1000
-        val daysSinceEpoch = epochMs / dayMs
-        return epochDaysToDateString(daysSinceEpoch)
-    }
+    // All date strings are ISO-8601 `yyyy-MM-dd` in UTC. The previous hand-rolled
+    // helpers also implicitly used UTC (epoch milliseconds divided by 24h); this
+    // implementation preserves that and documents it. Daily totals are stored
+    // under the same UTC date strings, so callers do not see a behaviour change.
+    private fun getCurrentDateString(): String =
+        Clock.System.now().toLocalDateTime(TimeZone.UTC).date.toString()
 
     // Subtract n days from a "YYYY-MM-DD" string.
     private fun minusDays(
         dateStr: String,
         days: Int,
-    ): String {
-        val parts = dateStr.split("-")
-        val year = parts[0].toInt()
-        val month = parts[1].toInt()
-        val day = parts[2].toInt()
-        val daysSinceEpoch = dateToEpochDays(year, month, day) - days
-        return epochDaysToDateString(daysSinceEpoch.toLong())
-    }
-
-    // Compute days since epoch (1970-01-01) for a given date using Gregorian calendar arithmetic.
-    private fun dateToEpochDays(
-        year: Int,
-        month: Int,
-        day: Int,
-    ): Int {
-        // Days in each month (non-leap year)
-        val daysInMonth = intArrayOf(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-        var days = (year - 1970) * 365
-        // Leap year corrections: count leap years from 1970 up to (but not including) year
-        val leapsFrom1970 = leapYearsBefore(year) - leapYearsBefore(1970)
-        days += leapsFrom1970
-        // Add days for full months in current year
-        for (m in 1 until month) {
-            days += daysInMonth[m - 1]
-            if (m == 2 && isLeapYear(year)) days++
-        }
-        days += day - 1
-        return days
-    }
-
-    private fun epochDaysToDateString(epochDays: Long): String {
-        // Convert epoch days to a calendar date
-        var remaining = epochDays.toInt()
-        var year = 1970
-        while (true) {
-            val daysInYear = if (isLeapYear(year)) 366 else 365
-            if (remaining < daysInYear) break
-            remaining -= daysInYear
-            year++
-        }
-        val daysInMonth = intArrayOf(31, if (isLeapYear(year)) 29 else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-        var month = 1
-        for (m in daysInMonth) {
-            if (remaining < m) break
-            remaining -= m
-            month++
-        }
-        val day = remaining + 1
-        val y = year.toString().padStart(4, '0')
-        val m = month.toString().padStart(2, '0')
-        val d = day.toString().padStart(2, '0')
-        return "$y-$m-$d"
-    }
-
-    private fun isLeapYear(year: Int): Boolean = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
-
-    // Count leap years before the given year (i.e., up to year-1).
-    private fun leapYearsBefore(year: Int): Int {
-        val y = year - 1
-        return y / 4 - y / 100 + y / 400
-    }
+    ): String = LocalDate.parse(dateStr).minus(days, DateTimeUnit.DAY).toString()
 }
 
 private fun com.po4yka.ratatoskr.database.ReadingGoalEntity.toDomain(): ReadingGoal =
