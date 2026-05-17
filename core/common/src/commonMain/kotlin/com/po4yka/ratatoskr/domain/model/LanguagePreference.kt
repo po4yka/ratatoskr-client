@@ -29,8 +29,7 @@ enum class LanguagePreference(val tag: String?) {
          * keys (e.g., a language that was removed in a later release) collapse to [System]
          * rather than crashing — the OS-level locale list still serves as a sensible default.
          */
-        fun fromStorageKey(key: String?): LanguagePreference =
-            entries.firstOrNull { it.name == key } ?: System
+        fun fromStorageKey(key: String?): LanguagePreference = entries.firstOrNull { it.name == key } ?: System
 
         /** Mirror of [fromStorageKey] — kept as a function for symmetry at call sites. */
         fun toStorageKey(preference: LanguagePreference): String = preference.name
