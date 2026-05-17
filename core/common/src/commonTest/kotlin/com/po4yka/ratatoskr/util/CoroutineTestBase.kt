@@ -8,13 +8,15 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 
 /**
- * Base class for tests that use coroutines
+ * Base class for tests that use coroutines. Each test method gets a
+ * freshly constructed [kotlinx.coroutines.test.StandardTestDispatcher]
+ * so pending tasks cannot leak between tests.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class CoroutineTestBase {
     @BeforeTest
     fun setupDispatchers() {
-        Dispatchers.setMain(TestDispatchers.standard)
+        Dispatchers.setMain(TestDispatchers.newStandard())
     }
 
     @AfterTest

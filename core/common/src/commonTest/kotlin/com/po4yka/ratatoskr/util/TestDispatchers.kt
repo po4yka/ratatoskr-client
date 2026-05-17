@@ -10,30 +10,30 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 
 /**
- * Test coroutine dispatcher utilities
+ * Test coroutine dispatcher factories.
+ *
+ * `StandardTestDispatcher` and `UnconfinedTestDispatcher` carry an
+ * internal pending-task queue, so they MUST NOT be shared across test
+ * methods — pending coroutines from one test can leak into another and
+ * cause flaky failures or hangs when tests run in parallel.
+ *
+ * Always call [newStandard] or [newUnconfined] to obtain a fresh
+ * instance per invocation; never cache a dispatcher at object scope.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 object TestDispatchers {
-    /**
-     * Standard test dispatcher for most tests
-     */
-    val standard: TestDispatcher = StandardTestDispatcher()
+    /** Construct a fresh [StandardTestDispatcher]. */
+    fun newStandard(): TestDispatcher = StandardTestDispatcher()
 
-    /**
-     * Unconfined test dispatcher for immediate execution
-     */
-    val unconfined: TestDispatcher = UnconfinedTestDispatcher()
+    /** Construct a fresh [UnconfinedTestDispatcher]. */
+    fun newUnconfined(): TestDispatcher = UnconfinedTestDispatcher()
 
-    /**
-     * Set the main dispatcher for tests
-     */
-    fun setMain(dispatcher: CoroutineDispatcher = standard) {
+    /** Install [dispatcher] (or a fresh standard one) as the Main dispatcher. */
+    fun setMain(dispatcher: CoroutineDispatcher = newStandard()) {
         Dispatchers.setMain(dispatcher)
     }
 
-    /**
-     * Reset the main dispatcher after tests
-     */
+    /** Reset the Main dispatcher after tests. */
     fun resetMain() {
         Dispatchers.resetMain()
     }

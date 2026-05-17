@@ -6,6 +6,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/**
+ * NOTE: This test mutates global state on the `AppConfig` singleton.
+ * Kotlin Multiplatform `kotlin.test` runs methods in a class
+ * sequentially, but running multiple `AppConfig*Test` classes in
+ * parallel would race on `AppConfig.Api`. The Gradle test tasks for
+ * `core:common` are configured single-fork (the default), so this is
+ * safe today. Do not enable parallel test execution for `core:common`
+ * without first migrating `AppConfig` consumers to an injected
+ * configuration interface.
+ */
 class AppConfigTest {
     @AfterTest
     fun resetApiConfig() {
