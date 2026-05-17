@@ -1,0 +1,109 @@
+name: OpenAPI Lock Bumper
+
+on:
+  schedule:
+    # Weekly: every Monday at 09:00 UTC. The drift gate handles intra-week
+    # incompatibilities, so a slower cadence is enough to keep the lock fresh
+    # without flooding reviewers with PRs.
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: openapi-bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: Bump tools/openapi.lock
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Read pinned lock
+        id: pinned
+        run: |
+          set -euo pipefail
+          repo=$(jq -r '.repo' tools/openapi.lock)
+          path=$(jq -r '.path' tools/openapi.lock)
+          old_ref=$(jq -r '.ref' tools/openapi.lock)
+          echo "repo=$repo" >> "$GITHUB_OUTPUT"
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+          echo "old_ref=$old_ref" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve upstream HEAD SHA
+        id: upstream
+        run: |
+          set -euo pipefail
+          # Default branch is main on the backend repo; if that ever changes,
+          # this query follows the repository's actual default head.
+          new_ref=$(curl --fail --silent --show-error \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ steps.pinned.outputs.repo }}/commits?path=${{ steps.pinned.outputs.path }}&per_page=1" \
+            | jq -r '.[0].sha')
+          if [ -z "$new_ref" ] || [ "$new_ref" = "null" ]; then
+            echo "Failed to resolve upstream SHA for ${{ steps.pinned.outputs.repo }}@${{ steps.pinned.outputs.path }}" >&2
+            exit 1
+          fi
+          echo "new_ref=$new_ref" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if pinned SHA is already current
+        id: gate
+        run: |
+          if [ "${{ steps.pinned.outputs.old_ref }}" = "${{ steps.upstream.outputs.new_ref }}" ]; then
+            echo "No upstream change since ${{ steps.pinned.outputs.old_ref }}."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update tools/openapi.lock
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          tmp=$(mktemp)
+          jq --arg ref "${{ steps.upstream.outputs.new_ref }}" '.ref = $ref' tools/openapi.lock > "$tmp"
+          mv "$tmp" tools/openapi.lock
+
+      - name: Regenerate Kotlin client
+        if: steps.gate.outputs.skip != 'true'
+        run: ./gradlew :core:api-generated:regenerateOpenApi
+
+      - name: Open pull request
+        if: steps.gate.outputs.skip != 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: openapi/auto-bump
+          delete-branch: true
+          commit-message: |
+            chore(openapi): bump pinned spec to ${{ steps.upstream.outputs.new_ref }}
+
+            Weekly automated bump. Drift gate must remain green before merge.
+          title: 'chore(openapi): weekly spec bump (${{ steps.upstream.outputs.new_ref }})'
+          body: |
+            Weekly OpenAPI spec bump.
+
+            * Old SHA: `${{ steps.pinned.outputs.old_ref }}`
+            * New SHA: `${{ steps.upstream.outputs.new_ref }}`
+            * Upstream diff: https://github.com/${{ steps.pinned.outputs.repo }}/compare/${{ steps.pinned.outputs.old_ref }}...${{ steps.upstream.outputs.new_ref }}
+
+            Humans must review the regenerated Kotlin diff before merge — the bot
+            does not validate backend contract intent. Drift gate must be green.
+          labels: |
+            area:openapi
+            automated
