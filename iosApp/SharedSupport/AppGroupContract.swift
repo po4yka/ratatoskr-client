@@ -4,8 +4,12 @@ enum AppGroupContract {
     static let appGroupIdentifier = "group.com.po4yka.ratatoskr"
     static let sharedURLKey = "sharedURL"
     static let sharedURLTimestampKey = "sharedURLTimestamp"
-    static let recentSummariesSnapshotKey = "recentSummariesSnapshot"
-    static let recentSummariesSnapshotTimestampKey = "recentSummariesSnapshotTimestamp"
+    /// File name under the app group container holding the JSON snapshot.
+    /// The Kotlin publisher writes it with
+    /// `NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication`
+    /// and excludes it from iCloud/iTunes backup, so the file is unreadable
+    /// before first unlock and is not persisted in device backups.
+    static let recentSummariesSnapshotFileName = "recent-summaries-snapshot.json"
     static let recentSummariesWidgetKind = "RecentSummariesWidget"
 
     static func summaryDeepLink(summaryId: String) -> URL {
@@ -14,6 +18,12 @@ enum AppGroupContract {
 
     static func submitURLDeepLink() -> URL {
         URL(string: "ratatoskr://submit-url")!
+    }
+
+    static func recentSummariesSnapshotURL() -> URL? {
+        FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)?
+            .appendingPathComponent(recentSummariesSnapshotFileName)
     }
 }
 
@@ -57,9 +67,8 @@ enum AppGroupStore {
 
     static func loadRecentSummariesSnapshot() -> RecentSummariesSnapshot {
         guard
-            let defaults = sharedDefaults(),
-            let snapshotJSON = defaults.string(forKey: AppGroupContract.recentSummariesSnapshotKey),
-            let data = snapshotJSON.data(using: .utf8),
+            let url = AppGroupContract.recentSummariesSnapshotURL(),
+            let data = try? Data(contentsOf: url, options: [.mappedIfSafe]),
             let snapshot = try? JSONDecoder().decode(RecentSummariesSnapshot.self, from: data)
         else {
             return .empty
