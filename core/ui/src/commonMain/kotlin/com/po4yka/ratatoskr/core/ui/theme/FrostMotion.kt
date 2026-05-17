@@ -14,9 +14,10 @@ import androidx.compose.runtime.Immutable
 /**
  * Frost motion tokens.
  *
- * Use [frostMotionDefault] in normal conditions.
- * Use [frostMotionReduced] when the user has requested reduced motion (check
- * `LocalAccessibilityManager.current?.isTraversalGroup` or platform reduced-motion setting).
+ * Use [frostMotionDefault] in normal conditions and [frostMotionReduced] when
+ * the user has requested reduced motion. `RatatoskrTheme` swaps between the
+ * two automatically via [rememberReduceMotion]; Composables that read
+ * `AppTheme.motion` get the right spec for free.
  */
 @Immutable
 data class FrostMotion(

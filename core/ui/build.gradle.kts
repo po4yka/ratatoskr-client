@@ -24,5 +24,8 @@ kotlin {
             implementation(libs.markdown.renderer)
             implementation(libs.markdown.renderer.coil3)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 }

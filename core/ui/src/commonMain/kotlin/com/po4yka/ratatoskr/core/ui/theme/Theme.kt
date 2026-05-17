@@ -36,6 +36,8 @@ fun RatatoskrTheme(
 ) {
     val frostColors = if (darkTheme) frostDark else frostLight
     val frostType = rememberFrostType()
+    val reduceMotion = rememberReduceMotion()
+    val frostMotion = if (reduceMotion) frostMotionReduced else frostMotionDefault
 
     CompositionLocalProvider(
         LocalFrostColors provides frostColors,
@@ -43,7 +45,7 @@ fun RatatoskrTheme(
         LocalFrostSpacing provides frostSpacingDefault,
         LocalFrostAlpha provides frostAlphaDefault,
         LocalFrostBorder provides frostBorderDefault,
-        LocalFrostMotion provides frostMotionDefault,
+        LocalFrostMotion provides frostMotion,
         LocalContentColor provides frostColors.ink,
         LocalTextStyle provides frostType.monoBody.copy(color = frostColors.ink),
         content = content,
