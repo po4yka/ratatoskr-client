@@ -6,6 +6,20 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<!--
+	  Declares the bundle's supported localizations so iOS treats the app as
+	  localized and surfaces a per-app language picker in Settings > Ratatoskr >
+	  Language. Keep in lockstep with `androidApp/src/main/res/xml/locales_config.xml`
+	  and the Compose Resources `values-*` directories in
+	  `core/ui/src/commonMain/composeResources/`.
+	-->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ru</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 

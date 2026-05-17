@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Declares the locales this app supports so Android 13+ surfaces the per-app
+  language picker under Settings > System > Languages > App languages.
+
+  Keep in lockstep with Compose Resources `values-*` folders in
+  `core/ui/src/commonMain/composeResources/`. The iOS counterpart is
+  `CFBundleLocalizations` in `iosApp/iosApp/Info.plist`.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="ru" />
+</locale-config>
