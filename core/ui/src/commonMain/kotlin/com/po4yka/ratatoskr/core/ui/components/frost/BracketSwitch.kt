@@ -14,7 +14,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIndication
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.theme.HapticKind
 import com.po4yka.ratatoskr.core.ui.theme.RatatoskrTheme
+import com.po4yka.ratatoskr.core.ui.theme.rememberHaptic
 
 /**
  * Frost bracket switch: renders `[X]` or `[ ]` followed by label text.
@@ -34,6 +36,7 @@ fun BracketSwitch(
     val interactionSource = remember { MutableInteractionSource() }
     val textAlpha = if (enabled) AppTheme.alpha.active else AppTheme.alpha.inactive
     val glyph = if (checked) "[X]" else "[ ]"
+    val haptic = rememberHaptic()
 
     Row(
         modifier =
@@ -43,7 +46,10 @@ fun BracketSwitch(
                     role = Role.Switch,
                     indication = FrostIndication,
                     interactionSource = interactionSource,
-                    onClick = { onCheckedChange(!checked) },
+                    onClick = {
+                        haptic(HapticKind.Confirm)
+                        onCheckedChange(!checked)
+                    },
                 )
                 .padding(vertical = AppTheme.spacing.cell),
         verticalAlignment = Alignment.CenterVertically,

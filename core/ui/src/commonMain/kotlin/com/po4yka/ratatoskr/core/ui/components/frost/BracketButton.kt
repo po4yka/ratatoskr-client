@@ -16,7 +16,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostIndication
 import com.po4yka.ratatoskr.core.ui.components.foundation.FrostText
 import com.po4yka.ratatoskr.core.ui.theme.AppTheme
+import com.po4yka.ratatoskr.core.ui.theme.HapticKind
 import com.po4yka.ratatoskr.core.ui.theme.RatatoskrTheme
+import com.po4yka.ratatoskr.core.ui.theme.rememberHaptic
 
 /**
  * Frost bracketed button: renders `[ LABEL ]` in monoEmph uppercase with hairline border.
@@ -55,6 +57,7 @@ fun BracketButton(
         }
 
     val alphaValue = if (enabled) AppTheme.alpha.active else AppTheme.alpha.inactive
+    val haptic = rememberHaptic()
 
     FrostText(
         text = "[ ${label.uppercase()} ]",
@@ -69,7 +72,10 @@ fun BracketButton(
                     role = Role.Button,
                     indication = FrostIndication,
                     interactionSource = interactionSource,
-                    onClick = onClick,
+                    onClick = {
+                        haptic(HapticKind.Confirm)
+                        onClick()
+                    },
                 )
                 .padding(horizontal = AppTheme.spacing.line, vertical = AppTheme.spacing.cell),
     )
