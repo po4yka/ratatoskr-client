@@ -109,6 +109,13 @@ Do not "fix" those exceptions by force-converting them to annotations without un
 
 `composeApp/.../di/KoinInitializer.kt` is the active bootstrap entry point. Platform actuals expose `appModules()` plus `platformModules()`.
 
+## Coroutines
+
+- Always rethrow `CancellationException` as the **first** `catch` clause when using broad
+  `catch (Exception)` / `catch (Throwable)` blocks. Swallowing cancellation breaks
+  structured concurrency — child coroutines stop honoring parent cancellation and tests
+  can hang. Use `kotlin.coroutines.cancellation.CancellationException` in shared code.
+
 ## Platform Notes
 
 ### Android

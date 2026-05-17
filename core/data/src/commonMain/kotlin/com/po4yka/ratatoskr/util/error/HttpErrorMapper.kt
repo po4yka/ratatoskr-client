@@ -5,6 +5,7 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
+import kotlin.coroutines.cancellation.CancellationException
 
 private val logger = KotlinLogging.logger {}
 
@@ -109,6 +110,9 @@ fun Exception.toKtorError(): AppError {
 suspend fun <T> handleApiError(block: suspend () -> T): Result<T> {
     return try {
         Result.success(block())
+    } catch (e: CancellationException) {
+        // Coroutine cancellation must always propagate to preserve structured concurrency.
+        throw e
     } catch (e: ClientRequestException) {
         Result.failure(e.response.status.toAppError(e.response))
     } catch (e: ServerResponseException) {

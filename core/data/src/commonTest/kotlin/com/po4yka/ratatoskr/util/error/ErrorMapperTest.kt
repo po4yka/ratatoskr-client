@@ -4,7 +4,10 @@ import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.http.HttpStatusCode
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.test.runTest
 import kotlinx.io.IOException
 
 class ErrorMapperTest {
@@ -43,6 +46,18 @@ class ErrorMapperTest {
         assertEquals("error.network.timeout", timeout.messageKey)
         assertEquals("Request timed out. Please try again.", timeout.userMessage(provider))
     }
+
+    @Test
+    fun `handleApiError rethrows CancellationException`() =
+        runTest {
+            val thrown =
+                assertFailsWith<CancellationException> {
+                    handleApiError<Int> {
+                        throw CancellationException("upstream cancelled")
+                    }
+                }
+            assertEquals("upstream cancelled", thrown.message)
+        }
 
     @Test
     fun `falls back to provided message when key not mapped`() {
