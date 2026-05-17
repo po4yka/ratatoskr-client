@@ -18,9 +18,25 @@ import kotlin.test.assertNull
  * the `SecureStorage` interface so the same suite can run against the
  * Tink-AEAD-backed Android implementation, the Keychain-backed iOS
  * implementation, and the development desktop implementation alike.
+ *
+ * Subclasses that share their backing store across `SecureStorage` instances
+ * (Android Tink + DataStore, iOS Keychain) can additionally override
+ * [recreateAgainstSameStore] to opt into the cross-instance AEAD key-reuse
+ * tests at the bottom of this contract. Platforms whose `SecureStorage`
+ * naturally builds a fresh in-memory store per instance (current desktop
+ * MapSettings) return `null` and skip those assertions.
  */
 abstract class SecureStorageContract {
     protected abstract suspend fun createStorage(): SecureStorage
+
+    /**
+     * Return a second [SecureStorage] pointing at the same backing store as
+     * [existing] — used by the cross-instance round-trip tests below. Default
+     * returns `null` (test is skipped on this platform). Override on Android +
+     * iOS to validate that Tink AEAD keys / Keychain entries persist across
+     * `SecureStorage` lifecycles.
+     */
+    protected open suspend fun recreateAgainstSameStore(existing: SecureStorage): SecureStorage? = null
 
     @Test
     fun `access token round-trips`() =
@@ -97,5 +113,34 @@ abstract class SecureStorageContract {
             storage.saveAccessToken("first")
             storage.saveAccessToken("second")
             assertEquals("second", storage.getAccessToken())
+        }
+
+    @Test
+    fun `token survives storage recreation against the same backing store`() =
+        runTest {
+            // Pins AEAD key-reuse on Android (Tink keyset must be persisted, not
+            // regenerated per `AndroidSecureStorage` instance) and Keychain-entry
+            // reuse on iOS. Platforms whose `recreateAgainstSameStore` returns
+            // null (desktop MapSettings, no real cross-instance persistence) skip.
+            val first = createStorage()
+            first.saveAccessToken("survives-aead-reuse")
+            first.saveRefreshToken("refresh-survives")
+
+            val second = recreateAgainstSameStore(first) ?: return@runTest
+            assertEquals("survives-aead-reuse", second.getAccessToken())
+            assertEquals("refresh-survives", second.getRefreshToken())
+        }
+
+    @Test
+    fun `developer credentials survive storage recreation against the same backing store`() =
+        runTest {
+            val first = createStorage()
+            first.saveDeveloperCredentials(userId = 314, clientId = "cid-survives", secret = "sec-survives")
+
+            val second = recreateAgainstSameStore(first) ?: return@runTest
+            assertEquals(
+                DeveloperCredentials(userId = 314, clientId = "cid-survives", secret = "sec-survives"),
+                second.getDeveloperCredentials(),
+            )
         }
 }

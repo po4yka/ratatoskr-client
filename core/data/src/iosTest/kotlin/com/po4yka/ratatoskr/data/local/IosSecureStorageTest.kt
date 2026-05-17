@@ -15,4 +15,11 @@ class IosSecureStorageTest : SecureStorageContract() {
         storage.clearDeveloperCredentials()
         return storage
     }
+
+    override suspend fun recreateAgainstSameStore(existing: SecureStorage): SecureStorage {
+        // The Keychain service name is hardcoded inside `IosSecureStorage`, so building a
+        // second instance points it at the same backing store — and exercises the contract's
+        // cross-instance round-trip / Keychain-entry reuse assertions for free.
+        return IosSecureStorage()
+    }
 }
