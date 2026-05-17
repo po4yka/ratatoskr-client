@@ -53,6 +53,18 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/recent_summaries_widget_info" />
         </receiver>
+
+        <!-- Quick Settings tile: submit current clipboard URL -->
+        <service
+            android:name=".tile.SubmitUrlTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_launcher_monochrome"
+            android:label="@string/qs_tile_submit_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

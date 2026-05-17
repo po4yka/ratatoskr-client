@@ -5,6 +5,9 @@
     <string name="shortcut_search_short">Search</string>
     <string name="shortcut_search_long">Search Summaries</string>
 
+    <!-- Quick Settings tile -->
+    <string name="qs_tile_submit_label">Submit to Ratatoskr</string>
+
     <!-- Authentication -->
     <string name="auth_title">Ratatoskr</string>
     <string name="auth_subtitle">AI summaries of web articles</string>

@@ -10,6 +10,7 @@ import com.po4yka.ratatoskr.app.AppLaunchAction
 import com.po4yka.ratatoskr.app.assembleAppCompositionRoot
 import com.po4yka.ratatoskr.app.handleLaunchAction
 import com.po4yka.ratatoskr.presentation.navigation.RootComponent
+import com.po4yka.ratatoskr.util.share.ClipboardUrlParser
 import org.koin.android.ext.android.getKoin
 
 class MainActivity : ComponentActivity() {
@@ -47,10 +48,11 @@ class MainActivity : ComponentActivity() {
     private fun Intent.toLaunchAction(): AppLaunchAction? =
         when {
             action == Intent.ACTION_SEND && type.equals(TEXT_PLAIN_MIME_TYPE, ignoreCase = true) -> {
-                AppLaunchAction.SubmitUrl(prefilledUrl = sharedText().firstHttpUrl())
+                AppLaunchAction.SubmitUrl(prefilledUrl = ClipboardUrlParser.firstHttpUrl(sharedText()))
             }
 
-            getStringExtra(EXTRA_SHORTCUT_ACTION) == SHORTCUT_ACTION_SUBMIT_URL -> AppLaunchAction.SubmitUrl()
+            getStringExtra(EXTRA_SHORTCUT_ACTION) == SHORTCUT_ACTION_SUBMIT_URL ->
+                AppLaunchAction.SubmitUrl(prefilledUrl = getStringExtra(EXTRA_PREFILLED_URL))
 
             getStringExtra(EXTRA_SHORTCUT_ACTION) == SHORTCUT_ACTION_SEARCH -> AppLaunchAction.Search
 
@@ -63,18 +65,11 @@ class MainActivity : ComponentActivity() {
             dataString,
         ).firstOrNull { it.isNotBlank() }.orEmpty()
 
-    private fun String.firstHttpUrl(): String? =
-        httpUrlRegex
-            .find(this)
-            ?.value
-            ?.trimEnd('.', ',', ';', ':', ')', ']', '}')
-
-    private companion object {
-        private const val TEXT_PLAIN_MIME_TYPE = "text/plain"
-        private const val EXTRA_SHORTCUT_ACTION = "action"
-        private const val SHORTCUT_ACTION_SUBMIT_URL = "submit_url"
+    companion object {
+        const val EXTRA_SHORTCUT_ACTION = "action"
+        const val SHORTCUT_ACTION_SUBMIT_URL = "submit_url"
+        const val EXTRA_PREFILLED_URL = "prefilled_url"
         private const val SHORTCUT_ACTION_SEARCH = "search"
-
-        private val httpUrlRegex = Regex("""https?://[^\s<>"']+""", RegexOption.IGNORE_CASE)
+        private const val TEXT_PLAIN_MIME_TYPE = "text/plain"
     }
 }
