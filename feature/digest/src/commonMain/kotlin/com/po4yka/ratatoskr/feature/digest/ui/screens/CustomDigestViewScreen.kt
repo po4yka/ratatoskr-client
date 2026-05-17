@@ -113,12 +113,14 @@ fun CustomDigestViewScreen(
                     modifier = Modifier.fillMaxSize().padding(horizontal = AppTheme.spacing.line),
                 ) {
                     item {
-                        FrostText(
-                            text = state.digest!!.content!!,
-                            style = AppTheme.frostType.monoBody,
-                            color = AppTheme.frostColors.ink,
-                            modifier = Modifier.padding(vertical = AppTheme.spacing.line),
-                        )
+                        state.digest?.content?.let { content ->
+                            FrostText(
+                                text = content,
+                                style = AppTheme.frostType.monoBody,
+                                color = AppTheme.frostColors.ink,
+                                modifier = Modifier.padding(vertical = AppTheme.spacing.line),
+                            )
+                        }
                     }
                 }
             }

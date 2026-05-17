@@ -56,9 +56,10 @@ fun SummaryCard(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (summary.imageUrl != null) {
+            val imageUrl = summary.imageUrl
+            if (imageUrl != null) {
                 ProxiedImage(
-                    imageUrl = summary.imageUrl!!,
+                    imageUrl = imageUrl,
                     contentDescription = null,
                     modifier =
                         Modifier

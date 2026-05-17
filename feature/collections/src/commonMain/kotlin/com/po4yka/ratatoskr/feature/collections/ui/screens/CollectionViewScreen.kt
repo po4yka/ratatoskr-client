@@ -783,9 +783,10 @@ private fun CollaboratorRow(
             )
         }
 
-        if (collaborator.role != CollaboratorRole.Owner && collaborator.userId != null) {
+        val removableUserId = collaborator.userId
+        if (collaborator.role != CollaboratorRole.Owner && removableUserId != null) {
             BracketIconButton(
-                onClick = { onRemove(collaborator.userId!!) },
+                onClick = { onRemove(removableUserId) },
                 contentDescription = stringResource(Res.string.collection_view_remove),
             ) {
                 FrostIcon(

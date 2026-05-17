@@ -242,11 +242,14 @@ fun SummaryDetailScreen(
             onLineSpacingScaleChange = { viewModel.updateLineSpacingScale(it) },
         )
 
-        // Content
+        // Content. Capture nullables once so recomposition between the guard
+        // and the read can't surface a null underneath us.
+        val errorMessage = state.error
+        val summary = state.summary
         when {
-            state.error != null -> {
+            errorMessage != null -> {
                 ErrorView(
-                    message = state.error!!,
+                    message = errorMessage,
                     onRetry = { viewModel.loadSummary(component.summaryId) },
                     modifier = Modifier.weight(1f),
                 )
@@ -264,9 +267,9 @@ fun SummaryDetailScreen(
                 }
             }
 
-            state.summary != null -> {
+            summary != null -> {
                 SummaryDetailContent(
-                    summary = state.summary!!,
+                    summary = summary,
                     readingPreferences = state.readingPreferences,
                     initialScrollPosition = state.lastReadPosition,
                     initialScrollOffset = state.lastReadOffset,
@@ -848,9 +851,10 @@ private fun ArticleHeader(summary: Summary) {
         )
         Spacer(modifier = Modifier.height(AppTheme.spacing.cell))
 
-        if (summary.imageUrl != null) {
+        val imageUrl = summary.imageUrl
+        if (imageUrl != null) {
             ProxiedImage(
-                imageUrl = summary.imageUrl!!,
+                imageUrl = imageUrl,
                 contentDescription = summary.title,
                 modifier =
                     Modifier

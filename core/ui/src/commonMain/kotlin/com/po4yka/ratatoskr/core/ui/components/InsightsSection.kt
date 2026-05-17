@@ -92,9 +92,10 @@ private fun InsightCard(
                 .clickable(role = Role.Button, onClick = onClick),
     ) {
         Column {
-            if (summary.imageUrl != null) {
+            val imageUrl = summary.imageUrl
+            if (imageUrl != null) {
                 ProxiedImage(
-                    imageUrl = summary.imageUrl!!,
+                    imageUrl = imageUrl,
                     contentDescription = null,
                     modifier =
                         Modifier
