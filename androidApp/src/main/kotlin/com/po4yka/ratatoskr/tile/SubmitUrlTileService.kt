@@ -50,10 +50,9 @@ class SubmitUrlTileService : TileService() {
     }
 
     private fun readClipboardUrl(): String? {
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager ?: return null
-        val primary = clipboard.primaryClip ?: return null
-        if (primary.itemCount == 0) return null
-        val text = primary.getItemAt(0)?.coerceToText(this)?.toString().orEmpty()
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+        val firstItem = clipboard?.primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)
+        val text = firstItem?.coerceToText(this)?.toString().orEmpty()
         return ClipboardUrlParser.firstHttpUrl(text)
     }
 
