@@ -39,15 +39,17 @@ fun RatatoskrTheme(
     val reduceMotion = rememberReduceMotion()
     val frostMotion = if (reduceMotion) frostMotionReduced else frostMotionDefault
 
-    CompositionLocalProvider(
-        LocalFrostColors provides frostColors,
-        LocalFrostType provides frostType,
-        LocalFrostSpacing provides frostSpacingDefault,
-        LocalFrostAlpha provides frostAlphaDefault,
-        LocalFrostBorder provides frostBorderDefault,
-        LocalFrostMotion provides frostMotion,
-        LocalContentColor provides frostColors.ink,
-        LocalTextStyle provides frostType.monoBody.copy(color = frostColors.ink),
-        content = content,
-    )
+    ClampFontScale {
+        CompositionLocalProvider(
+            LocalFrostColors provides frostColors,
+            LocalFrostType provides frostType,
+            LocalFrostSpacing provides frostSpacingDefault,
+            LocalFrostAlpha provides frostAlphaDefault,
+            LocalFrostBorder provides frostBorderDefault,
+            LocalFrostMotion provides frostMotion,
+            LocalContentColor provides frostColors.ink,
+            LocalTextStyle provides frostType.monoBody.copy(color = frostColors.ink),
+            content = content,
+        )
+    }
 }
