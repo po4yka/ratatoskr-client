@@ -14,6 +14,7 @@ dependencies {
     compileOnly("org.jetbrains.compose:org.jetbrains.compose.gradle.plugin:1.10.3")
     implementation("org.jlleitschuh.gradle:ktlint-gradle:14.2.0")
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
+    implementation("org.owasp:dependency-check-gradle:12.1.0")
     testImplementation(kotlin("test"))
     testImplementation("junit:junit:4.13.2")
 }
