@@ -3,8 +3,9 @@ package com.po4yka.ratatoskr.presentation.navigation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.ratatoskr.presentation.viewmodel.DigestViewModel
+import com.po4yka.ratatoskr.navigation.ScreenComponent
 
-interface DigestComponent {
+interface DigestComponent : ScreenComponent {
     val viewModel: DigestViewModel
 
     fun onBackClicked()

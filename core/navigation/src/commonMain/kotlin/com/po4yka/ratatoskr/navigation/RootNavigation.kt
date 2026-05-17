@@ -10,7 +10,7 @@ enum class RootScreen {
 
 data class RootChildDescriptor(
     val screen: RootScreen,
-    val component: Any,
+    val component: ScreenComponent,
     val render: @Composable () -> Unit,
 )
 

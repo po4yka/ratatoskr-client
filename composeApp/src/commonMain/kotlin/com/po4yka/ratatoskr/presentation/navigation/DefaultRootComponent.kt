@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import com.po4yka.ratatoskr.ui.screens.MainScreen
+import com.po4yka.ratatoskr.navigation.ScreenComponent
 
 class DefaultRootComponent(
     componentContext: ComponentContext,

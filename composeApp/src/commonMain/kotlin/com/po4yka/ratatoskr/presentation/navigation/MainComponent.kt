@@ -16,10 +16,11 @@ import com.po4yka.ratatoskr.navigation.MainNavigator
 import com.po4yka.ratatoskr.navigation.MainRouteEntry
 import com.po4yka.ratatoskr.navigation.MainTab
 import io.github.oshai.kotlinlogging.KotlinLogging
+import com.po4yka.ratatoskr.navigation.ScreenComponent
 
 private val logger = KotlinLogging.logger {}
 
-interface MainComponent {
+interface MainComponent : ScreenComponent {
     val childStack: Value<ChildStack<*, MainChildDescriptor>>
 
     fun navigateToTab(tab: MainTab)

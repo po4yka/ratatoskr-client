@@ -3,8 +3,9 @@ package com.po4yka.ratatoskr.presentation.navigation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.ratatoskr.presentation.viewmodel.SearchViewModel
+import com.po4yka.ratatoskr.navigation.ScreenComponent
 
-interface SearchComponent {
+interface SearchComponent : ScreenComponent {
     val viewModel: SearchViewModel
 
     fun onSummaryClicked(id: String)

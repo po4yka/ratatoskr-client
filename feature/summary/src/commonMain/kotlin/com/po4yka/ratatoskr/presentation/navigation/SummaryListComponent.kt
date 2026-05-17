@@ -5,8 +5,9 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.ratatoskr.presentation.viewmodel.RecommendationsViewModel
 import com.po4yka.ratatoskr.presentation.viewmodel.ReadingGoalController
 import com.po4yka.ratatoskr.presentation.viewmodel.SummaryListViewModel
+import com.po4yka.ratatoskr.navigation.ScreenComponent
 
-interface SummaryListComponent {
+interface SummaryListComponent : ScreenComponent {
     val viewModel: SummaryListViewModel
     val recommendationsViewModel: RecommendationsViewModel
     val readingGoalController: ReadingGoalController

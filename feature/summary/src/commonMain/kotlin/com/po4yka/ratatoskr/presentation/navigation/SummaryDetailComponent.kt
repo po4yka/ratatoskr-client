@@ -5,8 +5,9 @@ import com.arkivanov.essenty.instancekeeper.retainedInstance
 import com.po4yka.ratatoskr.domain.model.FeedbackIssue
 import com.po4yka.ratatoskr.domain.model.FeedbackRating
 import com.po4yka.ratatoskr.presentation.viewmodel.SummaryDetailViewModel
+import com.po4yka.ratatoskr.navigation.ScreenComponent
 
-interface SummaryDetailComponent {
+interface SummaryDetailComponent : ScreenComponent {
     val viewModel: SummaryDetailViewModel
     val summaryId: String
 

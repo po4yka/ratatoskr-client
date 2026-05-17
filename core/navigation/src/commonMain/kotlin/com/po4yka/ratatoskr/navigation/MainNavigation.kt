@@ -22,7 +22,7 @@ data class AppRoute(
 data class MainChildDescriptor(
     val route: AppRoute,
     val tab: MainTab?,
-    val component: Any,
+    val component: ScreenComponent,
     val render: @Composable () -> Unit,
 )
 
