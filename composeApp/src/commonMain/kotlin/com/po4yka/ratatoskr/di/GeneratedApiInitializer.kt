@@ -6,6 +6,7 @@ import com.po4yka.ratatoskr.api.generated.bootstrap.isAccessTokenExpired
 import com.po4yka.ratatoskr.api.generated.bootstrap.unwrap
 import com.po4yka.ratatoskr.api.generated.models.RefreshTokenRequest
 import com.po4yka.ratatoskr.data.local.SecureStorage
+import com.po4yka.ratatoskr.data.remote.trace.TraceHeadersPlugin
 import com.po4yka.ratatoskr.util.config.AppConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.engine.HttpClientEngine
@@ -40,6 +41,9 @@ fun Koin.bootstrapGeneratedApiFromKoin() {
         engine = engine,
         bearerTokenProvider = provider,
         withLogging = AppConfig.Api.loggingEnabled,
+        extraConfig = {
+            install(TraceHeadersPlugin)
+        },
     )
     moduleLogger.info { "Generated Api singleton bootstrapped" }
 }

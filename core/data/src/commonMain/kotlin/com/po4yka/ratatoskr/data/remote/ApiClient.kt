@@ -2,6 +2,7 @@ package com.po4yka.ratatoskr.data.remote
 
 import com.po4yka.ratatoskr.data.local.SecureStorage
 import com.po4yka.ratatoskr.data.remote.dto.ApiResponseDto
+import com.po4yka.ratatoskr.data.remote.trace.TraceHeadersPlugin
 import com.po4yka.ratatoskr.util.config.AppConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
@@ -170,6 +171,8 @@ class ApiClient(
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
                 header(HttpHeaders.Accept, ContentType.Application.Json)
             }
+
+            install(TraceHeadersPlugin)
 
             install(HttpCallValidator) {
                 handleResponseExceptionWithRequest { cause: Throwable, request: io.ktor.client.request.HttpRequest ->
