@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Themed-icon silhouette for Android 13+ Material You.
+
+  Pure ink-on-transparent mark sized for the adaptive-icon canvas
+  (108dp viewport, 66dp safe area). When "Themed icons" is on, the
+  system tints the path's INK fill with the user's wallpaper palette.
+
+  Glyph: bold monospace "R" — fits Frost's editorial monospace
+  minimalism. Single closed subpath, no anti-aliasing tricks, no
+  gradients, no inner shadows.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#1C242C"
+        android:fillType="evenOdd"
+        android:pathData="M28,22 L62,22 Q78,22 78,38 Q78,52 64,56 L82,86 L66,86 L52,58 L40,58 L40,86 L28,86 Z M40,34 L40,46 L60,46 Q66,46 66,40 Q66,34 60,34 Z" />
+</vector>
