@@ -1,6 +1,7 @@
 package com.po4yka.ratatoskr.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import com.po4yka.ratatoskr.domain.model.ReadingTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals

@@ -3,6 +3,7 @@ package com.po4yka.ratatoskr.domain.model
 data class ReadingPreferences(
     val fontSizeScale: Float = 1.0f,
     val lineSpacingScale: Float = 1.0f,
+    val readingTheme: ReadingTheme = ReadingTheme.MONO_LIGHT,
 ) {
     companion object {
         const val MIN_FONT_SCALE = 0.8f

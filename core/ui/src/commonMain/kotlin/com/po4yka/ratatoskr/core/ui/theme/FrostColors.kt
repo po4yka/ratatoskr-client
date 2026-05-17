@@ -2,6 +2,7 @@ package com.po4yka.ratatoskr.core.ui.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import com.po4yka.ratatoskr.domain.model.ReadingTheme
 
 /**
  * Frost design system color tokens.
@@ -70,15 +71,12 @@ val frostHighContrast =
     )
 
 /**
- * Reading-time palette selector. Only applies inside the reading detail surface — the rest of
- * the app stays in Frost MONO. Resolves through [paletteFor].
- */
-enum class ReadingTheme { MONO_LIGHT, MONO_DARK, SEPIA, HIGH_CONTRAST }
-
-/**
  * Resolves a [ReadingTheme] to a concrete [FrostColors] palette. `MONO_*` inherits the
  * project default light/dark; `SEPIA` and `HIGH_CONTRAST` switch to their dedicated palettes
  * regardless of system dark-mode.
+ *
+ * The [ReadingTheme] enum itself lives in `core/common/.../domain/model/ReadingTheme.kt` so
+ * the domain layer can include it in `ReadingPreferences` without a UI dependency.
  */
 fun paletteFor(theme: ReadingTheme): FrostColors =
     when (theme) {
