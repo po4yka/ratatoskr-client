@@ -21,7 +21,7 @@ package com.po4yka.ratatoskr.util.di
  * Wiring is the caller's responsibility: instantiate one `LazyFeatureLoader` in
  * `KoinInitializer`, register it as a `@Single`, and have each non-critical feature's
  * Decompose component factory invoke `loader.ensureLoaded(...)` before resolving its
- * first dependency. The eager modules — auth, summary, sync, core/* — stay loaded
+ * first dependency. The eager modules — auth, summary, sync, and the core modules — stay loaded
  * unconditionally at startup as today.
  */
 class LazyFeatureLoader(
