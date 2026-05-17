@@ -34,5 +34,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlin.logging)
         }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }
