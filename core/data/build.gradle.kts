@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.koin.test)
             implementation(libs.turbine)
             implementation(libs.multiplatform.settings.test)
+            implementation(libs.ktor.client.mock)
         }
 
         androidHostTest.dependencies {
