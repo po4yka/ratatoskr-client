@@ -42,8 +42,7 @@ object SecureStorageKeyValidator {
         return mapped.ifEmpty { null }
     }
 
-    private fun isAllowedChar(ch: Char): Boolean =
-        ch.isLetterOrDigitAscii() || ch == '_' || ch == '-' || ch == '.'
+    private fun isAllowedChar(ch: Char): Boolean = ch.isLetterOrDigitAscii() || ch == '_' || ch == '-' || ch == '.'
 
     private fun Char.isLetterOrDigitAscii(): Boolean = (this in '0'..'9') || (this in 'a'..'z') || (this in 'A'..'Z')
 }

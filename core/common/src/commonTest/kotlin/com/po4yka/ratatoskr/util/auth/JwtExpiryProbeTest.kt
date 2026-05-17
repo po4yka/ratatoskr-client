@@ -146,10 +146,10 @@ class JwtExpiryProbeTest {
     fun `realistic payload with multiple claims around exp`() {
         // Pin that the regex isolates the top-level exp key even when
         // surrounded by other claims (sub, iat, iss).
-        val token =
-            jwt(
-                """{"iss":"https://auth.ratatoskr.po4yka.com","sub":"u123","iat":1700000000,"exp":1700003600,"jti":"abc"}""",
-            )
+        val payload =
+            """{"iss":"https://auth.ratatoskr.po4yka.com","sub":"u123",""" +
+                """"iat":1700000000,"exp":1700003600,"jti":"abc"}"""
+        val token = jwt(payload)
         assertEquals(
             JwtExpiryProbe.Status.Valid,
             JwtExpiryProbe.check(token, nowEpochSeconds = 1_700_000_000),
