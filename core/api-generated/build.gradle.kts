@@ -3,6 +3,8 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
@@ -12,6 +14,7 @@ import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import java.io.File
 import java.net.URI
+import java.security.MessageDigest
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -125,21 +128,65 @@ abstract class CheckOpenApiDriftTask : DefaultTask() {
     // runs regenerateOpenApi separately.
     @get:Internal abstract val onDiskYaml: RegularFileProperty
 
+    /**
+     * Directory under `build/` keyed by lock SHA where the fetched upstream YAML
+     * is mirrored. Lets the build cache invalidate when the lock changes and
+     * keeps a usable copy when GitHub Raw has a transient outage.
+     */
+    @get:Internal abstract val cacheDir: DirectoryProperty
+
+    /**
+     * SHA of the lock file content, declared as a Gradle input so the
+     * configuration cache and build cache invalidate when the pin advances.
+     */
+    @get:Input
+    val lockSha: Provider<String>
+        get() =
+            lockFile.map { regularFile ->
+                MessageDigest.getInstance("SHA-256")
+                    .digest(regularFile.asFile.readBytes())
+                    .joinToString("") { b: Byte -> "%02x".format(b) }
+            }
+
     @TaskAction
     fun run() {
         @Suppress("UNCHECKED_CAST")
         val lock = JsonSlurper().parse(lockFile.get().asFile) as Map<String, String>
         val url = "https://raw.githubusercontent.com/${lock["repo"]}/${lock["ref"]}/${lock["path"]}"
-        val tmpRaw = File.createTempFile("openapi-check-", ".yaml")
+        val sha = lockSha.get()
+        val cacheRoot = cacheDir.get().asFile.resolve(sha)
+        val cachedRaw = cacheRoot.resolve("upstream.yaml")
         val tmpNorm = File.createTempFile("openapi-norm-", ".yaml")
         try {
-            URI(url).toURL().openStream().use { input ->
-                tmpRaw.outputStream().use { output -> input.copyTo(output) }
-            }
+            // Prefer the cached copy when it exists; otherwise fetch and populate it.
+            val rawFile =
+                if (cachedRaw.exists()) {
+                    logger.lifecycle("openapi: using cached upstream for sha=${sha.take(8)}")
+                    cachedRaw
+                } else {
+                    val tmpRaw = File.createTempFile("openapi-check-", ".yaml")
+                    try {
+                        URI(url).toURL().openStream().use { input ->
+                            tmpRaw.outputStream().use { output -> input.copyTo(output) }
+                        }
+                        cacheRoot.mkdirs()
+                        tmpRaw.copyTo(cachedRaw, overwrite = true)
+                        cachedRaw
+                    } catch (e: Exception) {
+                        tmpRaw.delete()
+                        throw GradleException(
+                            "openapi: upstream fetch failed and no cached copy exists for sha=${sha.take(8)}. " +
+                                "Re-run with network access to populate build/openapi-cache.",
+                            e,
+                        )
+                    } finally {
+                        tmpRaw.delete()
+                    }
+                }
             val proc = ProcessBuilder(
                 "python3",
                 normalizerScript.get().asFile.absolutePath,
-                tmpRaw.absolutePath,
+                rawFile.absolutePath,
                 tmpNorm.absolutePath,
             )
                 .redirectErrorStream(true)
@@ -156,7 +203,6 @@ abstract class CheckOpenApiDriftTask : DefaultTask() {
             }
             logger.lifecycle("openapi: drift check OK (${lock["repo"]}@${lock["ref"]?.take(8)})")
         } finally {
-            tmpRaw.delete()
             tmpNorm.delete()
         }
     }
@@ -208,6 +254,7 @@ val checkOpenApiDrift = tasks.register<CheckOpenApiDriftTask>("checkOpenApiDrift
     lockFile.set(openApiLock)
     normalizerScript.set(normalizerScriptFile)
     onDiskYaml.set(normalizedYaml)
+    cacheDir.set(layout.buildDirectory.dir("openapi-cache"))
 }
 
 val patchGenerated = tasks.register<PatchGeneratedTask>("patchGenerated") {
