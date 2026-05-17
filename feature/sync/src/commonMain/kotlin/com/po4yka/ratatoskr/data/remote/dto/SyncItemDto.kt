@@ -6,6 +6,11 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.longOrNull
 
+/**
+ * Sync transport envelope owned by `feature/sync`. Other features consume the
+ * `feature.sync.api.SyncEntity` projection instead — this DTO stays internal
+ * to the sync module's data layer.
+ */
 @Serializable
 data class SyncItemDto(
     @SerialName("id") val id: JsonPrimitive,
@@ -27,36 +32,3 @@ data class SyncItemDto(
     val idAsString: String get() = id.content
     val idAsLong: Long? get() = id.longOrNull
 }
-
-@Serializable
-data class HighlightDto(
-    val id: String,
-    @SerialName("summary_id") val summaryId: String,
-    val text: String,
-    @SerialName("start_offset") val startOffset: Int? = null,
-    @SerialName("end_offset") val endOffset: Int? = null,
-    val color: String? = null,
-    val note: String? = null,
-    @SerialName("created_at") val createdAt: String,
-    @SerialName("updated_at") val updatedAt: String,
-)
-
-@Serializable
-data class SyncTagDto(
-    val id: Int,
-    val name: String,
-    @SerialName("normalized_name") val normalizedName: String? = null,
-    val color: String? = null,
-    @SerialName("is_deleted") val isDeleted: Boolean = false,
-    @SerialName("created_at") val createdAt: String,
-    @SerialName("updated_at") val updatedAt: String,
-)
-
-@Serializable
-data class SyncSummaryTagDto(
-    val id: Int,
-    @SerialName("summary_id") val summaryId: Int,
-    @SerialName("tag_id") val tagId: Int,
-    val source: String? = null,
-    @SerialName("created_at") val createdAt: String,
-)
