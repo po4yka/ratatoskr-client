@@ -48,87 +48,97 @@ class SubmitURLViewModel(
     private fun observeRequestHistory() {
         getRequestsUseCase()
             .onEach { requests ->
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         recentRequests = requests,
                         isLoadingHistory = false,
+                    
                     )
+                }
             }
             .catch { e ->
                 logger.warn(e) { "Failed to load request history" }
-                _state.value = _state.value.copy(isLoadingHistory = false)
+                _state.update { it.copy(isLoadingHistory = false) }
             }
             .launchIn(viewModelScope)
     }
 
     fun toggleHistoryVisibility() {
-        _state.value = _state.value.copy(showHistory = !_state.value.showHistory)
+        _state.update { it.copy(showHistory = !it.showHistory) }
     }
 
     fun retryRequest(request: Request) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(url = request.url)
+            _state.update { it.copy(url = request.url) }
             submitUrl()
         }
     }
 
     @Suppress("unused") // Public API for UI layer
     fun onUrlChanged(url: String) {
-        _state.value =
-            _state.value.copy(
+        _state.update {
+            it.copy(
                 url = url,
                 error = null,
                 submitError = null,
                 isDuplicate = false,
                 duplicateSummaryId = null,
+            
             )
+        }
     }
 
     fun checkDuplicate() {
         val url = _state.value.url
         if (url.isBlank() || !isValidUrl(url)) {
-            _state.value = _state.value.copy(submitError = SubmitUrlError.InvalidUrl)
+            _state.update { it.copy(submitError = SubmitUrlError.InvalidUrl) }
             return
         }
 
         viewModelScope.launch {
-            _state.value = _state.value.copy(isCheckingDuplicate = true, error = null, submitError = null)
+            _state.update { it.copy(isCheckingDuplicate = true, error = null, submitError = null) }
             try {
                 val result = checkDuplicateUrlUseCase(url)
                 if (result.isDuplicate) {
-                    _state.value =
-                        _state.value.copy(
+                    _state.update {
+                        it.copy(
                             isCheckingDuplicate = false,
                             isDuplicate = true,
                             duplicateSummaryId = result.existingSummaryId,
+                        
                         )
+                    }
                 } else {
-                    _state.value = _state.value.copy(isCheckingDuplicate = false)
+                    _state.update { it.copy(isCheckingDuplicate = false) }
                     submitUrl()
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Failed to check duplicate URL, proceeding with submit" }
-                _state.value = _state.value.copy(isCheckingDuplicate = false)
+                _state.update { it.copy(isCheckingDuplicate = false) }
                 submitUrl()
             }
         }
     }
 
     fun forceSubmit() {
-        _state.value =
-            _state.value.copy(
+        _state.update {
+            it.copy(
                 isDuplicate = false,
                 duplicateSummaryId = null,
+            
             )
+        }
         submitUrl()
     }
 
     fun dismissDuplicate() {
-        _state.value =
-            _state.value.copy(
+        _state.update {
+            it.copy(
                 isDuplicate = false,
                 duplicateSummaryId = null,
+            
             )
+        }
     }
 
     fun toggleBatchMode() {
@@ -322,14 +332,14 @@ class SubmitURLViewModel(
         viewModelScope.launch {
             val url = _state.value.url
             if (url.isBlank() || !isValidUrl(url)) {
-                _state.value = _state.value.copy(submitError = SubmitUrlError.InvalidUrl)
+                _state.update { it.copy(submitError = SubmitUrlError.InvalidUrl) }
                 return@launch
             }
 
             processingService.submitUrl(url)
                 .onStart {
-                    _state.value =
-                        _state.value.copy(
+                    _state.update {
+                        it.copy(
                             isLoading = true,
                             error = null,
                             submitError = null,
@@ -337,22 +347,26 @@ class SubmitURLViewModel(
                             stage = ProcessingStage.QUEUED,
                             progress = 0f,
                             message = "Starting...",
+                        
                         )
+                    }
                 }
                 .catch { e ->
                     val appError = e.toAppError()
                     val submitError = appError.toSubmitUrlError()
-                    _state.value =
-                        _state.value.copy(
+                    _state.update {
+                        it.copy(
                             isLoading = false,
                             status = RequestStatus.FAILED,
                             error = appError.userMessage(),
                             submitError = submitError,
+                        
                         )
+                    }
                 }
                 .collect { update ->
-                    _state.value =
-                        _state.value.copy(
+                    _state.update {
+                        it.copy(
                             isLoading =
                                 update.status != RequestStatus.COMPLETED &&
                                     update.status != RequestStatus.FAILED,
@@ -360,10 +374,12 @@ class SubmitURLViewModel(
                             stage = update.stage,
                             progress = update.progress,
                             message = update.message,
+                        
                         )
+                    }
 
                     if (update.status == RequestStatus.FAILED) {
-                        _state.value = _state.value.copy(error = update.error)
+                        _state.update { it.copy(error = update.error) }
                     }
                 }
         }

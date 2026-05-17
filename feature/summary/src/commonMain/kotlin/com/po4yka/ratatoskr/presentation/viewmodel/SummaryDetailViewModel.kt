@@ -48,7 +48,7 @@ class SummaryDetailViewModel(
     init {
         readingPreferencesRepository.getPreferences()
             .onEach { prefs ->
-                _state.value = _state.value.copy(readingPreferences = prefs)
+                _state.update { it.copy(readingPreferences = prefs) }
             }
             .launchIn(viewModelScope)
 
@@ -74,13 +74,15 @@ class SummaryDetailViewModel(
             _state.value = SummaryDetailState(isLoading = true)
             try {
                 val summary = getSummaryByIdUseCase(id)
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         summary = summary,
                         isLoading = false,
                         lastReadPosition = summary?.lastReadPosition ?: 0,
                         lastReadOffset = summary?.lastReadOffset ?: 0,
+                    
                     )
+                }
                 if (summary != null) {
                     readingSessionDelegate.startSession(
                         summaryId = id,
@@ -100,7 +102,7 @@ class SummaryDetailViewModel(
                     ) { sub -> _state.update { it.copy(feedback = sub) } }
                 }
             } catch (e: Exception) {
-                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
+                _state.update { it.copy(isLoading = false, error = e.toAppError().userMessage()) }
             }
         }
     }
@@ -108,42 +110,54 @@ class SummaryDetailViewModel(
     @Suppress("TooGenericExceptionCaught")
     private fun fetchFullContent(id: String) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoadingContent = true)
+            _state.update { it.copy(isLoadingContent = true) }
             try {
                 val fullContent = getSummaryContentUseCase(id)
                 if (fullContent != null) {
-                    _state.value =
-                        _state.value.copy(
+                    _state.update {
+                        it.copy(
                             summary =
-                                _state.value.summary?.copy(
+                                it.summary?.copy(
                                     fullContent = fullContent,
                                     isFullContentCached = true,
                                 ),
                             isLoadingContent = false,
+                        
                         )
-                    // Stale-while-revalidate: refresh in background if cache is stale
+                    }
+                    // Stale-while-revalidate: refresh in background if cache is stale.
+                    // The originating summary id is captured here so the inner write
+                    // aborts when the user has navigated to a different summary by the
+                    // time the network call resolves — preventing a cross-summary write.
                     viewModelScope.launch {
                         try {
                             val refreshed = refreshFullContentUseCase(id)
                             if (refreshed != null) {
-                                _state.value =
-                                    _state.value.copy(
-                                        summary = _state.value.summary?.copy(fullContent = refreshed),
-                                    )
+                                _state.update { current ->
+                                    if (current.summary?.id != id) {
+                                        current
+                                    } else {
+                                        current.copy(
+                                            summary = current.summary.copy(fullContent = refreshed),
+                                        )
+                                    }
+                                }
                             }
                         } catch (e: Exception) {
                             logger.debug(e) { "Background content refresh failed for $id" }
                         }
                     }
                 } else {
-                    _state.value = _state.value.copy(isLoadingContent = false)
+                    _state.update { it.copy(isLoadingContent = false) }
                 }
             } catch (e: Exception) {
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         isLoadingContent = false,
                         error = e.toAppError().userMessage(),
+                    
                     )
+                }
             }
         }
     }
@@ -154,18 +168,20 @@ class SummaryDetailViewModel(
         viewModelScope.launch {
             try {
                 toggleFavoriteUseCase(summary.id)
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         summary = summary.copy(isFavorited = !summary.isFavorited),
+                    
                     )
+                }
             } catch (e: Exception) {
-                _state.value = _state.value.copy(error = e.toAppError().userMessage())
+                _state.update { it.copy(error = e.toAppError().userMessage()) }
             }
         }
     }
 
     fun toggleReadingSettings() {
-        _state.value = _state.value.copy(showReadingSettings = !_state.value.showReadingSettings)
+        _state.update { it.copy(showReadingSettings = !it.showReadingSettings) }
     }
 
     fun updateFontSizeScale(scale: Float) {
@@ -204,7 +220,7 @@ class SummaryDetailViewModel(
             try {
                 deleteSummaryUseCase(id)
             } catch (e: Exception) {
-                _state.value = _state.value.copy(error = e.toAppError().userMessage())
+                _state.update { it.copy(error = e.toAppError().userMessage()) }
             }
         }
     }

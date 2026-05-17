@@ -15,6 +15,7 @@ import com.po4yka.ratatoskr.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -42,20 +43,24 @@ class AuthViewModel(
         viewModelScope.launch {
             try {
                 val user = getCurrentUserUseCase()
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         user = user,
                         isAuthenticated = user != null,
+                    
                     )
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 logger.error(e) { "Failed to check auth status" }
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         user = null,
                         isAuthenticated = false,
+                    
                     )
+                }
             }
         }
     }
@@ -65,7 +70,7 @@ class AuthViewModel(
         viewModelScope.launch {
             try {
                 val credentials = getDeveloperCredentialsUseCase()
-                _state.value = _state.value.copy(savedDeveloperCredentials = credentials)
+                _state.update { it.copy(savedDeveloperCredentials = credentials) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -77,20 +82,22 @@ class AuthViewModel(
     @Suppress("TooGenericExceptionCaught")
     fun login(authData: TelegramAuthData) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
+            _state.update { it.copy(isLoading = true, error = null) }
             try {
                 loginWithTelegramUseCase(authData)
                 val user = getCurrentUserUseCase()
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         isLoading = false,
                         isAuthenticated = true,
                         user = user,
                         error = null,
+                    
                     )
+                }
             } catch (e: Exception) {
                 logger.error(e) { "Login with Telegram failed" }
-                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
+                _state.update { it.copy(isLoading = false, error = e.toAppError().userMessage()) }
             }
         }
     }
@@ -103,7 +110,7 @@ class AuthViewModel(
         rememberCredentials: Boolean = true,
     ) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
+            _state.update { it.copy(isLoading = true, error = null) }
             try {
                 loginWithSecretUseCase(userId, clientId, secret)
                 val user = getCurrentUserUseCase()
@@ -113,8 +120,8 @@ class AuthViewModel(
                     saveDeveloperCredentialsUseCase(userId, clientId, secret)
                 }
 
-                _state.value =
-                    _state.value.copy(
+                _state.update {
+                    it.copy(
                         isLoading = false,
                         isAuthenticated = true,
                         user = user,
@@ -127,12 +134,14 @@ class AuthViewModel(
                                     secret = secret,
                                 )
                             } else {
-                                _state.value.savedDeveloperCredentials
+                                it.savedDeveloperCredentials
                             },
+                    
                     )
+                }
             } catch (e: Exception) {
                 logger.error { "Login with Secret failed: ${e.message}" }
-                _state.value = _state.value.copy(isLoading = false, error = e.toAppError().userMessage())
+                _state.update { it.copy(isLoading = false, error = e.toAppError().userMessage()) }
             }
         }
     }
@@ -150,13 +159,15 @@ class AuthViewModel(
             } catch (e: Exception) {
                 logger.error(e) { "Logout failed" }
             }
-            _state.value =
-                _state.value.copy(
+            _state.update {
+                it.copy(
                     isAuthenticated = false,
                     user = null,
                     savedDeveloperCredentials =
-                        if (clearSavedCredentials) null else _state.value.savedDeveloperCredentials,
+                        if (clearSavedCredentials) null else it.savedDeveloperCredentials,
+                
                 )
+            }
         }
     }
 }
