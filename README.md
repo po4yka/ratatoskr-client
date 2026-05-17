@@ -67,12 +67,12 @@ configuration, and troubleshooting.
 | Concurrency | [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) | `Flow`, `StateFlow`, structured concurrency |
 | Date/Time | [kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime) | ISO 8601, timezone-correct |
 | Logging | [kotlin-logging](https://github.com/oshai/kotlin-logging) | Structured logging facade |
-| UI Kit | Material 3 + project `AppTheme` | Custom design tokens in `core/ui/.../theme/` |
+| UI Kit | Frost design system (`AppTheme`) | Editorial monospace minimalism — see [`DESIGN.md`](DESIGN.md). Material 3 is forbidden in `commonMain` and enforced by `./gradlew verifyNoMaterial3`. |
 | Hot Reload | [Compose Hot Reload](https://github.com/JetBrains/compose-hot-reload) | Desktop dev loop |
 
 ### Android (androidApp + Android actuals)
 
-- **Jetpack Compose** UI (Material 3 + `AppTheme`)
+- **Jetpack Compose** UI (Frost design system via `AppTheme`)
 - **Tink AEAD + DataStore** secure JWT storage (see [`docs/SECURITY.md`](docs/SECURITY.md))
 - **OkHttp** Ktor engine
 - **WorkManager** background sync
@@ -135,6 +135,7 @@ ratatoskr-client/
 ├── androidApp/              # Android Application class, MainActivity, Glance widgets, WorkManager workers
 ├── composeApp/              # Compose shell, navigation graph, CocoaPods export, Desktop dev target
 ├── core/
+│   ├── api-generated/       # openapi-kmp-gen output (kotlinx-serializable DTOs + suspend Api objects)
 │   ├── common/              # Cross-feature domain primitives, AppConfig, BaseViewModel, error types
 │   ├── data/                # Ktor ApiClient, SQLDelight, SecureStorage actuals, generic API wrappers
 │   ├── navigation/          # Route contracts (RootNavigation, MainNavigation)

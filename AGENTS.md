@@ -5,7 +5,7 @@ Project guidance for Codex when working in this repository.
 ## Project Snapshot
 
 - Kotlin Multiplatform app with shared infrastructure in `core/`, feature modules under `feature/*`, a Compose shell in `composeApp/`, an Android application host in `androidApp/`, and a SwiftUI host app in `iosApp/`.
-- Active Kotlin modules are `core/common`, `core/data`, `core/navigation`, `core/ui`, `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, and `feature/sync`.
+- Active Kotlin modules are `core/api-generated`, `core/common`, `core/data`, `core/navigation`, `core/ui`, `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, and `feature/sync`.
 - Desktop exists as a development target for Compose work and hot reload, not as a production app.
 
 ## Build And Run
@@ -110,7 +110,9 @@ Default rule in `core/` and `feature/*` code:
 Important exceptions already exist and are valid:
 
 - `core/data/src/iosMain/.../di/IosModule.kt` uses Koin DSL because the generated `.module` extensions are not visible from `iosMain`.
+- `core/data/src/desktopMain/.../di/DesktopModule.kt` uses DSL for desktop-only wiring that doesn't go through KSP-scanned annotations.
 - `composeApp/src/commonMain/.../di/ImageLoaderModule.kt` uses DSL for UI-only wiring.
+- `feature/auth/.../di/AuthFeatureBindings.kt` plus the matching `*FeatureBindings.kt` in `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, `feature/sync` use DSL because **ViewModels are wired manually to avoid duplicate `BaseViewModel` KSP symbols in native frameworks** — Koin's annotation scanner emits a synthetic ViewModel factory per module, and when several modules export `BaseViewModel` subclasses through the same iOS framework the duplicates fail link. See the comment at the top of `AuthFeatureBindings.kt` for the canonical explanation.
 - tests may use DSL to provide fakes and overrides.
 
 Do not "fix" those exceptions by force-converting them to annotations without understanding the source-set limitations.
@@ -157,7 +159,7 @@ from it via [openapi-kmp-gen](https://github.com/kroegerama/openapi-kmp-gen).
   `core/api-generated/src/commonMain/openapi/mobile_api.yaml` so the build
   works offline.
 - Generated Kotlin sources are checked in at
-  `core/api-generated/src/commonMain/generated/` (4 files, ~9k lines).
+  `core/api-generated/src/commonMain/generated/` (4 files, ~10.6k lines).
 
 ### Bump the pinned spec
 
@@ -215,19 +217,17 @@ bootstrapGeneratedApi(
 ```
 
 The companion library's `AuthPlugin` does not auto-refresh on 401 — that
-behavior currently lives in `core/data/.../ApiClient.kt` for hand-written
-call sites. While consumer migration is in progress, the two clients
-coexist:
+behavior lives in `core/data/.../ApiClient.kt`. The feature modules no
+longer import `ApiClient` directly (`rg -l "data\.remote\.ApiClient" feature/`
+returns nothing); the legacy client is now only referenced by
+`core/data/.../di/NetworkModule.kt` for the dwindling set of call sites
+inside `core/data` itself. New code should use the bootstrapped
+generated `Api.client` and handle 401 explicitly via the
+`Either<CallException, HttpCallResponse<T>>` return type.
 
-- Hand-written `feature/<name>/data/remote/<Name>Api.kt` keeps using
-  `core/data`'s `ApiClient`.
-- New code calling generated `<Name>Api` objects uses the bootstrapped
-  `Api.client` and handles 401 explicitly via the
-  `Either<CallException, HttpCallResponse<T>>` return type.
-
-When the last hand-written API call site is removed, the existing
-`ApiClient` and `ApiResponseDto<T>` envelope can be deleted in a single
-follow-up commit.
+Tracking the final cleanup: `docs/tasks/issues/complete-generated-client-migration-and-delete-apiclient.md`.
+When the last call site is removed, the existing `ApiClient` and
+`ApiResponseDto<T>` envelope can be deleted in a single follow-up commit.
 
 ## Auth And Sync
 
