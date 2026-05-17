@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Plural strings for count-driven UI surfaces. Use via Compose Resources
+    `pluralStringResource(Res.plurals.foo, count, count)`. English has two
+    forms (one, other); the corresponding ru file uses Russian's four forms
+    (one, few, many, other). Keep the keysets in lockstep across locales.
+-->
+<resources>
+    <plurals name="summary_count">
+        <item quantity="one">%d summary</item>
+        <item quantity="other">%d summaries</item>
+    </plurals>
+    <plurals name="collection_count">
+        <item quantity="one">%d collection</item>
+        <item quantity="other">%d collections</item>
+    </plurals>
+    <plurals name="highlight_count">
+        <item quantity="one">%d highlight</item>
+        <item quantity="other">%d highlights</item>
+    </plurals>
+    <plurals name="day_streak">
+        <item quantity="one">%d-day streak</item>
+        <item quantity="other">%d-day streak</item>
+    </plurals>
+    <plurals name="minutes_per_day_target">
+        <item quantity="one">Target: %d minute per day</item>
+        <item quantity="other">Target: %d minutes per day</item>
+    </plurals>
+    <plurals name="items_failed_to_sync">
+        <item quantity="one">%d item failed to sync</item>
+        <item quantity="other">%d items failed to sync</item>
+    </plurals>
+</resources>

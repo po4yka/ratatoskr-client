@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Russian plural forms (CLDR: one, few, many, other).
+    - one: n mod 10 = 1 and n mod 100 != 11 (1, 21, 31, ...)
+    - few: n mod 10 in {2,3,4} and n mod 100 not in {12,13,14} (2, 3, 4, 22, ...)
+    - many: n mod 10 = 0 or n mod 10 in {5..9} or n mod 100 in {11..14} (0, 5..20, 25..30, ...)
+    - other: fractional (1.5)
+    Keep keys in lockstep with values/plurals.xml.
+    NOTE: Russian wording reviewed by a native speaker per follow-up issue.
+-->
+<resources>
+    <plurals name="summary_count">
+        <item quantity="one">%d сводка</item>
+        <item quantity="few">%d сводки</item>
+        <item quantity="many">%d сводок</item>
+        <item quantity="other">%d сводки</item>
+    </plurals>
+    <plurals name="collection_count">
+        <item quantity="one">%d коллекция</item>
+        <item quantity="few">%d коллекции</item>
+        <item quantity="many">%d коллекций</item>
+        <item quantity="other">%d коллекции</item>
+    </plurals>
+    <plurals name="highlight_count">
+        <item quantity="one">%d выделение</item>
+        <item quantity="few">%d выделения</item>
+        <item quantity="many">%d выделений</item>
+        <item quantity="other">%d выделения</item>
+    </plurals>
+    <plurals name="day_streak">
+        <item quantity="one">Серия %d день</item>
+        <item quantity="few">Серия %d дня</item>
+        <item quantity="many">Серия %d дней</item>
+        <item quantity="other">Серия %d дня</item>
+    </plurals>
+    <plurals name="minutes_per_day_target">
+        <item quantity="one">Цель: %d минута в день</item>
+        <item quantity="few">Цель: %d минуты в день</item>
+        <item quantity="many">Цель: %d минут в день</item>
+        <item quantity="other">Цель: %d минуты в день</item>
+    </plurals>
+    <plurals name="items_failed_to_sync">
+        <item quantity="one">%d элемент не удалось синхронизировать</item>
+        <item quantity="few">%d элемента не удалось синхронизировать</item>
+        <item quantity="many">%d элементов не удалось синхронизировать</item>
+        <item quantity="other">%d элементов не удалось синхронизировать</item>
+    </plurals>
+</resources>
