@@ -251,12 +251,11 @@ follow-up commit.
 ## Task Board
 
 This repository uses Obsidian Tasks-compatible Markdown checkboxes as the canonical task system.
-
-Before changing task-related files, use the `repo-task-board` skill if available.
+Use the `repo-task-board` skill for all task-related operations.
 
 Canonical files: `docs/tasks/backlog.md` · `docs/tasks/active.md` · `docs/tasks/blocked.md` · `docs/tasks/dashboard.md`
 
-Canonical syntax:
+Canonical task syntax:
 
 ```md
 - [ ] #task <imperative title> #repo/ratatoskr-client #area/<area> #status/<status> <priority>
@@ -265,3 +264,5 @@ Canonical syntax:
 Allowed statuses: `#status/backlog` · `#status/todo` · `#status/doing` · `#status/review` · `#status/blocked` · `#status/done` · `#status/dropped`
 
 Rules: preserve Obsidian Tasks syntax · edit existing tasks instead of duplicating · exactly one `#status/*` per task · add `✅ YYYY-MM-DD` when completing · add `#blocked` and indented reason when blocking.
+
+Invoke the `repo-task-board` skill when the user mentions: roadmap, TODO, backlog, Kanban, task board, sprint, blocked work, or agent-ready work.
