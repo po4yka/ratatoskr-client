@@ -167,9 +167,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run detekt (if configured)
-        run: ./gradlew detekt --no-daemon || echo "Detekt not configured, skipping"
-        continue-on-error: true
+      - name: Run detekt
+        # Hard merge gate: a detekt finding must fail PR validation. The
+        # previous `|| echo "skipping"` plus `continue-on-error: true` were
+        # bootstrap-era softeners and are no longer correct now that detekt
+        # is configured and green.
+        run: ./gradlew detekt --no-daemon
 
       - name: Check dependencies for updates
         run: ./gradlew dependencyUpdates --no-daemon || echo "Dependency updates check not available"

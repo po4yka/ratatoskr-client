@@ -71,3 +71,20 @@ jobs:
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
+
+    # Runs the existing iosAppUITests (AuthViewTests, NavigationTests). A
+    # bootable simulator destination is required for `xcodebuild test`, hence
+    # the named iPhone destination here vs. the `generic/platform=...` used
+    # by the build steps. iPhone 15 is available on macos-latest as of
+    # 2026-05.
+    - name: Run iOS UI tests (XCTest)
+      run: |
+        cd iosApp
+        xcodebuild test \
+          -workspace iosApp.xcworkspace \
+          -scheme iosApp \
+          -sdk iphonesimulator \
+          -destination 'platform=iOS Simulator,name=iPhone 15' \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
