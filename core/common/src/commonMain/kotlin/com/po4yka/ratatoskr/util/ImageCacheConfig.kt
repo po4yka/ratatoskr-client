@@ -10,9 +10,12 @@ object ImageCacheConfig {
     const val MEMORY_CACHE_SIZE_MB = 50
 
     /**
-     * Maximum disk cache size in MB
+     * Maximum disk cache size in MB. 64 MiB matches the value documented in
+     * `docs/tasks/issues/tune-coil-image-loader-cache-and-crossfade.md` — large
+     * enough to retain ~200 thumbnails at full retina resolution without
+     * displacing user-app data on low-storage devices.
      */
-    const val DISK_CACHE_SIZE_MB = 250
+    const val DISK_CACHE_SIZE_MB = 64
 
     /**
      * Cache directory name
@@ -30,7 +33,9 @@ object ImageCacheConfig {
     const val PLACEHOLDER_COLOR = 0xFFE0E0E0
 
     /**
-     * Crossfade animation duration in milliseconds
+     * Crossfade animation duration in milliseconds. 150 ms is short enough to
+     * feel snappy on list-scroll thumbnail loads without being so abrupt that
+     * the user notices the swap.
      */
-    const val CROSSFADE_DURATION_MS = 300
+    const val CROSSFADE_DURATION_MS = 150
 }

@@ -7,6 +7,7 @@ import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
+import com.po4yka.ratatoskr.util.ImageCacheConfig
 import io.ktor.client.HttpClient
 import okio.FileSystem
 import org.koin.dsl.module
@@ -34,10 +35,10 @@ fun getImageLoader(
         }
         .diskCache {
             DiskCache.Builder()
-                .directory(FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "image_cache")
-                .maxSizeBytes(1024L * 1024L * 100L) // 100MB
+                .directory(FileSystem.SYSTEM_TEMPORARY_DIRECTORY / ImageCacheConfig.CACHE_DIRECTORY)
+                .maxSizeBytes(ImageCacheConfig.DISK_CACHE_SIZE_MB * 1024L * 1024L)
                 .build()
         }
-        .crossfade(true)
+        .crossfade(ImageCacheConfig.CROSSFADE_DURATION_MS)
         .build()
 }
