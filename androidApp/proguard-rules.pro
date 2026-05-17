@@ -53,5 +53,32 @@
 -dontwarn okio.**
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 
+# Strip debug/trace logging in release builds. R8 removes call sites
+# annotated as -assumenosideeffects entirely, so neither the call nor
+# the lambda body executes — saving both APK size and runtime allocation.
+# `error`, `warn`, `info` calls remain so Crashlytics / Logcat still
+# receive the intended signals.
+-assumenosideeffects class io.github.oshai.kotlinlogging.KLogger {
+    public *** debug(...);
+    public *** trace(...);
+}
+-assumenosideeffects class io.github.oshai.kotlinlogging.Logger {
+    public *** debug(...);
+    public *** trace(...);
+}
+
+# kotlin-logging's KLoggerKt extension functions used by some call sites.
+-assumenosideeffects class io.github.oshai.kotlinlogging.KLoggerKt {
+    public static *** debug(...);
+    public static *** trace(...);
+}
+
+# Strip android.util.Log debug/verbose entries too — any direct Log.d
+# / Log.v calls in androidMain code paths.
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+}
+
 # Obfuscate everything else
 -repackageclasses 'o'
