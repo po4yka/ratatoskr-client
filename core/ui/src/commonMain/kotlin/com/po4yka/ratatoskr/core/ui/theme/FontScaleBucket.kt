@@ -30,8 +30,7 @@ enum class FontScaleBucket(val rawScale: Float) {
     XLARGE(1.7f),
     ;
 
-    fun clampedScale(maxFontScale: Float = FROST_DEFAULT_MAX_FONT_SCALE): Float =
-        minOf(rawScale, maxFontScale)
+    fun clampedScale(maxFontScale: Float = FROST_DEFAULT_MAX_FONT_SCALE): Float = minOf(rawScale, maxFontScale)
 
     companion object {
         fun nearest(scale: Float): FontScaleBucket {
