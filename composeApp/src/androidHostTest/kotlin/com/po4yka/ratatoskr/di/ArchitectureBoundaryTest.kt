@@ -18,9 +18,9 @@ class ArchitectureBoundaryTest {
         )
 
     @Test
-    fun `domain layer does not import transport types`() {
+    fun `domain and api layers do not import transport types`() {
         val repoRoot = findRepoRoot()
-        val domainRoots =
+        val scanRoots =
             listOf(
                 repoRoot.resolve("feature"),
                 repoRoot.resolve("core/common"),
@@ -28,14 +28,17 @@ class ArchitectureBoundaryTest {
             )
 
         val violations =
-            domainRoots
+            scanRoots
                 .filter { Files.exists(it) }
                 .flatMap { root ->
                     Files.walk(root).use { paths: Stream<Path> ->
                         paths
                             .filter { path ->
                                 path.extension == "kt" &&
-                                    path.toString().contains("/domain/") &&
+                                    (
+                                        path.toString().contains("/domain/") ||
+                                            path.toString().contains("/api/")
+                                    ) &&
                                     !path.toString().contains("/build/")
                             }
                             .map { path ->
@@ -51,7 +54,7 @@ class ArchitectureBoundaryTest {
 
         assertTrue(
             violations.isEmpty(),
-            "Forbidden transport imports found in domain sources:\n${violations.joinToString("\n")}",
+            "Forbidden transport imports found in domain or api sources:\n${violations.joinToString("\n")}",
         )
     }
 

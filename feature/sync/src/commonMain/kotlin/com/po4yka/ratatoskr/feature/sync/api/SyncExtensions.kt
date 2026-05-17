@@ -1,13 +1,12 @@
 package com.po4yka.ratatoskr.feature.sync.api
 
-import com.po4yka.ratatoskr.data.remote.dto.SyncItemDto
 import com.po4yka.ratatoskr.database.PendingOperationEntity
 import com.po4yka.ratatoskr.feature.sync.domain.repository.LocalChange
 
 interface SyncItemApplier {
     val entityType: String
 
-    fun apply(item: SyncItemDto): Boolean
+    fun apply(entity: SyncEntity): Boolean
 }
 
 interface PendingOperationHandler {
