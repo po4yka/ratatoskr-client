@@ -20,18 +20,34 @@ kotlin {
         framework {
             baseName = "ComposeApp"
             isStatic = true
-            export(projects.core.apiGenerated)
+            // ObjC export surface — keep this minimal. A module needs an
+            // `export()` line ONLY when its types appear in the public
+            // Swift-visible API of `ComposeApp.framework` (i.e. on a
+            // public Kotlin symbol used directly from Swift). Internal
+            // deps stay as `api(...)` below so they compile but do not
+            // bloat the ObjC headers or the framework binary.
+            //
+            // Swift consumers (`iosApp/iosApp/iOSApp.swift`,
+            // `ContentView.swift`) only touch `IosAppHost`,
+            // `IosKoinBootstrap`, `ComposeRootViewControllerFactory`,
+            // and `RootComponent`. Of those:
+            //   - IosAppHost / IosKoinBootstrap / Factory live in this
+            //     module → no export needed for the symbol itself.
+            //   - RootComponent uses ChildStack/Value (Decompose) and
+            //     RootChildDescriptor/AppRoute (core/navigation) on its
+            //     public surface, so those modules MUST be exported.
+            //   - core/common is a transitive contract used by
+            //     core/navigation types and shared models — exported.
+            //
+            // core/data, core/api-generated, every feature/*, and
+            // koin.core are NOT referenced from Swift and are not
+            // surfaced through any exported Kotlin symbol, so they are
+            // intentionally omitted. ShareExtension and
+            // RecentSummariesWidget do not import ComposeApp at all
+            // (verified 2026-05-17).
             export(projects.core.common)
-            export(projects.core.data)
             export(projects.core.navigation)
-            export(projects.feature.auth)
-            export(projects.feature.collections)
-            export(projects.feature.digest)
-            export(projects.feature.settings)
-            export(projects.feature.summary)
-            export(projects.feature.sync)
             export(libs.decompose.core)
-            export(libs.koin.core)
         }
     }
 
