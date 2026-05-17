@@ -250,19 +250,53 @@ follow-up commit.
 
 ## Task Board
 
-This repository uses Obsidian Tasks-compatible Markdown checkboxes as the canonical task system.
+This repository uses Obsidian Tasks-compatible Markdown task lines as the canonical task system.
 Use the `repo-task-board` skill for all task-related operations.
 
-Canonical files: `docs/tasks/backlog.md` · `docs/tasks/active.md` · `docs/tasks/blocked.md` · `docs/tasks/dashboard.md`
+Canonical files:
 
-Canonical task syntax:
+- `docs/tasks/README.md` — structure overview, lifecycle, frontmatter schema
+- `docs/tasks/issues/<slug>.md` — **source of truth** — one note per task (YAML frontmatter + canonical `- [ ]` line + spec body)
+- `docs/tasks/templates/new-task.md` — Templater template for creating new task notes
+- `docs/tasks/views/{all-tasks,by-area,by-priority}.base` — Obsidian Bases structured views (table + cards)
+- `docs/tasks/active.md` — Obsidian Tasks query view (`#status/doing`, `#status/review`)
+- `docs/tasks/backlog.md` — Obsidian Tasks query view (`#status/backlog`)
+- `docs/tasks/blocked.md` — Obsidian Tasks query view (`#status/blocked`)
+- `docs/tasks/dashboard.md` — full Obsidian Tasks query hub + Bases-view links
+- `docs/tasks/board.md` — Kanban swim-lane view (`[[slug]]` wikilinks; source of truth remains `issues/`)
+- `docs/tasks/.markdownlint.yaml` — relaxes MD013/MD033 inside the tasks folder
+
+Canonical task syntax (lives inside `docs/tasks/issues/<slug>.md`):
 
 ```md
-- [ ] #task <imperative title> #repo/ratatoskr-client #area/<area> #status/<status> <priority>
+- [ ] #task <imperative title> #repo/ratatoskr-client #area/<area> #status/<status> <priority> [paperclip:POY-NNN]
+```
+
+The `[paperclip:POY-NNN]` suffix is optional; include it when a task corresponds to a Paperclip (Jira) issue.
+
+Per-task note YAML frontmatter:
+
+```yaml
+---
+title: Imperative task title
+status: doing          # backlog | todo | doing | review | blocked | done | dropped
+area: sync             # auth | api | kmp | sync | ci | frontend | observability | testing | content | scraper | llm | db | docs | ops | search | design
+priority: high         # critical | high | medium | low
+owner: Role name
+paperclip: POY-NNN     # optional
+blocks: []
+blocked_by: []
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+---
 ```
 
 Allowed statuses: `#status/backlog` · `#status/todo` · `#status/doing` · `#status/review` · `#status/blocked` · `#status/done` · `#status/dropped`
 
-Rules: preserve Obsidian Tasks syntax · edit existing tasks instead of duplicating · exactly one `#status/*` per task · add `✅ YYYY-MM-DD` when completing · add `#blocked` and indented reason when blocking.
+Lifecycle: create via Templater template (`templates/new-task.md`) → file lands in `issues/<slug>.md` with kebab-case filename → transitions update `status:` frontmatter AND the `#status/*` tag in the canonical `- [ ]` line together → delete the issue file on close (git history is the audit trail: `git log -- docs/tasks/issues/<slug>.md`). Do NOT add task lines to `active.md`, `backlog.md`, `blocked.md`, or `dashboard.md` — those are query-only views that would double-count.
+
+Open the **repo root** as your Obsidian vault (not `docs/tasks/`) so the Tasks plugin and Bases views resolve correctly.
+
+**AI assistants must delete the issue file after implementing a task.**
 
 Invoke the `repo-task-board` skill when the user mentions: roadmap, TODO, backlog, Kanban, task board, sprint, blocked work, or agent-ready work.

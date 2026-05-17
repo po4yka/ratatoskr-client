@@ -250,19 +250,28 @@ follow-up commit.
 
 ## Task Board
 
-This repository uses Obsidian Tasks-compatible Markdown checkboxes as the canonical task system.
-Use the `repo-task-board` skill for all task-related operations.
+This repository uses Obsidian Tasks-compatible Markdown task lines as the canonical task system.
+Before changing task-related files, use the `repo-task-board` skill if available.
 
-Canonical files: `docs/tasks/backlog.md` · `docs/tasks/active.md` · `docs/tasks/blocked.md` · `docs/tasks/dashboard.md`
+**Source of truth:** `docs/tasks/issues/<slug>.md` — one note per task (kebab-case slug, YAML frontmatter + canonical `- [ ]` line + spec body).
 
-Canonical task syntax:
+**Query views** (do not add task lines here — they would double-count):
+`docs/tasks/active.md` · `docs/tasks/backlog.md` · `docs/tasks/blocked.md` · `docs/tasks/dashboard.md`
+
+**Other vault files:** `docs/tasks/board.md` (Kanban `[[slug]]` wikilinks) · `docs/tasks/templates/new-task.md` (Templater) · `docs/tasks/views/{all-tasks,by-area,by-priority}.base` (Obsidian Bases) · `docs/tasks/README.md` (structure + lifecycle reference) · `docs/tasks/.markdownlint.yaml` (MD013/MD033 relaxed in tasks folder).
+
+Canonical syntax (lives inside `issues/<slug>.md`):
 
 ```md
-- [ ] #task <imperative title> #repo/ratatoskr-client #area/<area> #status/<status> <priority>
+- [ ] #task <imperative title> #repo/ratatoskr-client #area/<area> #status/<status> <priority> [paperclip:POY-NNN]
 ```
+
+The `[paperclip:POY-NNN]` suffix is optional; include it when a task corresponds to a Paperclip (Jira) issue. Mirror the same ID in the frontmatter as `paperclip: POY-NNN`.
+
+Allowed areas: `auth` · `api` · `kmp` · `sync` · `ci` · `frontend` · `observability` · `testing` · `content` · `scraper` · `llm` · `db` · `docs` · `ops` · `search` · `design`
 
 Allowed statuses: `#status/backlog` · `#status/todo` · `#status/doing` · `#status/review` · `#status/blocked` · `#status/done` · `#status/dropped`
 
-Rules: preserve Obsidian Tasks syntax · edit existing tasks instead of duplicating · exactly one `#status/*` per task · add `✅ YYYY-MM-DD` when completing · add `#blocked` and indented reason when blocking.
+Rules: one `- [ ]` line per per-task note · update `status:` frontmatter AND `#status/*` tag together · update the `updated:` frontmatter on every transition · delete the `issues/<slug>.md` file when done (git history is the audit trail: `git log -- docs/tasks/issues/<slug>.md`) · never add task lines to the query view files.
 
 Invoke the `repo-task-board` skill when the user mentions: roadmap, TODO, backlog, Kanban, task board, sprint, blocked work, or agent-ready work.
