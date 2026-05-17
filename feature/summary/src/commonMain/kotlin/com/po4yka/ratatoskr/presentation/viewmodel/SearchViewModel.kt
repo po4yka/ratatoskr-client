@@ -7,10 +7,10 @@ import com.po4yka.ratatoskr.domain.usecase.SemanticSearchUseCase
 import com.po4yka.ratatoskr.presentation.state.SearchFilters
 import com.po4yka.ratatoskr.presentation.state.SearchMode
 import com.po4yka.ratatoskr.presentation.state.SearchState
+import com.po4yka.ratatoskr.util.error.runCatchingDomain
 import com.po4yka.ratatoskr.util.error.toAppError
 import com.po4yka.ratatoskr.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -158,7 +158,6 @@ class SearchViewModel(
     /**
      * Deletes a single recent search query.
      */
-    @Suppress("TooGenericExceptionCaught")
     fun deleteRecentSearch(query: String) {
         searchHistoryManager.deleteSearch(viewModelScope, query) {
             loadRecentSearches()
@@ -199,7 +198,6 @@ class SearchViewModel(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     private fun loadRecentSearches() {
         searchHistoryManager.loadRecentSearches(viewModelScope) { searches ->
             _state.update { it.copy(recentSearches = searches) }
@@ -212,23 +210,20 @@ class SearchViewModel(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     private fun loadInsights() {
         viewModelScope.launch {
             _state.update { it.copy(isLoadingInsights = true) }
-            try {
-                val insights = getSearchInsightsUseCase()
-                _state.update { it.copy(insights = insights, isLoadingInsights = false) }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                logger.warn(e) { "Failed to load search insights" }
-                _state.update { it.copy(isLoadingInsights = false) }
-            }
+            runCatchingDomain { getSearchInsightsUseCase() }
+                .onSuccess { insights ->
+                    _state.update { it.copy(insights = insights, isLoadingInsights = false) }
+                }
+                .onFailure { e ->
+                    logger.warn(e) { "Failed to load search insights" }
+                    _state.update { it.copy(isLoadingInsights = false) }
+                }
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     private suspend fun performSearch(
         query: String,
         page: Int,
@@ -240,54 +235,56 @@ class SearchViewModel(
             _state.update { it.copy(isLoadingMore = true) }
         }
 
-        try {
+        runCatchingDomain {
             val currentState = _state.value
-            val results =
-                when (currentState.searchMode) {
-                    SearchMode.FULLTEXT -> searchSummariesUseCase(query, page, PresentationConstants.DEFAULT_PAGE_SIZE)
-                    SearchMode.SEMANTIC ->
-                        semanticSearchUseCase(
-                            query = query,
-                            page = page,
-                            pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
-                            language = currentState.filters.language,
-                            tags = currentState.filters.tags.ifEmpty { null },
-                        )
-                }
-            val hasMore = results.size >= PresentationConstants.DEFAULT_PAGE_SIZE
-
-            var shouldSaveHistory = false
-            _state.update { currentState ->
-                val newResults =
-                    if (isNewSearch) {
-                        results
-                    } else {
-                        currentState.results + results
-                    }
-                shouldSaveHistory = isNewSearch && results.isNotEmpty()
-
-                currentState.copy(
-                    results = newResults,
-                    currentPage = page,
-                    hasMoreResults = hasMore,
-                    isLoading = false,
-                    isLoadingMore = false,
-                )
-            }
-
-            // Save successful search to history
-            if (shouldSaveHistory) {
-                searchHistoryManager.saveSearch(query)
-                loadRecentSearches()
-            }
-        } catch (e: Exception) {
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    isLoadingMore = false,
-                    error = e.toAppError().userMessage(),
-                )
+            when (currentState.searchMode) {
+                SearchMode.FULLTEXT -> searchSummariesUseCase(query, page, PresentationConstants.DEFAULT_PAGE_SIZE)
+                SearchMode.SEMANTIC ->
+                    semanticSearchUseCase(
+                        query = query,
+                        page = page,
+                        pageSize = PresentationConstants.DEFAULT_PAGE_SIZE,
+                        language = currentState.filters.language,
+                        tags = currentState.filters.tags.ifEmpty { null },
+                    )
             }
         }
+            .onSuccess { results ->
+                val hasMore = results.size >= PresentationConstants.DEFAULT_PAGE_SIZE
+
+                var shouldSaveHistory = false
+                _state.update { currentState ->
+                    val newResults =
+                        if (isNewSearch) {
+                            results
+                        } else {
+                            currentState.results + results
+                        }
+                    shouldSaveHistory = isNewSearch && results.isNotEmpty()
+
+                    currentState.copy(
+                        results = newResults,
+                        currentPage = page,
+                        hasMoreResults = hasMore,
+                        isLoading = false,
+                        isLoadingMore = false,
+                    )
+                }
+
+                // Save successful search to history
+                if (shouldSaveHistory) {
+                    searchHistoryManager.saveSearch(query)
+                    loadRecentSearches()
+                }
+            }
+            .onFailure { e ->
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isLoadingMore = false,
+                        error = e.toAppError().userMessage(),
+                    )
+                }
+            }
     }
 }

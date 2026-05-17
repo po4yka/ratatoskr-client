@@ -10,6 +10,7 @@ import com.po4yka.ratatoskr.domain.usecase.LoginWithTelegramUseCase
 import com.po4yka.ratatoskr.domain.usecase.LogoutUseCase
 import com.po4yka.ratatoskr.domain.usecase.SaveDeveloperCredentialsUseCase
 import com.po4yka.ratatoskr.presentation.state.AuthState
+import com.po4yka.ratatoskr.util.error.runCatchingDomain
 import com.po4yka.ratatoskr.util.error.toAppError
 import com.po4yka.ratatoskr.util.error.userMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.coroutines.cancellation.CancellationException
 
 private val logger = KotlinLogging.logger {}
 
@@ -38,71 +38,65 @@ class AuthViewModel(
         loadSavedDeveloperCredentials()
     }
 
-    @Suppress("TooGenericExceptionCaught")
     private fun checkAuthStatus() {
         viewModelScope.launch {
-            try {
-                val user = getCurrentUserUseCase()
-                _state.update {
-                    it.copy(
-                        user = user,
-                        isAuthenticated = user != null,
-                    
-                    )
+            runCatchingDomain { getCurrentUserUseCase() }
+                .onSuccess { user ->
+                    _state.update {
+                        it.copy(
+                            user = user,
+                            isAuthenticated = user != null,
+                        )
+                    }
                 }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                logger.error(e) { "Failed to check auth status" }
-                _state.update {
-                    it.copy(
-                        user = null,
-                        isAuthenticated = false,
-                    
-                    )
+                .onFailure { e ->
+                    logger.error(e) { "Failed to check auth status" }
+                    _state.update {
+                        it.copy(
+                            user = null,
+                            isAuthenticated = false,
+                        )
+                    }
                 }
-            }
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     private fun loadSavedDeveloperCredentials() {
         viewModelScope.launch {
-            try {
-                val credentials = getDeveloperCredentialsUseCase()
-                _state.update { it.copy(savedDeveloperCredentials = credentials) }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                logger.error { "Failed to load saved developer credentials: ${e.message}" }
-            }
+            runCatchingDomain { getDeveloperCredentialsUseCase() }
+                .onSuccess { credentials ->
+                    _state.update { it.copy(savedDeveloperCredentials = credentials) }
+                }
+                .onFailure { e ->
+                    logger.error { "Failed to load saved developer credentials: ${e.message}" }
+                }
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     fun login(authData: TelegramAuthData) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            try {
+            runCatchingDomain {
                 loginWithTelegramUseCase(authData)
-                val user = getCurrentUserUseCase()
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        isAuthenticated = true,
-                        user = user,
-                        error = null,
-                    
-                    )
-                }
-            } catch (e: Exception) {
-                logger.error(e) { "Login with Telegram failed" }
-                _state.update { it.copy(isLoading = false, error = e.toAppError().userMessage()) }
+                getCurrentUserUseCase()
             }
+                .onSuccess { user ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isAuthenticated = true,
+                            user = user,
+                            error = null,
+                        )
+                    }
+                }
+                .onFailure { e ->
+                    logger.error(e) { "Login with Telegram failed" }
+                    _state.update { it.copy(isLoading = false, error = e.toAppError().userMessage()) }
+                }
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     fun loginWithSecret(
         userId: Int,
         clientId: String,
@@ -111,61 +105,57 @@ class AuthViewModel(
     ) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            try {
+            runCatchingDomain {
                 loginWithSecretUseCase(userId, clientId, secret)
                 val user = getCurrentUserUseCase()
-
-                // Save credentials if requested
                 if (rememberCredentials) {
                     saveDeveloperCredentialsUseCase(userId, clientId, secret)
                 }
-
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        isAuthenticated = true,
-                        user = user,
-                        error = null,
-                        savedDeveloperCredentials =
-                            if (rememberCredentials) {
-                                DeveloperCredentials(
-                                    userId = userId,
-                                    clientId = clientId,
-                                    secret = secret,
-                                )
-                            } else {
-                                it.savedDeveloperCredentials
-                            },
-                    
-                    )
-                }
-            } catch (e: Exception) {
-                logger.error { "Login with Secret failed: ${e.message}" }
-                _state.update { it.copy(isLoading = false, error = e.toAppError().userMessage()) }
+                user
             }
+                .onSuccess { user ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isAuthenticated = true,
+                            user = user,
+                            error = null,
+                            savedDeveloperCredentials =
+                                if (rememberCredentials) {
+                                    DeveloperCredentials(
+                                        userId = userId,
+                                        clientId = clientId,
+                                        secret = secret,
+                                    )
+                                } else {
+                                    it.savedDeveloperCredentials
+                                },
+                        )
+                    }
+                }
+                .onFailure { e ->
+                    logger.error { "Login with Secret failed: ${e.message}" }
+                    _state.update { it.copy(isLoading = false, error = e.toAppError().userMessage()) }
+                }
         }
     }
 
-    @Suppress("unused", "TooGenericExceptionCaught") // Public API for UI layer
+    @Suppress("unused") // Public API for UI layer
     fun logout(clearSavedCredentials: Boolean = false) {
         viewModelScope.launch {
-            try {
+            runCatchingDomain {
                 logoutUseCase()
                 if (clearSavedCredentials) {
                     clearDeveloperCredentialsUseCase()
                 }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                logger.error(e) { "Logout failed" }
             }
+                .onFailure { e -> logger.error(e) { "Logout failed" } }
             _state.update {
                 it.copy(
                     isAuthenticated = false,
                     user = null,
                     savedDeveloperCredentials =
                         if (clearSavedCredentials) null else it.savedDeveloperCredentials,
-                
                 )
             }
         }

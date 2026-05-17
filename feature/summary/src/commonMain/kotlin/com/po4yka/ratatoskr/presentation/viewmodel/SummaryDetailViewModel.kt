@@ -10,6 +10,7 @@ import com.po4yka.ratatoskr.domain.usecase.GetSummaryContentUseCase
 import com.po4yka.ratatoskr.domain.usecase.RefreshFullContentUseCase
 import com.po4yka.ratatoskr.domain.usecase.ToggleFavoriteUseCase
 import com.po4yka.ratatoskr.presentation.state.SummaryDetailState
+import com.po4yka.ratatoskr.util.error.runCatchingDomain
 import com.po4yka.ratatoskr.util.error.toAppError
 import com.po4yka.ratatoskr.util.error.userMessage
 import com.po4yka.ratatoskr.util.network.NetworkMonitor
@@ -68,115 +69,112 @@ class SummaryDetailViewModel(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     fun loadSummary(id: String) {
         viewModelScope.launch {
             _state.value = SummaryDetailState(isLoading = true)
-            try {
-                val summary = getSummaryByIdUseCase(id)
-                _state.update {
-                    it.copy(
-                        summary = summary,
-                        isLoading = false,
-                        lastReadPosition = summary?.lastReadPosition ?: 0,
-                        lastReadOffset = summary?.lastReadOffset ?: 0,
-                    
-                    )
+            runCatchingDomain { getSummaryByIdUseCase(id) }
+                .onSuccess { summary ->
+                    _state.update {
+                        it.copy(
+                            summary = summary,
+                            isLoading = false,
+                            lastReadPosition = summary?.lastReadPosition ?: 0,
+                            lastReadOffset = summary?.lastReadOffset ?: 0,
+                        )
+                    }
+                    if (summary != null) {
+                        readingSessionDelegate.startSession(
+                            summaryId = id,
+                            isRead = summary.isRead,
+                            scope = viewModelScope,
+                        ) { sub -> _state.update { it.copy(session = sub) } }
+                        fetchFullContent(id)
+                        highlightDelegate.observeHighlights(
+                            summaryId = id,
+                            scope = viewModelScope,
+                            currentState = { _state.value.highlights },
+                        ) { sub -> _state.update { it.copy(highlights = sub) } }
+                        feedbackDelegate.observeFeedback(
+                            summaryId = id,
+                            scope = viewModelScope,
+                            currentState = { _state.value.feedback },
+                        ) { sub -> _state.update { it.copy(feedback = sub) } }
+                    }
                 }
-                if (summary != null) {
-                    readingSessionDelegate.startSession(
-                        summaryId = id,
-                        isRead = summary.isRead,
-                        scope = viewModelScope,
-                    ) { sub -> _state.update { it.copy(session = sub) } }
-                    fetchFullContent(id)
-                    highlightDelegate.observeHighlights(
-                        summaryId = id,
-                        scope = viewModelScope,
-                        currentState = { _state.value.highlights },
-                    ) { sub -> _state.update { it.copy(highlights = sub) } }
-                    feedbackDelegate.observeFeedback(
-                        summaryId = id,
-                        scope = viewModelScope,
-                        currentState = { _state.value.feedback },
-                    ) { sub -> _state.update { it.copy(feedback = sub) } }
+                .onFailure { e ->
+                    _state.update { it.copy(isLoading = false, error = e.toAppError().userMessage()) }
                 }
-            } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.toAppError().userMessage()) }
-            }
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     private fun fetchFullContent(id: String) {
         viewModelScope.launch {
             _state.update { it.copy(isLoadingContent = true) }
-            try {
-                val fullContent = getSummaryContentUseCase(id)
-                if (fullContent != null) {
-                    _state.update {
-                        it.copy(
-                            summary =
-                                it.summary?.copy(
-                                    fullContent = fullContent,
-                                    isFullContentCached = true,
-                                ),
-                            isLoadingContent = false,
-                        
-                        )
-                    }
-                    // Stale-while-revalidate: refresh in background if cache is stale.
-                    // The originating summary id is captured here so the inner write
-                    // aborts when the user has navigated to a different summary by the
-                    // time the network call resolves — preventing a cross-summary write.
-                    viewModelScope.launch {
-                        try {
-                            val refreshed = refreshFullContentUseCase(id)
-                            if (refreshed != null) {
-                                _state.update { current ->
-                                    if (current.summary?.id != id) {
-                                        current
-                                    } else {
-                                        current.copy(
-                                            summary = current.summary.copy(fullContent = refreshed),
-                                        )
+            runCatchingDomain { getSummaryContentUseCase(id) }
+                .onSuccess { fullContent ->
+                    if (fullContent != null) {
+                        _state.update {
+                            it.copy(
+                                summary =
+                                    it.summary?.copy(
+                                        fullContent = fullContent,
+                                        isFullContentCached = true,
+                                    ),
+                                isLoadingContent = false,
+                            )
+                        }
+                        // Stale-while-revalidate: refresh in background if cache is stale.
+                        // The originating summary id is captured here so the inner write
+                        // aborts when the user has navigated to a different summary by the
+                        // time the network call resolves — preventing a cross-summary write.
+                        viewModelScope.launch {
+                            runCatchingDomain { refreshFullContentUseCase(id) }
+                                .onSuccess { refreshed ->
+                                    if (refreshed != null) {
+                                        _state.update { current ->
+                                            if (current.summary?.id != id) {
+                                                current
+                                            } else {
+                                                current.copy(
+                                                    summary = current.summary.copy(fullContent = refreshed),
+                                                )
+                                            }
+                                        }
                                     }
                                 }
-                            }
-                        } catch (e: Exception) {
-                            logger.debug(e) { "Background content refresh failed for $id" }
+                                .onFailure { e ->
+                                    logger.debug(e) { "Background content refresh failed for $id" }
+                                }
                         }
+                    } else {
+                        _state.update { it.copy(isLoadingContent = false) }
                     }
-                } else {
-                    _state.update { it.copy(isLoadingContent = false) }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoadingContent = false,
-                        error = e.toAppError().userMessage(),
-                    
-                    )
+                .onFailure { e ->
+                    _state.update {
+                        it.copy(
+                            isLoadingContent = false,
+                            error = e.toAppError().userMessage(),
+                        )
+                    }
                 }
-            }
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     fun toggleFavorite() {
         val summary = _state.value.summary ?: return
         viewModelScope.launch {
-            try {
-                toggleFavoriteUseCase(summary.id)
-                _state.update {
-                    it.copy(
-                        summary = summary.copy(isFavorited = !summary.isFavorited),
-                    
-                    )
+            runCatchingDomain { toggleFavoriteUseCase(summary.id) }
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            summary = summary.copy(isFavorited = !summary.isFavorited),
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update { it.copy(error = e.toAppError().userMessage()) }
-            }
+                .onFailure { e ->
+                    _state.update { it.copy(error = e.toAppError().userMessage()) }
+                }
         }
     }
 
@@ -214,14 +212,13 @@ class SummaryDetailViewModel(
         readingSessionDelegate.saveReadPosition(summaryId, position, offset, viewModelScope)
     }
 
-    @Suppress("unused", "TooGenericExceptionCaught")
+    @Suppress("unused") // Public API for UI layer
     fun deleteSummary(id: String) {
         viewModelScope.launch {
-            try {
-                deleteSummaryUseCase(id)
-            } catch (e: Exception) {
-                _state.update { it.copy(error = e.toAppError().userMessage()) }
-            }
+            runCatchingDomain { deleteSummaryUseCase(id) }
+                .onFailure { e ->
+                    _state.update { it.copy(error = e.toAppError().userMessage()) }
+                }
         }
     }
 
@@ -381,18 +378,18 @@ class SummaryDetailViewModel(
 
     // Export / Share
 
-    @Suppress("TooGenericExceptionCaught")
     fun exportSummary() {
         val summaryId = _state.value.summary?.id ?: return
         _state.update { it.copy(isExporting = true, exportError = null) }
         viewModelScope.launch {
-            try {
+            runCatchingDomain {
                 val markdown = exportSummaryUseCase(summaryId).getOrThrow()
                 shareManager.shareText(markdown, "Export Summary")
-                _state.update { it.copy(isExporting = false) }
-            } catch (e: Exception) {
-                _state.update { it.copy(isExporting = false, exportError = e.toAppError().userMessage()) }
             }
+                .onSuccess { _state.update { it.copy(isExporting = false) } }
+                .onFailure { e ->
+                    _state.update { it.copy(isExporting = false, exportError = e.toAppError().userMessage()) }
+                }
         }
     }
 
