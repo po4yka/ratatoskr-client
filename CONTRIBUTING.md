@@ -17,6 +17,18 @@ welcome and read carefully.
    describes the canonical layout for adding a screen, repository,
    or use case.
 
+## Optional: pre-commit hooks
+
+Install lefthook once and ktlint formatting plus the Frost "no
+Material 3" guard will run automatically on every commit:
+
+```bash
+brew install lefthook && lefthook install
+```
+
+The configuration is in `lefthook.yml`. Use `git commit --no-verify`
+to skip the hooks in emergencies — but don't make a habit of it.
+
 ## Workflow
 
 1. **Fork** and create a feature branch off `main`.

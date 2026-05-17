@@ -1,0 +1,34 @@
+# Lefthook git hooks — opt-in.
+#
+# Install via:
+#     brew install lefthook && lefthook install
+#
+# The default hooks deliberately stay under ~5 seconds on a typical commit by
+# scanning only the staged files and skipping daemon startup where possible.
+# Emergency overrides: `git commit --no-verify`. Don't rely on it.
+
+pre-commit:
+  parallel: true
+  commands:
+    ktlint-format:
+      # Re-format only the staged Kotlin files, then re-stage them so the diff
+      # the user sees is the diff that lands in the commit. ktlintFormat in
+      # Gradle does not accept per-file inputs, so we delegate via the daemon
+      # to keep latency tolerable.
+      glob: '*.{kt,kts}'
+      stage_fixed: true
+      run: ./gradlew --quiet ktlintFormat --daemon
+    no-material3:
+      # Frost forbids Material 3 imports. The Gradle task we just promoted is
+      # the single source of truth; the shell shim is kept for muscle memory.
+      glob: '*.{kt,kts}'
+      run: ./gradlew --quiet verifyNoMaterial3
+
+commit-msg:
+  commands:
+    conventional-commit:
+      # Enforce conventional-commit prefixes. The repo's commit log already
+      # follows this style (chore:, fix:, refactor:, ci:, docs:, build:,
+      # feat:, perf:, test:); the hook just blocks accidental deviations.
+      run: |
+        head -n1 "{1}" | grep -Eq '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([^)]+\))?!?: .+'
