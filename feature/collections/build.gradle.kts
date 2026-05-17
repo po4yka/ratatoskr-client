@@ -35,5 +35,10 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlin.logging)
         }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }
