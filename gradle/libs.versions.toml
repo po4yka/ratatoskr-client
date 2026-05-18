@@ -45,7 +45,7 @@ wire = "6.2.0"
 
 # OpenAPI client codegen
 openapi-kmp-gen = "1.3.0"
-arrow = "2.1.2"
+arrow = "2.2.2.1"
 
 # Testing
 turbine = "1.2.1"
