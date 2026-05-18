@@ -60,7 +60,7 @@ detekt = "1.23.8"
 multiplatform-settings = "1.3.0"
 
 # Markdown
-markdown-renderer = "0.40.2"
+markdown-renderer = "0.41.0"
 
 [libraries]
 # Kotlin
