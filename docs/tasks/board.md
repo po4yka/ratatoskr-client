@@ -16,7 +16,6 @@ kanban-plugin: basic
 - [ ] [[add-securestorage-round-trip-and-aead-key-persistence-tests]]
 - [ ] [[add-ktor-bearer-refresh-and-token-rotation-tests]]
 - [ ] [[add-decompose-component-and-route-tests-for-auth-summarylist-collections-digest-settings]]
-- [ ] [[add-syncrepositoryimpl-integration-tests-and-offline-pending-op-drain-coverage]]
 - [ ] [[wire-ios-xctest-into-ios-yml-and-promote-detekt-to-merge-gate]]
 
 ## Review
