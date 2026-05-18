@@ -5,7 +5,7 @@
  * RESTful API for Android/iOS mobile clients
  * Version 1.0.0
  * 
- * Generated Wed, 13 May 2026 10:50:14 +0400
+ * Generated Mon, 18 May 2026 10:35:05 GMT
  * OpenAPI KMP Gen (version 1.3.0) by kroegerama
  */
 @file:Suppress("ArrayInDataClass", "RedundantVisibilityModifier", "unused", "ConstPropertyName")
@@ -292,6 +292,33 @@ public object AuthenticationApi {
       "logout",
     )
     setBody(body)
+    decorator()
+  }
+
+  /**
+   * **Logout All Sessions**
+   *
+   * `POST /v1/auth/logout-all`
+   *
+   * Revoke every active refresh-token family for the current user.
+   *
+   * Enumerates the distinct ``family_id`` values across the user's active
+   * refresh tokens, bulk-revokes each family, and writes one
+   * ``AuditLog`` row per revoked family. The current refresh cookie is
+   * cleared. Returns the number of families and tokens revoked.
+   *
+   * @return Every active session for the user has been revoked.
+   */
+  public suspend fun logoutAllV1AuthLogoutAllPost(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<SuccessResponse>> = Api.client.eitherRequest {
+    method = HttpMethod.parse("POST")
+    authKeys(
+      Auth.HTTPBearer.ID,
+    )
+    url.appendPathSegments(
+      "v1",
+      "auth",
+      "logout-all",
+    )
     decorator()
   }
 
@@ -1038,6 +1065,9 @@ public object ProxyApi {
    */
   public suspend fun proxyImage(reqUrl: String, decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<HttpResponse>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
+    authKeys(
+      Auth.HTTPBearer.ID,
+    )
     url.appendPathSegments(
       "v1",
       "proxy",
@@ -2383,6 +2413,9 @@ public object HealthApi {
    */
   public suspend fun detailedHealthCheckHealthDetailedGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<DetailedHealthResponseEnvelope>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
+    authKeys(
+      Auth.HTTPBearer.ID,
+    )
     url.appendPathSegments(
       "health",
       "detailed",
@@ -2437,6 +2470,9 @@ public object HealthApi {
    */
   public suspend fun metricsGet(decorator: HttpRequestBuilder.() -> Unit = {}): Either<CallException, HttpCallResponse<HttpResponse>> = Api.client.eitherRequest {
     method = HttpMethod.parse("GET")
+    authKeys(
+      Auth.HTTPBearer.ID,
+    )
     url.appendPathSegments(
       "metrics",
     )

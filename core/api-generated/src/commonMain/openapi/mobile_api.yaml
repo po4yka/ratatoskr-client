@@ -109,6 +109,35 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /v1/auth/logout-all:
+    post:
+      tags:
+      - Authentication
+      summary: Logout All Sessions
+      description: 'Revoke every active refresh-token family for the current user.
+
+
+        Enumerates the distinct ``family_id`` values across the user''s active
+
+        refresh tokens, bulk-revokes each family, and writes one
+
+        ``AuditLog`` row per revoked family. The current refresh cookie is
+
+        cleared. Returns the number of families and tokens revoked.'
+      operationId: logout_all_v1_auth_logout_all_post
+      security:
+      - HTTPBearer: []
+      responses:
+        '200':
+          description: Every active session for the user has been revoked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /v1/auth/sessions:
     get:
       tags:
@@ -280,6 +309,8 @@ paths:
       summary: Proxy Image
       description: Proxy an image from a remote URL to bypass CORS/hotlink protection.
       operationId: proxyImage
+      security:
+      - HTTPBearer: []
       parameters:
       - name: url
         in: query
@@ -2803,6 +2834,8 @@ paths:
       summary: Detailed Health Check
       description: Comprehensive health check including database, Redis, and circuit breaker status. Has a 10-second timeout on component checks.
       operationId: detailed_health_check_health_detailed_get
+      security:
+      - HTTPBearer: []
       responses:
         '200':
           description: Detailed health status with component breakdown
@@ -2810,6 +2843,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DetailedHealthResponseEnvelope'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /health/ready:
     get:
       tags:
@@ -2851,6 +2888,8 @@ paths:
       summary: Prometheus Metrics
       description: Prometheus-compatible metrics endpoint for scraping.
       operationId: metrics_get
+      security:
+      - HTTPBearer: []
       responses:
         '200':
           description: Prometheus text metrics
@@ -2859,6 +2898,10 @@ paths:
               schema:
                 type: string
                 description: Prometheus exposition format metrics
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /v1/summaries/by-url:
     get:
       tags:
