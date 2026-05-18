@@ -48,8 +48,8 @@ Material 3 has been **removed from `commonMain`**. Do not reintroduce
   `AtomMark`, `InlineLink`, `Toast`, `FrostSpinner`, `FrostCheckbox`,
   `FrostRadio`.
 - **Foundation primitives** — `core/ui/.../components/foundation/`:
-  `FrostText`, `FrostIcon`, `FrostDialog`, `FrostScaffold`,
-  `FrostSurface`, `FrostDivider`.
+  `FrostDialog`, `FrostDivider`, `FrostIcon`, `FrostIndication`,
+  `FrostScaffold`, `FrostSurface`, `FrostText`.
 - **Theme entry**: `RatatoskrTheme` in `core/ui/.../theme/Theme.kt`.
 - **Tokens**: `core/ui/.../theme/` — `Spacing`, `Dimensions`,
   `IconSizes`, `FrostSpacing`, plus Frost color and type tokens.

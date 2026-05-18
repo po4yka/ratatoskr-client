@@ -225,9 +225,7 @@ inside `core/data` itself. New code should use the bootstrapped
 generated `Api.client` and handle 401 explicitly via the
 `Either<CallException, HttpCallResponse<T>>` return type.
 
-Tracking the final cleanup: `docs/tasks/issues/complete-generated-client-migration-and-delete-apiclient.md`.
-When the last call site is removed, the existing `ApiClient` and
-`ApiResponseDto<T>` envelope can be deleted in a single follow-up commit.
+When the last call site is removed, the existing `ApiClient` and `ApiResponseDto<T>` envelope can be deleted in a single follow-up commit.
 
 ## Auth And Sync
 
@@ -257,7 +255,9 @@ When the last call site is removed, the existing `ApiClient` and
 
 ### Add Shared UI Behavior
 
-- Prefer Frost atoms (`BrutalistCard`, `BracketButton`, `BracketIconButton`, `BracketField`, `BracketSwitch`, `BracketSelector`, `BracketSlider`, `MultiSelectChip`, `StatusBadge`, `RowDigest`, `SectionHeading`, `IngestLine`, `PullQuote`, `AtomMark`, `InlineLink`, `Toast`, `FrostText`, `FrostIcon`, `FrostSpinner`, `FrostDialog`, `FrostScaffold`, `FrostSurface`, `FrostDivider`, `FrostCheckbox`, `FrostRadio`) in `core/ui/.../components/frost/` or `core/ui/.../components/foundation/` before inventing new patterns.
+- Prefer Frost atoms in `core/ui/.../components/frost/`: `AtomMark`, `BracketButton`, `BracketField`, `BracketIconButton`, `BracketSelector`, `BracketSlider`, `BracketSwitch`, `BrutalistCard`, `FrostCheckbox`, `FrostRadio`, `FrostSpinner`, `IngestLine`, `InlineLink`, `MultiSelectChip`, `PullQuote`, `RowDigest`, `SectionHeading`, `StatusBadge`, `Toast`.
+- Frost foundation primitives in `core/ui/.../components/foundation/`: `FrostDialog`, `FrostDivider`, `FrostIcon`, `FrostIndication`, `FrostScaffold`, `FrostSurface`, `FrostText`.
+- Compose these before inventing new patterns.
 - Use Compose Resources instead of hardcoded UI text.
 - Keep accessibility semantics in mind; the repo already uses headings and live regions in screens such as `SummaryListScreen`.
 

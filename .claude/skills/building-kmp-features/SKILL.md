@@ -122,8 +122,19 @@ Valid exceptions already in the repo:
 - `core/data/src/iosMain/kotlin/com/po4yka/ratatoskr/di/IosModule.kt`
   uses Koin DSL because generated `.module` extensions are not visible
   from `iosMain`.
+- `core/data/src/desktopMain/kotlin/com/po4yka/ratatoskr/di/DesktopModule.kt`
+  uses DSL for desktop-only wiring that does not flow through the
+  KSP-scanned annotations.
 - `composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/di/ImageLoaderModule.kt`
   uses DSL for UI-only wiring.
+- `feature/{auth,collections,digest,settings,summary,sync}/.../di/*FeatureBindings.kt`
+  use DSL because **ViewModels are wired manually to avoid duplicate
+  `BaseViewModel` KSP symbols in the native (iOS) framework** — Koin's
+  annotation scanner emits a synthetic ViewModel factory per module,
+  and when several modules export `BaseViewModel` subclasses through
+  the same iOS framework the duplicates fail link. See the comment at
+  the top of `feature/auth/.../di/AuthFeatureBindings.kt` for the
+  canonical explanation.
 - Tests may use DSL for fake bindings and verification.
 
 Do not "normalize" those files into annotations unless the source-set

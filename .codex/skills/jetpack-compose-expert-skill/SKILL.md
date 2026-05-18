@@ -1,50 +1,70 @@
 ---
-name: compose-expert
-description: >
-  Compose and Compose Multiplatform expert skill for UI development across Android, Desktop,
-  iOS, and Web. Guides state management, view composition, animations, navigation, performance,
-  design-to-code workflows, and production crash patterns. Backed by actual source code analysis
-  from both androidx/androidx and JetBrains/compose-multiplatform-core.
-  Use this skill whenever the user mentions Compose, @Composable, remember, LaunchedEffect,
-  Scaffold, NavHost, MaterialTheme, LazyColumn, Modifier, recomposition, Style, styleable,
-  MutableStyleState, Compose Multiplatform, CMP, KMP, commonMain, expect, actual,
-  ComposeUIViewController, Window composable, UIKitView, ComposeViewport, Res.drawable,
-  Res.string, or any Compose API. Also trigger when the user says "Android UI", "Kotlin UI",
-  "compose layout", "compose navigation", "compose animation", "material3", "compose styles",
-  "compose multiplatform", "desktop compose", "iOS compose", "compose web", "design to compose",
-  "build this UI", "implement this design", or asks about modern Kotlin UI development patterns.
-  Even casual mentions like "my compose screen is slow" or "how do I pass data between screens"
-  should trigger this skill.
+name: jetpack-compose-expert
+description: Use when writing Compose or Compose Multiplatform code in this Ratatoskr KMP repo — state, layout, modifiers, side effects, lazy lists, navigation, animation, performance, or recomposition questions. Trigger on @Composable, remember, LaunchedEffect, Scaffold, LazyColumn, Modifier, recomposition, expect/actual, ComposeUIViewController, UIKitView, Res.string/drawable. For Frost atoms or design tokens, defer to `frost-design-system`. For Decompose components and routed-screen wiring, defer to `decompose-navigation`. Do NOT reintroduce Material 3 in commonMain — it has been removed in favor of Frost.
 ---
 
-# Compose Expert Skill
+# Compose & Compose Multiplatform — Ratatoskr
 
-Non-opinionated, practical guidance for writing correct, performant Compose code —
-across Android, Desktop, iOS, and Web. Covers Jetpack Compose and Compose Multiplatform.
-Backed by analysis of actual source code from `androidx/androidx` and
-`JetBrains/compose-multiplatform-core`.
+Practical guidance for writing correct, performant Compose code in this repo.
+This skill covers general Compose patterns. Project-specific concerns are
+covered by sibling skills:
 
-## Workflow
+- **Design system, atoms, tokens, theming** → `frost-design-system`
+- **Routed screens, components, navigation** → `decompose-navigation`
+- **Android home-screen widgets** → `glance-widgets`
 
-When helping with Compose code, follow this checklist:
+## Hard project rules
 
-### 1. Understand the request
-- What Compose layer is involved? (Runtime, UI, Foundation, Material3, Navigation)
-- Is this a state problem, layout problem, performance problem, or architecture question?
-- Is this Android-only or Compose Multiplatform (CMP)?
+- **No Material 3 in `commonMain`.** `MaterialTheme`, `Surface { elevation }`,
+  `Card`, `Button`, `OutlinedButton`, `OutlinedTextField` etc. have been
+  removed. Use Frost atoms and foundation primitives — see
+  `frost-design-system`.
+- **No `koinInject()` inside routed Composables.** Routed-screen
+  dependencies come from the Decompose component constructor or an
+  app-level provider in `composeApp/.../app/`. See `decompose-navigation`.
+- **Use Compose Resources for text.** `stringResource(Res.string.foo)` via
+  `ratatoskr.core.ui.generated.resources.*` — never hardcode UI strings.
+- **Cancellation discipline.** When using broad `catch (Throwable)` /
+  `catch (Exception)` blocks inside Compose-launched coroutines, rethrow
+  `kotlin.coroutines.cancellation.CancellationException` first.
 
-### 2. Analyze the design (if visual reference provided)
-- If the user shares a Figma frame, screenshot, or design spec, consult `references/design-to-compose.md`
-- Decompose the design into a composable tree using the 5-step methodology
-- Map design tokens to MaterialTheme, spacing to CompositionLocals
-- Identify animation needs and consult `references/animation.md` for recipes
+## Key principles
 
-### 3. Consult the right reference
-Read the relevant reference file(s) from `references/` before answering:
+1. **Three phases: Composition → Layout → Drawing.** A state read in each
+   phase only invalidates that phase and later ones. Animating a color
+   via `Modifier.drawBehind` is cheaper than reading the color in
+   composition.
+2. **Recomposition is frequent and cheap** — if you let the compiler skip
+   unchanged scopes. Prefer stable types; avoid allocating lambdas or
+   lists inline in composable bodies.
+3. **Modifier order matters.** `Modifier.padding(16.dp).background(Red)` is
+   visually different from `Modifier.background(Red).padding(16.dp)`.
+4. **Hoist state only as high as it needs to go.** Don't push every piece of
+   state into a ViewModel by default — page-local UI state belongs in
+   `remember { … }`.
+5. **Side effects bridge declarative to imperative.** `LaunchedEffect` for
+   keyed coroutines, `DisposableEffect` for cleanup, `SideEffect` for
+   sending current state to non-Compose systems. Misusing them causes
+   bugs that are hard to trace.
+
+## Compose Multiplatform notes
+
+- UI code in `commonMain` is portable; platform-specific APIs
+  (`LocalContext`, `BackHandler`, `Window`) require `expect`/`actual` or
+  conditional source sets.
+- iOS hosts the framework via `ComposeUIViewController` exported from
+  `composeApp/` through CocoaPods. See `ios-bridge` for the SwiftUI side.
+- The SKIE Swift-interop plugin is configured but currently disabled
+  (Kotlin version is ahead of supported SKIE). Don't write Swift code
+  that assumes SKIE-generated APIs.
+
+## Reference files
+
+For deeper Compose internals or specific topics, read the bundled refs:
 
 | Topic | Reference File |
 |-------|---------------|
-| `@State`, `remember`, `mutableStateOf`, state hoisting, `derivedStateOf`, `snapshotFlow` | `references/state-management.md` |
+| `remember`, `mutableStateOf`, state hoisting, `derivedStateOf`, `snapshotFlow` | `references/state-management.md` |
 | Structuring composables, slots, extraction, preview | `references/view-composition.md` |
 | Modifier ordering, custom modifiers, `Modifier.Node` | `references/modifiers.md` |
 | `LaunchedEffect`, `DisposableEffect`, `SideEffect`, `rememberCoroutineScope` | `references/side-effects.md` |
@@ -52,86 +72,19 @@ Read the relevant reference file(s) from `references/` before answering:
 | `LazyColumn`, `LazyRow`, `LazyGrid`, `Pager`, keys, content types | `references/lists-scrolling.md` |
 | `NavHost`, type-safe routes, deep links, shared element transitions | `references/navigation.md` |
 | `animate*AsState`, `AnimatedVisibility`, `Crossfade`, transitions | `references/animation.md` |
-| `MaterialTheme`, `ColorScheme`, dynamic color, `Typography`, shapes | `references/theming-material3.md` |
 | Recomposition skipping, stability, baseline profiles, benchmarking | `references/performance.md` |
 | Semantics, content descriptions, traversal order, testing | `references/accessibility.md` |
 | Removed/replaced APIs, migration paths from older Compose versions | `references/deprecated-patterns.md` |
-| **Styles API** (experimental): `Style {}`, `MutableStyleState`, `Modifier.styleable()` | `references/styles-experimental.md` |
 | Figma/screenshot decomposition, design tokens, spacing, modifier ordering | `references/design-to-compose.md` |
 | Production crash patterns, defensive coding, state/performance rules | `references/production-crash-playbook.md` |
 | Compose Multiplatform, `expect`/`actual`, resources (`Res.*`), migration | `references/multiplatform.md` |
-| Desktop (Window, Tray, MenuBar), iOS (UIKitView), Web (ComposeViewport) | `references/platform-specifics.md` |
+| Desktop (Window, Tray, MenuBar), iOS (UIKitView) | `references/platform-specifics.md` |
 
-### 4. Apply and verify
-- Write code that follows the patterns in the reference
-- Flag any anti-patterns you see in the user's existing code
-- Suggest the minimal correct solution — don't over-engineer
+### Source code refs (available)
 
-### 5. Cite the source
-When referencing Compose internals, point to the exact source file:
-```
-// See: compose/runtime/runtime/src/commonMain/kotlin/androidx/compose/runtime/Composer.kt
-```
-
-## Key Principles
-
-1. **Compose thinks in three phases**: Composition → Layout → Drawing. State reads in each
-   phase only trigger work for that phase and later ones.
-
-2. **Recomposition is frequent and cheap** — but only if you help the compiler skip unchanged
-   scopes. Use stable types, avoid allocations in composable bodies.
-
-3. **Modifier order matters**. `Modifier.padding(16.dp).background(Color.Red)` is visually
-   different from `Modifier.background(Color.Red).padding(16.dp)`.
-
-4. **State should live as low as possible** and be hoisted only as high as needed. Don't put
-   everything in a ViewModel just because you can.
-
-5. **Side effects exist to bridge Compose's declarative world with imperative APIs**. Use the
-   right one for the job — misusing them causes bugs that are hard to trace.
-
-6. **Compose Multiplatform shares the runtime but not the platform**. UI code in
-   `commonMain` is portable. Platform-specific APIs (`LocalContext`, `BackHandler`,
-   `Window`) require `expect`/`actual` or conditional source sets.
-
-## Source Code Receipts
-
-Beyond the guidance docs, this skill bundles the **actual source code** from
-`androidx/androidx` (branch: `androidx-main`) and `JetBrains/compose-multiplatform-core`
-(branch: `jb-main`). When you need to verify how something works internally, or the
-user asks "show me the actual implementation", read the raw source from
-`references/source-code/`:
-
-| Module | Source Reference | Key Files Inside |
-|--------|-----------------|------------------|
-| Runtime | `references/source-code/runtime-source.md` | Composer.kt, Recomposer.kt, State.kt, Effects.kt, CompositionLocal.kt, Remember.kt, SlotTable.kt, Snapshot.kt |
-| UI | `references/source-code/ui-source.md` | AndroidCompositionLocals.android.kt, Modifier.kt, Layout.kt, LayoutNode.kt, ModifierNodeElement.kt, DrawModifier.kt |
-| Foundation | `references/source-code/foundation-source.md` | LazyList.kt, LazyGrid.kt, BasicTextField.kt, Clickable.kt, Scrollable.kt, Pager.kt |
-| Material3 | `references/source-code/material3-source.md` | MaterialTheme.kt, ColorScheme.kt, Button.kt, Scaffold.kt, TextField.kt, NavigationBar.kt |
-| Navigation | `references/source-code/navigation-source.md` | NavHost.kt, ComposeNavigator.kt, NavGraphBuilder.kt, DialogNavigator.kt |
-| CMP | `references/source-code/cmp-source.md` | Window.kt, ComposeUIViewController.kt, UIKitView.kt, ComposeViewport.kt, ResourceReader.kt |
-
-### Two-layer approach
-1. **Start with guidance** — read the topic-specific reference (e.g., `references/state-management.md`)
-2. **Go deeper with source** — if the user wants receipts or you need to verify, read from `references/source-code/`
-
-### Source tree map
-```
-androidx/androidx (branch: androidx-main)
-├── compose/runtime/runtime/src/commonMain/kotlin/androidx/compose/runtime/
-├── compose/ui/ui/src/androidMain/kotlin/androidx/compose/ui/platform/
-├── compose/ui/ui/src/commonMain/kotlin/androidx/compose/ui/
-├── compose/foundation/foundation/src/commonMain/kotlin/androidx/compose/foundation/
-├── compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/
-└── compose/navigation/navigation-compose/src/commonMain/kotlin/androidx/navigation/compose/
-
-compose-multiplatform-core (branch: jb-main)
-├── compose/ui/ui/src/desktopMain/kotlin/androidx/compose/ui/window/
-├── compose/ui/ui/src/iosMain/kotlin/androidx/compose/ui/window/
-├── compose/ui/ui/src/webMain/kotlin/androidx/compose/ui/window/
-├── compose/ui/ui/src/skikoMain/kotlin/androidx/compose/ui/
-└── compose/foundation/foundation/src/skikoMain/kotlin/androidx/compose/foundation/
-
-compose-multiplatform (resources library)
-└── components/resources/library/src/commonMain/
-```
+| Module | File |
+|--------|------|
+| Runtime | `references/source-code/runtime-source.md` |
+| UI | `references/source-code/ui-source.md` |
+| Navigation | `references/source-code/navigation-source.md` |
+| CMP | `references/source-code/cmp-source.md` |
