@@ -125,6 +125,20 @@ Do not "fix" those exceptions by force-converting them to annotations without un
   `catch (Exception)` / `catch (Throwable)` blocks. Swallowing cancellation breaks
   structured concurrency — child coroutines stop honoring parent cancellation and tests
   can hang. Use `kotlin.coroutines.cancellation.CancellationException` in shared code.
+- See the `kotlin-coroutines` skill for the full anti-pattern catalogue, the
+  `runCatchingDomain` wrapper, and the `@Volatile + Mutex` one-active-job pattern.
+
+## Flow and State
+
+- Feature ViewModels expose state via a single `MutableStateFlow<T>` backed
+  `StateFlow<T>` (`_state.asStateFlow()`); mutate with `_state.update { it.copy(...) }`.
+  Zero `SharedFlow`/`Channel` usage today by deliberate choice.
+- For ViewModels that need to split responsibilities, use the
+  `StateAccessor<T>` delegate-collaborator pattern in `core/common` —
+  delegates mutate parent state without holding their own `MutableStateFlow`.
+- See the `flow-state-events` skill for the full pattern catalogue, including
+  what NOT to do (`stateIn` inside functions, sentinel placeholders, sealed
+  Loading/Empty states).
 
 ## Platform Notes
 
@@ -147,6 +161,12 @@ Do not "fix" those exceptions by force-converting them to annotations without un
 ### Swift Interop
 
 The SKIE plugin is configured in Gradle but currently disabled in `composeApp/build.gradle.kts` because the active Kotlin version is ahead of supported SKIE versions. Do not assume new SKIE-generated APIs are available until that flag is re-enabled.
+
+### Expect / Actual
+
+See the `expect-actual` skill for the boundary-choice rules (when to use
+`expect`/`actual`, when to use a common interface + Koin DSL binding, when to
+use a leaf Compose `expect fun`) and the catalogue of current expect sites.
 
 ## OpenAPI Generation
 

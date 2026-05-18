@@ -23,7 +23,7 @@ import com.po4yka.ratatoskr.feature.sync.domain.repository.LocalChange
 import com.po4yka.ratatoskr.feature.sync.domain.repository.SyncRepository
 import com.po4yka.ratatoskr.util.network.NetworkMonitor
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CancellationException
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

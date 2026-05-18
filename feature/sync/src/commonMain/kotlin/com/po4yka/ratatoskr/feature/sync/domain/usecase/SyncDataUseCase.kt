@@ -5,7 +5,7 @@ import com.po4yka.ratatoskr.domain.model.SyncState
 import com.po4yka.ratatoskr.feature.sync.domain.repository.SyncContentPrefetcher
 import com.po4yka.ratatoskr.feature.sync.domain.repository.SyncRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CancellationException
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.annotation.Factory

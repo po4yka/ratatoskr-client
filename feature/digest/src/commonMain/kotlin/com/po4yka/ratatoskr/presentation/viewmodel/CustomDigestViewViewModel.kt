@@ -6,12 +6,12 @@ import com.po4yka.ratatoskr.domain.usecase.DeleteCustomDigestUseCase
 import com.po4yka.ratatoskr.domain.usecase.GetCustomDigestByIdUseCase
 import com.po4yka.ratatoskr.presentation.state.CustomDigestViewState
 import com.po4yka.ratatoskr.util.error.toUserMessage
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 class CustomDigestViewViewModel(
     private val getCustomDigestByIdUseCase: GetCustomDigestByIdUseCase,

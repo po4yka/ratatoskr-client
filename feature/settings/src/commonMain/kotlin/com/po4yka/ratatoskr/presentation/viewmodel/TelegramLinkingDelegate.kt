@@ -7,9 +7,9 @@ import com.po4yka.ratatoskr.domain.usecase.UnlinkTelegramUseCase
 import com.po4yka.ratatoskr.presentation.state.TelegramLinkState
 import com.po4yka.ratatoskr.util.error.toUserMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 import org.koin.core.annotation.Factory
 
 private val logger = KotlinLogging.logger {}

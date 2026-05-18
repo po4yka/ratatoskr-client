@@ -7,7 +7,7 @@ import com.po4yka.ratatoskr.feature.sync.api.PendingOperationHandlingResult
 import com.po4yka.ratatoskr.feature.sync.domain.repository.ApplyResult
 import com.po4yka.ratatoskr.feature.sync.domain.repository.LocalChange
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CancellationException
+import kotlin.coroutines.cancellation.CancellationException
 
 private val logger = KotlinLogging.logger {}
 
