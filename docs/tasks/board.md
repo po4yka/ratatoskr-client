@@ -15,7 +15,6 @@ kanban-plugin: basic
 - [ ] [[audit-kmp-search-readiness-and-signals-aggregations-release-scope]]
 - [ ] [[add-securestorage-round-trip-and-aead-key-persistence-tests]]
 - [ ] [[add-ktor-bearer-refresh-and-token-rotation-tests]]
-- [ ] [[add-decompose-component-and-route-tests-for-auth-summarylist-collections-digest-settings]]
 - [ ] [[wire-ios-xctest-into-ios-yml-and-promote-detekt-to-merge-gate]]
 
 ## Review
