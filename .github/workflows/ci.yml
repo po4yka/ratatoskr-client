@@ -86,6 +86,22 @@ jobs:
       - name: Check OpenAPI drift
         run: ./gradlew :core:api-generated:checkOpenApiDrift --no-daemon
 
+  # Skill mirror drift check — verifies .claude/skills and .codex/skills
+  # remain byte-identical. The two trees are intentionally duplicated (not
+  # symlinked) so Claude Code and Codex skill loaders both work; this job
+  # makes sure an edit to one side gets propagated to the other.
+  skill-mirror:
+    name: Skill Mirror Drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Check .claude/skills vs .codex/skills
+        run: ./scripts/check-skill-mirror.sh
+
   # Build and test all platforms
   build-all:
     name: Build All Platforms
@@ -279,13 +295,15 @@ jobs:
   status-check:
     name: Status Check
     runs-on: ubuntu-latest
-    needs: [lint, build-all, coverage, security-check]
+    needs: [lint, openapi-drift, skill-mirror, build-all, coverage, security-check]
     if: always()
 
     steps:
       - name: Check build status
         run: |
           if [ "${{ needs.lint.result }}" != "success" ] || \
+             [ "${{ needs.openapi-drift.result }}" != "success" ] || \
+             [ "${{ needs.skill-mirror.result }}" != "success" ] || \
              [ "${{ needs.build-all.result }}" != "success" ]; then
             echo "One or more critical jobs failed"
             exit 1
