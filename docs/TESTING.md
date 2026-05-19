@@ -24,7 +24,7 @@ Ratatoskr uses a comprehensive testing strategy with multiple test types:
 |-----------|----------|-------|----------|
 | **Unit Tests** | ~70% | JUnit, MockK, Turbine | `core/*/src/commonTest/`, `feature/*/src/commonTest/` |
 | **Integration Tests** | ~40% | JUnit, MockK | `core/*/src/commonTest/`, `feature/*/src/commonTest/` |
-| **UI Tests** | ~20% | Compose Testing, XCTest | `composeApp/`, `iosApp/` |
+| **UI Tests** | ~20% | Compose Testing, XCTest | `shared/sharedUI/`, `iosApp/` |
 | **E2E Tests** | Planned | Maestro, XCUITest | TBD |
 
 ---
@@ -73,8 +73,8 @@ Ratatoskr uses a comprehensive testing strategy with multiple test types:
 ./gradlew :feature:auth:allTests :feature:collections:allTests :feature:digest:allTests
 ./gradlew :feature:settings:allTests :feature:summary:allTests :feature:sync:allTests
 
-# Run Android tests
-./gradlew :composeApp:testDebugUnitTest
+# Run Android unit tests (shared logic module)
+./gradlew :shared:sharedLogic:testDebugUnitTest
 
 # Run with coverage
 ./gradlew koverHtmlReportDebug
@@ -85,10 +85,10 @@ open build/reports/kover/
 
 ```bash
 # Run specific test class
-./gradlew :composeApp:testDebugUnitTest --tests SummaryListViewModelTest
+./gradlew :shared:sharedLogic:testDebugUnitTest --tests SummaryListViewModelTest
 
 # Run specific test method
-./gradlew :composeApp:testDebugUnitTest --tests "SummaryListViewModelTest.loadSummaries updates state with summaries"
+./gradlew :shared:sharedLogic:testDebugUnitTest --tests "SummaryListViewModelTest.loadSummaries updates state with summaries"
 ```
 
 ### iOS Tests

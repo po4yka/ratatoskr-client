@@ -4,8 +4,8 @@ Project guidance for Codex when working in this repository.
 
 ## Project Snapshot
 
-- Kotlin Multiplatform app with shared infrastructure in `core/`, feature modules under `feature/*`, a Compose shell in `composeApp/`, an Android application host in `androidApp/`, and a SwiftUI host app in `iosApp/`.
-- Active Kotlin modules are `core/api-generated`, `core/common`, `core/data`, `core/navigation`, `core/ui`, `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, and `feature/sync`.
+- Kotlin Multiplatform app with shared infrastructure in `core/`, feature modules under `feature/*`, shared KMP libraries under `shared/`, an Android application host in `androidApp/`, a desktop development app in `desktopApp/`, and a SwiftUI host app in `iosApp/`.
+- Active Kotlin modules are `core/api-generated`, `core/common`, `core/data`, `core/navigation`, `core/ui`, `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, `feature/sync`, `shared/sharedLogic`, and `shared/sharedUI`.
 - Desktop exists as a development target for Compose work and hot reload, not as a production app.
 
 ## Build And Run
@@ -19,14 +19,14 @@ Project guidance for Codex when working in this repository.
 ./gradlew :androidApp:installDebug
 
 # Desktop Compose development
-./gradlew :composeApp:hotRunDesktop
+./gradlew :desktopApp:hotRunDesktop
 
 # Module tests
 ./gradlew :core:common:allTests :core:data:allTests
 ./gradlew :feature:summary:allTests :feature:settings:allTests
 
-# composeApp tests (KMP — covers Android, iOS sim, JVM/desktop)
-./gradlew :composeApp:allTests
+# shared module tests (KMP — covers Android, iOS sim, JVM/desktop)
+./gradlew :shared:sharedLogic:allTests :shared:sharedUI:allTests
 
 # Code quality
 ./gradlew ktlintCheck detekt
@@ -88,15 +88,17 @@ Frost primitives live in:
   - `core/navigation` for route contracts and navigation-facing interfaces
   - `core/ui` for shared non-feature UI primitives
   - `feature/*` for feature-owned repositories, use cases, route factories, transport APIs/DTOs/mappers, state, ViewModels, and Decompose components
-  - `composeApp/` for shared Compose UI, navigation shell composition, CocoaPods export, and the desktop dev target
+  - `shared/sharedLogic/` for pure-logic KMP library: DI bootstrap, Koin initializers, app composition root, navigation components (no Compose deps)
+  - `shared/sharedUI/` for Compose Multiplatform KMP library: `App.kt`, screen composables, image loader DI, CocoaPods framework export (framework basename `ComposeApp`)
+  - `desktopApp/` for the pure-JVM Compose Desktop application (hot-reload dev target)
   - `androidApp/` for Android activity/app/widget/worker entrypoints
 - Navigation is Decompose-based. Feature components own routed-screen dependencies and retained ViewModel creation.
-- Compose UI lives in `composeApp/src/commonMain/kotlin/.../ui`, with screens consuming a `*Component` or app-level provider instead of resolving Koin directly.
+- Compose UI lives in `shared/sharedUI/src/commonMain/kotlin/.../ui`, with screens consuming a `*Component` or app-level provider instead of resolving Koin directly.
 - Domain contracts and UI code must not import `data.remote` APIs or DTOs.
 - One feature may depend on another feature's public contracts only. Do not import another feature's `data` or `presentation` packages.
 - Current public feature edges include `summary -> auth/collections/sync`, `collections -> sync`, `digest -> summary`, and `settings -> auth/summary/sync`.
 
-See `composeApp/AGENTS.md` for UI rules. See `docs/ARCHITECTURE.md` for the current dependency rules. See `CLAUDE.md` for Claude-Code-specific guidance (the two root files share most content).
+See `shared/sharedUI/AGENTS.md` for UI rules. See `docs/ARCHITECTURE.md` for the current dependency rules. See `CLAUDE.md` for Claude-Code-specific guidance (the two root files share most content).
 
 ## Dependency Injection
 
@@ -111,13 +113,13 @@ Important exceptions already exist and are valid:
 
 - `core/data/src/iosMain/.../di/IosModule.kt` uses Koin DSL because the generated `.module` extensions are not visible from `iosMain`.
 - `core/data/src/desktopMain/.../di/DesktopModule.kt` uses DSL for desktop-only wiring that doesn't go through KSP-scanned annotations.
-- `composeApp/src/commonMain/.../di/ImageLoaderModule.kt` uses DSL for UI-only wiring.
+- `shared/sharedUI/src/commonMain/.../di/ImageLoaderModule.kt` uses DSL for UI-only wiring.
 - `feature/auth/.../di/AuthFeatureBindings.kt` plus the matching `*FeatureBindings.kt` in `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, `feature/sync` use DSL because **ViewModels are wired manually to avoid duplicate `BaseViewModel` KSP symbols in native frameworks** — Koin's annotation scanner emits a synthetic ViewModel factory per module, and when several modules export `BaseViewModel` subclasses through the same iOS framework the duplicates fail link. See the comment at the top of `AuthFeatureBindings.kt` for the canonical explanation.
 - tests may use DSL to provide fakes and overrides.
 
 Do not "fix" those exceptions by force-converting them to annotations without understanding the source-set limitations.
 
-`composeApp/.../di/KoinInitializer.kt` is the active bootstrap entry point. Platform actuals expose `appModules()` plus `platformModules()`.
+`shared/sharedLogic/.../di/KoinInitializer.kt` is the active bootstrap entry point. Platform actuals expose `appModules()` plus `platformModules()`.
 
 ## Coroutines
 
@@ -152,7 +154,7 @@ Do not "fix" those exceptions by force-converting them to annotations without un
 
 ### iOS
 
-- `iosApp/` is the SwiftUI host around the `ComposeApp` framework exported from `composeApp/`.
+- `iosApp/` is the SwiftUI host around the `ComposeApp` framework exported from `shared/sharedUI/`.
 - Secure storage uses `KeychainSettings`.
 - Networking uses the Darwin Ktor engine.
 - App startup and background sync live in `iosApp/iosApp/iOSApp.swift`.
@@ -160,7 +162,7 @@ Do not "fix" those exceptions by force-converting them to annotations without un
 
 ### Swift Interop
 
-The SKIE plugin is configured in Gradle but currently disabled in `composeApp/build.gradle.kts` because the active Kotlin version is ahead of supported SKIE versions. Do not assume new SKIE-generated APIs are available until that flag is re-enabled.
+The SKIE plugin is configured in Gradle but currently disabled in `shared/sharedUI/build.gradle.kts` because the active Kotlin version is ahead of supported SKIE versions. Do not assume new SKIE-generated APIs are available until that flag is re-enabled.
 
 ### Expect / Actual
 
@@ -261,7 +263,7 @@ When the last call site is removed, the existing `ApiClient` and `ApiResponseDto
 1. Add or extend state in the owning `feature/.../presentation/state/` package, or `core/common` only if the state is intentionally shared across features.
 2. Add a ViewModel in the owning `feature/.../presentation/viewmodel/` module extending `BaseViewModel`.
 3. Add a Decompose component in the owning `feature/.../presentation/navigation/` module.
-4. Register the route entry or binding in the owning feature module, then connect it through the `composeApp` shell if needed.
+4. Register the route entry or binding in the owning feature module, then connect it through the `shared/sharedLogic` navigation shell if needed.
 5. Add the Compose screen in the owning feature module under `feature/.../feature/<name>/ui/screens/`.
 6. Add shared strings and assets under `core/ui/src/commonMain/composeResources/`.
 

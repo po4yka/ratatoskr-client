@@ -30,7 +30,7 @@ Browse and read AI-generated summaries of articles and YouTube videos:
 
 - **Shared (~80–90%)**: infrastructure in `core/*`, feature logic in
   `feature/*`, navigation contracts in `core/navigation`, shell
-  composition in `composeApp/`.
+  composition in `shared/sharedLogic/`.
 - **Shared UI**: Compose Multiplatform screens render on Android, iOS,
   and Desktop with native host hooks where the platform demands it.
 - **Offline-first**: SQLite (SQLDelight) cache fronted by session-based
@@ -133,7 +133,10 @@ production target. See [`docs/COMPOSE_HOT_RELOAD.md`](docs/COMPOSE_HOT_RELOAD.md
 ```
 ratatoskr-client/
 ├── androidApp/              # Android Application class, MainActivity, Glance widgets, WorkManager workers
-├── composeApp/              # Compose shell, navigation graph, CocoaPods export, Desktop dev target
+├── desktopApp/              # Compose Desktop application (hot-reload dev target)
+├── shared/
+│   ├── sharedLogic/         # Pure-logic KMP library: DI bootstrap, navigation shell, app composition root
+│   └── sharedUI/            # Compose Multiplatform KMP library + CocoaPods export (framework: ComposeApp)
 ├── core/
 │   ├── api-generated/       # openapi-kmp-gen output (kotlinx-serializable DTOs + suspend Api objects)
 │   ├── common/              # Cross-feature domain primitives, AppConfig, BaseViewModel, error types
@@ -197,7 +200,7 @@ xcodebuild -workspace iosApp/iosApp.xcworkspace -scheme iosApp \
 ### Desktop (hot reload)
 
 ```bash
-./gradlew :composeApp:hotRunDesktop
+./gradlew :desktopApp:hotRunDesktop
 ```
 
 ### Tests
@@ -205,7 +208,7 @@ xcodebuild -workspace iosApp/iosApp.xcworkspace -scheme iosApp \
 ```bash
 ./gradlew :core:common:allTests :core:data:allTests
 ./gradlew :feature:summary:allTests :feature:settings:allTests
-./gradlew :composeApp:testDebugUnitTest
+./gradlew :shared:sharedLogic:allTests :shared:sharedUI:allTests
 ./gradlew detekt ktlintCheck
 ```
 

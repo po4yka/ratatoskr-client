@@ -29,7 +29,7 @@ In scope for this policy:
 
 - The Ratatoskr Client mobile app (Android + iOS) and its Compose
   Multiplatform shared code
-- The desktop dev target (`composeApp/runDesktop`) — note that
+- The desktop dev target (`desktopApp/run`) — note that
   desktop secure storage is intentionally in-memory and is documented
   as DEVELOPMENT ONLY
 - Build tooling that ships with the repo (`build-logic/`, the GitHub

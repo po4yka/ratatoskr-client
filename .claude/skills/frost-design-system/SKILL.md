@@ -6,7 +6,7 @@ description:
   client. Frost is editorial monospace minimalism with strict rules:
   two-color (ink/page), single critical accent (spark), 0 corner
   radius, 1px hairline, no shadows, no Material elevation. Trigger
-  on any work under core/ui, composeApp, or feature/*/ui, and on
+  on any work under core/ui, shared/sharedUI, or feature/*/ui, and on
   references to Frost atoms (BrutalistCard, BracketButton,
   BracketField, FrostText, etc.).
 user-invocable: false
@@ -68,7 +68,7 @@ theme; migrating those tokens to Frost values is in progress.
    - Honor the bracket-marker / monospace visual language.
    - Honor every hard rule above.
    - Update the canonical atom list in `CLAUDE.md`, `AGENTS.md`, and
-     `composeApp/AGENTS.md` in the same change.
+     `shared/sharedUI/AGENTS.md` in the same change.
 3. New tokens go in `core/ui/.../theme/` and **must be documented in
    `DESIGN.md`** in the same change.
 

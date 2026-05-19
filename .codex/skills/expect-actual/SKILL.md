@@ -127,8 +127,8 @@ bootstrap sets the flag once:
 | Platform | Bootstrap file | Value |
 |---|---|---|
 | Android | `androidApp/src/main/kotlin/com/po4yka/ratatoskr/RatatoskrApp.kt` | `!BuildConfig.DEBUG` |
-| iOS | `composeApp/src/iosMain/kotlin/com/po4yka/ratatoskr/di/KoinInitializer.kt` | `!Platform.isDebugBinary` |
-| Desktop | `composeApp/src/desktopMain/kotlin/com/po4yka/ratatoskr/di/KoinInitializer.kt` | `System.getProperty("ratatoskr.release") == "true"` |
+| iOS | `shared/sharedLogic/src/iosMain/kotlin/com/po4yka/ratatoskr/di/KoinInitializer.kt` | `!Platform.isDebugBinary` |
+| Desktop | `shared/sharedLogic/src/desktopMain/kotlin/com/po4yka/ratatoskr/di/KoinInitializer.kt` | `System.getProperty("ratatoskr.release") == "true"` |
 
 `AppConfig.Api.loggingEnabled` getter clamps to `false` when `isReleaseBuild`
 is `true`, even if `local.properties` says otherwise. New platform-mode config
@@ -174,9 +174,9 @@ This is a permanent constraint of the source-set layout, not a TODO. See
 | `fun rememberReduceMotion(): Boolean` | `core/ui/.../ReduceMotion.kt` | android / ios / desktop |
 | `fun rememberHaptic(): (HapticKind) -> Unit` | `core/ui/.../Haptic.kt` | android / ios / desktop |
 | `fun WebView(...)` | `feature/auth/.../WebView.kt` | android / ios / desktop |
-| `class PlatformConfiguration()` | `composeApp/.../di/KoinInitializer.kt` | android / ios / desktop |
-| `fun platformModules(config): List<Module>` | `composeApp/.../di/KoinInitializer.kt` | android / ios / desktop |
-| `fun KoinApplication.platformExtras(config)` | `composeApp/.../di/KoinInitializer.kt` | android / ios / desktop |
+| `class PlatformConfiguration()` | `shared/sharedLogic/.../di/KoinInitializer.kt` | android / ios / desktop |
+| `fun platformModules(config): List<Module>` | `shared/sharedLogic/.../di/KoinInitializer.kt` | android / ios / desktop |
+| `fun KoinApplication.platformExtras(config)` | `shared/sharedLogic/.../di/KoinInitializer.kt` | android / ios / desktop |
 
 If you add a new one, append it here in the same PR.
 

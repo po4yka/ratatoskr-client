@@ -315,6 +315,6 @@ system is the contract.
 - Compose token shim (legacy, pending migration):
   `core/ui/src/commonMain/kotlin/com/po4yka/ratatoskr/core/ui/theme/`
   (`AppColors.kt`, `AppType.kt`, `AppTheme.kt`, `Theme.kt`).
-- Architecture entrypoint for UI: `composeApp/AGENTS.md` (UI rules)
+- Architecture entrypoint for UI: `shared/sharedUI/AGENTS.md` (UI rules)
   and `docs/ARCHITECTURE.md` (module dependency rules).
 - Where this file and the code disagree, this file is the target.

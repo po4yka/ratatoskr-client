@@ -8,7 +8,7 @@ package com.po4yka.ratatoskr.util.lint
  *
  * Two allowlist shapes:
  *  1. Frost Lab demo screens (`FrostLab*Screen.kt` under
- *     `composeApp/.../ui/frost/`). The Lab is an in-app component browser
+ *     `shared/sharedUI/.../ui/frost/`). The Lab is an in-app component browser
  *     of canonical Frost atoms — its literals are intentional dev fixtures.
  *  2. Any file in a test source set (`/src/commonTest/`,
  *     `/src/androidTest/`, `/src/iosTest/`, `/src/jvmTest/`, etc.) or any

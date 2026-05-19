@@ -218,7 +218,7 @@ api.debug.payloads=false
 **BuildConfig Generation** (Android):
 
 ```kotlin
-// composeApp/build.gradle.kts
+// androidApp/build.gradle.kts
 android {
     defaultConfig {
         val properties = Properties()

@@ -10,7 +10,7 @@ inhibit_all_warnings!
 
 target 'iosApp' do
   # Compose Multiplatform UI + shared business logic
-  pod 'ComposeApp', :path => '../composeApp'
+  pod 'ComposeApp', :path => '../shared/sharedUI'
 
   # iOS-specific dependencies can be added here if needed
   # Example:

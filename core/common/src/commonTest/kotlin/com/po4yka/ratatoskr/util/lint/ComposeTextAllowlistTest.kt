@@ -7,18 +7,18 @@ import kotlin.test.assertTrue
 class ComposeTextAllowlistTest {
     @Test
     fun `Frost Lab demo screen — allowlisted`() {
-        // FrostLab*Screen.kt under composeApp/.../ui/frost/ holds
+        // FrostLab*Screen.kt under shared/sharedUI/.../ui/frost/ holds
         // intentional literal text — the lab is a component browser, not
         // a localized product surface.
         assertTrue(
             ComposeTextAllowlist.isAllowlisted(
-                filePath = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/frost/FrostLabAtomsScreen.kt",
+                filePath = "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/frost/FrostLabAtomsScreen.kt",
             ),
         )
         assertTrue(
             ComposeTextAllowlist.isAllowlisted(
                 filePath =
-                    "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/" +
+                    "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/" +
                         "ui/frost/FrostLabComponentBrowserScreen.kt",
             ),
         )
@@ -31,7 +31,7 @@ class ComposeTextAllowlistTest {
         // the rule.
         assertFalse(
             ComposeTextAllowlist.isAllowlisted(
-                filePath = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/frost/ReadingThemeBottomSheet.kt",
+                filePath = "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/frost/ReadingThemeBottomSheet.kt",
             ),
         )
     }
@@ -93,7 +93,7 @@ class ComposeTextAllowlistTest {
         assertTrue(
             ComposeTextAllowlist.isAllowlisted(
                 filePath =
-                    "composeApp\\src\\commonMain\\kotlin\\com\\po4yka\\ratatoskr\\ui\\frost\\FrostLabAtomsScreen.kt",
+                    "shared\\sharedUI\\src\\commonMain\\kotlin\\com\\po4yka\\ratatoskr\\ui\\frost\\FrostLabAtomsScreen.kt",
             ),
         )
     }

@@ -43,9 +43,9 @@ to skip the hooks in emergencies — but don't make a habit of it.
 3. **Verify locally** before pushing:
    ```bash
    ./gradlew detekt ktlintCheck
-   ./gradlew :composeApp:compileDebugKotlinAndroid \
-             :composeApp:linkDebugFrameworkIosSimulatorArm64 \
-             :composeApp:compileKotlinDesktop
+   ./gradlew :shared:sharedLogic:compileDebugKotlinAndroid \
+             :shared:sharedUI:linkDebugFrameworkIosSimulatorArm64 \
+             :shared:sharedLogic:compileKotlinDesktop
    ./gradlew :androidApp:assembleDebug
    ```
    For iOS-impacting changes:
@@ -68,7 +68,7 @@ that runs on every `check` invocation:
 - A feature module may depend on another feature's **public domain
   contracts only**. Never import another feature's `data/` or
   `presentation/` package.
-- Shell code in `composeApp/` must not import feature implementation
+- Shell code in `shared/sharedLogic/` and `shared/sharedUI/` must not import feature implementation
   types from `data/` or `presentation/`.
 - `core/*` modules must not depend on feature modules.
 - Routed Composables must not call `koinInject()` directly — read
@@ -95,7 +95,7 @@ is the source of truth for cross-feature exceptions.
 - Unit tests live in each module's `src/commonTest/`.
 - Per-module test runs:
   `./gradlew :feature:<name>:allTests` and `./gradlew :core:<name>:allTests`.
-- Android-only unit tests: `./gradlew :composeApp:testDebugUnitTest`.
+- Android-only unit tests: `./gradlew :shared:sharedLogic:testDebugUnitTest`.
 - The full suite runs in CI on every PR.
 - See [`docs/TESTING.md`](docs/TESTING.md) for testing patterns and
   fakes/mocks conventions.

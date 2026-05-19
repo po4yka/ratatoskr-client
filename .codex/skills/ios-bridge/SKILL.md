@@ -13,7 +13,7 @@ user-invocable: false
 # iOS Bridge
 
 `iosApp/` is the SwiftUI host around the `ComposeApp` framework
-exported from `composeApp/` via CocoaPods. The bridge has three
+exported from `shared/sharedUI/` via CocoaPods. The bridge has three
 moving parts that must agree on shared contracts: the main app, the
 share extension, and the Recent Summaries widget.
 
@@ -43,7 +43,7 @@ share extension, and the Recent Summaries widget.
   paths for shared HTTP calls — they bypass the bearer-refresh
   layer in `core/data/.../ApiClient.kt`.
 - **SKIE is configured but currently disabled** in
-  `composeApp/build.gradle.kts` because the active Kotlin version
+  `shared/sharedUI/build.gradle.kts` because the active Kotlin version
   is ahead of supported SKIE versions. Don't write Swift code that
   assumes new SKIE-generated APIs are available.
 
@@ -67,7 +67,7 @@ both ends:
 
 - `iosApp/ShareExtension/` (the writer)
 - The launch-action consumer in
-  `composeApp/.../app/AppCompositionRoot.kt` (Darwin source set
+  `shared/sharedLogic/.../app/AppCompositionRoot.kt` (Darwin source set
   binding on the KMP side).
 
 ## Widget contract
@@ -82,7 +82,8 @@ iOS actuals for KMP modules live in:
 
 - `core/common/src/iosMain/`
 - `core/data/src/iosMain/`
-- `composeApp/src/iosMain/` (rare; only for app-shell concerns)
+- `shared/sharedLogic/src/iosMain/` (app-shell concerns: KoinInitializer, IosAppHost)
+- `shared/sharedUI/src/iosMain/` (MainViewController, ComposeRootViewControllerFactory)
 
 `core/data/src/iosMain/.../di/IosModule.kt` is a **valid Koin DSL
 exception** — generated `.module` extensions are not visible from

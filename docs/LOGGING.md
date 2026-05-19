@@ -60,7 +60,7 @@ logger.debug("Processing ${expensiveOperation()}")
 
 ### Android Configuration
 
-The Android logging is configured via `composeApp/src/androidMain/assets/logback.xml`:
+The Android logging is configured via `androidApp/src/main/assets/logback.xml`:
 
 ```xml
 <configuration>

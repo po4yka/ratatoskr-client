@@ -22,7 +22,8 @@ This project uses multiple code quality tools to maintain high code standards ac
 ./gradlew ktlintFormat
 
 # Check specific module
-./gradlew :composeApp:ktlintCheck
+./gradlew :shared:sharedLogic:ktlintCheck
+./gradlew :shared:sharedUI:ktlintCheck
 ./gradlew :feature:summary:ktlintCheck
 ```
 
@@ -51,8 +52,8 @@ ktlint is configured with the following customizations for Compose Multiplatform
 ./gradlew detekt
 
 # Run with type resolution (Android-specific)
-./gradlew :composeApp:detektAndroidDebug
-./gradlew :composeApp:detektAndroidRelease
+./gradlew :shared:sharedLogic:detektAndroidDebug
+./gradlew :shared:sharedLogic:detektAndroidRelease
 
 # Create baseline (ignore existing issues)
 ./gradlew detektBaseline

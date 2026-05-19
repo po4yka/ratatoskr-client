@@ -31,7 +31,9 @@ rootProject.name = "Ratatoskr"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":androidApp")
-include(":composeApp")
+include(":desktopApp")
+include(":shared:sharedLogic")
+include(":shared:sharedUI")
 include(":core:api-generated")
 include(":core:common")
 include(":core:data")

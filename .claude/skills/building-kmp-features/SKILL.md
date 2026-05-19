@@ -25,15 +25,18 @@ Production code is split across two layers:
   mappers, presentation state, ViewModels, Decompose components, and UI
   screens.
 
-The `composeApp/` module is the shell host: it composes the navigation
-graph, exports the iOS framework via CocoaPods, and serves as the
-desktop dev target. Feature UI lives in feature modules, not composeApp.
+The `shared/sharedLogic/` module is the pure-logic KMP shell: DI
+bootstrap, Koin initializers, app composition root, and navigation
+components (no Compose deps). The `shared/sharedUI/` module is the
+Compose Multiplatform KMP library that exports the iOS framework via
+CocoaPods (framework basename `ComposeApp`) and contains `App.kt`,
+screen composables, and the image-loader DI module.
+
+The `desktopApp/` module is the pure-JVM Compose Desktop application
+(hot-reload dev target only).
 
 The `androidApp/` module contains the Android `Application`, `Activity`,
 widgets, and WorkManager workers — entrypoints only.
-
-There is no `shared/` Gradle module. References to `shared/` in older
-docs or git history describe the pre-migration layout.
 
 ## Default Flow For A New Feature Slice
 
@@ -53,7 +56,7 @@ docs or git history describe the pre-migration layout.
    `androidApp/`; those resources are not shared with iOS or Desktop.
 6. **Route registration**: expose the feature's route entry from the
    feature module, then wire it into the shell via the navigation graph
-   in `composeApp/.../presentation/navigation/`.
+   in `shared/sharedLogic/.../presentation/navigation/`.
 
 ## Add Or Refactor A Screen
 
@@ -64,7 +67,7 @@ docs or git history describe the pre-migration layout.
 4. Add a Decompose component interface plus `Default<Name>Component`
    in `feature/<name>/.../presentation/navigation/`.
 5. Create the screen in `feature/<name>/.../ui/screens/`.
-6. Wire the route through the shell in `composeApp/`.
+6. Wire the route through the shell in `shared/sharedLogic/`.
 7. Add strings in `core/ui/src/commonMain/composeResources/values/strings.xml`
    and `values-ru/strings.xml`.
 
@@ -125,7 +128,7 @@ Valid exceptions already in the repo:
 - `core/data/src/desktopMain/kotlin/com/po4yka/ratatoskr/di/DesktopModule.kt`
   uses DSL for desktop-only wiring that does not flow through the
   KSP-scanned annotations.
-- `composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/di/ImageLoaderModule.kt`
+- `shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/di/ImageLoaderModule.kt`
   uses DSL for UI-only wiring.
 - `feature/{auth,collections,digest,settings,summary,sync}/.../di/*FeatureBindings.kt`
   use DSL because **ViewModels are wired manually to avoid duplicate
@@ -140,7 +143,7 @@ Valid exceptions already in the repo:
 Do not "normalize" those files into annotations unless the source-set
 constraint is removed.
 
-`composeApp/.../di/KoinInitializer.kt` is the active bootstrap entry
+`shared/sharedLogic/.../di/KoinInitializer.kt` is the active bootstrap entry
 point. Platform actuals expose `appModules()` plus `platformModules()`.
 
 ## UI Rules
@@ -211,12 +214,18 @@ feature/<name>/src/commonMain/kotlin/com/po4yka/ratatoskr/
   presentation/{state,viewmodel,navigation}
   di/                                ← @ComponentScan module
 
-composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/
-  App.kt              ← root composable
-  app/                ← AppCompositionRoot, launch action handling
-  di/                 ← KoinInitializer + ImageLoaderModule (DSL)
+shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/
+  app/                ← AppCompositionRoot, AppCompositionAssembly, launch action handling
+  di/                 ← KoinInitializer, AppModules, GeneratedApiInitializer
   presentation/navigation/  ← MainComponent, RootComponent, shell
+
+shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/
+  App.kt              ← root composable
+  di/                 ← ImageLoaderModule (DSL)
   ui/screens/         ← MainScreen only (allowed shell host)
+
+desktopApp/src/jvmMain/kotlin/
+  main.kt             ← desktop entry point
 
 androidApp/src/main/kotlin/com/po4yka/ratatoskr/
   RatatoskrApp.kt     ← Application class

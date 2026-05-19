@@ -31,7 +31,7 @@ val verifyArchitectureBoundaries =
 
         screenFiles.from(
             layout.projectDirectory
-                .dir("composeApp/src")
+                .dir("shared/sharedUI/src")
                 .asFileTree
                 .matching {
                     include("**/ui/screens/**/*.kt")
@@ -40,8 +40,10 @@ val verifyArchitectureBoundaries =
         )
 
         sourceFiles.from(
-            allSourceTree("composeApp/src"),
+            allSourceTree("shared/sharedLogic/src"),
+            allSourceTree("shared/sharedUI/src"),
             allSourceTree("androidApp/src"),
+            allSourceTree("desktopApp/src"),
             allSourceTree("core/common/src"),
             allSourceTree("core/data/src"),
             allSourceTree("core/navigation/src"),
@@ -56,7 +58,21 @@ val verifyArchitectureBoundaries =
 
         shellFiles.from(
             layout.projectDirectory
-                .dir("composeApp/src")
+                .dir("shared/sharedLogic/src")
+                .asFileTree
+                .matching {
+                    include("**/*.kt")
+                    exclude("**/commonTest/**/*.kt")
+                    exclude("**/androidUnitTest/**/*.kt")
+                    exclude("**/androidInstrumentedTest/**/*.kt")
+                    exclude("**/androidHostTest/**/*.kt")
+                    exclude("**/androidDeviceTest/**/*.kt")
+                    exclude("**/iosTest/**/*.kt")
+                    exclude("**/desktopTest/**/*.kt")
+                    exclude("**/build/**")
+                },
+            layout.projectDirectory
+                .dir("shared/sharedUI/src")
                 .asFileTree
                 .matching {
                     include("**/*.kt")
@@ -81,7 +97,9 @@ val verifyArchitectureBoundaries =
         )
 
         buildFiles.from(
-            layout.projectDirectory.file("composeApp/build.gradle.kts"),
+            layout.projectDirectory.file("shared/sharedLogic/build.gradle.kts"),
+            layout.projectDirectory.file("shared/sharedUI/build.gradle.kts"),
+            layout.projectDirectory.file("desktopApp/build.gradle.kts"),
             layout.projectDirectory.file("androidApp/build.gradle.kts"),
             layout.projectDirectory.file("core/common/build.gradle.kts"),
             layout.projectDirectory.file("core/data/build.gradle.kts"),
@@ -127,7 +145,8 @@ val verifyFrostPalette =
                 allSourceTree("feature/settings/src"),
                 allSourceTree("feature/summary/src"),
                 allSourceTree("feature/sync/src"),
-                allSourceTree("composeApp/src"),
+                allSourceTree("shared/sharedLogic/src"),
+                allSourceTree("shared/sharedUI/src"),
             )
         inputs.files(sources).withPropertyName("frostPaletteScannedSources")
         val designMdPath = layout.projectDirectory.file("DESIGN.md").asFile.absolutePath
@@ -261,7 +280,8 @@ val verifyNoMaterial3 =
                 allSourceTree("feature/settings/src"),
                 allSourceTree("feature/summary/src"),
                 allSourceTree("feature/sync/src"),
-                allSourceTree("composeApp/src"),
+                allSourceTree("shared/sharedLogic/src"),
+                allSourceTree("shared/sharedUI/src"),
             )
         inputs.files(sources).withPropertyName("frostScannedSources")
         val designMdPath = layout.projectDirectory.file("DESIGN.md").asFile.absolutePath

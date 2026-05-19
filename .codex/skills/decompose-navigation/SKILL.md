@@ -5,7 +5,7 @@ description:
   navigation graph: Decompose components, child stacks, retained
   ViewModels, navigation callbacks, deep links, or shell rendering
   via MainChildDescriptor / RootChildDescriptor. Trigger on any work
-  under presentation/navigation/, composeApp shell composition, or
+  under presentation/navigation/, shared/sharedLogic shell composition, or
   *Screen(component: *Component) factories.
 user-invocable: false
 ---
@@ -14,7 +14,7 @@ user-invocable: false
 
 The Ratatoskr client uses Decompose for navigation. Feature components
 own routed-screen dependencies and retain ViewModels across config
-changes; the `composeApp` shell renders them through descriptor types
+changes; the `shared/sharedLogic` shell renders them through descriptor types
 without importing feature screens directly.
 
 ## Three-layer pattern
@@ -39,7 +39,7 @@ Every routed screen has three layers:
 
 - **No `koinInject()` inside routed Composables.** Dependencies are
   provided by the component constructor or by an app-level provider
-  in `composeApp/.../app/`.
+  in `shared/sharedLogic/.../app/`.
 - **No navigation stack mutation in screens.** Screens emit intents;
   components decide what happens next.
 - **No importing feature route screens into shell hosts.** The shell
@@ -66,7 +66,7 @@ Every routed screen has three layers:
    `<Name>Screen(component: <Name>Component, modifier: Modifier = Modifier)`.
 5. Expose a route entry from the feature module.
 6. Wire it into the appropriate parent in
-   `composeApp/.../presentation/navigation/` — usually
+   `shared/sharedLogic/.../presentation/navigation/` — usually
    `MainComponent.kt` (bottom-nav children) or `RootComponent.kt`
    (modal / overlay).
 7. Render through the descriptor in the shell host
@@ -85,7 +85,7 @@ implementations:
 ## Deep links
 
 Deep links are dispatched through the root component's launch-action
-handling in `composeApp/.../app/AppCompositionRoot.kt`. New deep-link
+handling in `shared/sharedLogic/.../app/AppCompositionRoot.kt`. New deep-link
 shapes need both:
 
 - A route entry on the target feature module.

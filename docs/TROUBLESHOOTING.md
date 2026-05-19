@@ -18,7 +18,7 @@ The Kotlin/Native framework hasn't been linked yet for the architecture
 Xcode is targeting. Force a fresh framework sync, then reinstall pods:
 
 ```bash
-./gradlew :composeApp:syncFramework \
+./gradlew :shared:sharedUI:syncFramework \
   -Pkotlin.native.cocoapods.platform=iphonesimulator \
   -Pkotlin.native.cocoapods.archs=arm64 \
   -Pkotlin.native.cocoapods.configuration=Debug

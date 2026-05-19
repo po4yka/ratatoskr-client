@@ -11,7 +11,9 @@ Ratatoskr is a Kotlin Multiplatform app with:
 - `core/navigation` for route contracts and navigation interfaces
 - `core/ui` for shared non-feature UI primitives
 - `feature/auth`, `feature/collections`, `feature/digest`, `feature/settings`, `feature/summary`, `feature/sync` for feature-owned repositories, use cases, state, ViewModels, and Decompose components
-- `composeApp/` for shared Compose UI, shell navigation composition, CocoaPods export, and the desktop dev target
+- `shared/sharedLogic/` for pure-logic KMP library: DI bootstrap, Koin initializers, app composition root, and navigation components (no Compose deps)
+- `shared/sharedUI/` for Compose Multiplatform KMP library: `App.kt`, screen composables, image loader DI, and CocoaPods framework export (framework basename `ComposeApp`)
+- `desktopApp/` for the pure-JVM Compose Desktop application (hot-reload dev target only)
 - `androidApp/` for Android application entrypoints, widgets, and workers
 - `iosApp/` for the SwiftUI host app plus native share/widget source
 
@@ -20,9 +22,9 @@ Ratatoskr is a Kotlin Multiplatform app with:
 
 Allowed direction:
 
-- `androidApp` -> `composeApp`
-- `iosApp` -> `ComposeApp.framework`
-- `composeApp` -> `feature/*` -> `core/*`
+- `androidApp` -> `shared/sharedUI` -> `shared/sharedLogic` -> `feature/*` -> `core/*`
+- `desktopApp` -> `shared/sharedUI` -> `shared/sharedLogic` -> `feature/*` -> `core/*`
+- `iosApp` consumes `shared/sharedUI` via CocoaPods (framework basename `ComposeApp`)
 
 Additional rules:
 
@@ -32,7 +34,7 @@ Additional rules:
   - `feature/digest` -> `feature/summary`
   - `feature/settings` -> `feature/auth`, `feature/summary`, `feature/sync`
 - Feature modules must not import another feature's `data` or `presentation` packages.
-- `composeApp` shell code must not import feature implementation types from `data` or `presentation`.
+- `shared/sharedLogic` and `shared/sharedUI` shell code must not import feature implementation types from `data` or `presentation`.
 - `core/*` must not depend on feature modules.
 
 ## Boundaries
@@ -57,17 +59,17 @@ Default rule set:
 Valid DSL exceptions:
 
 - `core/data/src/iosMain/.../di/IosModule.kt`
-- `composeApp/src/commonMain/.../di/ImageLoaderModule.kt`
+- `shared/sharedUI/src/commonMain/.../di/ImageLoaderModule.kt`
 - tests and verification modules
 
-Active Koin bootstrap uses `composeApp/.../di/KoinInitializer.kt` plus platform `appModules()` and `platformModules()` actuals.
+Active Koin bootstrap uses `shared/sharedLogic/.../di/KoinInitializer.kt` plus platform `appModules()` and `platformModules()` actuals.
 
 ## Navigation And UI
 
 - Navigation is Decompose-based.
 - `core/navigation` owns route contracts and navigator-facing interfaces.
 - Feature components own retained ViewModel instances and expose screen dependencies through component APIs.
-- `composeApp` screens render feature state and call component methods or ViewModel intents.
+- `shared/sharedUI` screens render feature state and call component methods or ViewModel intents.
 - Cross-cutting UI glue, such as image URL transformation for proxied images, is provided once at the app layer and consumed by reusable composables.
 - UI is built on the Frost design system. Foundation primitives live in `core/ui/.../components/foundation/`; brand atoms in `core/ui/.../components/frost/`.
 
@@ -197,5 +199,5 @@ interface RootComponent {
   dependencies through method APIs — Compose screens never call
   `koinInject()` directly.
 - Cross-cutting UI providers (e.g. image URL transformation) are
-  installed at the app layer in `composeApp/.../App.kt` and consumed
+  installed at the app layer in `shared/sharedUI/.../App.kt` and consumed
   by reusable composables via `LocalXxx` providers.

@@ -21,7 +21,7 @@ covered by sibling skills:
   `frost-design-system`.
 - **No `koinInject()` inside routed Composables.** Routed-screen
   dependencies come from the Decompose component constructor or an
-  app-level provider in `composeApp/.../app/`. See `decompose-navigation`.
+  app-level provider in `shared/sharedLogic/.../app/`. See `decompose-navigation`.
 - **Use Compose Resources for text.** `stringResource(Res.string.foo)` via
   `ratatoskr.core.ui.generated.resources.*` — never hardcode UI strings.
 - **Cancellation discipline.** When using broad `catch (Throwable)` /
@@ -53,7 +53,7 @@ covered by sibling skills:
   (`LocalContext`, `BackHandler`, `Window`) require `expect`/`actual` or
   conditional source sets.
 - iOS hosts the framework via `ComposeUIViewController` exported from
-  `composeApp/` through CocoaPods. See `ios-bridge` for the SwiftUI side.
+  `shared/sharedUI/` through CocoaPods (framework basename `ComposeApp`). See `ios-bridge` for the SwiftUI side.
 - The SKIE Swift-interop plugin is configured but currently disabled
   (Kotlin version is ahead of supported SKIE). Don't write Swift code
   that assumes SKIE-generated APIs.

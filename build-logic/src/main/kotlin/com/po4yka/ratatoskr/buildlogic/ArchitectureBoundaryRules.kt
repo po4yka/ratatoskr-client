@@ -21,9 +21,9 @@ internal object ArchitectureBoundaryRules {
             "feature/sync" to emptySet(),
         )
 
-    private val allowedComposeAppUiPaths =
+    private val allowedShellUiPaths =
         setOf(
-            "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt",
+            "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt",
         )
 
     fun findComposableDiViolations(screenFiles: List<SourceFile>): List<String> =
@@ -39,10 +39,10 @@ internal object ArchitectureBoundaryRules {
 
     fun findComposeAppFeatureUiViolations(files: List<SourceFile>): List<String> =
         files
-            .filter { it.path.startsWith("composeApp/src/") }
+            .filter { it.path.startsWith("shared/sharedUI/src/") || it.path.startsWith("shared/sharedLogic/src/") }
             .filterNot { isTestSourcePath(it.path) }
             .filter { it.path.contains("/ui/") }
-            .filterNot { it.path in allowedComposeAppUiPaths }
+            .filterNot { it.path in allowedShellUiPaths }
             .map { "Shell UI: ${it.path} must live in core/ui or an owning feature module" }
 
     fun findShellRouteUiImportViolations(shellFiles: List<SourceFile>): List<String> =
@@ -150,10 +150,12 @@ internal object ArchitectureBoundaryRules {
             ?.get(1)
 
     fun isAllowedDirectDiPath(path: String): Boolean =
-        path == "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/App.kt" ||
-            path == "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionRoot.kt" ||
-            path == "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionAssembly.kt" ||
-            path == "composeApp/src/iosMain/kotlin/com/po4yka/ratatoskr/IosAppHost.kt" ||
+        path == "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/App.kt" ||
+            path == "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionRoot.kt" ||
+            path == "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionAssembly.kt" ||
+            path == "shared/sharedUI/src/iosMain/kotlin/com/po4yka/ratatoskr/IosAppHost.kt" ||
+            path == "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/DefaultRootComponent.kt" ||
+            path == "desktopApp/src/jvmMain/kotlin/com/po4yka/ratatoskr/main.kt" ||
             path.contains("/di/") ||
             path.contains("/worker/") ||
             path.contains("/widget/")
@@ -176,7 +178,9 @@ internal object ArchitectureBoundaryRules {
 
     private fun moduleNameFromBuildPath(path: String): String? =
         when {
-            path == "composeApp/build.gradle.kts" -> "composeApp"
+            path == "shared/sharedLogic/build.gradle.kts" -> "shared/sharedLogic"
+            path == "shared/sharedUI/build.gradle.kts" -> "shared/sharedUI"
+            path == "desktopApp/build.gradle.kts" -> "desktopApp"
             path == "androidApp/build.gradle.kts" -> "androidApp"
             path.startsWith("core/") && path.endsWith("/build.gradle.kts") -> path.removeSuffix("/build.gradle.kts")
             path.startsWith("feature/") && path.endsWith("/build.gradle.kts") -> path.removeSuffix("/build.gradle.kts")

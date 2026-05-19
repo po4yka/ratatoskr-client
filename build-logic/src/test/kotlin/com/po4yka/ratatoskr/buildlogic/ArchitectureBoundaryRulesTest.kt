@@ -12,19 +12,19 @@ class ArchitectureBoundaryRulesTest {
             ArchitectureBoundaryRules.findDirectDiViolations(
                 listOf(
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/Root.kt",
+                        path = "shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/Root.kt",
                         content = "val entry = koin.get<MyEntry>()",
                     ),
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/Main.kt",
+                        path = "shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/Main.kt",
                         content = "val entries = koin.getAll<FeatureRouteEntry>()",
                     ),
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/Shell.kt",
+                        path = "shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/Shell.kt",
                         content = "val dep = getKoin().get<RootDependency>()",
                     ),
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/CommentOnly.kt",
+                        path = "shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/CommentOnly.kt",
                         content = "// inject() should not count inside comments",
                     ),
                 ),
@@ -37,17 +37,17 @@ class ArchitectureBoundaryRulesTest {
     fun `allowlisted paths can resolve dependencies directly`() {
         assertTrue(
             ArchitectureBoundaryRules.isAllowedDirectDiPath(
-                "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/App.kt",
+                "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/App.kt",
             ),
         )
         assertTrue(
             ArchitectureBoundaryRules.isAllowedDirectDiPath(
-                "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionAssembly.kt",
+                "shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionAssembly.kt",
             ),
         )
         assertTrue(
             ArchitectureBoundaryRules.isAllowedDirectDiPath(
-                "composeApp/src/iosMain/kotlin/com/po4yka/ratatoskr/IosAppHost.kt",
+                "shared/sharedLogic/src/iosMain/kotlin/com/po4yka/ratatoskr/IosAppHost.kt",
             ),
         )
         assertTrue(
@@ -57,7 +57,7 @@ class ArchitectureBoundaryRulesTest {
         )
         assertFalse(
             ArchitectureBoundaryRules.isAllowedDirectDiPath(
-                "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/NavigationRegistry.kt",
+                "shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/NavigationRegistry.kt",
             ),
         )
     }
@@ -72,7 +72,7 @@ class ArchitectureBoundaryRulesTest {
                         content = "fun detail(id: String) = AppRoute(\"summary\", \"detail\", id)",
                     ),
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/MainComponent.kt",
+                        path = "shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/MainComponent.kt",
                         content = "val route = AppRoute(featureId = \"summary\", screenId = \"detail\")",
                     ),
                     SourceFile(
@@ -84,7 +84,7 @@ class ArchitectureBoundaryRulesTest {
 
         assertEquals(
             listOf(
-                "Route ownership: composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/MainComponent.kt must use owner feature route helpers instead of raw AppRoute(...) construction",
+                "Route ownership: shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/presentation/navigation/MainComponent.kt must use owner feature route helpers instead of raw AppRoute(...) construction",
             ),
             violations,
         )
@@ -128,7 +128,7 @@ class ArchitectureBoundaryRulesTest {
                 shellFiles =
                     listOf(
                         SourceFile(
-                            path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/App.kt",
+                            path = "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/App.kt",
                             content =
                                 """
                                 import com.po4yka.ratatoskr.presentation.navigation.SummaryListComponent
@@ -224,32 +224,32 @@ class ArchitectureBoundaryRulesTest {
     }
 
     @Test
-    fun `composeApp cannot keep feature route ui outside shell host`() {
+    fun `sharedUI cannot keep feature route ui outside shell host`() {
         val violations =
             ArchitectureBoundaryRules.findComposeAppFeatureUiViolations(
                 listOf(
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt",
+                        path = "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt",
                         content = "",
                     ),
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/SummaryListScreen.kt",
+                        path = "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/SummaryListScreen.kt",
                         content = "",
                     ),
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/auth/TelegramAuthScreen.kt",
+                        path = "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/auth/TelegramAuthScreen.kt",
                         content = "",
                     ),
                     SourceFile(
-                        path = "composeApp/src/androidInstrumentedTest/kotlin/com/po4yka/ratatoskr/ui/SummaryListScreenTest.kt",
+                        path = "shared/sharedUI/src/androidInstrumentedTest/kotlin/com/po4yka/ratatoskr/ui/SummaryListScreenTest.kt",
                         content = "",
                     ),
                     SourceFile(
-                        path = "composeApp/src/androidDeviceTest/kotlin/com/po4yka/ratatoskr/ui/SummaryListScreenTest.kt",
+                        path = "shared/sharedUI/src/androidDeviceTest/kotlin/com/po4yka/ratatoskr/ui/SummaryListScreenTest.kt",
                         content = "",
                     ),
                     SourceFile(
-                        path = "composeApp/src/androidHostTest/kotlin/com/po4yka/ratatoskr/ui/SummaryListUiHostTest.kt",
+                        path = "shared/sharedLogic/src/androidHostTest/kotlin/com/po4yka/ratatoskr/ui/SummaryListUiHostTest.kt",
                         content = "",
                     ),
                 ),
@@ -257,8 +257,8 @@ class ArchitectureBoundaryRulesTest {
 
         assertEquals(
             listOf(
-                "Shell UI: composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/SummaryListScreen.kt must live in core/ui or an owning feature module",
-                "Shell UI: composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/auth/TelegramAuthScreen.kt must live in core/ui or an owning feature module",
+                "Shell UI: shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/SummaryListScreen.kt must live in core/ui or an owning feature module",
+                "Shell UI: shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/auth/TelegramAuthScreen.kt must live in core/ui or an owning feature module",
             ),
             violations,
         )
@@ -270,7 +270,7 @@ class ArchitectureBoundaryRulesTest {
             ArchitectureBoundaryRules.findShellRouteUiImportViolations(
                 listOf(
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt",
+                        path = "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt",
                         content =
                             """
                             import com.po4yka.ratatoskr.feature.summary.ui.screens.SummaryListScreen
@@ -278,7 +278,7 @@ class ArchitectureBoundaryRulesTest {
                             """.trimIndent(),
                     ),
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionAssembly.kt",
+                        path = "shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionAssembly.kt",
                         content = "import com.po4yka.ratatoskr.feature.summary.api.SummaryEntry",
                     ),
                 ),
@@ -286,8 +286,8 @@ class ArchitectureBoundaryRulesTest {
 
         assertEquals(
             listOf(
-                "Shell boundary: composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt must not import feature route UI type com.po4yka.ratatoskr.feature.summary.ui.screens.SummaryListScreen",
-                "Shell boundary: composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt must not import feature route UI type com.po4yka.ratatoskr.feature.auth.ui.auth.TelegramAuthScreen",
+                "Shell boundary: shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt must not import feature route UI type com.po4yka.ratatoskr.feature.summary.ui.screens.SummaryListScreen",
+                "Shell boundary: shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/screens/MainScreen.kt must not import feature route UI type com.po4yka.ratatoskr.feature.auth.ui.auth.TelegramAuthScreen",
             ),
             violations,
         )
@@ -307,7 +307,7 @@ class ArchitectureBoundaryRulesTest {
                         content = "module { single { summaryEntry() } bind MainRouteEntry::class }",
                     ),
                     SourceFile(
-                        path = "composeApp/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionAssembly.kt",
+                        path = "shared/sharedLogic/src/commonMain/kotlin/com/po4yka/ratatoskr/app/AppCompositionAssembly.kt",
                         content = "val entries = summaryRouteEntries(koin)",
                     ),
                 ),

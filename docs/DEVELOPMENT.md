@@ -31,7 +31,7 @@ EOL
 ./gradlew build
 
 # Run Android
-./gradlew :composeApp:installDebug
+./gradlew :androidApp:installDebug
 
 # Run iOS (macOS only)
 open iosApp/iosApp.xcodeproj
@@ -45,7 +45,9 @@ open iosApp/iosApp.xcodeproj
 ```
 ratatoskr-client/
  androidApp/          # Android application host
- composeApp/          # Compose shell, shared UI, CocoaPods export
+ desktopApp/          # Compose Desktop app (hot-reload dev target)
+ shared/sharedLogic/  # Pure-logic KMP library: DI bootstrap, navigation shell
+ shared/sharedUI/     # Compose Multiplatform KMP library + CocoaPods export
  core/                # Shared domain, data, navigation, and UI infrastructure
  feature/             # Feature-owned business logic, APIs, DTOs, and components
  iosApp/              # iOS app (SwiftUI host + native share/widget targets)
@@ -67,7 +69,7 @@ ratatoskr-client/
 ./gradlew :androidApp:installDebug
 
 # Run with Hot Reload (desktop)
-./gradlew :composeApp:hotRunDesktop
+./gradlew :desktopApp:hotRunDesktop
 ```
 
 ### iOS Development
@@ -148,7 +150,7 @@ Update models in `core/common/src/commonMain/kotlin/com/po4yka/ratatoskr/domain/
 1. **Install**: Download from [developer.android.com](https://developer.android.com)
 2. **Open Project**: File → Open → Select project root
 3. **Sync**: File → Sync Project with Gradle Files
-4. **Run**: Select `composeApp` configuration → Run
+4. **Run**: Select `androidApp` or `desktopApp` run configuration → Run
 
 **Recommended Plugins**:
 - Kotlin

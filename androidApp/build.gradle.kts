@@ -115,7 +115,8 @@ kotlin {
 }
 
 dependencies {
-    implementation(projects.composeApp)
+    implementation(projects.shared.sharedLogic)
+    implementation(projects.shared.sharedUI)
     implementation(compose.preview)
     implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)

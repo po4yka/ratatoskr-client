@@ -63,7 +63,7 @@ Current widgets:
    and the hardcoded Frost colors.
 5. Hook deep links via `actionStartActivity(...)` with the same
    launch-action URIs the main app handles in
-   `composeApp/.../app/AppCompositionRoot.kt`.
+   `shared/sharedLogic/.../app/AppCompositionRoot.kt`.
 
 ## Refresh + sync
 

@@ -1,6 +1,6 @@
 # App UI Reference
 
-Use this reference when touching `composeApp` UI or any feature screen.
+Use this reference when touching `shared/sharedUI` UI or any feature screen.
 
 ## Theme Rules
 

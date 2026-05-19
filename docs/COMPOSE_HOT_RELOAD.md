@@ -18,7 +18,7 @@ Compose Hot Reload allows you to make changes to your Compose UI code and see th
 The project is already configured with:
 
 1. **Compose Hot Reload Plugin** (v1.0.0-rc03) added to `gradle/libs.versions.toml`
-2. **Desktop Target** added to both `composeApp` and `shared` modules
+2. **Desktop Target** configured in `desktopApp` and `shared/sharedUI` modules
 3. **Foojay Resolver** enabled in `settings.gradle.kts` for automatic JetBrains Runtime downloads
 4. **Platform-specific implementations** for desktop (stubs for development)
 
@@ -30,17 +30,17 @@ The project is already configured with:
 
 2. **Find the run configuration** for the desktop target:
    - Look for "desktopRun" or similar in the run configurations dropdown
-   - Or create a new Gradle run configuration with task: `composeApp:runDesktop`
+   - Or create a new Gradle run configuration with task: `desktopApp:run`
 
 3. **Run the application**:
    ```bash
-   ./gradlew :composeApp:runDesktop
+   ./gradlew :desktopApp:run
    ```
 
 4. **Make changes** to any Compose UI code in:
-   - `composeApp/src/commonMain/kotlin/` (shared UI code)
-   - `composeApp/src/androidMain/kotlin/` (Android UI code)
-   - `composeApp/src/desktopMain/kotlin/` (Desktop UI code)
+   - `shared/sharedUI/src/commonMain/kotlin/` (shared UI code)
+   - `shared/sharedUI/src/androidMain/kotlin/` (Android UI code)
+   - `desktopApp/src/jvmMain/kotlin/` (Desktop entry point)
 
 5. **See instant updates** without restarting the app!
 
@@ -48,7 +48,7 @@ The project is already configured with:
 
 ```bash
 # Run the desktop app with hot reload
-./gradlew :composeApp:runDesktop
+./gradlew :desktopApp:hotRunDesktop
 
 # The app will launch in a desktop window
 # Edit any Compose UI file and save
@@ -84,8 +84,10 @@ For hot reload development, the project includes a **desktop target** with stub 
 - `util/share/DesktopShareManager.kt` - Console-based sharing
 - `util/network/DesktopNetworkMonitor.kt` - Always-connected stub
 
-**ComposeApp Module** (`composeApp/src/desktopMain/`):
+**DesktopApp Module** (`desktopApp/src/jvmMain/`):
 - `main.kt` - Desktop entry point with Koin initialization
+
+**SharedLogic Module** (`shared/sharedLogic/src/desktopMain/`):
 - `di/KoinInitializer.kt` - Desktop-specific Koin bootstrap
 
 ### Development Notes
@@ -116,7 +118,7 @@ For production features, always test on the actual target platforms (Android/iOS
 4. **Clean and rebuild**:
    ```bash
    ./gradlew clean
-   ./gradlew :composeApp:runDesktop
+   ./gradlew :desktopApp:hotRunDesktop
    ```
 
 ### Build Errors
@@ -141,7 +143,7 @@ The desktop target is **only for development**. For production builds:
 
 **Android:**
 ```bash
-./gradlew :composeApp:assembleRelease
+./gradlew :androidApp:assembleRelease
 ```
 
 **iOS:**

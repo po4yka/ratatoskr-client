@@ -7,7 +7,7 @@ package com.po4yka.ratatoskr.util.designsystem
  * lets the user toggle (e.g. `disabled`, `error`, `focused`).
  *
  * Kept as a pure data class — the actual Compose composable bindings
- * live in `composeApp` so commonMain stays free of UI imports.
+ * live in `shared/sharedUI` so commonMain stays free of UI imports.
  */
 data class FrostLabSection(
     val id: String,
