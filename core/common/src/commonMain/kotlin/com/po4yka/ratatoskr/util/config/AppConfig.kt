@@ -19,7 +19,7 @@ object AppConfig {
          * Base URL for the API server Default: example.com (should be replaced in
          * production)
          */
-        var baseUrl: String = "https://api.ratatoskr.po4yka.com"
+        var baseUrl: String = "https://ratatoskr-api.po4yka.com"
 
         /**
          * Set to `true` from each platform's release bootstrap (Android Application

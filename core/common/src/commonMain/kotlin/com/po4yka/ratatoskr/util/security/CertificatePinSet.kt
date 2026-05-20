@@ -48,7 +48,7 @@ data class CertificatePinSet(val host: String, val pins: List<CertificatePin>) {
 
     companion object {
         const val MIN_PINS: Int = 2
-        const val PRODUCTION_HOST: String = "api.ratatoskr.po4yka.com"
+        const val PRODUCTION_HOST: String = "ratatoskr-api.po4yka.com"
 
         fun shouldPin(baseUrl: String): Boolean = extractHost(baseUrl) == PRODUCTION_HOST
 

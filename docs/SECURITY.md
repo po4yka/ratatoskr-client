@@ -251,7 +251,7 @@ val httpClient = HttpClient(OkHttp) {
                 certificatePinner(
                     CertificatePinner.Builder()
                         .add(
-                            "api.ratatoskr.po4yka.com",
+                            "ratatoskr-api.po4yka.com",
                             "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
                         )
                         .build()

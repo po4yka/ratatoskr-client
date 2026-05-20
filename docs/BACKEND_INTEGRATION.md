@@ -56,12 +56,12 @@ Configure the base URL based on environment:
 
 **Production**:
 ```kotlin
-const val PRODUCTION_BASE_URL = "https://api.ratatoskr.po4yka.com"
+const val PRODUCTION_BASE_URL = "https://ratatoskr-api.po4yka.com"
 ```
 
 **Staging**:
 ```kotlin
-const val STAGING_BASE_URL = "https://staging-api.ratatoskr.po4yka.com"
+const val STAGING_BASE_URL = "https://staging-ratatoskr-api.po4yka.com"
 ```
 
 **Local Development**:
@@ -91,8 +91,8 @@ object ApiConfig {
 
     val baseUrl: String
         get() = when (currentEnvironment) {
-            Environment.PRODUCTION -> "https://api.ratatoskr.po4yka.com"
-            Environment.STAGING -> "https://staging-api.ratatoskr.po4yka.com"
+            Environment.PRODUCTION -> "https://ratatoskr-api.po4yka.com"
+            Environment.STAGING -> "https://staging-ratatoskr-api.po4yka.com"
             Environment.LOCAL -> getPlatformLocalUrl()
         }
 
@@ -135,8 +135,8 @@ app.add_middleware(
 All endpoints are prefixed with `/v1`:
 
 ```
-https://api.ratatoskr.po4yka.com/v1/summaries
-https://api.ratatoskr.po4yka.com/v1/auth/telegram-login
+https://ratatoskr-api.po4yka.com/v1/summaries
+https://ratatoskr-api.po4yka.com/v1/auth/telegram-login
 ```
 
 **Client Implementation**:

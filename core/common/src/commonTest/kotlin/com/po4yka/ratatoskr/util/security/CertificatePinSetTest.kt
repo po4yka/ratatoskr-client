@@ -11,7 +11,7 @@ class CertificatePinSetTest {
     // Real pin material is host- and key-specific; these are synthetic for tests.
     private val leafPin = "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
     private val backupPin = "sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="
-    private val productionHost = "api.ratatoskr.po4yka.com"
+    private val productionHost = "ratatoskr-api.po4yka.com"
 
     @Test
     fun `valid sha256 pin parses and stores the hash`() {
@@ -78,7 +78,7 @@ class CertificatePinSetTest {
     @Test
     fun `appliesTo matches the configured host exactly — no wildcard, no port`() {
         // Wildcard host matching is a footgun: an attacker who can MITM
-        // x.api.ratatoskr.po4yka.com should not benefit from the api pin set.
+        // x.ratatoskr-api.po4yka.com should not benefit from the api pin set.
         // Pinning is per-host by design.
         val set =
             CertificatePinSet(
@@ -88,7 +88,7 @@ class CertificatePinSetTest {
 
         assertTrue(set.appliesTo(productionHost))
         assertFalse(set.appliesTo("other.example.com"))
-        assertFalse(set.appliesTo("sub.api.ratatoskr.po4yka.com"))
+        assertFalse(set.appliesTo("sub.ratatoskr-api.po4yka.com"))
     }
 
     @Test
@@ -103,10 +103,10 @@ class CertificatePinSetTest {
 
     @Test
     fun `production base URL opts into pinning`() {
-        // Boundary: the production hostname is exactly api.ratatoskr.po4yka.com.
+        // Boundary: the production hostname is exactly ratatoskr-api.po4yka.com.
         // Anything else is treated as non-prod.
-        assertTrue(CertificatePinSet.shouldPin("https://api.ratatoskr.po4yka.com"))
-        assertTrue(CertificatePinSet.shouldPin("https://api.ratatoskr.po4yka.com/v1/auth/refresh"))
+        assertTrue(CertificatePinSet.shouldPin("https://ratatoskr-api.po4yka.com"))
+        assertTrue(CertificatePinSet.shouldPin("https://ratatoskr-api.po4yka.com/v1/auth/refresh"))
     }
 
     @Test
@@ -114,7 +114,7 @@ class CertificatePinSetTest {
         // Defensive: AppConfig.Api.baseUrl is parsed elsewhere and could arrive
         // with or without a scheme depending on the caller. The helper must
         // normalize without crashing.
-        assertTrue(CertificatePinSet.shouldPin("api.ratatoskr.po4yka.com"))
-        assertTrue(CertificatePinSet.shouldPin("api.ratatoskr.po4yka.com/health"))
+        assertTrue(CertificatePinSet.shouldPin("ratatoskr-api.po4yka.com"))
+        assertTrue(CertificatePinSet.shouldPin("ratatoskr-api.po4yka.com/health"))
     }
 }

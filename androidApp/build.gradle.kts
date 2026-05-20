@@ -9,7 +9,7 @@ plugins {
 }
 
 val debugApiBaseUrl = "http://10.0.2.2:8000"
-val productionApiBaseUrl = "https://api.ratatoskr.po4yka.com"
+val productionApiBaseUrl = "https://ratatoskr-api.po4yka.com"
 
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")

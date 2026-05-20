@@ -389,7 +389,7 @@ private fun LegalSection() {
         ) {
             LegalRow(
                 label = stringResource(Res.string.privacy_policy),
-                onClick = { uriHandler.openUri("https://api.ratatoskr.po4yka.com/web/privacy.html") },
+                onClick = { uriHandler.openUri("https://ratatoskr-api.po4yka.com/privacy.html") },
             )
 
             Spacer(
@@ -403,7 +403,7 @@ private fun LegalSection() {
 
             LegalRow(
                 label = stringResource(Res.string.terms_of_service),
-                onClick = { uriHandler.openUri("https://api.ratatoskr.po4yka.com/web/terms.html") },
+                onClick = { uriHandler.openUri("https://ratatoskr-api.po4yka.com/terms.html") },
             )
         }
     }

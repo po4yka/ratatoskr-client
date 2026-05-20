@@ -10,7 +10,7 @@ enum AppConfiguration {
     enum API {
         /// Base URL for the API server
         /// Update this with your actual API endpoint
-        static let baseURL = "https://api.ratatoskr.po4yka.com"
+        static let baseURL = "https://ratatoskr-api.po4yka.com"
 
         /// Enable API logging
         static let loggingEnabled = true

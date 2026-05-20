@@ -1,7 +1,7 @@
 # Backend API Reference
 
 **Last Updated**: 2026-04-28
-**Base URL**: configured in `local.properties` (default `https://api.ratatoskr.po4yka.com`)
+**Base URL**: configured in `local.properties` (default `https://ratatoskr-api.po4yka.com`)
 **API version**: v1
 **Content-Type**: `application/json`
 **Authentication**: JWT Bearer tokens in the `Authorization` header

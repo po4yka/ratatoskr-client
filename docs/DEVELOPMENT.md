@@ -21,7 +21,7 @@ cd ratatoskr-client
 
 # Create local.properties
 cat > local.properties << EOL
-api.base.url=https://api.ratatoskr.po4yka.com
+api.base.url=https://ratatoskr-api.po4yka.com
 client.id=ratatoskr-android-v1.0
 api.timeout.seconds=30
 api.logging.enabled=true

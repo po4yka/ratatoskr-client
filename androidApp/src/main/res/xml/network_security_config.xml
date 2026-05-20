@@ -8,7 +8,7 @@
   mitmproxy, etc.) still work. Release builds never honour the overrides.
 
   TODO: once the certificate-pinning task lands, attach a <pin-set> with at
-  least two pins to the api.ratatoskr.po4yka.com <domain-config>. Until then
+  least two pins to the ratatoskr-api.po4yka.com <domain-config>. Until then
   pinning is intentionally absent — we keep this config focused on the trust
   anchor restriction.
 -->
