@@ -86,7 +86,7 @@ jobs:
 
       - name: Open pull request
         if: steps.gate.outputs.skip != 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: openapi/auto-bump
           delete-branch: true
