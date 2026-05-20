@@ -167,14 +167,14 @@ jobs:
 
       - name: Run Android tests
         if: matrix.platform == 'android'
-        run: ./gradlew :composeApp:testAndroidHostTest --no-daemon
+        run: ./gradlew :shared:sharedUI:testAndroidHostTest --no-daemon
 
       # iOS-specific tasks
       - name: Build iOS frameworks
         if: matrix.platform == 'ios'
         run: |
-          ./gradlew :composeApp:linkPodDebugFrameworkIosSimulatorArm64 --no-daemon
-          ./gradlew :composeApp:linkPodDebugFrameworkIosArm64 --no-daemon
+          ./gradlew :shared:sharedUI:linkPodDebugFrameworkIosSimulatorArm64 --no-daemon
+          ./gradlew :shared:sharedUI:linkPodDebugFrameworkIosArm64 --no-daemon
 
       - name: Run iOS tests
         if: matrix.platform == 'ios'
@@ -240,7 +240,7 @@ jobs:
           path: |
             core/common/build/reports/kover/
             core/data/build/reports/kover/
-            composeApp/build/reports/jacoco/
+            shared/sharedUI/build/reports/jacoco/
           retention-days: 30
         continue-on-error: true
 

@@ -207,15 +207,15 @@ jobs:
 
       - name: Build iOS Release Framework
         run: |
-          ./gradlew :composeApp:linkReleaseFrameworkIosArm64 --no-daemon
-          ./gradlew :composeApp:linkReleaseFrameworkIosSimulatorArm64 --no-daemon
+          ./gradlew :shared:sharedUI:linkReleaseFrameworkIosArm64 --no-daemon
+          ./gradlew :shared:sharedUI:linkReleaseFrameworkIosSimulatorArm64 --no-daemon
 
       # Create XCFramework
       - name: Create XCFramework
         run: |
           xcodebuild -create-xcframework \
-            -framework composeApp/build/bin/iosArm64/releaseFramework/ComposeApp.framework \
-            -framework composeApp/build/bin/iosSimulatorArm64/releaseFramework/ComposeApp.framework \
+            -framework shared/sharedUI/build/bin/iosArm64/releaseFramework/ComposeApp.framework \
+            -framework shared/sharedUI/build/bin/iosSimulatorArm64/releaseFramework/ComposeApp.framework \
             -output ComposeApp.xcframework
 
       - name: Upload XCFramework

@@ -161,7 +161,7 @@ jobs:
           # Module breakdown
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Module Breakdown:" >> $GITHUB_STEP_SUMMARY
-          for module in shared composeApp; do
+          for module in shared shared/sharedUI; do
             if [ -d "$module" ]; then
               module_kt=$(find $module -name "*.kt" | wc -l)
               module_lines=$(find $module -name "*.kt" -exec cat {} \; | wc -l)

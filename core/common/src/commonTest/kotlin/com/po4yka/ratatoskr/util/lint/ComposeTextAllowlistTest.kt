@@ -31,7 +31,9 @@ class ComposeTextAllowlistTest {
         // the rule.
         assertFalse(
             ComposeTextAllowlist.isAllowlisted(
-                filePath = "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/frost/ReadingThemeBottomSheet.kt",
+                filePath =
+                    "shared/sharedUI/src/commonMain/kotlin/com/po4yka/ratatoskr/ui/frost/" +
+                        "ReadingThemeBottomSheet.kt",
             ),
         )
     }
@@ -93,7 +95,8 @@ class ComposeTextAllowlistTest {
         assertTrue(
             ComposeTextAllowlist.isAllowlisted(
                 filePath =
-                    "shared\\sharedUI\\src\\commonMain\\kotlin\\com\\po4yka\\ratatoskr\\ui\\frost\\FrostLabAtomsScreen.kt",
+                    "shared\\sharedUI\\src\\commonMain\\kotlin\\com\\po4yka\\ratatoskr\\ui\\frost\\" +
+                        "FrostLabAtomsScreen.kt",
             ),
         )
     }

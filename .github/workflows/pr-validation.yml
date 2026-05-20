@@ -76,7 +76,7 @@ jobs:
         run: ./gradlew :androidApp:assembleDebug --no-daemon
 
       - name: Run Android unit tests
-        run: ./gradlew :composeApp:testAndroidHostTest --no-daemon
+        run: ./gradlew :shared:sharedUI:testAndroidHostTest --no-daemon
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v7
@@ -90,7 +90,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: android-test-results
-          path: composeApp/build/reports/tests/
+          path: shared/sharedUI/build/reports/tests/
           retention-days: 7
 
   # Build iOS framework
@@ -128,10 +128,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build iOS framework (Simulator Arm64)
-        run: ./gradlew :composeApp:linkPodDebugFrameworkIosSimulatorArm64 --no-daemon
+        run: ./gradlew :shared:sharedUI:linkPodDebugFrameworkIosSimulatorArm64 --no-daemon
 
       - name: Build iOS framework (Device Arm64)
-        run: ./gradlew :composeApp:linkPodDebugFrameworkIosArm64 --no-daemon
+        run: ./gradlew :shared:sharedUI:linkPodDebugFrameworkIosArm64 --no-daemon
 
       - name: Run iOS tests
         run: ./gradlew :core:common:iosSimulatorArm64Test :core:data:iosSimulatorArm64Test :feature:auth:iosSimulatorArm64Test :feature:collections:iosSimulatorArm64Test :feature:digest:iosSimulatorArm64Test :feature:settings:iosSimulatorArm64Test :feature:summary:iosSimulatorArm64Test :feature:sync:iosSimulatorArm64Test --no-daemon

@@ -88,9 +88,6 @@ class ArchitectureBoundaryTest {
                 repoRoot.resolve(
                     "shared/sharedLogic/src/iosSimulatorArm64Main/kotlin/com/po4yka/ratatoskr/di/IosCommonModules.kt",
                 ),
-                repoRoot.resolve(
-                    "shared/sharedLogic/src/iosX64Main/kotlin/com/po4yka/ratatoskr/di/IosCommonModules.kt",
-                ),
             )
 
         val violations =

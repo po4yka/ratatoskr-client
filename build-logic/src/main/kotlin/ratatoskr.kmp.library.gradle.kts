@@ -38,7 +38,6 @@ extensions.configure<KotlinMultiplatformExtension> {
         }
     }
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -57,7 +56,6 @@ pluginManager.withPlugin("com.google.devtools.ksp") {
     dependencies {
         add("kspCommonMainMetadata", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
         add("kspAndroid", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
-        add("kspIosX64", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
         add("kspIosArm64", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
         add("kspIosSimulatorArm64", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
         add("kspDesktop", "io.insert-koin:koin-ksp-compiler:$koinKspVersion")
